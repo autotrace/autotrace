@@ -62,61 +62,71 @@ CVS tag for version X.Y: RELEASE_X_Y.
 CVS tag for version X.YpreN: PRERELEASE_X_Y_N. 
 Branch for version X.Y: TOWARD_version X.Y.
 
+* Tool for debugging output
+
+   eps: ghostscript
+   sk:  sketch
+   emf: CorelDraw, Illustrator, StarOffice, OpenOffice 
+        and Microsoft Office.
+   svg: sodipodi
+   ai: Illustrator
+   pdf: ghostscript, xpdf, acrobat
+
 * Web page
 
-From sourceforge.org:
+    From sourceforge.org:
 
-5. Setup your group's web site.
+    5. Setup your group's web site.
 
-I'll assume that you have some sort of web
-page or site built already that you wish to put up on
-SourceForge to give your group a public face.
-Login to SourceForge using SSH, for example ;
+    I'll assume that you have some sort of web
+    page or site built already that you wish to put up on
+    SourceForge to give your group a public face.
+    Login to SourceForge using SSH, for example ;
 
-ssh -l loginname yourproject.sourceforge.net
+    ssh -l loginname yourproject.sourceforge.net
 
-you will now be in your home directory. All
-group files are stored in a directory structure for each
-project. The group directory structure is
-split out by the first, then first and second, letters of
-the project name. From here all group files
-are stored in /home/groups/y/yo/yourproject.
-Change to this directory. All your web pages
-are stored in the htdocs directory. Going in here will
-contain index.php, which is a blank page that
-says you haven't uploaded a web page yet.
-Logout, and copy the files for your web page
-using scp, a program which comes with ssh. For
-example:
+    you will now be in your home directory. All
+    group files are stored in a directory structure for each
+    project. The group directory structure is
+    split out by the first, then first and second, letters of
+    the project name. From here all group files
+    are stored in /home/groups/y/yo/yourproject.
+    Change to this directory. All your web pages
+    are stored in the htdocs directory. Going in here will
+    contain index.php, which is a blank page that
+    says you haven't uploaded a web page yet.
+    Logout, and copy the files for your web page
+    using scp, a program which comes with ssh. For
+    example:
 
-scp localfile loginname@yourproject.sourceforge.net:/home/groups/y/yo/yourproject/htdocs/
+    scp localfile loginname@yourproject.sourceforge.net:/home/groups/y/yo/yourproject/htdocs/
 
-I suggest you gzip up your site, send it in
-one go using scp, then login with ssh and gunzip it.
+    I suggest you gzip up your site, send it in
+    one go using scp, then login with ssh and gunzip it.
 
-So what should be on the web page ? Perhaps
-you'd like the following, as well as your project's
-information ;
+    So what should be on the web page ? Perhaps
+    you'd like the following, as well as your project's
+    information ;
 
-1.A link to the projects group page on SourceForge.
-2.Mailing list links (we'll create them in a second)
-3.A SourceForge icon and web counter - see the site documentation for this.
-4.A link to the CVS web interface at
+    1.A link to the projects group page on SourceForge.
+    2.Mailing list links (we'll create them in a second)
+    3.A SourceForge icon and web counter - see the site documentation for this.
+    4.A link to the CVS web interface at
 
-http://cvs.sourceforge.net/cgi-bin/cvsweb.cgi/?cvsroot=yourproject
+    http://cvs.sourceforge.net/cgi-bin/cvsweb.cgi/?cvsroot=yourproject
 
-5.Some info about using CVS specific to your project.
-6.Setup mailing lists for your project.
+    5.Some info about using CVS specific to your project.
+    6.Setup mailing lists for your project.
 
-If your project isn't that active yet (or only
-has one lonely developer) your mailing lists will be
-very quiet, however I still suggest you look
-to the future and setup three standard lists for your
-project: a devel list for developers, a users
-list for users, and an announce list for new version
-announcements.
+    If your project isn't that active yet (or only
+    has one lonely developer) your mailing lists will be
+    very quiet, however I still suggest you look
+    to the future and setup three standard lists for your
+    project: a devel list for developers, a users
+    list for users, and an announce list for new version
+    announcements.
 
-Do this via your group page using the mailing
-list admin link. Its quite simple so you shouldn't
-have any problems...
+    Do this via your group page using the mailing
+    list admin link. Its quite simple so you shouldn't
+    have any problems...
 
