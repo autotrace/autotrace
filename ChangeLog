@@ -1,5 +1,14 @@
 2000-09-26  Masatake YAMATO  <yamato@redhat.com>
 
+	* output-eps.c: Applied a patch from 
+	Bernhard Herzog <herzog@online.de>.
+		
+          Message-ID: <m3og1g7brh.fsf@greebo.nodomain.de>
+	  Subject: Re: [AutoTrace] autotrace 0.23
+	  From: Bernhard Herzog <herzog@online.de>
+	  To: autotrace@egroups.com
+	  Date: 22 Sep 2000 16:16:18 +0200
+
 	* fit.c: Include both limits.h and float.h.
 	(fit_with_least_squares): Use %lx instead of %x.
 	Cast left_curve to unsigned long.
