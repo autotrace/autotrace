@@ -1,3 +1,12 @@
+2002-03-20  Martin Weber <martweb@gmx.net>
+
+	* output-emf.c: Include output.h.
+	Fixed bug when boundaries of the splines were larger than the
+	boundaries of the bitmap.
+	* output-cgm.c: removed FLOAT_TO_UI16.
+	
+	Message-ID: <3C97B972.12D92E49@gmx.net>.
+
 2002-03-20  Masatake YAMATO  <yamato@redhat.com>
 
 	* NEWS: Updated for 0.30.

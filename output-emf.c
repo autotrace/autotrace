@@ -10,6 +10,7 @@
 #include <string.h>
 #include "spline.h"
 #include "xstd.h"
+#include "output.h"
 
 /* EMF record-number definitions */
 
@@ -41,8 +42,8 @@
 #define MAKE_COLREF(r,g,b) (((r) & 0x0FF) | (((g) & 0x0FF) << 8) | (((b) & 0x0FF) << 16))
 #define MK_PEN(n) ((n) * 2 + 1)
 #define MK_BRUSH(n) ((n) * 2 + 2)
-#define FLOAT_TO_UI32(num) ((UI32)(num * scale))
-#define FLOAT_TO_UI16(num) ((UI16)(num * scale))
+#define FLOAT_TO_UI32(num) ((UI32)((num - off) * scale + 0.5))
+#define FLOAT_TO_UI16(num) ((UI16)((num - off) * scale + 0.5))
 
 /* maybe these definitions be put into types.h 
    with some ifdefs ... */
@@ -72,7 +73,50 @@ typedef struct
 
 static EMFColorList *color_list = NULL;  /* Color list */
 static UI32 *color_table = NULL;         /* Color table */
-static float scale;
+static float scale, off;
+/* Check what the minimum and maximum x and y values are  */
+
+static void
+maxminxy_spline_list_array (spline_list_array_type spline_list_array,
+  at_real *llx, at_real *lly, at_real *urx, at_real *ury)
+{
+  unsigned this_list, this_spline;
+
+  for (this_list = 0;
+       this_list < SPLINE_LIST_ARRAY_LENGTH (spline_list_array);
+       this_list++)
+    {
+      spline_list_type sl;
+      sl = SPLINE_LIST_ARRAY_ELT (spline_list_array, this_list);
+      for (this_spline = 0; this_spline < SPLINE_LIST_LENGTH (sl); this_spline++)
+        {
+		  spline_type s;
+
+          s = SPLINE_LIST_ELT (sl, this_spline);
+          if (START_POINT(s).x < *llx) *llx = START_POINT(s).x;
+          if (START_POINT(s).y < *lly) *lly = START_POINT(s).y;
+          if (START_POINT(s).x > *urx) *urx = START_POINT(s).x;
+          if (START_POINT(s).y > *ury) *ury = START_POINT(s).y;
+          if (END_POINT(s).x < *llx) *llx = END_POINT(s).x;
+          if (END_POINT(s).y < *lly) *lly = END_POINT(s).y;
+          if (END_POINT(s).x > *urx) *urx = END_POINT(s).x;
+          if (END_POINT(s).y > *ury) *ury = END_POINT(s).y;
+
+		  if (SPLINE_DEGREE(s) == CUBICTYPE)
+            {
+              if (CONTROL1(s).x < *llx) *llx = CONTROL1(s).x;
+              if (CONTROL1(s).y < *lly) *lly = CONTROL1(s).y;
+              if (CONTROL1(s).x > *urx) *urx = CONTROL1(s).x;
+              if (CONTROL1(s).y > *ury) *ury = CONTROL1(s).y;
+              if (CONTROL2(s).x < *llx) *llx = CONTROL2(s).x;
+              if (CONTROL2(s).y < *lly) *lly = CONTROL2(s).y;
+              if (CONTROL2(s).x > *urx) *urx = CONTROL2(s).x;
+              if (CONTROL2(s).y > *ury) *ury = CONTROL2(s).y;
+            }
+        }
+    }
+
+}
 
 /* color list & table functions */
 
@@ -634,11 +678,20 @@ static void OutputEmf(FILE* fdes, EMFStats *stats, at_string name, int width, in
   spline_type curr_spline;
   int last_degree, open_path = 0;
   int nlines;
+  at_real rllx, rlly, rurx, rury;
+
+  rllx = (at_real) 0.0;
+  rlly = (at_real) 0.0;
+  rurx = (at_real) width;
+  rury = (at_real) height;
+  maxminxy_spline_list_array (shape, &rllx, &rlly, &rurx, &rury);
+
 
   /* output EMF header */
   WriteHeader(fdes, name, width, height, stats->filesize, stats->nrecords, (stats->ncolors * 2) +1);
   
-  scale = (float) (height > width ? 32768 / height : 32768 / width);
+  off = (rllx > rlly ? rlly : rllx);
+  scale = (float) (rury > rurx ? 32767 / (rury - off) : 32767 / (rurx - off));
 
   /* output world tranform */
   WriteSetWorldTransform(fdes, height);

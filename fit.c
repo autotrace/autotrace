@@ -153,7 +153,6 @@ fitted_splines (pixel_outline_list_type pixel_outline_list,
 #endif
 {
   unsigned this_list;
-  unsigned total    = 0;
 
   spline_list_array_type char_splines = new_spline_list_array ();
   curve_list_array_type curve_array = split_at_corners (pixel_outline_list, 
@@ -193,11 +192,6 @@ fitted_splines (pixel_outline_list_type pixel_outline_list,
     }
  cleanup:
   free_curve_list_array (&curve_array, notify_progress, progress_data);
-
-  for (this_list = 0; this_list < SPLINE_LIST_ARRAY_LENGTH (char_splines);
-       this_list++)
-    total
-     += SPLINE_LIST_LENGTH (SPLINE_LIST_ARRAY_ELT (char_splines, this_list));
 
   flush_log_output ();
 
@@ -323,7 +317,7 @@ static spline_list_type *
 fit_curve (curve_type curve, fitting_opts_type *fitting_opts,
 	   at_exception *exception)
 {
-  spline_list_type *fitted_splines;
+  spline_list_type *fittedsplines;
 
   if (CURVE_LENGTH (curve) < 2)
     {
@@ -334,11 +328,11 @@ fit_curve (curve_type curve, fitting_opts_type *fitting_opts,
     }
 
   /* Do we have enough points to fit with a spline?  */
-  fitted_splines = CURVE_LENGTH (curve) < 4
+  fittedsplines = CURVE_LENGTH (curve) < 4
                    ? fit_with_line (curve)
                    : fit_with_least_squares (curve, fitting_opts, exception);
 
-  return fitted_splines;
+  return fittedsplines;
 }
 
 /* As mentioned above, the first step is to find the corners in
@@ -609,12 +603,12 @@ find_corners (pixel_outline_type pixel_outline,
           if (best_corner_angle > fitting_opts->corner_always_threshold
               && best_corner_index >= p)
             {
-              unsigned i;
+              unsigned j;
 
               APPEND_CORNER (best_corner_index, best_corner_angle, '/');
 
-              for (i = 0; i < INDEX_LIST_LENGTH (equally_good_list); i++)
-                APPEND_CORNER (GET_INDEX (equally_good_list, i),
+              for (j = 0; j < INDEX_LIST_LENGTH (equally_good_list); j++)
+                APPEND_CORNER (GET_INDEX (equally_good_list, j),
                                best_corner_angle, '@');
             }
           free_index_list (&equally_good_list);
@@ -853,12 +847,12 @@ filter (curve_type curve, fitting_opts_type *fitting_opts)
   for (iteration = 0; iteration < fitting_opts->filter_iteration_count;
    iteration++)
     {
-      curve_type new_curve = copy_most_of_curve (curve);
+      curve_type newcurve = copy_most_of_curve (curve);
       at_bool collapsed = false;
 
       /* Keep the first point on the curve.  */
       if (offset)
-        append_point (new_curve, CURVE_POINT (curve, 0));
+        append_point (newcurve, CURVE_POINT (curve, 0));
 
       for (this_point = offset; this_point < CURVE_LENGTH (curve) - offset;
            this_point++)
@@ -913,22 +907,22 @@ filter (curve_type curve, fitting_opts_type *fitting_opts)
 
           /* Put the newly computed point into a separate curve, so it
              doesn't affect future computation (on this iteration).  */
-          append_point (new_curve, prev_new_point = new_point);
+          append_point (newcurve, prev_new_point = new_point);
         }
 
       if (collapsed)
-	free_curve (new_curve);
+	free_curve (newcurve);
       else
 	{
           /* Just as with the first point, we have to keep the last point.  */
           if (offset)
-	    append_point (new_curve, LAST_CURVE_POINT (curve));
+	    append_point (newcurve, LAST_CURVE_POINT (curve));
 	  
           /* Set the original curve to the newly filtered one, and go again.  */
           free_curve (curve);
-          *curve = *new_curve;
+          *curve = *newcurve;
 	}
-      free (new_curve);
+      free (newcurve);
     }
 
   log_curve (curve, false);
@@ -972,10 +966,10 @@ fit_with_least_squares (curve_type curve, fitting_opts_type *fitting_opts,
 			at_exception * exception)
 			
 {
-  at_real error, best_error = FLT_MAX;
+  at_real error = 0, best_error = FLT_MAX;
   spline_type spline, best_spline;
   spline_list_type *spline_list = NULL;
-  unsigned worst_point;
+  unsigned worst_point = 0;
   at_real previous_error = FLT_MAX;
 
   LOG ("\nFitting with least squares:\n");
@@ -1000,7 +994,7 @@ fit_with_least_squares (curve_type curve, fitting_opts_type *fitting_opts,
      been fit.  */
   while (true)
     {
-      spline = fit_one_spline (curve, exception);
+      spline = best_spline = fit_one_spline (curve, exception);
       if (at_exception_got_fatal(exception))
 	goto cleanup;
 
@@ -1443,13 +1437,13 @@ spline_linear_enough (spline_type *spline, curve_type curve,
 {
   at_real A, B, C, slope;
   unsigned this_point;
-  at_real distance = 0.0, start_end_distance, threshold;
+  at_real dist = 0.0, start_end_dist, threshold;
 
   LOG ("Checking linearity:\n");
 
-  start_end_distance = (at_real) sqrt (SQUARE (END_POINT (*spline).x - START_POINT
+  start_end_dist = (at_real) sqrt (SQUARE (END_POINT (*spline).x - START_POINT
     (*spline).x) + SQUARE (END_POINT (*spline).y - START_POINT (*spline).y));
-  LOG1 ("start_end_distance is %.3f.\n", start_end_distance);
+  LOG1 ("start_end_distance is %.3f.\n", start_end_dist);
   /* For a line described by Ax + By + C = 0, the distance d from a
      point (x0,y0) to that line is:
 
@@ -1486,25 +1480,25 @@ spline_linear_enough (spline_type *spline, curve_type curve,
       at_real t = CURVE_T (curve, this_point);
       at_real_coord spline_point = evaluate_spline (*spline, t);
 
-      distance += (at_real) fabs (A * spline_point.x + B * spline_point.y + C)
+      dist += (at_real) fabs (A * spline_point.x + B * spline_point.y + C)
                    / (at_real) sqrt (A * A + B * B);
     }
   LOG1 ("  Total distance is %.3f, ", distance);
 
-  distance /= (CURVE_LENGTH (curve) - 1);
-  LOG1 ("which is %.3f normalized.\n", distance);
+  dist /= (CURVE_LENGTH (curve) - 1);
+  LOG1 ("which is %.3f normalized.\n", dist);
 
   /* We want reversion of short curves to splines to be more likely than
      reversion of long curves, hence the second division by the curve
      length, for use in `change_bad_lines'.  */
-  SPLINE_LINEARITY (*spline) = distance;
+  SPLINE_LINEARITY (*spline) = dist;
   LOG1 ("  Final linearity: %.3f.\n", SPLINE_LINEARITY (*spline));
-  if (start_end_distance * (at_real) 0.5 > fitting_opts->line_threshold)
+  if (start_end_dist * (at_real) 0.5 > fitting_opts->line_threshold)
     threshold = fitting_opts->line_threshold;
   else
-    threshold = start_end_distance * (at_real) 0.5;
+    threshold = start_end_dist * (at_real) 0.5;
   LOG1 ("threshold is %.3f .\n", threshold);
-  return distance < threshold;
+  return dist < threshold;
 }
 
 /* Unfortunately, we cannot tell in isolation whether a given spline

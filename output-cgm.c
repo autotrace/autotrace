@@ -11,8 +11,6 @@
 #define CGM_METAFILEVERSION      0x1022
 #define CGM_METAFILEDESCRIPTION  0x1040
 
-#define FLOAT_TO_UI16(num) ((UI16)(num * scale))
-
 typedef unsigned short int UI16;
 typedef unsigned char      UI8;
 
