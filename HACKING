@@ -7,4 +7,41 @@ See https://sourceforge.net/cvs/?group_id=11789
 
 The module name is autotrace.  After checking out the codes, invoke
 autogen.sh in the distribution. That generates configure.in,
-Makefile.in and so on. autogen.sh invokes automake, autoconf, aclocal.
+Makefile.in and so on. autogen.sh invokes automake, autoconf, aclocal
+and autogen.
+
+
+* Autogen
+
+Autogen generate autotrace-config.in from autotrace-config.am.
+You can get autogen from
+http://gnomecd.copyleft.no/sources/unstable/snapshots/?N=D
+
+
+* Library
+
+Here is a sample progaram that uses libautotrace.a.
+To compile, invoke following commands:
+gcc sample.c `./autotrace-config --libs` `./autotrace-config --cflags`
+
+/* sample.c */
+#include <autotrace/autotrace.h>
+
+int main()
+{
+  char * fname = "img/triangle.png";
+  at_fitting_opts_type * opts = at_fitting_opts_new();
+  at_input_read_func rfunc = at_input_get_handler(fname);
+  at_bitmap_type * bitmap ;
+  at_splines_type * splines;
+  at_output_write_func wfunc = at_output_get_handler("eps");
+
+  bitmap = at_bitmap_new(rfunc, fname);
+  splines = at_splines_new(bitmap, opts);
+  at_output_write(wfunc, stdout, "", 
+		  0, 0,
+		  at_bitmap_get_width(bitmap),
+		  at_bitmap_get_height(bitmap),
+		  splines);
+  return 0;
+}

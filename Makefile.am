@@ -1,5 +1,6 @@
 EXTRA_DIST=swf.h output-swf.c output-swf.h  \
-input-magick.h input-magick.c input-png.c input-png.h 
+input-magick.h input-magick.c input-png.c input-png.h \
+autotrace-config.af
 
 AUTOMAKE_OPTIONS = foreign no-dependencies
 
@@ -95,3 +96,10 @@ autotrace_SOURCES=\
 
 libautotrace_a_INCLUDES = $(MAGICK_CFLAGS)
 autotrace_LDADD = libautotrace.a $(MAGICK_LDFLAGS) $(LIBPNG_LDFLAGS) -lm
+
+bin_SCRIPTS=autotrace-config
+BUILT_SOURCES=autotrace-config
+autotrace-config: autotrace-config.in
+
+%.in: %.af
+	autofig $<

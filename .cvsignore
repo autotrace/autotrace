@@ -11,3 +11,8 @@ config.cache
 config.log
 config.status
 *.tar.gz
+autotrace-config
+autotrace-config.in
+foo.*
+foo-*
+a.out

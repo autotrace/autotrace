@@ -1,5 +1,14 @@
 2000-11-20  Masatake YAMATO  <yamato@redhat.com>
 
+	* HACKING: Write about autofig.
+	Write about Library usage.
+
+	* configure.in (AC_OUTPUT): Generate autotrace-config.
+
+	* autotrace-config.af: New file.
+
+	* Makefile.am: Added target for autotrace-config.
+
 	* autotrace.h: Put typedefs here.
 
 	* autotrace.c (at_home_site): New function.

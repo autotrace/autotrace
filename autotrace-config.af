@@ -1,0 +1,19 @@
+##
+## Initialize names
+##
+AF_INIT(autotrace)
+
+##
+## Available options
+##
+AF_ARG_DIR(prefix,@prefix@)
+AF_ARG_DIR(exec_prefix,@exec_prefix@)
+AF_ARG_VERSION(@VERSION@)
+
+##
+## Libraries
+##
+#dummy because this should always be selected
+AF_LIBRARY(autotrace)
+AF_DEF_CFLAGS([-I@includedir@])
+AF_DEF_LIBS([-L@libdir@ -lautotrace @LIBPNG_LDFLAGS@ @MAGICK_LDFLAGS@])

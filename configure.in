@@ -83,4 +83,4 @@ dnl	    ;;
 dnl  esac
 dnl fi
 
-AC_OUTPUT(Makefile)
+AC_OUTPUT([Makefile autotrace-config], [chmod a+x autotrace-config])
