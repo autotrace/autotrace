@@ -9,6 +9,9 @@ AC_PROG_CC
 AC_PROG_CPP
 AC_PROG_RANLIB
 
+dnl
+dnl ImageMagick
+dnl 
 HAVE_MAGICK=no
 AC_CHECK_PROG(MAGICK_CONFIG, Magick-config, Magick-config, "")
 if test "x$MAGICK_CONFIG" = "xMagick-config" ; then
@@ -32,6 +35,28 @@ if test "x$MAGICK_CONFIG" = "xMagick-config" ; then
  		AC_MSG_WARN([Check Magick-config.])
 	fi
 fi
-AM_CONDITIONAL(HAVE_MAGICK, test x$HAVE_MAGIC = xyes)
+AM_CONDITIONAL(HAVE_MAGICK, test x$HAVE_MAGICK = xyes)
+
+dnl
+dnl Vender's cc(not gcc)
+dnl
+dnl AC_CANONICAL_HOST
+dnl if test "x$CC" = xcc ; then
+dnl   case host in
+dnl 	mips-sgi-irix*)
+dnl # Peter Cucka <pcucka at anim.dreamworks.com> wrote:
+dnl # > Should I use -Ofast instead of -O2?
+dnl # -Ofast selects optimizations that maximize speed, at the expense of
+dnl # size, compile time, and, in some cases, floating point accuracy.
+dnl # Compiled with -Ofast, AutoTrace runs about twice as fast as with -O2,
+dnl # or even -O3, on the two machines (admittedly not a very extensive
+dnl # sample) on which I've tested it.  I'd recommend using -Ofast, but
+dnl # it's not necessary.
+dnl            CFLAGS=-Ofast
+dnl            ;;
+dnl 	*)
+dnl	    ;;
+dnl  esac
+dnl fi
 
 AC_OUTPUT(Makefile)

@@ -1,5 +1,7 @@
 2000-10-03  Masatake YAMATO  <yamato@redhat.com>
 
+	* configure.in: Fix a typo. (MAGIC->MAGICK).
+
 	* Makefile.am (EXTRA_DIST): Added input-magick.[ch].
 
 	* output-emf.c (OutputEmf): Set return type to void.
