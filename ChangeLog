@@ -1,3 +1,8 @@
+2001-10-14  Martin Weber  <martweb@gmx.net>
+
+	* main.c (read_command_line::long_options): Added
+	despeckle-level and despeckle-tightness.
+
 2001-10-13  Masatake YAMATO  <yamato@redhat.com>
 
 	* types.h (progress_func): New type.
