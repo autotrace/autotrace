@@ -1,8 +1,10 @@
-What's new in AutoTrace 0.30.1?
+What's new in AutoTrace 0.31.0?
+- corrected output when background-color is used
 - changing the license of sources files input and output 
   to GNU Lesser Public License(LGPL)
 - checking libautotrace version number in autotrace.m4
 - output in dr2d format(Andrew Elia)
+- introduced config.h
 
 What's new in AutoTrace 0.30?
 - fixed some bugs in the filtering routine

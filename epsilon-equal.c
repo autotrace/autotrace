@@ -1,5 +1,9 @@
 /* epsilon-equal.c: define a error resist compare. */
 
+#ifdef HAVE_CONFIG_H
+#include "config.h"
+#endif /* Def: HAVE_CONFIG_H */
+
 #include "types.h"
 #include "epsilon-equal.h"
 #include <math.h>

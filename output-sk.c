@@ -17,10 +17,13 @@
    Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111-1307
    USA. */
 
+#ifdef HAVE_CONFIG_H
+#include "config.h"
+#endif /* Def: HAVE_CONFIG_H */
+
 #include "spline.h"
 #include "color.h"
 #include "output-sk.h"
-
 
 static void
 out_splines (FILE * file, spline_list_array_type shape)

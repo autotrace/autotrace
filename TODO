@@ -16,17 +16,17 @@ Core:
 - Better thinning algorithm like CAT (Chordal Axis Transformation)
 
 Input:
-- Mirgrate new plug-in interface with using glib(0.31)
-- Support of image libraries as freeimage, gdk-pixbuf or paintlib(0.31)
+- Mirgrate new plug-in interface with using glib(0.32.0)
+- Support of image libraries as freeimage, gdk-pixbuf or paintlib(0.32.0)
 
 Output:
-- Mirgrate new plug-in interface with using glib(0.31)
-- Output API abstraction(0.31)
+- Mirgrate new plug-in interface with using glib(0.32.0)
+- Output API abstraction(0.32.0)
 - New export formats like wmf, cdr, cmx, compressed pdf, compressed svg and
   dxf with splines...
 
 Library and its clients:
-- Make libautotrace.h shared library(0.31)
+- Make libautotrace.a shared library(0.32.0)
 - Graphical userinterface
   -- For gnome/gtk, frontline is under developing.
      See http://autotrace.sourceforge.net/frontline

@@ -1,5 +1,9 @@
 /* main.c: main driver for autotrace -- convert bitmaps to splines. */
 
+#ifdef HAVE_CONFIG_H
+#include "config.h"
+#endif /* Def: HAVE_CONFIG_H */
+
 #include "autotrace.h"
 #include "message.h"
 #include "cmdline.h"

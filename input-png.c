@@ -17,6 +17,10 @@
    Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111-1307
    USA. */
 
+#ifdef HAVE_CONFIG_H
+#include "config.h"
+#endif /* Def: HAVE_CONFIG_H */
+
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
@@ -28,7 +32,7 @@
 #include <png.h>
 #include "input-png.h"
 
-static volatile char rcsid[]="$Id: input-png.c,v 1.10 2002/04/16 04:55:49 masata-y Exp $";
+static volatile char rcsid[]="$Id: input-png.c,v 1.11 2002/05/03 15:25:09 masata-y Exp $";
 
 /* for pre-1.0.6 versions of libpng */
 #ifndef png_jmpbuf

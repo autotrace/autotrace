@@ -21,6 +21,10 @@
    use the generated file to run "pstoedit -bo -f format input output"
    Adapted to pstoedit 3.30 by Wolfgang Glunz. */
 
+#ifdef HAVE_CONFIG_H
+#include "config.h"
+#endif /* Def: HAVE_CONFIG_H */
+
 #include "types.h"
 #include "spline.h"
 #include "color.h"

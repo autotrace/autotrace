@@ -1,5 +1,9 @@
 /* atou.c: like atoi, but if the number is negative, abort. */
 
+#ifdef HAVE_CONFIG_H
+#include "config.h"
+#endif /* Def: HAVE_CONFIG_H */
+
 #include "message.h"
 #include "atou.h"
 

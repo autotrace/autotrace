@@ -1,3 +1,11 @@
+2002-05-04  Masatake YAMATO  <yamato@redhat.com>
+
+	* *.c: include config.h.
+
+	* configure.in (AM_CONFIG_HEADER): Use config.h.
+
+	* acconfig.h: New file.
+
 2002-05-01  Masatake YAMATO  <yamato@redhat.com>
 
 	* configure.in: Version 0.30.1.

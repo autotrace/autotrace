@@ -20,6 +20,10 @@
 /* This code was tested with ImageMagick 5.2.1-5.4.5
    it doesn't work with earlier versions */
 
+#ifdef HAVE_CONFIG_H
+#include "config.h"
+#endif /* Def: HAVE_CONFIG_H */
+
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>

@@ -1,6 +1,10 @@
 /* pxl-outline.c: find the outlines of a bitmap image; each outline is made up of one or more pixels;
    and each pixel participates via one or more edges. */
 
+#ifdef HAVE_CONFIG_H
+#include "config.h"
+#endif /* Def: HAVE_CONFIG_H */
+
 #include "message.h"
 #include "types.h"
 #include "bitmap.h"

@@ -1,5 +1,9 @@
 /* color.c: color handling. */
 
+#ifdef HAVE_CONFIG_H
+#include "config.h"
+#endif /* Def: HAVE_CONFIG_H */
+
 #include "color.h"
 
 color_type GET_COLOR (bitmap_type bitmap, unsigned int row, unsigned int col)

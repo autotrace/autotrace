@@ -24,6 +24,10 @@
 **  format have to deal with endianess problems
 */
 
+#ifdef HAVE_CONFIG_H
+#include "config.h"
+#endif /* Def: HAVE_CONFIG_H */
+
 #include <stdio.h>
 #include <string.h>
 #include "spline.h"

@@ -1,5 +1,9 @@
 /* spline.c: spline and spline list (represented as arrays) manipulation. */
 
+#ifdef HAVE_CONFIG_H
+#include "config.h"
+#endif /* Def: HAVE_CONFIG_H */
+
 #include "message.h"
 #include "types.h"
 #include "spline.h"

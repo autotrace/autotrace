@@ -10,5 +10,6 @@
 
 autofig autotrace-config.af
 aclocal $ACLOCAL_FLAGS
+autoheader
 automake -a
 autoconf
