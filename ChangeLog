@@ -1,3 +1,7 @@
+2001-11-21  Martin Weber <martweb@gmx.net>
+
+	* READM, THANKS, NEWS: Updated(<3BFBEB8D.E493F888@gmx.net>).
+	
 2001-11-21  Masatake YAMATO  <yamato@redhat.com>
 
 	* main.c (main): Set fitting_opts->centerline.

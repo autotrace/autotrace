@@ -11,12 +11,16 @@ ppm, bmp and tga files. If you have installed libpng
 (http://www.libpng.org/pub/png/libpng.html) you can also read
 png files and with ImageMagick a very broad range of input
 formats is available.
-You will need at last libpng 1.0.6 and ImageMagick 5.2.1.
-Most output formats like dxf, emf, eps, ai, er, fig, svg and sk are
-directly integrated in AutoTrace, but if you need swf export you
-need to install Ming (http://www.opaque.net/ming/).
+You will need at least libpng 1.0.6 and ImageMagick 5.2.1.
+Most output formats like dxf, emf, eps, ai, er, fig, svg, epd and sk
+are directly integrated in AutoTrace, but if you need swf export you
+need to install Ming (http://www.opaque.net/ming/). Also you can
+export to the p2e format. This format can be converted by pstoedit
+(www.pstoedit.net) to a large number of other formats.
 There are two main methods that can be used outline and midline
-tracing.
+tracing. If you use Visual C++ 6.0 for compilation be shure to have
+at least SP 5 otherwise you could get Memory access violations due
+to a bug in earlier versions.
 
 Here the options you can use:
 Usage: autotrace [options] <input_name>.
@@ -60,7 +64,7 @@ list-input-formats:  print a list of support input formats to stderr.
 log: write detailed progress reports to <input_name>.log.
 output-file <filename>: write to <filename>
 output-format <format>: use format <format> for the output file
-  er, emf, eps, ai, sk, p2e, svg, dxf, dxf12 and fig can be used.
+  er, emf, eps, ai, sk, p2e, svg, dxf, epd and fig can be used.
 remove-adjacent-corners: remove corners that are adjacent.
 tangent-surround <unsigned>: number of points on either side of a
   point to consider when computing the tangent at that point; default is 3.
