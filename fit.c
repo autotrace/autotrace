@@ -108,7 +108,7 @@ fitting_opts_type new_fitting_opts (void)
 {
   fitting_opts_type fitting_opts;
 
-  fitting_opts.bgColor = NULL;
+  fitting_opts.background_color = NULL;
   fitting_opts.color_count = 0;
   fitting_opts.corner_always_threshold = (at_real) 60.0;
   fitting_opts.corner_surround = 4;
@@ -1489,7 +1489,7 @@ spline_linear_enough (spline_type *spline, curve_type curve,
       dist += (at_real) fabs (A * spline_point.x + B * spline_point.y + C)
                    / (at_real) sqrt (A * A + B * B);
     }
-  LOG1 ("  Total distance is %.3f, ", distance);
+  LOG1 ("  Total distance is %.3f, ", dist);
 
   dist /= (CURVE_LENGTH (curve) - 1);
   LOG1 ("which is %.3f normalized.\n", dist);

@@ -1,3 +1,12 @@
+2002-04-28  Masatake YAMATO  <yamato@redhat.com>
+
+	* main.c, fit.c, autotrace.[ch]: Renamed
+	bgColor to background_color.
+
+	* fit.c (spline_linear_enough): Don't 
+	log distance. It is function.
+	In stead, logging dist, at_real var.
+
 2002-04-28  Martin Weber <martweb@gmx.net>
 
 	* input-magick.c: Now also tested with ImageMagick till 5.4.5.

@@ -103,11 +103,11 @@ struct _at_spline_list_array_type
    each option could be get. e.g. at_fitting_opts_doc(bgColor) */
 struct _at_fitting_opts_type
 {
-#define at_doc__bgColor							\
+#define at_doc__background_color					\
 "background-color <hexadezimal>: the color of the background that "	\
 "should be ignored, for example FFFFFF; "				\
 "default is no background color."
-  at_color_type *bgColor;
+  at_color_type *background_color;
 
 #define at_doc__color_count						  \
 "color-count <unsigned>: number of colors a color bitmap is reduced to, " \

@@ -33,16 +33,16 @@ at_fitting_opts_copy (at_fitting_opts_type * original)
 
   new_opts = at_fitting_opts_new ();
   *new_opts = *original;
-  if (original->bgColor)
-    new_opts->bgColor = at_color_copy(original->bgColor);
+  if (original->background_color)
+    new_opts->background_color = at_color_copy(original->background_color);
   return new_opts;
 }
 
 void 
 at_fitting_opts_free(at_fitting_opts_type * opts)
 {
-  if (opts->bgColor != NULL)
-    free (opts->bgColor);
+  if (opts->background_color != NULL)
+    free (opts->background_color);
   free(opts);
 }
 
@@ -181,7 +181,7 @@ at_splines_new_full (at_bitmap_type * bitmap,
 
   if (opts->color_count > 0)
     {
-      quantize (bitmap, opts->color_count, opts->bgColor, &myQuant, &exp);
+      quantize (bitmap, opts->color_count, opts->background_color, &myQuant, &exp);
       if (at_exception_got_fatal(&exp))
 	return splines;
     }
@@ -189,7 +189,7 @@ at_splines_new_full (at_bitmap_type * bitmap,
 
   if (opts->centerline)
     {
-      thin_image (bitmap, opts->bgColor, &exp);
+      thin_image (bitmap, opts->background_color, &exp);
       if (at_exception_got_fatal(&exp))
 	return splines;
     }
@@ -200,14 +200,14 @@ at_splines_new_full (at_bitmap_type * bitmap,
   if (opts->centerline)
   {
     color_type bg_color = { 0xff, 0xff, 0xff };
-    if (opts->bgColor) bg_color = *opts->bgColor;
+    if (opts->background_color) bg_color = *opts->background_color;
 
     pixels = find_centerline_pixels(*bitmap, bg_color, 
 				    notify_progress, progress_data,
 				    test_cancel, testcancel_data, &exp);
   }
   else
-    pixels = find_outline_pixels(*bitmap, opts->bgColor, 
+    pixels = find_outline_pixels(*bitmap, opts->background_color, 
 				 notify_progress, progress_data,
 				 test_cancel, testcancel_data, &exp);
   if (at_exception_got_fatal(&exp))

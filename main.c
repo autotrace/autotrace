@@ -282,7 +282,7 @@ read_command_line (int argc, char * argv[],
         {
            if (strlen (optarg) != 6)
                FATAL ("background-color be six chars long");
-	       fitting_opts->bgColor = at_color_new((unsigned char)(hctoi (optarg[0]) * 16 + hctoi (optarg[1])),
+	       fitting_opts->background_color = at_color_new((unsigned char)(hctoi (optarg[0]) * 16 + hctoi (optarg[1])),
 				       (unsigned char)(hctoi (optarg[2]) * 16 + hctoi (optarg[3])),
 				       (unsigned char)(hctoi (optarg[4]) * 16 + hctoi (optarg[5])));
 	    }
