@@ -17,7 +17,7 @@
    Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111-1307
    USA. */
 
-/* This code was tested with ImageMagick 5.2.1-5.4.9
+/* This code was tested with ImageMagick 5.2.1-5.5.2
    it doesn't work with earlier versions */
 
 #ifdef HAVE_CONFIG_H

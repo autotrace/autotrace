@@ -1,3 +1,10 @@
+2002-10-21  Martin Weber <martweb@gmx.net>
+
+	* input-magick.c: Checked autotrace works with
+	ImageMagick-5.5.2.
+
+	Message-ID: <3DB448EA.E3A63661@gmx.net>.
+
 2002-10-20  Masatake YAMATO  <yamato@redhat.com>
 
 	* autogen.sh: checked aclocal-1.4, automake-1.4
