@@ -41,7 +41,7 @@ need to install Ming (http://www.opaque.net/ming/). Also you can
 export to the p2e format. This format can be converted by pstoedit
 (www.pstoedit.net) to a large number of other formats. If you have
 installed the latest pstoedit(3.32 or newer), autotrace uses pstoedit
-directly. However, pstoedit directly supports is not stable enough. 
+directly. However, pstoedit supports directly is not stable enough. 
 See INSTALL file for more detail.
 
 Installation
