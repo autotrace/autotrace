@@ -241,14 +241,12 @@ make_temporary_file(char *template, char * mode)
   if (tmpfd < 0)
     return NULL;
   return fdopen(tmpfd, mode);
-#elif HAVE_TMPNAM
+#else
   /* #warning "To make temporary file, tmpnam will be used." */
   char * tmpname;
   tmpname = tmpnam(template);
   if (template == NULL)
     return NULL;
   return fopen(tmpname, mode);
-#else 
-#error cannot find both mkstemp and tmpnam
-#endif  /* HAVE_MKSTEMP or HAVE_TMPNAM */
+#endif  /* HAVE_MKSTEMP */
 }

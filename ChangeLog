@@ -1,3 +1,16 @@
+2002-09-12  Masatake YAMATO  <yamato@redhat.com>
+
+	Martin suggested me that tmpnam is ANSI C 
+	function so we don't have to check.
+	
+	* acconfig.h: removed HAVE_TMPNAM.
+
+	* configure.in (HAVE_LIBPSTOEDIT): Checked mkstemp
+	only.
+
+	* output-pstoedit.c (make_temporary_file): used
+	tmpnam if mkstemp is not found.
+
 2002-09-11  Masatake YAMATO  <yamato@redhat.com>
 
 	* output-pstoedit.c (make_temporary_file): New function.
