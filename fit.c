@@ -696,7 +696,7 @@ remove_adjacent_corners (index_list_type *list, unsigned last_index,
 {
   unsigned j;
   unsigned last;
-  index_list_type new = new_index_list ();
+  index_list_type new_list = new_index_list ();
 
   for (j = INDEX_LIST_LENGTH (*list) - 1; j > 0; j--)
     {
@@ -732,19 +732,19 @@ remove_adjacent_corners (index_list_type *list, unsigned last_index,
       if ((remove_adj_corners) && (next == current + 1))
         j++;
 
-      append_index (&new, current);
+      append_index (&new_list, current);
     }
 
   /* Don't append the last element if it is 1) adjacent to the previous
      one; or 2) adjacent to the very first one.  */
   last = GET_LAST_INDEX (*list);
-  if (INDEX_LIST_LENGTH (new) == 0
-      || !(last == GET_LAST_INDEX (new) + 1
+  if (INDEX_LIST_LENGTH (new_list) == 0
+      || !(last == GET_LAST_INDEX (new_list) + 1
            || (last == last_index && GET_INDEX (*list, 0) == 0)))
-    append_index (&new, last);
+    append_index (&new_list, last);
 
   free_index_list (list);
-  *list = new;
+  *list = new_list;
 }
 
 

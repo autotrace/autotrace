@@ -40,7 +40,7 @@ static        unsigned int     masks[]         = { 0200, 0002, 0040, 0010 };
 /*                            d e f                                   */ 
 /*                            g h i                                   */ 
  
-static        unsigned char   delete[512] = { 
+static        unsigned char   delete_map[512] = { 
               0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 
               0, 0, 0, 1, 0, 0, 1, 1, 0, 1, 1, 1, 0, 0, 1, 1, 
               0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 
@@ -120,7 +120,7 @@ void thin_image (bitmap_type *image)
       bitmap_type bm; 
       memcpy (&bm,image, sizeof (bitmap_type)); 
  
-      bm.bitmap = malloc (3 * BITMAP_HEIGHT(bm) * BITMAP_WIDTH (bm)); 
+      bm.bitmap = (unsigned char *)malloc (3 * BITMAP_HEIGHT(bm) * BITMAP_WIDTH (bm)); 
       memcpy (bm.bitmap,image->bitmap,3 * BITMAP_HEIGHT(bm) * BITMAP_WIDTH (bm)); 
       /* that clones the image */ 
       for (y=0; y < BITMAP_HEIGHT(bm); y++){ 
@@ -155,7 +155,7 @@ void thin (bitmap_type *image, unsigned int colour)
       LOG (" Thinning image.....\n "); 
       xsize = BITMAP_WIDTH(*image); 
       ysize = BITMAP_HEIGHT(*image); 
-      qb    = malloc (xsize*sizeof(Pixel)); 
+      qb    = (Pixel*)malloc (xsize*sizeof(Pixel)); 
       qb[xsize-1] = 0;                /* Used for lower-right pixel   */ 
  
       while ( count ) {               /* Scan image while deletions   */ 
@@ -183,7 +183,7 @@ void thin (bitmap_type *image, unsigned int colour)
                       p = ((p<<1)&0666) | ((q<<3)&0110) | 
                               (pixel(x+1,y+1,image) == colour); 
                       qb[x] = p; 
-                      if  ( ((p&m) == 0) && delete[p] ) { 
+                      if  ( ((p&m) == 0) && delete_map[p] ) { 
                           count++; 
                           clr_pixel(x,y,image); 
                           /* delete the pixel */ 
@@ -193,7 +193,7 @@ void thin (bitmap_type *image, unsigned int colour)
                   /* Process right edge pixel.                        */ 
  
                   p = (p<<1)&0666; 
-                  if  ( (p&m) == 0 && delete[p] ) { 
+                  if  ( (p&m) == 0 && delete_map[p] ) { 
                       count++; 
                       clr_pixel(xsize-1,y,image); 
                   } 
@@ -204,7 +204,7 @@ void thin (bitmap_type *image, unsigned int colour)
               for ( x = 0 ; x < xsize ; x++ ) { 
                   q = qb[x]; 
                   p = ((p<<1)&0666) | ((q<<3)&0110); 
-                  if  ( (p&m) == 0 && delete[p] ) { 
+                  if  ( (p&m) == 0 && delete_map[p] ) { 
                       count++; 
                       clr_pixel(x,ysize-1,image); 
                   } 

@@ -1,3 +1,22 @@
+2000-11-17  Masatake YAMATO  <yamato@redhat.com>
+
+	Make codes C++-clean. Suggested by 
+	Glunz Wolfgang <Wolfgang.Glunz@icn.siemens.de>
+	and 
+	Reini Urban <rurban@sbox.tu-graz.ac.at>.
+	
+	* autotrace.h: Added an extern "C". 
+
+	* fit.c (remove_adjacent_corners): Rename new to
+	new_list.
+
+	* getopt.h: Added an extern "C". 
+
+	* thin-image.c (delete_map): Renamed from `delete'. 
+	(thin_image): Add a cast to return value of malloc.
+	(thin): Likewise.
+	(thin): Use delete_map.
+
 2000-11-14  Masatake YAMATO  <yamato@redhat.com>
 
 	* Makefile.am (autotrace_SOURCES): Move some files

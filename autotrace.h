@@ -1,28 +1,31 @@
 /* autotrace.h */
-
 #ifndef AUTOTRACE_H
 #define AUTOTRACE_H
+
+#include "fit.h"
+#include "bitmap.h"
+#include "input.h"
+#include "spline.h"
+#include "output.h"
+
+#ifdef __cplusplus
+extern "C" {
+#endif /* __cplusplus */
+
+/*
+ * Defines
+ */
+#define AT_INPUT_SUFFIX_LIST INPUT_SUFFIX_LIST
+#define AT_OUTPUT_SUFFIX_LIST OUTPUT_SUFFIX_LIST
 
 /*
  * Typedefs
  */
-#include "fit.h"
 typedef fitting_opts_type at_fitting_opts_type ;
-
-#include "bitmap.h"
 typedef bitmap_type at_bitmap_type;
-
-#include "input.h"
 typedef input_read at_input_read_func;
-
-#include "spline.h"
 typedef spline_list_array_type at_splines_type;
-
-#include "output.h"
 typedef output_write at_output_write_func;
-
-#define AT_INPUT_SUFFIX_LIST INPUT_SUFFIX_LIST
-#define AT_OUTPUT_SUFFIX_LIST OUTPUT_SUFFIX_LIST
 
 /*
  * Option related
@@ -74,5 +77,9 @@ void at_output_list_free(char ** list);
  * Version
  */
 char * at_version ();
+
+#ifdef __cplusplus
+}
+#endif /* __cplusplus */
 
 #endif /* AUTOTRACE_H */
