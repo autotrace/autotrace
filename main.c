@@ -23,9 +23,6 @@
 #include <string.h>
 #include <assert.h>
 
-/* General information about the image.  Set by the input routines.  */
-image_header_type image_header;
-
 /* Pointers to functions based on input format.  (-input-format)  */
 static input_read input_reader = NULL;
 
@@ -69,6 +66,7 @@ while (*str != '\0') {char *c = (str); while (*c != '\0') {*c = tolower (*c); c+
 int
 main (int argc, char * argv[])
 {
+  image_header_type image_header;
   char * input_name, * input_rootname, * logfile_name=NULL;
   pixel_outline_list_type pixels;
   spline_list_array_type splines;
@@ -92,16 +90,31 @@ main (int argc, char * argv[])
   if (input_rootname != input_name)
     free (input_rootname);
   if (logging)
-	free (logfile_name);
+    free (logfile_name);
 
-  if (input_reader == NULL)
+  /* Set input_reader if it is not set in command line args */
+  if (!input_reader)
     input_reader = input_get_handler (input_name);
+
+  /* Set output_writer if it is not set in command line args */
+  if (!output_writer)
+    {
+      output_writer = output_get_handler(DEFAULT_FORMAT);
+      if (output_writer == NULL)
+	FATAL1("Default format %s not supported\n", DEFAULT_FORMAT);
+    }
+
+  /* Open output file */
+  if (STREQ (output_name, ""))
+    output_file = stdout;
+  else
+    output_file = xfopen(output_name, "w");
 
   /* Open the main input file.  */
   if (input_reader != NULL)
     bitmap = (*input_reader) (input_name);
   else
-	FATAL ("Unsupported inputformat\n"); 
+    FATAL ("Unsupported inputformat\n"); 
 
   image_header.width = DIMENSIONS_WIDTH (bitmap.dimensions);
   image_header.height = DIMENSIONS_HEIGHT (bitmap.dimensions);
@@ -110,40 +123,21 @@ main (int argc, char * argv[])
     quantize (bitmap.bitmap, bitmap.bitmap, DIMENSIONS_WIDTH (bitmap.dimensions),
       DIMENSIONS_HEIGHT (bitmap.dimensions), fitting_opts.color_count,
       fitting_opts.bgColor, &myQuant);
-
   if (thin) thin_image (&bitmap); 
  
   pixels = find_outline_pixels (bitmap);
-
-  {
-    /* Before fitting, set output_writer, Masatake */
-    if (!output_writer)
-    {
-      output_writer = output_get_handler(DEFAULT_FORMAT);
-      if (output_writer == NULL)
-      {
-	  FATAL1("Default format %s not supported\n", DEFAULT_FORMAT);
-      }
-    }
-  }
-  
   splines = fitted_splines (pixels, &fitting_opts);
-
-  /* Open output_file, Masatake */
-  if (STREQ (output_name, ""))
-      output_file = stdout;
-  else
-    output_file = xfopen(output_name, "w");
 
   output_writer (output_file, output_name,
 		0, 0, image_header.width, image_header.height,
 		splines);
-  /* Change the order of freeing, Masatake */
-  free_spline_list_array (&splines); 
-  /* Change the order of freeing ,Masatake */
-  free_pixel_outline_list (&pixels);
   
-  free (BITMAP_BITS (bitmap));
+  if (output_file != stdout)
+    fclose (output_file);
+
+  free_spline_list_array (&splines); 
+  free_pixel_outline_list (&pixels);
+  free_bitmap (&bitmap);
 
   if (fitting_opts.bgColor != NULL)
     free (fitting_opts.bgColor);

@@ -9,7 +9,6 @@
 
 /* See main.c for explanations of these globals.  */
 extern bool trace_scanlines;
-extern image_header_type image_header;
 extern string input_name;
 
 #endif /* not MAIN_H */

@@ -8,6 +8,11 @@
 	Use input_get_handler* instead.
 	(main): Check `input_reader' is set or not before
 	set. 
+	Set output format and open output before oput input.
+	Close output.
+	Call free_bitmap instead of calling free directly.
+	(image_header):	 Make the scope of `image_header' to 
+	main local from global.
 
 	* THANKS: New file.
 
