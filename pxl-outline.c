@@ -193,7 +193,6 @@ find_centerline_pixels(bitmap_type bitmap, color_type bg_color)
     pixel_outline_list_type outline_list;
     unsigned row, col;
     bitmap_type marked = new_bitmap(BITMAP_DIMENSIONS(bitmap));
-    color_type color;
 
     O_LIST_LENGTH(outline_list) = 0;
     outline_list.data = NULL;
@@ -527,7 +526,7 @@ bool
 is_marked_pixel(unsigned row, unsigned col, bitmap_type marked)
 {
     unsigned mark = (1 << NUM_EDGES) - 1;
-    return (*BITMAP_PIXEL(marked, row, col) & mark == mark);
+    return ((*BITMAP_PIXEL(marked, row, col) & mark) == mark);
 }
 
 

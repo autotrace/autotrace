@@ -1,5 +1,17 @@
 2001-02-23  Masatake YAMATO  <yamato@redhat.com>
 
+	Applied patches from Martin.
+	-- I removed some compiler warnings in color.h 
+	and pxl-outline.c. Also I have a new autotrace.dsp.
+
+	* pxl-outline.c: Updated.
+
+	* color.h: Updated.
+
+	* autotrace.dsp: Updated.
+
+2001-02-23  Masatake YAMATO  <yamato@redhat.com>
+	
 	* configure.in: Set version to 0.27pre.
 
 	* output-eps.c (out_splines): Use at_centerline.
