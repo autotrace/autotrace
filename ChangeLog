@@ -1,5 +1,15 @@
 2002-09-10  Martin Weber <martweb@gmx.net>
 
+	* input.c (at_input_get_handler_by_suffix): added 
+	cast to the returned value for Visual C++.
+
+	* output-pstoedit.c (output_pstoedit_get_writer): 
+	Likewise.
+
+	Message-ID: <3D7D116C.68950963@gmx.net>.
+
+2002-09-10  Martin Weber <martweb@gmx.net>
+
 	* output-pstoedit.c: Include io.h if _VISUALC_
 	is defined.
 	(set_last_suffix): returned void.

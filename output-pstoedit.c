@@ -66,7 +66,7 @@ output_pstoedit_get_writer(const at_string suffix)
   if (get_symbolicname(suffix))
     {
       set_last_suffix (suffix);
-      return output_pstoedit_writer;
+      return (at_output_write_func) output_pstoedit_writer;
     }
   else
     return NULL;
