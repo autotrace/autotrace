@@ -336,7 +336,7 @@ at_color_free(at_color_type * color)
   free(color);
 }
 
-#define make_string(x) #x
+#define make_string(x) "x"
 const char *
 at_version (at_bool long_format)
 {

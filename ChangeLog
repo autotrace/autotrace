@@ -1,3 +1,13 @@
+2002-06-30  Masatake YAMATO  <yamato@redhat.com>
+
+	* autotrace.c (make_string): Put '"' around
+	an arg.
+
+2002-06-26  Masatake YAMATO  <yamato@redhat.com>
+
+	* Makefile.am (libautotrace_la_SOURCES): Use '()'
+	instead of "{}".
+
 2002-06-11  Masatake YAMATO  <yamato@redhat.com>
 
 	* README: Reorganized.
