@@ -51,7 +51,10 @@ libautotrace_a_SOURCES= version.c               \
 		input.c 			\
 		pxl-outline.c 			\
 		median.c 			\
-	        thin-image.c			
+	        thin-image.c			\
+		logreport.c 			\
+		find-suffix.c 		
+
 
 autotraceinclude_HEADERS=\
 		fit.h  				\
@@ -68,7 +71,9 @@ autotraceinclude_HEADERS=\
 		pxl-outline.h 			\
 		median.h 			\
 	        quantize.h                      \
-	        thin-image.h			
+	        thin-image.h			\
+		logreport.h 			\
+		find-suffix.h 		
 
 autotrace_SOURCES=\
 		atou.c 				\
@@ -93,11 +98,7 @@ autotrace_SOURCES=\
 		xfile.h 			\
 		xfopen.c 			\
 		xfseek.c 			\
-		xmem.h 				\
-		find-suffix.c 			\
-		logreport.c 			\
-		find-suffix.h 			\
-		logreport.h 			
+		xmem.h 				
 
 libautotrace_a_INCLUDES = $(MAGICK_CFLAGS)
 autotrace_LDADD = libautotrace.a $(MAGICK_LDFLAGS) $(LIBPNG_LDFLAGS) -lm

@@ -1,5 +1,8 @@
 2000-11-14  Masatake YAMATO  <yamato@redhat.com>
 
+	* Makefile.am (autotrace_SOURCES): Move some files
+	to libautotrace_a_SOURCES from autotrace_SOURCES.
+
 	* main.c (read_command_line): Use at_version().
 
 	* autotrace.c (at_version): New function.
