@@ -2,6 +2,7 @@ What's new in AutoTrace 0.30?
 - fixed some bugs in the filtering routine
 - fixed pdf export
 - fixed despeckle
+- fixed emf export
 - better error handling mechanism
 - rpm spec file template(Han-Wen Nienhuys)
 - pkgconfig support

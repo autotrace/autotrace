@@ -10,7 +10,6 @@
 #include <string.h>
 #include "spline.h"
 #include "xstd.h"
-#include "output.h"
 
 /* EMF record-number definitions */
 
