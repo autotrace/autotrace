@@ -31,6 +31,10 @@ typedef enum { false = 0, true = 1 } at_bool;
 #define at_bool bool
 #endif
 
+#ifdef __cplusplus
+extern "C" {
+#endif /* __cplusplus */
+
 /* The usual null-terminated string.  */
 typedef char *at_string;
 
@@ -50,5 +54,9 @@ typedef struct _at_real_coord
 {
   at_real x, y;
 } at_real_coord;
+
+#ifdef __cplusplus
+}
+#endif /* __cplusplus */
 
 #endif /* not TYPES_H */

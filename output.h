@@ -24,6 +24,10 @@
 #include "types.h"
 #include "exception.h"
 
+#ifdef __cplusplus
+extern "C" {
+#endif /* __cplusplus */
+
 /* Data struct hierarchy:
    spline_list_array (splines)
    -> spline_list...
@@ -84,5 +88,9 @@ void at_spline_list_array_foreach (at_spline_list_array_type *,
 int   at_output_add_handler (at_string suffix, 
 			     at_string description, 
 			     at_output_write_func func);
+
+#ifdef __cplusplus
+}
+#endif /* __cplusplus */
 
 #endif /* not OUTPUT_H */

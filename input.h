@@ -23,6 +23,10 @@
 #include "autotrace.h"
 #include "exception.h"
 
+#ifdef __cplusplus
+extern "C" {
+#endif /* __cplusplus */
+
 /* Input handler should be implemented with using 
    following functions and macros. */
 
@@ -74,5 +78,9 @@ extern at_bitmap_type at_bitmap_init(unsigned char * area,
 #define AT_BITMAP_PIXEL(b, row, col)					\
   ((AT_BITMAP_BITS (b) + (row) * AT_BITMAP_PLANES (b) * AT_BITMAP_WIDTH (b)	\
         + (col) * AT_BITMAP_PLANES(b)))
+
+#ifdef __cplusplus
+}
+#endif /* __cplusplus */
 
 #endif /* Not def: INPUT_H */

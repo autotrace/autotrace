@@ -6,6 +6,10 @@
 #include "autotrace.h"
 #include "types.h"
 
+#ifdef __cplusplus
+extern "C" {
+#endif /* __cplusplus */
+
 typedef struct at_exception_type at_exception;
 struct at_exception_type
 {
@@ -21,5 +25,9 @@ void at_exception_fatal(at_exception * exception,
 			const at_string message);
 void at_exception_warning(at_exception * exception,
 			  const at_string message);
+
+#ifdef __cplusplus
+}
+#endif /* __cplusplus */
 
 #endif /* Not def: AT_EXCEPTION_H */
