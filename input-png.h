@@ -17,7 +17,7 @@
    Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111-1307
    USA. */
 
-/* $Id: input-png.h,v 1.7 2002/10/05 19:38:25 masata-y Exp $ */
+/* $Id: input-png.h,v 1.8 2003/02/13 11:52:36 masata-y Exp $ */
 
 #ifndef INPUT_PNG_H
 #define INPUT_PNG_H
@@ -27,6 +27,7 @@
 at_bitmap_type input_png_reader (at_string filename,
 				 at_input_opts_type * opts,
 				 at_msg_func msg_func, 
-				 at_address msg_data);
+				 at_address msg_data,
+				 at_address user_data);
 
 #endif /* not INPUT_PNG_H */

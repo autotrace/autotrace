@@ -125,7 +125,8 @@ static struct struct_pnm_types
 at_bitmap_type input_pnm_reader (at_string filename,
 				 at_input_opts_type * opts,
 				 at_msg_func msg_func, 
-				 at_address msg_data)
+				 at_address msg_data,
+				 at_address user_data)
 {
   char buf[BUFLEN];		/* buffer for random things like scanning */
   PNMInfo *pnminfo;

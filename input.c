@@ -23,7 +23,7 @@
 #endif /* Def: HAVE_CONFIG_H */
 
 #include "autotrace.h"
-
+#include "private.h"
 #include "xstd.h"
 #include "filename.h"
 #include "strgicmp.h"
@@ -32,13 +32,16 @@
 
 typedef struct _at_input_format_entry at_input_format_entry;
 struct _at_input_format_entry {
+  at_bitmap_reader  reader;
   const gchar * descr;
-  at_input_read_func reader;
+  GDestroyNotify user_data_destroy_func;
 };
 
 static GHashTable * at_input_formats = NULL;
 static at_input_format_entry * at_input_format_new(const char * descr,
-						   at_input_read_func reader);
+						   at_input_func reader,
+						   gpointer user_data,
+						   GDestroyNotify user_data_destroy_func);
 static void at_input_format_free (at_input_format_entry * entry);
 
 /* 
@@ -60,8 +63,8 @@ at_input_init (void)
   if (at_input_formats)
     return 1;
 
-  at_input_formats = g_hash_table_new_full (NULL, 
-					    (GEqualFunc)strgicmp,
+  at_input_formats = g_hash_table_new_full (g_str_hash, 
+					    (GEqualFunc)g_str_equal,
 					    g_free,
 					    (GDestroyNotify)at_input_format_free);
   if (!at_input_formats)
@@ -71,14 +74,18 @@ at_input_init (void)
 
 static at_input_format_entry *
 at_input_format_new(const gchar * descr,
-		    at_input_read_func reader)
+		    at_input_func reader,
+		    gpointer user_data,
+		    GDestroyNotify user_data_destroy_func)
 {
   at_input_format_entry * entry;
   entry = g_malloc (sizeof(at_input_format_entry));
   if (entry)
     {
-      entry->descr  = g_strdup(descr);
-      entry->reader = reader;
+      entry->reader.func 	    = reader;
+      entry->reader.data            = user_data;
+      entry->descr     		    = g_strdup(descr);
+      entry->user_data_destroy_func = user_data_destroy_func;
     }
   return entry;
 }
@@ -87,26 +94,31 @@ static void
 at_input_format_free(at_input_format_entry * entry)
 {
   g_free((gpointer)entry->descr);
+  if (entry->user_data_destroy_func)
+    entry->user_data_destroy_func(entry->reader.data);
   g_free(entry);
+  
 }
 
 int
 at_input_add_handler (const at_string suffix, 
 		      const at_string description,
-		      at_input_read_func reader)
+		      at_input_func reader)
 {
-  return at_input_add_handler_full (suffix, description, reader, 0);
+  return at_input_add_handler_full (suffix, description, reader, 0,
+				    NULL, NULL);
 }
 
 int
 at_input_add_handler_full (const at_string suffix, 
 			   const at_string description,
-			   at_input_read_func reader,
-			   at_bool override)
+			   at_input_func reader,
+			   at_bool override,
+			   at_address user_data,
+			   GDestroyNotify user_data_destroy_func)
 {
   gchar * gsuffix;
   const gchar * gdescription;
-  gboolean goverride;
   at_input_format_entry * old_entry;
   at_input_format_entry * new_entry;
   
@@ -114,24 +126,28 @@ at_input_add_handler_full (const at_string suffix,
   g_return_val_if_fail (description, 0);
   g_return_val_if_fail (reader, 0);
   
-  gsuffix      = (gchar *)suffix;
+  gsuffix      = g_strdup((gchar *)suffix);
+  g_return_val_if_fail (gsuffix, 0);  
+  gsuffix = g_ascii_strdown(gsuffix, strlen(gsuffix));
+  
   gdescription = (const gchar *)description;
-  goverride    = (gboolean)override;
 
   old_entry        = g_hash_table_lookup (at_input_formats, gsuffix);
-  if (old_entry && !override) 
-    return 1;
+  if (old_entry && !override)
+    {
+      g_free(gsuffix);
+      return 1;
+    }
 
-  new_entry = at_input_format_new(gdescription, reader);
+  new_entry = at_input_format_new(gdescription, reader,
+				  user_data, user_data_destroy_func);
   g_return_val_if_fail (new_entry, 0);
 
-  gsuffix = g_strdup(gsuffix);
-  g_return_val_if_fail (gsuffix, 0);  
   g_hash_table_replace(at_input_formats, gsuffix, new_entry);
   return 1;
 }
 
-at_input_read_func
+at_bitmap_reader*
 at_input_get_handler (at_string filename)
 {
   char * ext = find_suffix (filename);
@@ -141,17 +157,25 @@ at_input_get_handler (at_string filename)
   return at_input_get_handler_by_suffix (ext);
 }
 
-at_input_read_func
+at_bitmap_reader*
 at_input_get_handler_by_suffix (at_string suffix)
 {
   at_input_format_entry * format;
-  
+  gchar * gsuffix;
+
   if (!suffix || suffix[0] == '\0')
     return NULL;
 
-  format = g_hash_table_lookup (at_input_formats, suffix);
+  gsuffix = g_strdup(suffix);
+  g_return_val_if_fail (gsuffix, NULL);
+  gsuffix = g_ascii_strdown(gsuffix, strlen(gsuffix));
+  format = g_hash_table_lookup (at_input_formats, gsuffix);
+  g_free(gsuffix);
+  
   if (format)
-    return format->reader;
+    return &(format->reader);
+  else
+    return NULL;
 }
 
 const char **

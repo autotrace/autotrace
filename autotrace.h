@@ -244,11 +244,11 @@ void autotrace_init (void);
  * IO Handler typedefs
  */
 
-typedef 
-at_bitmap_type (*at_input_read_func)   (at_string name,
-					at_input_opts_type * opts,
-					at_msg_func msg_func, 
-					at_address msg_data);
+typedef struct _at_bitmap_reader at_bitmap_reader;
+struct _at_bitmap_reader;
+
+/* typedefs struct _at_spline_writer at_spline_writer;
+   struct at_spline_writer; */
 
 typedef 
 int            (*at_output_write_func) (FILE*, at_string name,
@@ -318,13 +318,13 @@ void at_output_opts_free(at_output_opts_type * opts);
    1. Using input reader
       Use at_bitmap_read. 
       at_input_get_handler_by_suffix or
-      at_input_get_handler will help you to get at_input_read_func.
+      at_input_get_handler will help you to get at_bitmap_reader.
    2. Allocating a bitmap and rendering an image on it by yourself
       Use at_bitmap_new.
 
    In both case, you have to call at_bitmap_free when at_bitmap_type * 
    data are no longer needed. */
-at_bitmap_type * at_bitmap_read (at_input_read_func input_reader,
+at_bitmap_type * at_bitmap_read (at_bitmap_reader * reader,
 				 at_string filename,
 				 at_input_opts_type * opts,
 				 at_msg_func msg_func, at_address msg_data);
@@ -416,8 +416,8 @@ void            at_color_free  (at_color_type * color);
 /* --------------------------------------------------------------------- *
  * Input related 
  * --------------------------------------------------------------------- */
-at_input_read_func at_input_get_handler (at_string filename);
-at_input_read_func at_input_get_handler_by_suffix (at_string suffix);
+at_bitmap_reader * at_input_get_handler (at_string filename);
+at_bitmap_reader * at_input_get_handler_by_suffix (at_string suffix);
 
 const char ** at_input_list_new (void);
 void at_input_list_free(const char ** list);

@@ -24,9 +24,10 @@
 #ifdef ENABLE_NLS
 #include <locale.h>
 #endif
+#include <glib.h>
 
 /* Pointers to functions based on input format.  (-input-format)  */
-static at_input_read_func input_reader = NULL;
+static at_bitmap_reader * input_reader = NULL;
 
 /* Return NAME with any leading path stripped off.  This returns a
    pointer into NAME.  For example, `basename ("/foo/bar.baz")'

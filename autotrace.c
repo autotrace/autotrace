@@ -131,7 +131,7 @@ at_output_opts_free(at_output_opts_type * opts)
 }
 
 at_bitmap_type *
-at_bitmap_read (at_input_read_func input_reader,
+at_bitmap_read (at_bitmap_reader * reader,
 		at_string filename,
 		at_input_opts_type * opts,
 		at_msg_func msg_func, at_address msg_data)
@@ -144,7 +144,7 @@ at_bitmap_read (at_input_read_func input_reader,
       opts     = at_input_opts_new();
       new_opts = true;
     }
-  *bitmap = (*input_reader) (filename, opts, msg_func, msg_data);
+  *bitmap = (*reader->func) (filename, opts, msg_func, msg_data, reader->data);
   if (new_opts)
     at_input_opts_free(opts);
   return bitmap;

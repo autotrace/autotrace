@@ -38,9 +38,6 @@
 /* Round up a division to the nearest integer. */
 #define ROUNDUP_DIVIDE(n,d) (((n) + (d - 1)) / (d))
 
-#define MAX(a,b) ((a) > (b) ? (a) : (b))
-#define MIN(a,b) ((a) < (b) ? (a) : (b))
-
 #define INDEXED 1
 #define INDEXEDA 2
 #define GRAY 3
@@ -112,7 +109,8 @@ at_bitmap_type
 input_tga_reader (at_string filename,
 		  at_input_opts_type * opts,
 		  at_msg_func msg_func, 
-		  at_address msg_data)
+		  at_address msg_data,
+		  at_address user_data)
 {
   FILE *fp;
   struct tga_header hdr;

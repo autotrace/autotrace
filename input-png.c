@@ -32,7 +32,7 @@
 #include <png.h>
 #include "input-png.h"
 
-static volatile char rcsid[]="$Id: input-png.c,v 1.16 2002/10/05 19:38:25 masata-y Exp $";
+static volatile char rcsid[]="$Id: input-png.c,v 1.17 2003/02/13 11:52:36 masata-y Exp $";
 static png_bytep * read_png(png_structp png_ptr, png_infop info_ptr, at_input_opts_type * opts);
 
 /* for pre-1.0.6 versions of libpng */
@@ -127,7 +127,8 @@ static int load_image(at_bitmap_type *image, FILE *stream, at_input_opts_type * 
 }
 
 at_bitmap_type input_png_reader(at_string filename, at_input_opts_type * opts,
-				at_msg_func msg_func, at_address msg_data) {
+				at_msg_func msg_func, at_address msg_data,
+				at_address user_data) {
 	FILE *stream;
 	at_bitmap_type image = at_bitmap_init(0, 0, 0, 1);
 	at_exception_type exp = at_exception_new(msg_func, msg_data);

@@ -1,3 +1,37 @@
+2003-02-13  Masatake YAMATO  <yamato@redhat.com>
+
+	* input.c (_at_input_format_entry): Added new field, 
+	user_data_destroy_func.
+	included private.h.
+	(at_input_format_new): added data, user_data_destroy_func
+	as arguments. Type of reader reader is changed to at_input_func.
+	(at_input_init): Use g_str_hash and g_str_equal.
+	(at_input_format_free): call user_data_destroy_func.
+	(at_input_add_handler_full): added data, user_data_destroy_func
+	as arguments. 
+	(at_input_add_handler_full): call g_ascii_strdown. 
+	(at_input_get_handler_by_suffix): return type is changed
+	to at_bitmap_reader.
+	(at_input_get_handler_by_suffix): call g_ascii_strdown. 
+
+	* main.c: included glib.h.
+	at_input_func is used.
+
+	* input.h (at_input_func): added new type.
+	included glib.
+
+	* input.c: include private.h.
+
+	* input-tga.c (MAX, MIN): removed it. glib provides
+	the same functions.
+
+	* autotrace.h (at_bitmap_reader): introduced as the
+	replacement of at_input_read_func.
+
+	* input-* (input_*_reader): added an argument.
+
+	* autotrace.c (at_bitmap_read): call reader->func.
+
 2003-02-09  Masatake YAMATO  <yamato@redhat.com>
 
 	* autotrace.c: Include private.h.

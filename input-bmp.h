@@ -26,7 +26,8 @@
 at_bitmap_type input_bmp_reader (at_string filename,
 				 at_input_opts_type * opts,
 				 at_msg_func msg_func, 
-				 at_address msg_data); 
+				 at_address msg_data,
+				 at_address user_data);
 
 #endif /* not INPUT_BMP_H */
 
