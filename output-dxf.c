@@ -601,14 +601,14 @@ int bspline_to_lines(xypnt_head_rec *vtx_list          /*  */,
 /******************************************************************************
 * This function outputs the DXF code which produces the polylines 
 */
-static void out_splines (FILE * dxf_file, spline_list_array_type shape, bool want_splines)
+static void out_splines (FILE * dxf_file, spline_list_array_type shape)
 {
   unsigned this_list;
   double startx, starty;
   xypnt_head_rec *vec, *res;
   xypnt pnt, pnt1, pnt_old;
   char fin, new_layer=0, layerstr[10];
-  int i, first_seg = 1, idx, spline_flag;
+  int i, first_seg = 1, idx;
 
   strcpy(layerstr, "C1");
   for (this_list = 0; this_list < SPLINE_LIST_ARRAY_LENGTH (shape);
@@ -630,169 +630,118 @@ static void out_splines (FILE * dxf_file, spline_list_array_type shape, bool wan
              last_color = list.color;
             }
     	}
-      if (!want_splines)
+      startx = START_POINT (first).x;
+      starty = START_POINT (first).y;
+      if (!first_seg)
         {
-         startx = START_POINT (first).x;
-         starty = START_POINT (first).y;
-         if (!first_seg)
+         if (ROUND(startx*RESOLUTION) != pnt_old.xp || ROUND(starty*RESOLUTION) != pnt_old.yp || new_layer)
            {
-            if (ROUND(startx*RESOLUTION) != pnt_old.xp || ROUND(starty*RESOLUTION) != pnt_old.yp || new_layer)
-              {
-               /* must begin new polyline */
-                new_layer = 0;
-                fprintf(dxf_file, "  0\nSEQEND\n  8\n%s\n", layerstr);
-                fprintf(dxf_file, "  0\nPOLYLINE\n  8\n%s\n  66\n1\n  10\n%f\n  20\n%f\n",
-                        layerstr, startx, starty);
-                fprintf(dxf_file, "  0\nVERTEX\n  8\n%s\n  10\n%f\n  20\n%f\n",
-                        layerstr, startx, starty);
-                pnt_old.xp = ROUND(startx*RESOLUTION);
-                pnt_old.yp = ROUND(starty*RESOLUTION);
-              }
-           }   
-         else
-           {
-            fprintf(dxf_file, "  0\nPOLYLINE\n  8\n%s\n  66\n1\n  10\n%f\n  20\n%f\n",
-                    layerstr, startx, starty);
-            fprintf(dxf_file, "  0\nVERTEX\n  8\n%s\n  10\n%f\n  20\n%f\n",
-                    layerstr, startx, starty);
-            pnt_old.xp = ROUND(startx*RESOLUTION);
-            pnt_old.yp = ROUND(starty*RESOLUTION);
-           } 
-         for (this_spline = 0; this_spline < SPLINE_LIST_LENGTH (list);
-              this_spline++)
-           {
-             spline_type s = SPLINE_LIST_ELT (list, this_spline);
-
-             if (SPLINE_DEGREE (s) == LINEARTYPE)
-               {
-
-                if (ROUND(startx*RESOLUTION) != pnt_old.xp || ROUND(starty*RESOLUTION) != pnt_old.yp || new_layer)
-                  {
-                   /* must begin new polyline */
-                   new_layer = 0;
-                   fprintf(dxf_file, "  0\nSEQEND\n  8\n%s\n", layerstr);
-                   fprintf(dxf_file, "  0\nPOLYLINE\n  8\n%s\n  66\n1\n  10\n%f\n  20\n%f\n",
-                           layerstr, startx, starty);
-                   fprintf(dxf_file, "  0\nVERTEX\n  8\n%s\n  10\n%f\n  20\n%f\n",
-                           layerstr, startx, starty);
-                  }
-                fprintf(dxf_file, "  0\nVERTEX\n  8\n%s\n  10\n%f\n  20\n%f\n",
-                        layerstr, END_POINT(s).x, END_POINT (s).y);
-
-                startx = END_POINT(s).x;
-                starty = END_POINT(s).y;
-                pnt_old.xp = ROUND(startx*RESOLUTION);
-                pnt_old.yp = ROUND(starty*RESOLUTION);
-               }
-             else
-               {
-                vec = (struct xypnt_head_t *)calloc(1, sizeof (struct xypnt_head_t));
-
-                pnt.xp = ROUND(startx*RESOLUTION);  pnt.yp = ROUND(starty*RESOLUTION);
-                xypnt_add_pnt(vec, pnt);
-                pnt.xp = ROUND(CONTROL1(s).x*RESOLUTION);  pnt.yp = ROUND(CONTROL1 (s).y*RESOLUTION);
-                xypnt_add_pnt(vec, pnt);
-                pnt.xp = ROUND(CONTROL2(s).x*RESOLUTION);  pnt.yp = ROUND(CONTROL2 (s).y*RESOLUTION);
-                xypnt_add_pnt(vec, pnt);
-                pnt.xp = ROUND(END_POINT(s).x*RESOLUTION);  pnt.yp = ROUND(END_POINT (s).y*RESOLUTION);
-                xypnt_add_pnt(vec, pnt);
-
-                res = NULL;
-
-                /* Note that spline order can be max. 4 since we have only 4 spline control points */
-                bspline_to_lines(vec, &res, 4, 4, 10000);
-
-
-                xypnt_first_pnt(res, &pnt, &fin);
-
-                if (pnt.xp != pnt_old.xp || pnt.yp != pnt_old.yp || new_layer)
-                  {
-                   /* must begin new polyline */
-                   new_layer = 0;
-                   fprintf(dxf_file, "  0\nSEQEND\n  8\n%s\n", layerstr);
-                   fprintf(dxf_file, "  0\nPOLYLINE\n  8\n%s\n  66\n1\n  10\n%f\n  20\n%f\n",
-                           layerstr, (double)pnt.xp/RESOLUTION, (double)pnt.yp/RESOLUTION);
-                   fprintf(dxf_file, "  0\nVERTEX\n  8\n%s\n  10\n%f\n  20\n%f\n",
-                           layerstr, (double)pnt.xp/RESOLUTION, (double)pnt.yp/RESOLUTION);
-                  }
-                i = 0;
-                while (!fin)
-                   {
-                    if (i)
-                      {
-                       fprintf(dxf_file, "  0\nVERTEX\n  8\n%s\n  10\n%f\n  20\n%f\n",
-                              layerstr, (double)pnt.xp/RESOLUTION, (double)pnt.yp/RESOLUTION);
-                      }
-                    pnt1 = pnt;
-                    xypnt_next_pnt(res, &pnt, &fin);
-                    i++;
-                   }
-
-                pnt_old = pnt;
-
-                xypnt_dispose_list(&vec);
-                xypnt_dispose_list(&res);
-
-                startx = END_POINT(s).x;
-                starty = END_POINT(s).y;
-
-                free(res);
-                free(vec);
-               }
+            /* must begin new polyline */
+             new_layer = 0;
+             fprintf(dxf_file, "  0\nSEQEND\n  8\n%s\n", layerstr);
+             fprintf(dxf_file, "  0\nPOLYLINE\n  8\n%s\n  66\n1\n  10\n%f\n  20\n%f\n",
+                     layerstr, startx, starty);
+             fprintf(dxf_file, "  0\nVERTEX\n  8\n%s\n  10\n%f\n  20\n%f\n",
+                     layerstr, startx, starty);
+             pnt_old.xp = ROUND(startx*RESOLUTION);
+             pnt_old.yp = ROUND(starty*RESOLUTION);
            }
-         first_seg = 0;
-         last_color = list.color;
-        }
+        }   
       else
         {
-         spline_flag = 1;
-         startx = START_POINT (first).x;
-         starty = START_POINT (first).y;
-         for (this_spline = 0; this_spline < SPLINE_LIST_LENGTH (list); this_spline++)
+         fprintf(dxf_file, "  0\nPOLYLINE\n  8\n%s\n  66\n1\n  10\n%f\n  20\n%f\n",
+                 layerstr, startx, starty);
+         fprintf(dxf_file, "  0\nVERTEX\n  8\n%s\n  10\n%f\n  20\n%f\n",
+                 layerstr, startx, starty);
+         pnt_old.xp = ROUND(startx*RESOLUTION);
+         pnt_old.yp = ROUND(starty*RESOLUTION);
+        } 
+      for (this_spline = 0; this_spline < SPLINE_LIST_LENGTH (list);
+           this_spline++)
+        {
+          spline_type s = SPLINE_LIST_ELT (list, this_spline);
+
+          if (SPLINE_DEGREE (s) == LINEARTYPE)
             {
-             /* 10 control points, 11 fit points, 40 knot values */
-             spline_type s = SPLINE_LIST_ELT (list, this_spline);
-             if (SPLINE_DEGREE(s) == LINEARTYPE)
-	           {
-                fprintf(dxf_file, "  0\nLINE\n  8\n%s\n  10\n%f\n  20\n%f\n  30\n0.0\n  11\n%f\n  21\n%f\n  31\n0.0\n",
-                        layerstr, startx, starty, END_POINT(s).x, END_POINT(s).y);
-                startx = END_POINT(s).x;
-                starty = END_POINT(s).y;
-                spline_flag = 1;
-	           }
-             else
-               {
-                 if (spline_flag)
-                   {
- 	                fprintf(dxf_file, "  0\nSPLINE\n");
-                    fprintf(dxf_file, "  8\n%s\n", layerstr);                    /* Layer */
-    	            fprintf(dxf_file, "  210\n0.0\n  220\n0.0\n  230\n1.0\n");         /* Norm vector */
-    	            fprintf(dxf_file, " 70\n%d\n", 8);                           /* spline type: 8: planar; 1 closed; 2 periodic; 16 linear */
-  	                fprintf(dxf_file, " 71\n%d\n", 3);                           /* degree of curve */
-	                fprintf(dxf_file, " 72\n%d\n", 0);                           /* no of knots */
-	                fprintf(dxf_file, " 73\n%d\n", SPLINE_LIST_LENGTH (list));   /* no of control points */
-	                fprintf(dxf_file, " 74\n%d\n", SPLINE_LIST_LENGTH (list));   /* no of fit points */
-	                fprintf(dxf_file, " 42\n%g\n", 0.0000001);        		     /* knot tolerance */
-	                fprintf(dxf_file, " 43\n%g\n", 0.0000001);        		     /* control-point tolerance */
-	                fprintf(dxf_file, " 44\n%g\n", 0.0000000001);     		     /* fit tolerance */
 
-                    fprintf(dxf_file, " 10\n%g\n 20\n%g\n 30\n0.0\n", startx, starty);
-                   }
-                fprintf(dxf_file, " 11\n%g\n 21\n%g\n 31\n0.0\n",
-                        END_POINT(s).x, END_POINT(s).y);
-                fprintf(dxf_file, " 10\n%g\n 20\n%g\n 30\n0.0\n",
-			            CONTROL1(s).x, CONTROL1(s).y);
-		        fprintf(dxf_file, " 10\n%g\n 20\n%g\n 30\n0.0\n",
-			            CONTROL2(s).x, CONTROL2(s).y);
-                startx = END_POINT(s).x;
-                starty = END_POINT(s).y;
-                spline_flag = 0;
-	           }
+              if (ROUND(startx*RESOLUTION) != pnt_old.xp || ROUND(starty*RESOLUTION) != pnt_old.yp || new_layer)
+                {
+                  /* must begin new polyline */
+                  new_layer = 0;
+                  fprintf(dxf_file, "  0\nSEQEND\n  8\n%s\n", layerstr);
+                  fprintf(dxf_file, "  0\nPOLYLINE\n  8\n%s\n  66\n1\n  10\n%f\n  20\n%f\n",
+                          layerstr, startx, starty);
+                  fprintf(dxf_file, "  0\nVERTEX\n  8\n%s\n  10\n%f\n  20\n%f\n",
+                          layerstr, startx, starty);
+                }
+              fprintf(dxf_file, "  0\nVERTEX\n  8\n%s\n  10\n%f\n  20\n%f\n",
+                      layerstr, END_POINT(s).x, END_POINT (s).y);
+
+              startx = END_POINT(s).x;
+              starty = END_POINT(s).y;
+              pnt_old.xp = ROUND(startx*RESOLUTION);
+              pnt_old.yp = ROUND(starty*RESOLUTION);
             }
-        }
-    }
+          else
+            {
+              vec = (struct xypnt_head_t *)calloc(1, sizeof (struct xypnt_head_t));
 
-  if (!want_splines)
+              pnt.xp = ROUND(startx*RESOLUTION);  pnt.yp = ROUND(starty*RESOLUTION);
+              xypnt_add_pnt(vec, pnt);
+              pnt.xp = ROUND(CONTROL1(s).x*RESOLUTION);  pnt.yp = ROUND(CONTROL1 (s).y*RESOLUTION);
+              xypnt_add_pnt(vec, pnt);
+              pnt.xp = ROUND(CONTROL2(s).x*RESOLUTION);  pnt.yp = ROUND(CONTROL2 (s).y*RESOLUTION);
+              xypnt_add_pnt(vec, pnt);
+              pnt.xp = ROUND(END_POINT(s).x*RESOLUTION);  pnt.yp = ROUND(END_POINT (s).y*RESOLUTION);
+              xypnt_add_pnt(vec, pnt);
+
+              res = NULL;
+
+              /* Note that spline order can be max. 4 since we have only 4 spline control points */
+              bspline_to_lines(vec, &res, 4, 4, 10000);
+
+
+              xypnt_first_pnt(res, &pnt, &fin);
+
+              if (pnt.xp != pnt_old.xp || pnt.yp != pnt_old.yp || new_layer)
+                {
+                 /* must begin new polyline */
+                 new_layer = 0;
+                 fprintf(dxf_file, "  0\nSEQEND\n  8\n%s\n", layerstr);
+                 fprintf(dxf_file, "  0\nPOLYLINE\n  8\n%s\n  66\n1\n  10\n%f\n  20\n%f\n",
+                         layerstr, (double)pnt.xp/RESOLUTION, (double)pnt.yp/RESOLUTION);
+                 fprintf(dxf_file, "  0\nVERTEX\n  8\n%s\n  10\n%f\n  20\n%f\n",
+                         layerstr, (double)pnt.xp/RESOLUTION, (double)pnt.yp/RESOLUTION);
+                }
+              i = 0;
+              while (!fin)
+                {
+                  if (i)
+                    {
+                     fprintf(dxf_file, "  0\nVERTEX\n  8\n%s\n  10\n%f\n  20\n%f\n",
+                            layerstr, (double)pnt.xp/RESOLUTION, (double)pnt.yp/RESOLUTION);
+                    }
+                  pnt1 = pnt;
+                  xypnt_next_pnt(res, &pnt, &fin);
+                  i++;
+                 }
+
+              pnt_old = pnt;
+
+              xypnt_dispose_list(&vec);
+              xypnt_dispose_list(&res);
+
+              startx = END_POINT(s).x;
+              starty = END_POINT(s).y;
+
+              free(res);
+              free(vec);
+             }
+         }
+       first_seg = 0;
+       last_color = list.color;
+    }
+    
     fprintf(dxf_file, "  0\nSEQEND\n  8\n0\n");
 
 }
@@ -877,9 +826,9 @@ void output_layer(FILE *dxf_file,
 /******************************************************************************
 * DXF output function.
 */
-static int output_dxf_internal_writer(FILE* dxf_file, string name,
+int output_dxf12_writer(FILE* dxf_file, string name,
          		      int llx, int lly, int urx, int ury,
-		              spline_list_array_type shape, bool want_splines)
+		              spline_list_array_type shape)
 {
   OUT_LINE ("  0");
   OUT_LINE ("SECTION");
@@ -915,7 +864,7 @@ static int output_dxf_internal_writer(FILE* dxf_file, string name,
   OUT_LINE ("  2");
   OUT_LINE ("ENTITIES");
 
-  out_splines(dxf_file, shape, want_splines);
+  out_splines(dxf_file, shape);
 
   OUT_LINE ("  0");
   OUT_LINE ("ENDSEC");
@@ -923,21 +872,4 @@ static int output_dxf_internal_writer(FILE* dxf_file, string name,
   OUT_LINE ("EOF");
   return 0;
 }
-
-int output_dxf12_writer(FILE* dxf_file, string name,
-         		      int llx, int lly, int urx, int ury,
-		              spline_list_array_type shape)
-{
-  return
-    output_dxf_internal_writer(dxf_file, name, llx, lly, urx, ury, shape, false);
-}
-
-int output_dxf_writer(FILE* dxf_file, string name,
-         		      int llx, int lly, int urx, int ury,
-		              spline_list_array_type shape)
-{
-  return
-    output_dxf_internal_writer(dxf_file, name, llx, lly, urx, ury, shape, true);
-}
-
 

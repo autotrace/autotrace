@@ -1,3 +1,16 @@
+2001-12-08  Masatake YAMATO  <yamato@redhat.com>
+
+	* configure.in: Version 0.28.
+
+2001-12-08  Martin Weber <martweb@gmx.net>
+
+	* output.c: 
+	* output-dxf.[ch]: DXF output is disabled.
+
+2001-12-08  Masatake YAMATO  <yamato@redhat.com>
+
+	Put a tag, "BEFORE_DISABLING_DXF" to the CVS repository.
+
 2001-12-03  Martin Weber <martweb@gmx.net>
 
 	* input.c: We should use api.h instead of

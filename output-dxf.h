@@ -8,10 +8,6 @@
 #include "ptypes.h"
 #include "spline.h"
 
-int output_dxf_writer (FILE* file, string name,
-		      int llx, int lly, int urx, int ury,
-		      spline_list_array_type shape);
-
 int output_dxf12_writer (FILE* file, string name,
 		      int llx, int lly, int urx, int ury,
 		      spline_list_array_type shape);
