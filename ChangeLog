@@ -4,6 +4,9 @@
 	flags to configure.
 	Check ImageMagick version.
 
+	--with-magick and --without-magick are suggested by
+	"Stewart C. Russell" <stewart@ref.collins.co.uk>.
+
 2001-03-14  Masatake YAMATO  <yamato@redhat.com>
 
 	* configure.in: Check zlib.
