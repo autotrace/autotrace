@@ -244,7 +244,7 @@ line-threshold <real>: if the spline is not more than this far away\n\
 list-output-formats: print a list of support output formats to stderr.\n\
 list-input-formats:  print a list of support input formats to stderr.\n\
 log: write detailed progress reports to <input_name>.log.\n\
-noise-removal <real>:: 1.0..0.0; default is 0.99.\n\
+noise-removal <real>:: 0.0..1.0; default is 0.99.\n\
 output-file <filename>: write to <filename>\n\
 output-format <format>: use format <format> for the output file\n\
   %s can be used.\n\
