@@ -444,9 +444,9 @@ const char *
 at_version (at_bool long_format)
 {
   if (long_format)
-    return "AutoTrace version " VERSION;
+    return "AutoTrace version " AUTOTRACE_VERSION;
   else
-    return VERSION;
+    return AUTOTRACE_VERSION;
 }
 
 const char * 

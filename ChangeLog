@@ -1,3 +1,10 @@
+2002-12-19  Masatake YAMATO  <yamato@redhat.com>
+
+	* autotrace.c: Likewise.
+
+	* configure.in: Don't use VERSION. This symbol is 
+	reserved by VC++. Instead AUTOTRACE_VERSION is used.
+
 2002-11-16  Martin Weber <martweb@gmx.net>
 
 	* despeckle.c: removed unnecessary for loop.

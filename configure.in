@@ -10,11 +10,13 @@ PACKAGE=autotrace
 MAJOR_VERSION=0
 MINOR_VERSION=31
 MICRO_VERSION=1
-VERSION=${MAJOR_VERSION}.${MINOR_VERSION}.${MICRO_VERSION}
-AM_INIT_AUTOMAKE($PACKAGE, $VERSION, no-define)
+dnl VERSION is not acceptable; it conflicts 
+dnl with a variable defined in VC++.
+AUTOTRACE_VERSION=${MAJOR_VERSION}.${MINOR_VERSION}.${MICRO_VERSION}
+AM_INIT_AUTOMAKE($PACKAGE, $AUTOTRACE_VERSION, no-define)
 AC_DEFINE_UNQUOTED(PACKAGE, "$PACKAGE")
 AC_SUBST(PACKAGE)
-AC_DEFINE_UNQUOTED(VERSION,"$VERSION")
+AC_DEFINE_UNQUOTED(AUTOTRACE_VERSION,"$VERSION")
 
 #
 # version setting up for libtool
@@ -48,6 +50,7 @@ AC_CHECK_HEADERS(malloc.h)
 ALL_LINGUAS="ja"
 AM_GNU_GETTEXT
 AC_CHECK_FUNC(gettext,,AC_CHECK_LIB(intl, gettext))
+dnl AC_PROG_INTLTOOL
 
 dnl
 dnl ImageMagick
@@ -358,6 +361,7 @@ dnl	    ;;
 dnl  esac
 dnl fi
 
+dnl AC_OUTPUT([intl/Makefile po/Makefile.in po/Makefile.in m4/Makefile 
 AC_OUTPUT([intl/Makefile po/Makefile.in
 Makefile autotrace-config autotrace.pc autotrace.spec], 
 [chmod a+x autotrace-config])
