@@ -1,3 +1,9 @@
+2002-09-28  Masatake YAMATO  <yamato@redhat.com>
+
+	* input-png.c (read_png): New function that can
+	handle transparent region (just fill with white). 
+	(load_image): use read_png.
+
 2002-09-27  Martin Weber <martweb@gmx.net>
 
 	* pxl-outline.c (find_centerline_pixels): During speed up 
