@@ -3,7 +3,7 @@
 #ifndef ATOU_H
 #define ATOU_H
 
-#include "types.h"
+#include "ptypes.h"
 #include "atou.h"
 
 unsigned atou (string s);

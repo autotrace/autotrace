@@ -1,7 +1,7 @@
 /* spline.c: spline and spline list (represented as arrays) manipulation. */
 
 #include "message.h"
-#include "types.h"
+#include "ptypes.h"
 #include "spline.h"
 #include "vector.h"
 #include "xstd.h"

@@ -1,3 +1,13 @@
+2001-11-21  Masatake YAMATO  <yamato@redhat.com>
+
+	* ptypes.h: New file.
+
+	* Makefile.am: Added ptypes.h.
+	
+	* types.h: Added "at_" as prefix to all type names.
+
+	* *.[ch]: Include ptypes.h.
+
 2001-11-19  Martin Weber  <martweb@gmx.net>
 
 	* pxl-outline.c (find_one_outline): Fixed that sometimes the first 

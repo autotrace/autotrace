@@ -3,7 +3,7 @@
 #ifndef VECTOR_H
 #define VECTOR_H
 
-#include "types.h"
+#include "ptypes.h"
 
 
 /* Our vectors are represented as displacements along the x and y axes.  */

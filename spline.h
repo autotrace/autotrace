@@ -5,6 +5,7 @@
 
 #include <stdio.h>
 #include "autotrace.h"
+#include "ptypes.h"
 
 typedef at_polynomial_degree polynomial_degree;
 typedef at_spline_type spline_type;

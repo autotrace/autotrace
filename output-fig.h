@@ -5,7 +5,7 @@
 #define OUTPUT_FIG_H
 
 #include <stdio.h>
-#include "types.h"
+#include "ptypes.h"
 #include "spline.h"
 #include "color.h"
 

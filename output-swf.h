@@ -7,7 +7,7 @@ Uses the Ming SWF library from http://www.opaque.net/ming/
 #define OUTPUTSWF_H 
 
 #include <stdio.h>
-#include "types.h"
+#include "ptypes.h"
 #include "spline.h"
 #include <ming.h>
 

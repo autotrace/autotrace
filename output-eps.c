@@ -1,6 +1,6 @@
 /* output-eps.c: utility routines for PostScript output. */
 
-#include "types.h"
+#include "ptypes.h"
 #include "spline.h"
 #include "color.h"
 #include "output-eps.h"

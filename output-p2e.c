@@ -8,7 +8,7 @@ Adapted to pstoedit 3.30 by Wolfgang Glunz.
 
 */
 
-#include "types.h"
+#include "ptypes.h"
 #include "spline.h"
 #include "color.h"
 #include "output-p2e.h"

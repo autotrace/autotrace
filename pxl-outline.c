@@ -2,7 +2,7 @@
    and each pixel participates via one or more edges. */
 
 #include "message.h"
-#include "types.h"
+#include "ptypes.h"
 #include "bitmap.h"
 #include "color.h"
 #include "bitmap.h"

@@ -3,7 +3,7 @@
 #ifndef EPSILON_EQUAL_H
 #define EPSILON_EQUAL_H
 
-#include "types.h"
+#include "ptypes.h"
 
 /* Says whether V1 and V2 are within REAL_EPSILON of each other.
    Fixed-point arithmetic would be better, to guarantee machine

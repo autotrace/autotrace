@@ -22,7 +22,7 @@
 #include <stdio.h>
 #include <time.h>
 #include "xstd.h"
-#include "types.h"
+#include "ptypes.h"
 #include "bitmap.h"
 
 

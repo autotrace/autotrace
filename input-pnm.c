@@ -4,6 +4,7 @@
  * does not contain any code from the netpbm or pbmplus distributions.
  */
 
+#include "ptypes.h"
 #include "bitmap.h"
 #include "input-pnm.h"
 #include "message.h"

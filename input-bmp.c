@@ -4,6 +4,7 @@
 #include <stdlib.h>
 #include <string.h>
 
+#include "ptypes.h"
 #include "bitmap.h"
 #include "message.h"
 #include "xstd.h"

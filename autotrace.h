@@ -32,7 +32,7 @@ extern "C" {
  */
 /* Whether to trace a character's centerline or its outline 
  - This should be in filtering_opts and output_opts */
-extern bool at_centerline;
+extern at_bool at_centerline;
 
 /*
  * Typedefs
@@ -74,9 +74,9 @@ enum _at_polynomial_degree
    straight line defined by the endpoints.  */
 struct _at_spline_type
 {
-  real_coordinate_type v[4];	/* The control points.  */
+  at_real_coordinate_type v[4];	/* The control points.  */
   at_polynomial_degree degree;
-  real linearity;
+  at_real linearity;
 };
 
 /* Each outline in a character is typically represented by many
@@ -85,9 +85,9 @@ struct _at_spline_list_type
 {
   at_spline_type *data;
   unsigned length;
-  bool clockwise;
+  at_bool clockwise;
   at_color_type color;
-  bool open;
+  at_bool open;
 };
 
 /* Each character is in general made up of many outlines. So here is one
@@ -110,7 +110,7 @@ struct _at_fitting_opts_type
    is smaller than this, it's a corner, even if it's within
    `corner_surround' pixels of a point with a smaller angle.
    (-corner-always-threshold)  */
-  real corner_always_threshold;
+  at_real corner_always_threshold;
 
 /* Number of points to consider when determining if a point is a corner
    or not.  (-corner-surround)  */
@@ -119,12 +119,12 @@ struct _at_fitting_opts_type
 /* If a point, its predecessors, and its successors define an angle
     smaller than this, it's a corner.  Should be in range 0..180.
    (-corner-threshold)  */
-  real corner_threshold;
+  at_real corner_threshold;
 
 /* Amount of error at which a fitted spline is unacceptable.  If any
    pixel is further away than this from the fitted curve, we try again.
    (-error-threshold) */
-  real error_threshold;
+  at_real error_threshold;
 
 /* Number of times to smooth original data points.  Increasing this
    number dramatically---to 50 or so---can produce vastly better
@@ -134,34 +134,34 @@ struct _at_fitting_opts_type
 
 /* To produce the new point, use the old point plus this times the
    neighbors.  (-filter-percent)  */
-  real filter_percent;
+  at_real filter_percent;
 
 /* If a spline is closer to a straight line than this, it remains a
    straight line, even if it would otherwise be changed back to a curve.
    This is weighted by the square of the curve length, to make shorter
    curves more likely to be reverted.  (-line-reversion-threshold)  */
-  real line_reversion_threshold;
+  at_real line_reversion_threshold;
 
 /* How many pixels (on the average) a spline can diverge from the line
    determined by its endpoints before it is changed to a straight line.
    (-line-threshold) */
-  real line_threshold;
+  at_real line_threshold;
 
 /* Should adjacent corners be removed?  */
-  bool remove_adj_corners;
+  at_bool remove_adj_corners;
 
 /* Number of points to look at on either side of a point when computing
    the approximation to the tangent at that point.  (-tangent-surround)  */
   unsigned tangent_surround;
 
 /* Thin all the lines in the image prior to fitting. */
-  bool thin;
+  at_bool thin;
 
 /* Despeckle level */
   int despeckle_level;
 
 /* Despeckle tightness */
-  real despeckle_tightness;
+  at_real despeckle_tightness;
 };
 
 struct _at_bitmap_type
@@ -177,10 +177,10 @@ struct _at_bitmap_type
  * IO Handler typedefs
  */
 typedef 
-at_bitmap_type (*at_input_read_func)   (string name);
+at_bitmap_type (*at_input_read_func)   (at_string name);
 
 typedef 
-int            (*at_output_write_func) (FILE*, string name,
+int            (*at_output_write_func) (FILE*, at_string name,
 					int llx, int lly, 
 					int urx, int ury,
 					at_splines_type shape);
@@ -189,14 +189,14 @@ int            (*at_output_write_func) (FILE*, string name,
  * Progress handler typedefs
  * 0.0 <= percentage <= 1.0
  */
-typedef progress_func at_progress_func;
+typedef void           (* at_progress_func)    (at_real percentage,
+						at_address client_data);
 
 /*
  * Test cancel
  * Return true if auto-tracing should be stopped.
  */
-typedef testcancel_func at_testcancel_func;
-
+typedef at_bool          (*  at_testcancel_func) (at_address client_data);
 
 /*
  * Functions
@@ -210,18 +210,18 @@ void at_fitting_opts_free(at_fitting_opts_type * opts);
 
 /* Bitmap related */
 at_bitmap_type * at_bitmap_new (at_input_read_func input_reader,
-				string filename);
+				at_string filename);
 unsigned short at_bitmap_get_width (at_bitmap_type * bitmap);
 unsigned short at_bitmap_get_height (at_bitmap_type * bitmap);
 void at_bitmap_free (at_bitmap_type * bitmap);
 /* TODO internal data access */
 
 /* Input related */
-at_input_read_func at_input_get_handler (string filename);
-at_input_read_func at_input_get_handler_by_suffix (string suffix);
+at_input_read_func at_input_get_handler (at_string filename);
+at_input_read_func at_input_get_handler_by_suffix (at_string suffix);
 char ** at_input_list_new (void);
 void at_input_list_free(char ** list);
-/* at_input_read_add_handler (string suffix, at_input_read_func); */
+/* at_input_read_add_handler (at_string suffix, at_input_read_func); */
 
 /* Spline related */
 at_splines_type * at_splines_new (at_bitmap_type * bitmap,
@@ -248,15 +248,15 @@ at_splines_type * at_splines_new (at_bitmap_type * bitmap,
 at_splines_type * at_splines_new_full (at_bitmap_type * bitmap,
 				       at_fitting_opts_type * opts,
 				       at_progress_func notify_progress,
-				       address progress_data,
+				       at_address progress_data,
 				       at_testcancel_func test_cancel,
-				       address testcancel_data);
+				       at_address testcancel_data);
 
 void at_splines_free (at_splines_type * splines);
 /* TODO internal data access */
 
 /* Output related */
-at_output_write_func at_output_get_handler (string suffix);
+at_output_write_func at_output_get_handler (at_string suffix);
 void 
 at_output_write(at_output_write_func output_writer,
 		FILE * writeto,
@@ -265,7 +265,7 @@ at_output_write(at_output_write_func output_writer,
 		at_splines_type * splines);
 char ** at_output_list_new (void);
 void at_output_list_free(char ** list);
-/* at_output_write_add_handler (string suffix, at_output_write_func); */
+/* at_output_write_add_handler (at_string suffix, at_output_write_func); */
 
 /* Color related */
 at_color_type * at_color_new (unsigned char r, 

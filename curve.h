@@ -3,7 +3,7 @@
 #ifndef CURVE_H
 #define CURVE_H
 
-#include "types.h"
+#include "ptypes.h"
 #include "vector.h"
 
 

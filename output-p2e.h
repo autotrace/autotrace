@@ -7,7 +7,7 @@
 #define P2EOUT_H
 
 #include <stdio.h>
-#include "types.h"
+#include "ptypes.h"
 #include "spline.h"
 
 int output_p2e_writer (FILE* file, string name,

@@ -4,7 +4,7 @@
 #include "thin-image.h"
 #include "logreport.h"
 #include "message.h"
-#include "types.h" 
+#include "ptypes.h" 
 #include "bitmap.h"
 #include "xstd.h"
 #include <string.h>

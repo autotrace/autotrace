@@ -5,7 +5,7 @@
 
 #include "autotrace.h"
 #include "bitmap.h"
-#include "types.h"
+#include "ptypes.h"
 #include "color.h"
 
 /* This is a list of contiguous points on the bitmap.  */

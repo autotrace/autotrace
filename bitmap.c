@@ -1,6 +1,6 @@
 /* bitmap.c: operations on bitmaps. */
 
-#include "types.h"
+#include "ptypes.h"
 #include "bitmap.h"
 #include "xstd.h"
 #include <string.h>

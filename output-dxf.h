@@ -5,7 +5,7 @@
 #define OUTPUT_DXF_H
 
 #include <stdio.h>
-#include "types.h"
+#include "ptypes.h"
 #include "spline.h"
 
 int output_dxf_writer (FILE* file, string name,

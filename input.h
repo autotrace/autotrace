@@ -4,8 +4,8 @@
 #ifndef INPUT_H
 #define INPUT_H 
 
-#include "types.h"
 #include "autotrace.h"
+#include "ptypes.h"
 
 #if HAVE_LIBPNG
 #define PNG_SUFFIX "png, "

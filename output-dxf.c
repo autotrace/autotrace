@@ -2,7 +2,7 @@
 
 /* mail comments and suggestions to kovar@t-online.de */
 
-#include "types.h"
+#include "ptypes.h"
 #include "spline.h"
 #include "color.h"
 #include "output-dxf.h"

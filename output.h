@@ -4,7 +4,7 @@
 #ifndef OUTPUT_H
 #define OUTPUT_H
 
-#include "types.h"
+#include "ptypes.h"
 #include "autotrace.h"
 
 #if HAVE_LIBSWF

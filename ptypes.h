@@ -1,4 +1,4 @@
-/* types.h: general types
+/* ptypes.h: types used in automake code private
    Copyright (C) 2000, 2001 Martin Weber
 
    The author can be contacted at <martweb@gmx.net>
@@ -17,34 +17,27 @@
    along with this program; if not, write to the Free Software
    Foundation, Inc., 675 Mass Ave, Cambridge, MA 02139, USA. */
 
-#ifndef TYPES_H
-#define TYPES_H
+#ifndef P_TYPES_H
+#define P_TYPES_H
 
-#ifndef __cplusplus
-/* Booleans.  */
-#ifndef at_bool
-typedef enum { false = 0, true = 1 } at_bool;
-#endif
-#endif
+#include "autotrace.h"
 
-/* The usual null-terminated string.  */
-typedef char *at_string;
+/* Curvetype */
+#define LINE 1
+#define QUAD_BEZIER 2
+#define CUB_BEZIER 4
+#define CIRCLE 8
+#define PARALLEL_ELLIPSE 16
+#define ELLIPSE 32
 
-/* A generic pointer in ANSI C.  */
-typedef void *at_address;
+typedef at_bool bool;
+typedef at_string string;
+typedef at_real real;
+typedef at_address address;
+typedef at_coordinate_type coordinate_type;
+typedef at_real_coordinate_type real_coordinate_type ;
 
-/* We use `real' for our floating-point variables.  */
-typedef float at_real;
+typedef at_progress_func progress_func;
+typedef at_testcancel_func testcancel_func;
 
-/* Cartesian points.  */
-typedef struct
-{
-  short x, y;
-} at_coordinate_type;
-
-typedef struct
-{
-  at_real x, y;
-} at_real_coordinate_type;
-
-#endif /* not TYPES_H */
+#endif /* not P_TYPES_H */

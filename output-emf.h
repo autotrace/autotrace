@@ -8,7 +8,7 @@
 #define __OUTPUT_EMF_H
 
 #include <stdio.h>
-#include "types.h"
+#include "ptypes.h"
 #include "spline.h"
 
 int output_emf_writer(FILE* file, string name,

@@ -7,7 +7,7 @@
 #ifndef XSTD_H
 #define XSTD_H 
 
-#include "types.h"
+#include "ptypes.h"
 #include "message.h"
 #include <stdio.h>
 #include <string.h>

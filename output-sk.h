@@ -5,7 +5,7 @@
 #define OUTPUT_SK_H
 
 #include <stdio.h>
-#include "types.h"
+#include "ptypes.h"
 #include "spline.h"
 
 int output_sk_writer(FILE* file, string name,

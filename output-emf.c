@@ -8,7 +8,7 @@
 
 #include <stdio.h>
 #include <string.h>
-#include "types.h"
+#include "ptypes.h"
 #include "spline.h"
 #include "xstd.h"
 

@@ -4,7 +4,7 @@
 #define CMDLINE_H
 
 #include "getopt.h"
-#include "types.h"
+#include "ptypes.h"
 #include <string.h>
 
 

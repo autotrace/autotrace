@@ -1,6 +1,6 @@
 /* epsilon-equal.c: define a error resist compare. */
 
-#include "types.h"
+#include "ptypes.h"
 #include "epsilon-equal.h"
 #include <math.h>
 
