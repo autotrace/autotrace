@@ -30,13 +30,13 @@ struct input_format_entry {
 
 static struct input_format_entry input_formats[] = {
 #ifdef HAVE_LIBPNG
-  { png_load_image,  "Portable network graphics", "PNG" },
+  { png_load_image,   "Portable network graphics",      "PNG" },
 #endif /* HAVE_LIBPNG */
-  { tga_load_image,   "Truevision Targa image", "TGA" },
-  { pnm_load_image,   "Portable bitmap format", "PBM" },
-  { pnm_load_image,   "Portable anymap format", "PNM" },
-  { pnm_load_image,   "Portable graymap format", "PGM" },
-  { pnm_load_image,   "Portable pixmap format", "PPM" },
+  { tga_load_image,   "Truevision Targa image",         "TGA" },
+  { pnm_load_image,   "Portable bitmap format",         "PBM" },
+  { pnm_load_image,   "Portable anymap format",         "PNM" },
+  { pnm_load_image,   "Portable graymap format",        "PGM" },
+  { pnm_load_image,   "Portable pixmap format",         "PPM" },
   { bmp_load_image,   "Microsoft Windows bitmap image", "BMP" },
   {NULL, NULL, NULL}
 };
@@ -77,7 +77,11 @@ input_list (void)
   int i;
 #if HAVE_MAGICK
   ExceptionInfo exception;
+#if (MagickLibVersion < 0x0540)
   MagickInfo *info, *magickinfo;
+#else
+  const MagickInfo *info, *magickinfo;
+#endif
 #endif
 
   struct input_format_entry * entry;
@@ -93,10 +97,11 @@ input_list (void)
 #if (MagickLibVersion < 0x0538)
   magickinfo = info = GetMagickInfo(NULL);
 #else
-  magickinfo = info = GetMagickInfo(NULL, &exception);
+  magickinfo = info = GetMagickInfo("", &exception);
 #endif
-
+#endif
   count = count_int;
+#if HAVE_MAGICK
   while (info)
     {
 #if (MagickLibVersion < 0x0537)
@@ -104,9 +109,10 @@ input_list (void)
 #else
       if (info->name && info->description)
 #endif
-          count ++;
+        count ++;
       info = info->next ;
     }
+#endif
 
   XMALLOC(list, sizeof(char*)*((2*count)+1));
 
@@ -117,6 +123,7 @@ input_list (void)
       list[2*i+1] = (char *)entry[i].descr;
     }
 
+#if HAVE_MAGICK
   info = magickinfo;
 
   while (info)
@@ -146,26 +153,88 @@ char *
 input_shortlist (void)
 {
   char * list;
-  int count = 0;
+  int count_int = 0, count;
   int length = 0;
   int i;
+#if HAVE_MAGICK
+  ExceptionInfo exception;
+#if (MagickLibVersion < 0x0540)
+  MagickInfo *info, *magickinfo;
+#else
+  const MagickInfo *info, *magickinfo;
+#endif
+#endif
 
   struct input_format_entry * entry;
   for (entry = input_formats; entry->name; entry++)
     {
-      count++;
+      count_int++;
       length += strlen (entry->name) + 2;
   }
+
+#if HAVE_MAGICK
+#if (MagickLibVersion < 0x0538)
+  MagickIncarnate("");
+#else
+  InitializeMagick("");
+#endif
+  GetExceptionInfo(&exception);
+#if (MagickLibVersion < 0x0538)
+  magickinfo = info = GetMagickInfo(NULL);
+#else
+  magickinfo = info = GetMagickInfo(NULL, &exception);
+#endif
+#endif
+count = count_int;
+#if HAVE_MAGICK
+  while (info)
+    {
+#if (MagickLibVersion < 0x0537)
+      if (info->tag && info->description)
+#else
+      if (info->name && info->description)
+#endif
+        {
+          count ++;
+#if (MagickLibVersion < 0x0537)
+          length += strlen (info->tag) + 2;
+#else
+          length += strlen (info->name) + 2;
+#endif
+        }
+      info = info->next ;
+    }
+#endif
 
   XMALLOC(list, sizeof (char) * (length + 1 + 2));
 
   entry = input_formats;
   strcpy (list, (char *) entry[0].name);
-  for (i = 1; i < count - 1; i++)
+  for (i = 1; i < count_int - 1; i++)
     {
       strcat (list, ", ");
       strcat (list, (char *) entry[i].name);
     }
+#if HAVE_MAGICK
+  info = magickinfo;
+  while (info)
+    {
+#if (MagickLibVersion < 0x0537)
+      if (info->tag && info->description)
+#else
+      if (info->name && info->description)
+#endif
+        {
+          strcat (list, ", ");
+#if (MagickLibVersion < 0x0537)
+          strcat (list, info->tag);
+#else
+          strcat (list, info->name);
+#endif
+        }
+      info = info->next ;
+    }
+#endif
   strcat (list, " or ");
   strcat (list, (char *) entry[i].name);
   return list;

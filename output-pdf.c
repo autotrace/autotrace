@@ -20,24 +20,24 @@ static string now (void);
 
 /* This should be used for outputting a string S on a line by itself.  */
 #define OUT_LINE(s)                                 \
-  fprintf (file, "%s\n", s)
+  fprintf (pdf_file, "%s\n", s)
 
 /* These output their arguments, preceded by the indentation.  */
 #define OUT1(s, e)                                  \
-  fprintf (file, s, e)
+  fprintf (pdf_file, s, e)
 
 #define OUT2(s, e1, e2)                             \
-  fprintf (file, s, e1, e2)
+  fprintf (pdf_file, s, e1, e2)
 
 #define OUT3(s, e1, e2, e3)                         \
-  fprintf (file, s, e1, e2, e3)
+  fprintf (pdf_file, s, e1, e2, e3)
 
 #define OUT4(s, e1, e2, e3, e4)                     \
-  fprintf (file, s, e1, e2, e3, e4)
+  fprintf (pdf_file, s, e1, e2, e3, e4)
 
 /* These macros just output their arguments.  */
-#define OUT_STRING(s)	fprintf (file, "%s", s)
-#define OUT_REAL(r)	fprintf (file, r == (ROUND (r = ROUND((real)6.0*r)/(real)6.0))				\
+#define OUT_STRING(s)	fprintf (pdf_file, "%s", s)
+#define OUT_REAL(r)	fprintf (pdf_file, r == (ROUND (r = ROUND((real)6.0*r)/(real)6.0))				\
                                   ? "%.0f " : "%.3f ", r)
 
 /* For a PostScript command with two real arguments, e.g., lineto.  OP
@@ -68,10 +68,61 @@ static string now (void);
     }                                               \
   while (0)
 
+/* This should be used for outputting a string S on a line by itself.  */
+#define SOUT_LINE(s)                                 \
+  sprintf (temp, "%s\n", s), length += strlen(temp)
+
+/* These output their arguments, preceded by the indentation.  */
+#define SOUT1(s, e)                                  \
+  sprintf (temp, s, e), length += strlen(temp)
+
+#define SOUT2(s, e1, e2)                             \
+  sprintf (temp, s, e1, e2), length += strlen(temp)
+
+#define SOUT3(s, e1, e2, e3)                         \
+  sprintf (temp, s, e1, e2, e3), length += strlen(temp)
+
+#define SOUT4(s, e1, e2, e3, e4)                     \
+  sprintf (temp, s, e1, e2, e3, e4), length += strlen(temp)
+
+/* These macros just output their arguments.  */
+#define SOUT_STRING(s)	sprintf (temp, "%s", s), length += strlen(temp)
+#define SOUT_REAL(r)	sprintf (temp, r == (ROUND (r = ROUND((real)6.0*r)/(real)6.0))				\
+                                  ? "%.0f " : "%.3f ", r), length += strlen(temp)
+
+/* For a PostScript command with two real arguments, e.g., lineto.  OP
+   should be a constant string.  */
+#define SOUT_COMMAND2(first, second, op)             \
+  do                                                \
+    {                                               \
+      SOUT_REAL (first);                             \
+      SOUT_REAL (second);                            \
+      SOUT_STRING (op "\n");                         \
+    }                                               \
+  while (0)
+
+/* For a PostScript command with six real arguments, e.g., curveto.
+   Again, OP should be a constant string.  */
+#define SOUT_COMMAND6(first, second, third, fourth, fifth, sixth, op)	\
+  do                                                \
+    {                                               \
+      SOUT_REAL (first);                             \
+      SOUT_REAL (second);                            \
+      SOUT_STRING (" ");                             \
+      SOUT_REAL (third);                             \
+      SOUT_REAL (fourth);                            \
+      SOUT_STRING (" ");                             \
+      SOUT_REAL (fifth);                             \
+      SOUT_REAL (sixth);                             \
+      SOUT_STRING (" " op " \n");                    \
+    }                                               \
+  while (0)
+
+
 /* This should be called before the others in this file. It opens the
    output file `OUTPUT_NAME.pdf', and writes some preliminary boilerplate. */
 
-static int output_pdf_header(FILE* file, string name,
+static int output_pdf_header(FILE* pdf_file, string name,
 			     int llx, int lly, int urx, int ury)
 {
   OUT_LINE ("%PDF-1.2");
@@ -108,7 +159,7 @@ static int output_pdf_header(FILE* file, string name,
 /* This should be called after the others in this file. It writes some
    last informations. */
 
-static int output_pdf_tailor(FILE* file)
+static int output_pdf_tailor(FILE* pdf_file)
 {
   OUT_LINE ("6 0 obj");
   OUT_LINE ("[/PDF]");
@@ -129,11 +180,11 @@ static int output_pdf_tailor(FILE* file)
 static void
 out_splines (FILE *pdf_file, spline_list_array_type shape)
 {
-  FILE *file, *tempfile = tmpfile ();
+  char temp[40];
+  int length = 0;
   unsigned this_list;
 
   color_type last_color = {0,0,0};
-  file = tempfile;
 
   for (this_list = 0; this_list < SPLINE_LIST_ARRAY_LENGTH (shape);
        this_list++)
@@ -146,13 +197,13 @@ out_splines (FILE *pdf_file, spline_list_array_type shape)
       if (this_list == 0 || !COLOR_EQUAL(list.color, last_color))
         {
           if (this_list > 0)
-              OUT_LINE("h");
-          OUT4 ("%f %f %f %s\n", (double) list.color.r / 255.0,
+              SOUT_LINE("h");
+          SOUT4 ("%f %f %f %s\n", (double) list.color.r / 255.0,
             (double) list.color.g / 255.0, (double) list.color.b / 255.0,
             (shape.centerline || list.open) ? "RG" : "rg");
           last_color = list.color;
         }    
-      OUT_COMMAND2 (START_POINT (first).x, START_POINT (first).y, "m");
+      SOUT_COMMAND2 (START_POINT (first).x, START_POINT (first).y, "m");
 
       for (this_spline = 0; this_spline < SPLINE_LIST_LENGTH (list);
            this_spline++)
@@ -160,21 +211,19 @@ out_splines (FILE *pdf_file, spline_list_array_type shape)
           spline_type s = SPLINE_LIST_ELT (list, this_spline);
 
           if (SPLINE_DEGREE (s) == LINEARTYPE)
-            OUT_COMMAND2 (END_POINT (s).x, END_POINT (s).y, "l");
+            SOUT_COMMAND2 (END_POINT (s).x, END_POINT (s).y, "l");
           else
-            OUT_COMMAND6 (CONTROL1 (s).x, CONTROL1 (s).y,
+            SOUT_COMMAND6 (CONTROL1 (s).x, CONTROL1 (s).y,
                           CONTROL2 (s).x, CONTROL2 (s).y,
                           END_POINT (s).x, END_POINT (s).y,
                           "c");
         }
-      OUT_LINE ((shape.centerline || list.open) ? "S" : "f");
+      SOUT_LINE ((shape.centerline || list.open) ? "S" : "f");
 
     }
 
-  file = pdf_file;
-
   OUT_LINE ("5 0 obj");
-  OUT1 ("<< /Length %d >>\n", ftell(tempfile));
+  OUT1 ("<< /Length %d >>\n", length);
   OUT_LINE ("stream");
 
   last_color.r = 0;

@@ -1,5 +1,5 @@
 /* input-magick.c: import files via image magick
-   This code was tested with ImageMagick 5.2.0-5.4.0
+   This code was tested with ImageMagick 5.2.1-5.4.0
    it doesn't work with earlier versions */
 
 #include <stdio.h>

@@ -1,4 +1,14 @@
 2001-12-01  Martin Weber <martweb@gmx.net>
+
+	* input-magick.c: Fixed comments.
+
+	* input.c: input_shortlist now supports ImageMagick formats.
+
+	* output-pdf.c: no more a temporary file needed.
+
+	(Message-ID: <3C07E7CB.42BB90D4@gmx.net>).
+
+2001-12-01  Martin Weber <martweb@gmx.net>
 	
 	* input.c, input.h, main.c, README: input_list now also lists
 	all formats that are supported by ImageMagick, dynamic generation of
