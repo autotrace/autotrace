@@ -1,6 +1,18 @@
+2001-02-19  Masatake YAMATO  <yamato@redhat.com>
+
+	Applied patches from Martin.
+	* main.c(read_command_line): removed bad 
+	initialisation of opts
+
+        * input.c(input_get_handler_by_suffix): Removed warning.
+	magick_load_image is casted to input_read.
+
+        * input-tga.c: removed unistd.h because it does not 
+	compile with Windows.
+
 2001-01-20  Masatake YAMATO  <yamato@redhat.com>
 
-	* input-magick.c: Appled a patch from Martin.
+	* input-magick.c: Applied a patch from Martin.
 	Added special care for 
 	(MagickLibVersion >= 0x500) && (MagickLibVersion <= 0x525).
 

@@ -65,7 +65,7 @@ input_get_handler_by_suffix (string suffix)
 	}
     }
 #if HAVE_MAGICK
-  return magick_load_image;
+  return (input_read)magick_load_image;
 #else 
   return NULL;
 #endif /* HAVE_MAGICK */

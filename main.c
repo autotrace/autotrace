@@ -196,7 +196,6 @@ static char *
 read_command_line (int argc, char * argv[], 
 		   at_fitting_opts_type * fitting_opts)
 {
-  at_fitting_opts_type opts;
   int g;   /* `getopt' return code.  */
   int option_index;
   struct option long_options[]
@@ -224,14 +223,14 @@ read_command_line (int argc, char * argv[],
         { "output-format",		1, 0, 0 },
         { "range",                      1, 0, 0 },
         { "remove-adjacent-corners",     0,
-	      (int *) opts.remove_adj_corners, 1 },
+	      (int *) fitting_opts->remove_adj_corners, 1 },
         { "reparameterize-improve",     1, 0, 0 },
         { "reparameterize-threshold",   1, 0, 0 },
         { "subdivide-search",		1, 0, 0 },
         { "subdivide-surround",		1, 0, 0 },
         { "subdivide-threshold",	1, 0, 0 },
         { "tangent-surround",           1, 0, 0 },
-        { "thin",                       1, (int*) opts.thin ,0},
+        { "thin",                       1, (int*) fitting_opts->thin ,0},
         { "version",                    0, (int *) &printed_version, 1 },
         { 0, 0, 0, 0 } };
 
@@ -249,45 +248,45 @@ read_command_line (int argc, char * argv[],
       assert (g == 0); /* We have no short option names.  */
 
       if (ARGUMENT_IS ("align-threshold"))
-        opts.align_threshold = (real) atof (optarg);
+        fitting_opts->align_threshold = (real) atof (optarg);
 
       else if (ARGUMENT_IS ("background-color"))
         {
            if (strlen (optarg) != 6)
                FATAL ("background-color be six chars long");
-	   opts.bgColor = at_color_new(hctoi (optarg[1]) * 16 + hctoi (optarg[0]),
+	       fitting_opts->bgColor = at_color_new(hctoi (optarg[1]) * 16 + hctoi (optarg[0]),
 				       hctoi (optarg[3]) * 16 + hctoi (optarg[2]),
 				       hctoi (optarg[5]) * 16 + hctoi (optarg[4]));
  	}
       else if (ARGUMENT_IS ("color-count"))
-        opts.color_count = atou (optarg);
+        fitting_opts->color_count = atou (optarg);
 
       else if (ARGUMENT_IS ("corner-always-threshold"))
-        opts.corner_always_threshold = (real) atof (optarg);
+        fitting_opts->corner_always_threshold = (real) atof (optarg);
 
       else if (ARGUMENT_IS ("corner-surround"))
-        opts.corner_surround = atou (optarg);
+        fitting_opts->corner_surround = atou (optarg);
 
       else if (ARGUMENT_IS ("corner-threshold"))
-        opts.corner_threshold = (real) atof (optarg);
+        fitting_opts->corner_threshold = (real) atof (optarg);
 
       else if (ARGUMENT_IS ("error-threshold"))
-        opts.error_threshold = (real) atof (optarg);
+        fitting_opts->error_threshold = (real) atof (optarg);
 
       else if (ARGUMENT_IS ("filter-alternative-surround"))
-        opts.filter_alternative_surround = atou (optarg);
+        fitting_opts->filter_alternative_surround = atou (optarg);
 
       else if (ARGUMENT_IS ("filter-epsilon"))
-        opts.filter_epsilon = (real) atof (optarg);
+        fitting_opts->filter_epsilon = (real) atof (optarg);
 
       else if (ARGUMENT_IS ("filter-iterations"))
-        opts.filter_iteration_count = atou (optarg);
+        fitting_opts->filter_iteration_count = atou (optarg);
 
       else if (ARGUMENT_IS ("filter-percent"))
-        opts.filter_percent = get_percent (optarg);
+        fitting_opts->filter_percent = get_percent (optarg);
 
       else if (ARGUMENT_IS ("filter-surround"))
-        opts.filter_surround = atou (optarg);
+        fitting_opts->filter_surround = atou (optarg);
 
       else if (ARGUMENT_IS ("help"))
         {
@@ -308,10 +307,10 @@ read_command_line (int argc, char * argv[],
         }
 
       else if (ARGUMENT_IS ("line-reversion-threshold"))
-        opts.line_reversion_threshold = (real) atof (optarg);
+        fitting_opts->line_reversion_threshold = (real) atof (optarg);
 
       else if (ARGUMENT_IS ("line-threshold"))
-        opts.line_threshold = (real) atof (optarg);
+        fitting_opts->line_threshold = (real) atof (optarg);
 
       else if (ARGUMENT_IS ("list-output-formats"))
         {
@@ -339,22 +338,22 @@ read_command_line (int argc, char * argv[],
         }
 
       else if (ARGUMENT_IS ("reparameterize-improve"))
-        opts.reparameterize_improvement = get_percent (optarg);
+        fitting_opts->reparameterize_improvement = get_percent (optarg);
 
       else if (ARGUMENT_IS ("reparameterize-threshold"))
-        opts.reparameterize_threshold = (real) atof (optarg);
+        fitting_opts->reparameterize_threshold = (real) atof (optarg);
 
       else if (ARGUMENT_IS ("subdivide-search"))
-        opts.subdivide_search = get_percent (optarg);
+        fitting_opts->subdivide_search = get_percent (optarg);
 
       else if (ARGUMENT_IS ("subdivide-surround"))
-        opts.subdivide_surround = atou (optarg);
+        fitting_opts->subdivide_surround = atou (optarg);
 
       else if (ARGUMENT_IS ("subdivide-threshold"))
-        opts.subdivide_threshold = (real) atof (optarg);
+        fitting_opts->subdivide_threshold = (real) atof (optarg);
 
       else if (ARGUMENT_IS ("tangent-surround"))
-        opts.tangent_surround = atou (optarg);
+        fitting_opts->tangent_surround = atou (optarg);
 
       else if (ARGUMENT_IS ("version"))
         printf ("AutoTrace version %s.\n", at_version());
@@ -363,7 +362,6 @@ read_command_line (int argc, char * argv[],
     }
   FINISH_COMMAND_LINE ();
 
-  *fitting_opts = opts;
 }
 
 /* Return NAME with any leading path stripped off.  This returns a
@@ -484,7 +482,3 @@ void output_list_formats(FILE* file)
   
   at_output_list_free(tmp);
 }
-
-/* version 0.24a */
-
-
