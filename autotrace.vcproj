@@ -234,6 +234,12 @@
 			RelativePath=".\message.h">
 		</File>
 		<File
+			RelativePath="output-cgm.c">
+		</File>
+		<File
+			RelativePath="output-cgm.h">
+		</File>
+		<File
 			RelativePath=".\output-dxf.c">
 		</File>
 		<File

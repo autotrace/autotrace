@@ -30,11 +30,6 @@
 #define PARALLEL_ELLIPSE 16
 #define ELLIPSE 32
 
-extern at_string version_string;
-
-typedef at_bool bool;
-typedef at_real real;
-typedef at_address address;
 typedef at_coordinate_type coordinate_type;
 typedef at_real_coordinate_type real_coordinate_type ;
 

@@ -88,7 +88,7 @@ append_point (curve_type curve, real_coordinate_type coord)
   while (0)
 
 void
-log_curve (curve_type curve, bool print_t)
+log_curve (curve_type curve, at_bool print_t)
 {
   unsigned this_point;
 
@@ -242,14 +242,14 @@ new_curve_list_array (void)
 void
 free_curve_list_array (curve_list_array_type *curve_list_array,
 		       progress_func notify_progress, 
-		       address client_data)
+		       at_address client_data)
 {
   unsigned this_list;
 
   for (this_list = 0; this_list < CURVE_LIST_ARRAY_LENGTH (*curve_list_array);
        this_list++) {
     if (notify_progress)
-      notify_progress(((real)this_list)/(CURVE_LIST_ARRAY_LENGTH (*curve_list_array)*(real)3.0)+(real)0.666 ,
+      notify_progress(((at_real)this_list)/(CURVE_LIST_ARRAY_LENGTH (*curve_list_array)*(at_real)3.0)+(at_real)0.666 ,
 		      client_data);
     free_curve_list (&CURVE_LIST_ARRAY_ELT (*curve_list_array, this_list));
   }

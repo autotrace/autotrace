@@ -29,7 +29,7 @@ typedef at_spline_type spline_type;
 extern void print_spline (FILE *, spline_type);
 
 /* Evaluate SPLINE at the given T value.  */
-extern real_coordinate_type evaluate_spline (spline_type spline, real t);
+extern real_coordinate_type evaluate_spline (spline_type spline, at_real t);
 #endif
 
 /* Each outline in a character is typically represented by many

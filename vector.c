@@ -7,7 +7,7 @@
 #include <errno.h>
 #include <assert.h>
 
-static real acos_d (real);
+static at_real acos_d (at_real);
 
 #ifndef M_PI
 #define M_PI 3.14159265
@@ -44,10 +44,10 @@ vector_to_point (const vector_type v)
 }
 
 
-real
+at_real
 magnitude (const vector_type v)
 {
-  return (real) hypot (v.dx, v.dy);
+  return (at_real) hypot (v.dx, v.dy);
 }
 
 
@@ -55,7 +55,7 @@ vector_type
 normalize (const vector_type v)
 {
   vector_type new_v;
-  real m = magnitude (v);
+  at_real m = magnitude (v);
 
   /* assert (m > 0.0); */
 
@@ -86,7 +86,7 @@ Vadd (const vector_type v1, const vector_type v2)
 }
 
 
-real
+at_real
 Vdot (const vector_type v1, const vector_type v2)
 {
   return v1.dx * v2.dx + v1.dy * v2.dy;
@@ -94,7 +94,7 @@ Vdot (const vector_type v1, const vector_type v2)
 
 
 vector_type
-Vmult_scalar (const vector_type v, const real r)
+Vmult_scalar (const vector_type v, const at_real r)
 {
   vector_type new_v;
 
@@ -108,7 +108,7 @@ Vmult_scalar (const vector_type v, const real r)
 /* Given the IN_VECTOR and OUT_VECTOR, return the angle between them in
    degrees, in the range zero to 180.  */
 
-real
+at_real
 Vangle (const vector_type in_vector, const vector_type out_vector)
 {
   vector_type v1 = normalize (in_vector);
@@ -145,8 +145,8 @@ Vadd_int_point (const coordinate_type c, const vector_type v)
 {
   coordinate_type a;
 
-  a.x = (unsigned short) ROUND ((real) c.x + v.dx);
-  a.y = (unsigned short) ROUND ((real) c.y + v.dy);
+  a.x = (unsigned short) ROUND ((at_real) c.x + v.dx);
+  a.y = (unsigned short) ROUND ((at_real) c.y + v.dy);
   return a;
 }
 
@@ -156,8 +156,8 @@ Vabs (const vector_type v)
 {
   vector_type new_v;
 
-  new_v.dx = (real) fabs (v.dx);
-  new_v.dy = (real) fabs (v.dy);
+  new_v.dx = (at_real) fabs (v.dx);
+  new_v.dy = (at_real) fabs (v.dy);
   return new_v;
 }
 
@@ -177,7 +177,7 @@ Padd (const real_coordinate_type coord1, const real_coordinate_type coord2)
 
 
 real_coordinate_type
-Pmult_scalar (const real_coordinate_type coord, const real r)
+Pmult_scalar (const real_coordinate_type coord, const at_real r)
 {
   real_coordinate_type answer;
 
@@ -208,8 +208,8 @@ IPsubtract (const coordinate_type coord1, const coordinate_type coord2)
 {
   vector_type v;
 
-  v.dx = (real) (coord1.x - coord2.x);
-  v.dy = (real) (coord1.y - coord2.y);
+  v.dx = (at_real) (coord1.x - coord2.x);
+  v.dy = (at_real) (coord1.y - coord2.y);
 
   return v;
 }
@@ -252,7 +252,7 @@ IPmult_scalar (const coordinate_type c, const int i)
 
 
 real_coordinate_type
-IPmult_real (const coordinate_type c, const real r)
+IPmult_real (const coordinate_type c, const at_real r)
 {
   real_coordinate_type a;
 
@@ -263,16 +263,16 @@ IPmult_real (const coordinate_type c, const real r)
 }
 
 
-bool
+at_bool
 IPequal (const coordinate_type c1, const coordinate_type c2)
 {
   return ((c1.x == c2.x) && (c1.y == c2.y));
 }
 
-static real
-acos_d (real v)
+static at_real
+acos_d (at_real v)
 {
-  real a;
+  at_real a;
 
   if (epsilon_equal (v, 1.0))
     v = 1.0;
@@ -280,9 +280,9 @@ acos_d (real v)
     v = -1.0;
 
   errno = 0;
-  a = (real) acos (v);
+  a = (at_real) acos (v);
   if (errno == ERANGE || errno == EDOM)
     FATAL_PERROR ("acosd");
 
-  return a * (real) 180.0 / (real) M_PI;
+  return a * (at_real) 180.0 / (at_real) M_PI;
 }

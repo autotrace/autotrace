@@ -35,7 +35,7 @@ static at_string now (void);
 
 /* These macros just output their arguments.  */
 #define OUT_STRING(s)	fprintf (pdf_file, "%s", s)
-#define OUT_REAL(r)	fprintf (pdf_file, r == (ROUND (r = ROUND((real)6.0*r)/(real)6.0))				\
+#define OUT_REAL(r)	fprintf (pdf_file, r == (ROUND (r = ROUND((at_real)6.0*r)/(at_real)6.0))				\
                                   ? "%.0f " : "%.3f ", r)
 
 /* For a PostScript command with two real arguments, e.g., lineto.  OP
@@ -85,7 +85,7 @@ static at_string now (void);
 
 /* These macros just output their arguments.  */
 #define SOUT_STRING(s)	sprintf (temp, "%s", s), length += strlen(temp)
-#define SOUT_REAL(r)	sprintf (temp, r == (ROUND (r = ROUND((real)6.0*r)/(real)6.0))				\
+#define SOUT_REAL(r)	sprintf (temp, r == (ROUND (r = ROUND((at_real)6.0*r)/(at_real)6.0))				\
                                   ? "%.0f " : "%.3f ", r), length += strlen(temp)
 
 /* For a PostScript command with two real arguments, e.g., lineto.  OP

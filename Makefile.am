@@ -46,6 +46,7 @@ output-dxf.c output-dxf.h \
 output-epd.c output-epd.h \
 output-pdf.c output-pdf.h \
 output-mif.c output-mif.h \
+output-cgm.c output-cgm.h \
 $(output_swf_src)
 
 libautotrace_a_SOURCES = version.c               \

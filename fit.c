@@ -44,7 +44,7 @@ typedef struct index_list
 static void append_index (index_list_type *, unsigned);
 static void free_index_list (index_list_type *);
 static index_list_type new_index_list (void);
-static void remove_adjacent_corners (index_list_type *, unsigned, bool);
+static void remove_adjacent_corners (index_list_type *, unsigned, at_bool);
 static void change_bad_lines (spline_list_type *,
   fitting_opts_type *);
 static void filter (curve_type, fitting_opts_type *);
@@ -52,9 +52,9 @@ static void find_vectors
   (unsigned, pixel_outline_type, vector_type *, vector_type *, unsigned);
 static index_list_type find_corners (pixel_outline_type,
   fitting_opts_type *);
-static real find_error (curve_type, spline_type, unsigned *);
-static vector_type find_half_tangent (curve_type, bool start, unsigned *, unsigned);
-static void find_tangent (curve_type, bool, bool, unsigned);
+static at_real find_error (curve_type, spline_type, unsigned *);
+static vector_type find_half_tangent (curve_type, at_bool start, unsigned *, unsigned);
+static void find_tangent (curve_type, at_bool, at_bool, unsigned);
 static spline_type fit_one_spline (curve_type);
 static spline_list_type *fit_curve (curve_type,
   fitting_opts_type *);
@@ -63,16 +63,16 @@ static spline_list_type fit_curve_list (curve_list_type,
 static spline_list_type *fit_with_least_squares (curve_type,
   fitting_opts_type *);
 static spline_list_type *fit_with_line (curve_type);
-static void remove_knee_points (curve_type, bool);
+static void remove_knee_points (curve_type, at_bool);
 static void set_initial_parameter_values (curve_type);
-static bool spline_linear_enough (spline_type *, curve_type,
+static at_bool spline_linear_enough (spline_type *, curve_type,
   fitting_opts_type *);
 static curve_list_array_type split_at_corners (
   pixel_outline_list_type, fitting_opts_type *);
-static bool test_subdivision_point (curve_type, unsigned,
+static at_bool test_subdivision_point (curve_type, unsigned,
   vector_type *, fitting_opts_type *);
 static coordinate_type real_to_int_coord (real_coordinate_type);
-static real distance (real_coordinate_type, real_coordinate_type);
+static at_real distance (real_coordinate_type, real_coordinate_type);
 
 /* Get a new set of fitting options */
 #ifdef _EXPORTING
@@ -94,7 +94,7 @@ fitting_opts_type new_fitting_opts (void)
    is smaller than this, it's a corner, even if it's within
    `corner_surround' pixels of a point with a smaller angle.
    (-corner-always-threshold)  */
-  fitting_opts.corner_always_threshold = (real) 60.0;
+  fitting_opts.corner_always_threshold = (at_real) 60.0;
 
 /* Number of points to consider when determining if a point is a corner
    or not.  (-corner-surround)  */
@@ -103,12 +103,12 @@ fitting_opts_type new_fitting_opts (void)
 /* If a point, its predecessors, and its successors define an angle
     smaller than this, it's a corner.  Should be in range 0..180.
    (-corner-threshold)  */
-  fitting_opts.corner_threshold = (real) 100.0;
+  fitting_opts.corner_threshold = (at_real) 100.0;
 
 /* Amount of error at which a fitted spline is unacceptable.  If any
    pixel is further away than this from the fitted curve, we try again.
    (-error-threshold) */
-  fitting_opts.error_threshold = (real) .8;
+  fitting_opts.error_threshold = (at_real) .8;
 
 /* Number of times to smooth original data points.  Increasing this
    number dramatically---to 50 or so---can produce vastly better
@@ -120,12 +120,12 @@ fitting_opts_type new_fitting_opts (void)
    straight line, even if it would otherwise be changed back to a curve.
    This is weighted by the square of the curve length, to make shorter
    curves more likely to be reverted.  (-line-reversion-threshold)  */
-  fitting_opts.line_reversion_threshold = (real) .01;
+  fitting_opts.line_reversion_threshold = (at_real) .01;
 
 /* How many pixels (on the average) a spline can diverge from the line
    determined by its endpoints before it is changed to a straight line.
    (-line-threshold) */
-  fitting_opts.line_threshold = (real) 1.0;
+  fitting_opts.line_threshold = (at_real) 1.0;
 
 /* Should adjacent corners be removed?  */
   fitting_opts.remove_adj_corners = false;
@@ -163,9 +163,9 @@ spline_list_array_type
 fitted_splines (pixel_outline_list_type pixel_outline_list,
   fitting_opts_type *fitting_opts,
   progress_func notify_progress, 
-  address progress_data,
+  at_address progress_data,
   testcancel_func test_cancel,
-  address testcancel_data)
+  at_address testcancel_data)
 #endif
 {
   unsigned this_list;
@@ -182,7 +182,7 @@ fitted_splines (pixel_outline_list_type pixel_outline_list,
       curve_list_type curves = CURVE_LIST_ARRAY_ELT (curve_array, this_list);
 
       if (notify_progress)
-	notify_progress((((real)this_list)/((real)CURVE_LIST_ARRAY_LENGTH (curve_array)*(real)3.0) + (real)0.333),
+	notify_progress((((at_real)this_list)/((at_real)CURVE_LIST_ARRAY_LENGTH (curve_array)*(at_real)3.0) + (at_real)0.333),
 			progress_data);
       if (test_cancel && test_cancel(testcancel_data))
 	goto cleanup;
@@ -519,7 +519,7 @@ find_corners (pixel_outline_type pixel_outline,
   /* Consider each pixel on the outline in turn.  */
   for (p = start_p; p <= end_p; p++)
     {
-      real corner_angle;
+      at_real corner_angle;
       vector_type in_vector, out_vector;
 
       /* Check if the angle is small enough.  */
@@ -533,7 +533,7 @@ find_corners (pixel_outline_type pixel_outline,
              first pixel we find with a small enough angle, since there
              might be another corner within `corner_surround' pixels, with
              a smaller angle.  If that is the case, we want that one.  */
-          real best_corner_angle = corner_angle;
+          at_real best_corner_angle = corner_angle;
           unsigned best_corner_index = p;
           index_list_type equally_good_list = new_index_list ();
           /* As we come into the loop, `p' is the index of the point
@@ -671,7 +671,7 @@ find_vectors (unsigned test_index, pixel_outline_type outline,
 
 static void
 remove_adjacent_corners (index_list_type *list, unsigned last_index,
-  bool remove_adj_corners)
+  at_bool remove_adj_corners)
 {
   unsigned j;
   unsigned last;
@@ -763,7 +763,7 @@ remove_adjacent_corners (index_list_type *list, unsigned last_index,
    || (prev_delta.dx == -1.0 && next_delta.dy == -1.0))
 
 static void
-remove_knee_points (curve_type curve, bool clockwise)
+remove_knee_points (curve_type curve, at_bool clockwise)
 {
   unsigned i;
   unsigned offset = CURVE_CYCLIC (curve) ? 0 : 1;
@@ -831,7 +831,7 @@ filter (curve_type curve, fitting_opts_type *fitting_opts)
    iteration++)
     {
       curve_type new_curve = copy_most_of_curve (curve);
-      bool collapsed = false;
+      at_bool collapsed = false;
 
       /* Keep the first point on the curve.  */
       if (offset)
@@ -950,11 +950,11 @@ fit_with_line (curve_type curve)
 static spline_list_type *
 fit_with_least_squares (curve_type curve, fitting_opts_type *fitting_opts)
 {
-  real error, best_error = FLT_MAX;
+  at_real error, best_error = FLT_MAX;
   spline_type spline, best_spline;
   spline_list_type *spline_list;
   unsigned worst_point;
-  real previous_error = FLT_MAX;
+  at_real previous_error = FLT_MAX;
 
   LOG ("\nFitting with least squares:\n");
 
@@ -1135,9 +1135,9 @@ fit_with_least_squares (curve_type curve, fitting_opts_type *fitting_opts)
    The Bernshte\u in polynomials of degree n are defined by
    B_i^n(t) = { n \choose i } t^i (1-t)^{n-i}, i = 0..n  */
 
-#define B0(t) CUBE ((real) 1.0 - (t))
-#define B1(t) ((real) 3.0 * (t) * SQUARE ((real) 1.0 - (t)))
-#define B2(t) ((real) 3.0 * SQUARE (t) * ((real) 1.0 - (t)))
+#define B0(t) CUBE ((at_real) 1.0 - (t))
+#define B1(t) ((at_real) 3.0 * (t) * SQUARE ((at_real) 1.0 - (t)))
+#define B2(t) ((at_real) 3.0 * SQUARE (t) * ((at_real) 1.0 - (t)))
 #define B3(t) CUBE (t)
 
 static spline_type
@@ -1145,16 +1145,16 @@ fit_one_spline (curve_type curve)
 {
   /* Since our arrays are zero-based, the `C0' and `C1' here correspond
      to `C1' and `C2' in the paper.  */
-  real X_C1_det, C0_X_det, C0_C1_det;
-  real alpha1, alpha2;
+  at_real X_C1_det, C0_X_det, C0_C1_det;
+  at_real alpha1, alpha2;
   spline_type spline;
   vector_type start_vector, end_vector;
   unsigned i;
   vector_type *A;
   vector_type t1_hat = *CURVE_START_TANGENT (curve);
   vector_type t2_hat = *CURVE_END_TANGENT (curve);
-  real C[2][2] = { { 0.0, 0.0 }, { 0.0, 0.0 } };
-  real X[2] = { 0.0, 0.0 };
+  at_real C[2][2] = { { 0.0, 0.0 }, { 0.0, 0.0 } };
+  at_real X[2] = { 0.0, 0.0 };
 
   XMALLOC (A, CURVE_LENGTH (curve) * 2
    * sizeof (vector_type ));  /* A dynamically allocated array. */
@@ -1234,7 +1234,7 @@ set_initial_parameter_values (curve_type curve)
     {
       real_coordinate_type point = CURVE_POINT (curve, p),
                            previous_p = CURVE_POINT (curve, p - 1);
-      real d = distance (point, previous_p);
+      at_real d = distance (point, previous_p);
       CURVE_T (curve, p) = CURVE_T (curve, p - 1) + d;
     }
 
@@ -1256,7 +1256,7 @@ set_initial_parameter_values (curve_type curve)
    endpoints...and we never recompute the tangent after this.  */
 
 static void
-find_tangent (curve_type curve, bool to_start_point, bool cross_curve,
+find_tangent (curve_type curve, at_bool to_start_point, at_bool cross_curve,
   unsigned tangent_surround)
 {
   vector_type tangent;
@@ -1286,7 +1286,7 @@ find_tangent (curve_type curve, bool to_start_point, bool cross_curve,
         }
 
       assert (n_points > 0);
-      **curve_tangent = Vmult_scalar (tangent, (real)(1.0 / n_points));
+      **curve_tangent = Vmult_scalar (tangent, (at_real)(1.0 / n_points));
     }
   else
     LOG ("(already computed) ");
@@ -1299,7 +1299,7 @@ find_tangent (curve_type curve, bool to_start_point, bool cross_curve,
    actually look at.  */
 
 static vector_type
-find_half_tangent (curve_type c, bool to_start_point, unsigned *n_points,
+find_half_tangent (curve_type c, at_bool to_start_point, unsigned *n_points,
   unsigned tangent_surround)
 {
   unsigned p;
@@ -1326,7 +1326,7 @@ find_half_tangent (curve_type c, bool to_start_point, unsigned *n_points,
          factor dependent on the distance from the tangent point.  */
       tangent = Vadd (tangent,
                       Vmult_scalar (Psubtract (this_point, tangent_point),
-                                    (real) factor));
+                                    (at_real) factor));
       (*n_points)++;
     }
 
@@ -1341,21 +1341,21 @@ find_half_tangent (curve_type c, bool to_start_point, unsigned *n_points,
    WORST_POINT.  The error computation itself is the Euclidean distance
    from the original curve CURVE to the fitted spline SPLINE.  */
 
-static real
+static at_real
 find_error (curve_type curve, spline_type spline, unsigned *worst_point)
 {
   unsigned this_point;
-  real total_error = 0.0;
-  real worst_error = FLT_MIN;
+  at_real total_error = 0.0;
+  at_real worst_error = FLT_MIN;
 
   *worst_point = CURVE_LENGTH (curve) + 1;   /* A sentinel value.  */
 
   for (this_point = 0; this_point < CURVE_LENGTH (curve); this_point++)
     {
-      real_coordinate_type curve_point = CURVE_POINT (curve, this_point);
-      real t = CURVE_T (curve, this_point);
-      real_coordinate_type spline_point = evaluate_spline (spline, t);
-      real this_error = distance (curve_point, spline_point);
+      at_real_coordinate_type curve_point = CURVE_POINT (curve, this_point);
+      at_real t = CURVE_T (curve, this_point);
+      at_real_coordinate_type spline_point = evaluate_spline (spline, t);
+      at_real this_error = distance (curve_point, spline_point);
       if (this_error >= worst_error)
         {
          *worst_point = this_point;
@@ -1392,17 +1392,17 @@ find_error (curve_type curve, spline_type spline, unsigned *worst_point)
 /* Supposing that we have accepted the error, another question arises:
    would we be better off just using a straight line?  */
 
-static bool
+static at_bool
 spline_linear_enough (spline_type *spline, curve_type curve,
   fitting_opts_type *fitting_opts)
 {
-  real A, B, C, slope;
+  at_real A, B, C, slope;
   unsigned this_point;
-  real distance = 0.0, start_end_distance, threshold;
+  at_real distance = 0.0, start_end_distance, threshold;
 
   LOG ("Checking linearity:\n");
 
-  start_end_distance = (real) sqrt (SQUARE (END_POINT (*spline).x - START_POINT
+  start_end_distance = (at_real) sqrt (SQUARE (END_POINT (*spline).x - START_POINT
     (*spline).x) + SQUARE (END_POINT (*spline).y - START_POINT (*spline).y));
   LOG1 ("start_end_distance is %.3f.\n", start_end_distance);
   /* For a line described by Ax + By + C = 0, the distance d from a
@@ -1438,11 +1438,11 @@ spline_linear_enough (spline_type *spline, curve_type curve,
 
   for (this_point = 0; this_point < CURVE_LENGTH (curve); this_point++)
     {
-      real t = CURVE_T (curve, this_point);
+      at_real t = CURVE_T (curve, this_point);
       real_coordinate_type spline_point = evaluate_spline (*spline, t);
 
-      distance += (real) fabs (A * spline_point.x + B * spline_point.y + C)
-                   / (real) sqrt (A * A + B * B);
+      distance += (at_real) fabs (A * spline_point.x + B * spline_point.y + C)
+                   / (at_real) sqrt (A * A + B * B);
     }
   LOG1 ("  Total distance is %.3f, ", distance);
 
@@ -1454,10 +1454,10 @@ spline_linear_enough (spline_type *spline, curve_type curve,
      length, for use in `change_bad_lines'.  */
   SPLINE_LINEARITY (*spline) = distance;
   LOG1 ("  Final linearity: %.3f.\n", SPLINE_LINEARITY (*spline));
-  if (start_end_distance * (real) 0.5 > fitting_opts->line_threshold)
+  if (start_end_distance * (at_real) 0.5 > fitting_opts->line_threshold)
     threshold = fitting_opts->line_threshold;
   else
-    threshold = start_end_distance * (real) 0.5;
+    threshold = start_end_distance * (at_real) 0.5;
   LOG1 ("threshold is %.3f .\n", threshold);
   return distance < threshold;
 }
@@ -1475,7 +1475,7 @@ change_bad_lines (spline_list_type *spline_list,
   fitting_opts_type *fitting_opts)
 {
   unsigned this_spline;
-  bool found_cubic = false;
+  at_bool found_cubic = false;
   unsigned length = SPLINE_LIST_LENGTH (*spline_list);
 
   LOG1 ("\nChecking for bad lines (length %u):\n", length);
@@ -1562,8 +1562,8 @@ real_to_int_coord (real_coordinate_type real_coord)
 
 /* Return the Euclidean distance between P1 and P2.  */
 
-static real
+static at_real
 distance (real_coordinate_type p1, real_coordinate_type p2)
 {
-  return (real) hypot (p1.x - p2.x, p1.y - p2.y);
+  return (at_real) hypot (p1.x - p2.x, p1.y - p2.y);
 }

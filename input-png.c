@@ -28,7 +28,7 @@
 #include <png.h>
 #include "input-png.h"
 
-static volatile char rcsid[]="$Id: input-png.c,v 1.4 2001/11/21 00:56:08 masata-y Exp $";
+static volatile char rcsid[]="$Id: input-png.c,v 1.5 2001/12/23 09:15:10 masata-y Exp $";
 
 /* for pre-1.0.6 versions of libpng */
 #ifndef png_jmpbuf
@@ -110,7 +110,7 @@ static int load_image(bitmap_type *image, FILE *stream) {
 	return 1;
 }
 
-bitmap_type png_load_image(string filename) {
+bitmap_type png_load_image(at_string filename) {
 	FILE *stream;
 	bitmap_type image;
 

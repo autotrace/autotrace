@@ -38,7 +38,7 @@ static at_string now (void);
 
 /* These macros just output their arguments.  */
 #define OUT_STRING(s)	fprintf (ps_file, "%s", s)
-#define OUT_REAL(r)	fprintf (ps_file, r == (ROUND (r = ROUND((real)6.0*r)/(real)6.0))				\
+#define OUT_REAL(r)	fprintf (ps_file, r == (ROUND (r = ROUND((at_real)6.0*r)/(at_real)6.0))				\
                                   ? "%.0f " : "%.3f ", r)
 
 /* For a PostScript command with two real arguments, e.g., lineto.  OP
@@ -78,7 +78,7 @@ static int output_eps_header(FILE* ps_file, at_string name,
   at_string time;
 
   OUT_LINE ("%!PS-Adobe-3.0 EPSF-3.0");
-  OUT1 ("%%%%Creator: Adobe Illustrator by %s\n", version_string);
+  OUT1 ("%%%%Creator: Adobe Illustrator by %s\n", at_version(true));
   OUT1 ("%%%%Title: %s\n", name);
   OUT1 ("%%%%CreationDate: %s\n", time = now ());
   OUT4 ("%%%%BoundingBox: %d %d %d %d\n", llx, lly, urx, ury);

@@ -42,6 +42,6 @@
  */
 
 extern void
-despeckle (bitmap_type *bitmap, int level, real tightness);
+despeckle (bitmap_type *bitmap, int level, at_real tightness);
 
 #endif /* not DESPECKLE_H */

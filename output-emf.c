@@ -131,7 +131,7 @@ static int ColorLookUp(UI32 colref, UI32 *table, int len)
 
 /* endianess independent IO functions */
 
-static bool write32(FILE *fdes, UI32 data)
+static at_bool write32(FILE *fdes, UI32 data)
 {
   int count = 0;
   UI8 outch;
@@ -151,7 +151,7 @@ static bool write32(FILE *fdes, UI32 data)
   return (count == sizeof(UI32)) ? true : false;
 }
 
-static bool write16(FILE *fdes, UI16 data)
+static at_bool write16(FILE *fdes, UI16 data)
 {
   int count = 0;
   UI8 outch;
@@ -763,7 +763,7 @@ int output_emf_writer(FILE* file, at_string name,
   }
 
   /* Setup editor string */
-  editor = version_string;
+  editor = at_version(true);
 
   /* Get EMF stats */
   GetEmfStats(&stats, name, shape);

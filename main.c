@@ -31,23 +31,23 @@ static char * output_name = (char *)"";
 static at_output_write_func output_writer = NULL;
 
 /* Whether to print version information */
-static bool printed_version;
+static at_bool printed_version;
 
 /* Whether to trace a character's centerline or its outline */
-static bool centerline = false;
+static at_bool centerline = false;
 
 /* Whether to write a log file */
-static bool logging = false;
+static at_bool logging = false;
 
 /* Should adjacent corners be removed?  */
-static bool remove_adj_corners;
+static at_bool remove_adj_corners;
 
 /* image dpi used in mif backend. */
 static int dpi = 72;
 
 /* Report tracing status in real time (--report-progress) */
-static bool report_progress = false;
-static void dot_printer(real percentage, address client_data);
+static at_bool report_progress = false;
+static void dot_printer(at_real percentage, at_address client_data);
 
 static char * read_command_line (int, char * [], at_fitting_opts_type *);
 
@@ -68,7 +68,7 @@ main (int argc, char * argv[])
   at_bitmap_type * bitmap;
   FILE *output_file;
   at_progress_func progress_reporter = NULL;
-  real progress_stat = 0.0;
+  at_real progress_stat = 0.0;
 
   fitting_opts = at_fitting_opts_new ();
 
@@ -118,7 +118,7 @@ main (int argc, char * argv[])
   if (!strcmp (output_name, ""))
     output_file = stdout;
   else
-    output_file = xfopen(output_name, "w");
+    output_file = xfopen(output_name, "wb");
 
   /* Open the main input file.  */
   if (input_reader != NULL)
@@ -262,25 +262,25 @@ read_command_line (int argc, char * argv[],
         fitting_opts->color_count = atou (optarg);
 
       else if (ARGUMENT_IS ("corner-always-threshold"))
-        fitting_opts->corner_always_threshold = (real) atof (optarg);
+        fitting_opts->corner_always_threshold = (at_real) atof (optarg);
 
       else if (ARGUMENT_IS ("corner-surround"))
         fitting_opts->corner_surround = atou (optarg);
 
       else if (ARGUMENT_IS ("corner-threshold"))
-        fitting_opts->corner_threshold = (real) atof (optarg);
+        fitting_opts->corner_threshold = (at_real) atof (optarg);
 
       else if (ARGUMENT_IS ("despeckle-level"))
         fitting_opts->despeckle_level = atou (optarg);
 
       else if (ARGUMENT_IS ("despeckle-tightness"))
-        fitting_opts->despeckle_tightness = (real) atof (optarg);
+        fitting_opts->despeckle_tightness = (at_real) atof (optarg);
 
       else if (ARGUMENT_IS ("dpi"))
 	dpi = atou (optarg);
 
       else if (ARGUMENT_IS ("error-threshold"))
-        fitting_opts->error_threshold = (real) atof (optarg);
+        fitting_opts->error_threshold = (at_real) atof (optarg);
 
       else if (ARGUMENT_IS ("filter-iterations"))
         fitting_opts->filter_iteration_count = atou (optarg);
@@ -308,10 +308,10 @@ read_command_line (int argc, char * argv[],
         }
 
       else if (ARGUMENT_IS ("line-threshold"))
-        fitting_opts->line_threshold = (real) atof (optarg);
+        fitting_opts->line_threshold = (at_real) atof (optarg);
 
       else if (ARGUMENT_IS ("line-reversion-threshold"))
-        fitting_opts->line_reversion_threshold = (real) atof (optarg);
+        fitting_opts->line_reversion_threshold = (at_real) atof (optarg);
 
       else if (ARGUMENT_IS ("list-output-formats"))
         {
@@ -342,7 +342,7 @@ read_command_line (int argc, char * argv[],
         fitting_opts->tangent_surround = atou (optarg);
 
       else if (ARGUMENT_IS ("version"))
-        printf ("AutoTrace version %s.\n", at_version());
+        printf ("AutoTrace version %s.\n", at_version(false));
 
       /* Else it was just a flag; getopt has already done the assignment.  */
     }
@@ -456,9 +456,9 @@ void output_list_formats(FILE* file)
 }
 
 static void
-dot_printer(real percentage, address client_data)
+dot_printer(at_real percentage, at_address client_data)
 {
-  real last = *(real *)client_data;
+  at_real last = *(at_real *)client_data;
   if (((percentage - last) >= 0.01 || percentage == 0.0)
       && (percentage < 0.99))
     {
@@ -479,6 +479,6 @@ dot_printer(real percentage, address client_data)
 	      break;
 	    }
 	}
-      *(real *)client_data = percentage;
+      *(at_real *)client_data = percentage;
     }
 }

@@ -237,6 +237,14 @@ SOURCE=.\message.h
 # End Source File
 # Begin Source File
 
+SOURCE=".\output-cgm.c"
+# End Source File
+# Begin Source File
+
+SOURCE=".\output-cgm.h"
+# End Source File
+# Begin Source File
+
 SOURCE=".\output-dxf.c"
 # End Source File
 # Begin Source File

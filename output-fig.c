@@ -4,7 +4,7 @@
 #include "output-fig.h"
 #include "xstd.h"
 
-static real bezpnt(real, real, real, real, real);
+static at_real bezpnt(at_real, at_real, at_real, at_real, at_real);
 static void out_fig_splines(FILE *, spline_list_array_type, int, int, int, int);
 static int get_fig_colour(color_type);
 static int fig_col_init();
@@ -74,14 +74,14 @@ static void fig_addtobbox(float x, float y)
 
 /* Convert Bezier Spline */
 
-static real bezpnt(real t, real z1, real z2, real z3, real z4)
+static at_real bezpnt(at_real t, at_real z1, at_real z2, at_real z3, at_real z4)
 {
-	real temp, t1;
+	at_real temp, t1;
 	/* Determine ordinate on Bezier curve at length "t" on curve */
-	if (t < (real) 0.0) { t = (real) 0.0; }
-	if (t > (real) 1.0) { t = (real) 1.0; }
-	t1 = ((real) 1.0 - t);
-	temp = t1*t1*t1*z1 + (real)3.0*t*t1*t1*z2 + (real)3.0*t*t*t1*z3 + t*t*t*z4;
+	if (t < (at_real) 0.0) { t = (at_real) 0.0; }
+	if (t > (at_real) 1.0) { t = (at_real) 1.0; }
+	t1 = ((at_real) 1.0 - t);
+	temp = t1*t1*t1*z1 + (at_real)3.0*t*t1*t1*z2 + (at_real)3.0*t*t*t1*z3 + t*t*t*z4;
 	return(temp);
 }
 
@@ -132,13 +132,13 @@ static void out_fig_splines(FILE * file, spline_list_array_type shape,
 
 /*	store the spline points in two arrays, control weights in another */
 	int *pointx, *pointy;
-	real *contrl;
+	at_real *contrl;
         int pointcount=0,is_spline=0,i,j;
         int maxlength=SPLINE_LIST_LENGTH (list) * 5 + 1;
 
 	XMALLOC (pointx, maxlength * sizeof (int));
 	XMALLOC (pointy, maxlength * sizeof (int));
-	XMALLOC (contrl, maxlength * sizeof (real));
+	XMALLOC (contrl, maxlength * sizeof (at_real));
 
 	if (list.clockwise) { fig_colour = FIG_WHITE; }
 	    else { fig_colour = spline_colours[this_list]; }
@@ -151,37 +151,37 @@ static void out_fig_splines(FILE * file, spline_list_array_type shape,
 	    if (pointcount == 0) {
 		pointx[pointcount] = FIG_X(START_POINT(s).x);
 		pointy[pointcount] = FIG_Y(START_POINT(s).y);
-		contrl[pointcount] = (real) 0.0;
+		contrl[pointcount] = (at_real) 0.0;
 		fig_addtobbox(START_POINT(s).x,START_POINT(s).y);
 		pointcount++;
 	    }
 	/* Apparently START_POINT for one spline section is same as END_POINT
-	   for previous section - should really test for this */
+	   for previous section - should at_really test for this */
 	    if (SPLINE_DEGREE(s) == LINEARTYPE)
 	    {
 		pointx[pointcount] = FIG_X(END_POINT(s).x);
 		pointy[pointcount] = FIG_Y(END_POINT(s).y);
-		contrl[pointcount] = (real) 0.0;
+		contrl[pointcount] = (at_real) 0.0;
 		fig_addtobbox(START_POINT(s).x,START_POINT(s).y);
 		pointcount++;
 	    }
 	    else /* Assume Bezier like spline */
 	    {
 		/* Convert approximated bezier to interpolated X Spline */
-		real temp;
-		for (temp = (real) 0.2; temp < (real) 0.9; temp += (real) 0.2) {
+		at_real temp;
+		for (temp = (at_real) 0.2; temp < (at_real) 0.9; temp += (at_real) 0.2) {
 		    pointx[pointcount] =
 			FIG_X(bezpnt(temp,START_POINT(s).x,CONTROL1(s).x,
 			CONTROL2(s).x,END_POINT(s).x));
 		    pointy[pointcount] =
 			FIG_Y(bezpnt(temp,START_POINT(s).y,CONTROL1(s).y,
 			CONTROL2(s).y,END_POINT(s).y));
-		    contrl[pointcount] = (real) -1.0;
+		    contrl[pointcount] = (at_real) -1.0;
 		    pointcount++;
 		}
 		pointx[pointcount] = FIG_X(END_POINT(s).x);
 		pointy[pointcount] = FIG_Y(END_POINT(s).y);
-		contrl[pointcount] = (real) 0.0;
+		contrl[pointcount] = (at_real) 0.0;
 		fig_addtobbox(START_POINT(s).x,START_POINT(s).y);
 		fig_addtobbox(CONTROL1(s).x,CONTROL1(s).y);
 		fig_addtobbox(CONTROL2(s).x,CONTROL2(s).y);

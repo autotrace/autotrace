@@ -308,7 +308,7 @@ ignore (/* in */     int    x,
  *   FALSE - feature wasn't recolored
  */
 
-static bool
+static at_bool
 recolor (/* in */     double adaptive_tightness,
          /* in */     int    x,
          /* in */     int    y,
@@ -436,7 +436,7 @@ despeckle_iteration (/* in */     int    level,
 void
 despeckle (/* in/out */ bitmap_type *bitmap,
            /* in */     int          level,
-           /* in */     real         tightness)
+           /* in */     at_real      tightness)
 {
   int i;
   int planes;

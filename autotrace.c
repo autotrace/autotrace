@@ -108,9 +108,9 @@ at_splines_type *
 at_splines_new_full (at_bitmap_type * bitmap,
 		     at_fitting_opts_type * opts,
 		     at_progress_func notify_progress,
-		     address progress_data,
+		     at_address progress_data,
 		     at_testcancel_func test_cancel,
-		     address testcancel_data)
+		     at_address testcancel_data)
 
 {
   image_header_type image_header;
@@ -246,10 +246,14 @@ at_color_free(at_color_type * color)
   free(color);
 }
 
+extern at_string version_string;
 const char *
-at_version ()
+at_version (at_bool long_format)
 {
-  return VERSION;
+  if (long_format)
+    version_string ;
+  else
+    return VERSION;
 }
 
 const char * 

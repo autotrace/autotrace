@@ -20,6 +20,7 @@
 #include "output-dxf.h"
 #include "output-epd.h"
 #include "output-pdf.h"
+#include "output-cgm.h"
 
 struct output_format_entry {
     const char * name;
@@ -45,6 +46,7 @@ static struct output_format_entry output_formats[] = {
     {"dxf",     "default DXF format", output_dxf12_writer},
     {"epd",     "EPD format",   output_epd_writer},
     {"pdf",     "PDF format",                 output_pdf_writer},
+    {"cgm",     "Computer Graphics Metafile", output_cgm_writer},
     {NULL,	NULL}
 };
 

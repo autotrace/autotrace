@@ -271,8 +271,10 @@ at_color_type * at_color_new (unsigned char r,
 at_color_type * at_color_copy (at_color_type * original);
 void at_color_free(at_color_type * color);
 
-/* Version and other informations */
-const char * at_version ();
+/* Version and other informations 
+   long_format == true: "AutoTrace version x.y"
+   long_format == false: "x.y" */
+const char * at_version (at_bool long_format);
 const char * at_home_site ();
 
 #ifdef __cplusplus

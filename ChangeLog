@@ -1,5 +1,31 @@
 2001-12-23  Masatake YAMATO  <yamato@redhat.com>
 
+	* output-cgm.c (output_metafiledescription): Added `const'
+	to UI8.
+	(*): bool->at_bool.
+	(output_cgm_writer): version_string->at_version.
+
+	* Makefile.am (output_src): Added output-cgm.*.
+
+2001-12-23  Martin Weber <martweb@gmx.net>
+
+	* main.c (main): corrected bug that binary output was not 
+	written correctly.
+
+	* autotrace.[vcproj,dsp], output.c, output-cgm.[ch], Makefile.am: 
+	added binary cgm export.
+
+	(Message-ID: <3C250ADC.945F47F8@gmx.net>).
+
+2001-12-23  Masatake YAMATO  <yamato@redhat.com>
+
+	* autotrace.c (at_version): Added parameter
+	`long_format'.
+
+	* .*: Remvoe bool and address types.
+
+	* input-png.c: Use at_string instead of string.
+
 	* Makefile.am (EXTRA_DIST): Added
 	autotrace.sln autotrace.vcproj libming.sln libming.vcproj.
 
