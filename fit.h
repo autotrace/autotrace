@@ -111,6 +111,8 @@ typedef struct
    the approximation to the tangent at that point.  (-tangent-surround)  */
   unsigned tangent_surround;
 
+/* Thin all the lines in the image prior to fitting. */
+  bool thin;
 } fitting_opts_type;
 
 

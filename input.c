@@ -12,6 +12,7 @@
 #include "input-magick.h"
 #endif /* HAVE_MAGICK */
 
+#include "xmem.h"
 #include "find-suffix.h"
 #include <string.h>
 
@@ -19,24 +20,25 @@
 
 struct input_format_entry {
   input_read reader;
+  const char * descr;
   const char * name;
-  /*   const char * descr; */
+
 };
 
 static struct input_format_entry input_formats[] = {
 #ifdef HAVE_LIBPNG
-  { png_load_image,    "png" },
+  { png_load_image,  "Portable Network Graphics",  "png" },
 #endif /* HAVE_LIBPNG */
 #if HAVE_MAGICK
-  { magick_load_image, "magick" },
+  { magick_load_image, "", "magick" },
 #endif /* HAVE_MAGICK */
-  { ReadTGA,           "tga" },
-  { pnm_load_image,    "pbm" },
-  { pnm_load_image,    "pnm" },
-  { pnm_load_image,    "pgm" },
-  { pnm_load_image,    "ppm" },
-  { ReadBMP, "bmp" },
-  {NULL, NULL}
+  { ReadTGA,          "", "tga" },
+  { pnm_load_image,   "", "pbm" },
+  { pnm_load_image,   "", "pnm" },
+  { pnm_load_image,   "", "pgm" },
+  { pnm_load_image,   "", "ppm" },
+  { ReadBMP, "", "bmp" },
+  {NULL, NULL, NULL}
 };
 
 input_read
@@ -67,14 +69,25 @@ input_get_handler_by_suffix (string suffix)
 #endif /* HAVE_MAGICK */
 }
 
-
-void
-input_list_formats(FILE * file)
+char **
+input_list (void)
 {
-    struct input_format_entry * entry;
+  char ** list;
+  int count = 0;
+  int i;
 
-    for (entry = input_formats; entry->name; entry++)
+  struct input_format_entry * entry;
+  for (entry = input_formats; entry->name; entry++)
+    count++;
+  
+  XMALLOC(list, sizeof(char*)*((2*count)+1));
+
+  entry = input_formats;
+  for (i = 0; i < count; i++)
     {
-	fprintf(file, "%6s\n", entry->name);
+      list[2*i] = (char *)entry[i].name;
+      list[2*i+1] = (char *)entry[i].descr;
     }
+  list[2*i] = NULL;
+  return list;
 }

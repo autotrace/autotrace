@@ -16,8 +16,7 @@ typedef int (*output_write)(FILE*, string name,
 
 
 output_write output_get_handler(string name);
-void output_list_formats(FILE *);
-
+char ** output_list (void);
 
 #endif /* not OUTPUT_H */
 

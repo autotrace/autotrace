@@ -52,7 +52,6 @@ dllmain.c (Windows only)
 main part:
 atou.c
 atou.h
-bitmap.h
 cmdline.h
 concat3.c
 concat3.h
@@ -100,7 +99,6 @@ output.c
 output.h
 pbm.h
 pbmplus.h
-pxl-outline.h
 remove-suffx.c
 remove-suffx.h
 spline.h
@@ -109,5 +107,6 @@ substring.h
 swf.h
 types.h
 usefull.h
+xfile.h
 
 /* version 0.25 */

@@ -1,5 +1,25 @@
 2000-11-14  Masatake YAMATO  <yamato@redhat.com>
 
+	* main.c: use autotrace.[ch].
+
+	* autotrace.c: New file.
+
+	* autotrace.h: New file.
+
+	* output.c(output_list): New function.
+
+	* input.c (input_format_entry): Added descr field.
+	(input_list): New function.
+	(input_list_formats): Move to main.
+	
+	* fit.h (fitting_opts_type): Added new field `thin'.
+
+	* fit.c (new_fitting_opts): Initialize thin.
+
+	* README (http): Remove files in main part.
+
+	* Makefile.am (autotrace_SOURCES): Added autotrace.[ch].
+
 	* fit.c: Apply a patch from martin.
 	"I fixed a bug in fit.c that sometimes causes an endless 
 	loop in AutoTrace."

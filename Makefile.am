@@ -88,7 +88,10 @@ autotrace_SOURCES=$(input_src) ${output_src}	\
 		median.h 			\
 	        quantize.h                      \
 	        thin-image.c                    \
-	        thin-image.h                     
+	        thin-image.h                    \
+		autotrace.c			\
+		autotrace.h
+
 
 INCLUDES = $(MAGICK_CFLAGS)
 autotrace_LDADD=	$(MAGICK_LDFLAGS) $(LIBPNG_LDFLAGS) -lm

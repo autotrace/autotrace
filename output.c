@@ -13,6 +13,7 @@
 #include "output-dxf.h"
 #include "output-dxf12.h"
 #include "output-emf.h"
+#include "xmem.h"
 #include <string.h>
 
 struct output_format_entry {
@@ -51,15 +52,26 @@ output_write output_get_handler(string name)
     return entry->writer;
 }
 
-
-void output_list_formats(FILE* file)
+char **
+output_list (void)
 {
-    struct output_format_entry * entry;
+  char ** list;
+  int count = 0;
+  int i;
 
-    for (entry = output_formats; entry->name; entry++)
+  struct output_format_entry * entry;
+  for (entry = output_formats; entry->name; entry++)
+    count++;
+  
+  XMALLOC(list, sizeof(char*)*((2*count)+1));
+
+  entry = output_formats;
+  for (i = 0; i < count; i++)
     {
-	fprintf(file, "%5s %s\n", entry->name, entry->descr);
+      list[2*i] = (char *)entry[i].name;
+      list[2*i+1] = (char *)entry[i].descr;
     }
+  list[2*i] = NULL;
+  return list;
 }
-
 /* version 0.24a */

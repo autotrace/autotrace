@@ -24,5 +24,6 @@
 typedef bitmap_type (*input_read) (string name);
 input_read input_get_handler (string filename);
 input_read input_get_handler_by_suffix (string suffix);
-void input_list_formats(FILE *);
+char ** input_list (void);
+
 #endif /* Not def: INPUT_H */

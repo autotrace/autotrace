@@ -187,6 +187,9 @@ fitting_opts_type new_fitting_opts (void)
    the approximation to the tangent at that point.  (-tangent-surround)  */
   fitting_opts.tangent_surround = 3;
 
+/* Thin all the lines in the image prior to fitting. */
+  fitting_opts.thin = false;
+
   return (fitting_opts);
 }
 
