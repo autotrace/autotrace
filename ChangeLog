@@ -1,3 +1,15 @@
+2002-09-20  Masatake YAMATO  <yamato@redhat.com>
+
+	* autotrace.m4: did the same as frontline.m4.
+	$autotrace_exec_prefix or $autotrace_prefix only.
+	$autotrace_config_exec_prefix and $autotrace_config_prefix are 
+	unnecessary variables. 
+
+	used --exec_prefix instead of --exec-prefix. This is restriction
+	of autofig. Fix broken a if-condition. Added "bin" to exec_prefix.
+
+	(autotrace_config_args): removed. unnecessary variable.
+
 2002-09-20  Martin Weber <martweb@gmx.net>
 
 	* color.c (GET_COLOR): Improved speed and better luminance calculation.

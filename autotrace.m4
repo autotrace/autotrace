@@ -9,21 +9,21 @@ AC_DEFUN(AM_PATH_AUTOTRACE,
 dnl Get the cflags and libraries from the autotrace-config script
 dnl
 AC_ARG_WITH(autotrace-prefix,[  --with-autotrace-prefix=PFX   Prefix where Autotrace is installed (optional)],
-            autotrace_config_prefix="$withval", autotrace_config_prefix="")
+            autotrace_prefix="$withval", autotrace_prefix="")
 AC_ARG_WITH(autotrace-exec-prefix,[  --with-autotrace-exec-prefix=PFX Exec prefix where Autotrace is installed (optional)],
-            autotrace_config_exec_prefix="$withval", autotrace_config_exec_prefix="")
+            autotrace_exec_prefix="$withval", autotrace_exec_prefix="")
 AC_ARG_ENABLE(autotracetest, [  --disable-autotracetest       Do not try to compile and run a test Autotrace program],
 		    , enable_autotracetest=yes)
 
   if test x$autotrace_exec_prefix != x ; then
-     autotrace_args="$autotrace_args --exec-prefix=$autotrace_exec_prefix"
-     if test x${AUTOTRACE_CONFIG+set} = xset ; then
-        AUTOTRACE_CONFIG=$autotrace_exec_prefix/autotrace-config
+     autotrace_args="$autotrace_args --exec_prefix=$autotrace_exec_prefix"
+     if test x${AUTOTRACE_CONFIG+set} != xset ; then
+        AUTOTRACE_CONFIG=$autotrace_exec_prefix/bin/autotrace-config
      fi
   fi
   if test x$autotrace_prefix != x ; then
      autotrace_args="$autotrace_args --prefix=$autotrace_prefix"
-     if test x${AUTOTRACE_CONFIG+set} = xset ; then
+     if test x${AUTOTRACE_CONFIG+set} != xset ; then
         AUTOTRACE_CONFIG=$autotrace_prefix/bin/autotrace-config
      fi
   fi
@@ -35,14 +35,14 @@ AC_ARG_ENABLE(autotracetest, [  --disable-autotracetest       Do not try to comp
   if test "$AUTOTRACE_CONFIG" = "no" ; then
     no_autotrace=yes
   else
-    AUTOTRACE_CFLAGS=`$AUTOTRACE_CONFIG $autotraceconf_args --cflags`
-    AUTOTRACE_LIBS=`$AUTOTRACE_CONFIG $autotraceconf_args --libs`
+    AUTOTRACE_CFLAGS=`$AUTOTRACE_CONFIG $autotrace_args --cflags`
+    AUTOTRACE_LIBS=`$AUTOTRACE_CONFIG $autotrace_args --libs`
 
     autotrace_major_version=`$AUTOTRACE_CONFIG $autotrace_args --version | \
            sed 's/\([[0-9]]*\).\([[0-9]]*\).\([[0-9]]*\)/\1/'`
     autotrace_minor_version=`$AUTOTRACE_CONFIG $autotrace_args --version | \
            sed 's/\([[0-9]]*\).\([[0-9]]*\).\([[0-9]]*\)/\2/'`
-    autotrace_micro_version=`$AUTOTRACE_CONFIG $autotrace_config_args --version | \
+    autotrace_micro_version=`$AUTOTRACE_CONFIG $autotrace_args --version | \
            sed 's/\([[0-9]]*\).\([[0-9]]*\).\([[0-9]]*\)/\3/'`
     if test "x$enable_autotracetest" = "xyes" ; then
       ac_save_CFLAGS="$CFLAGS"
