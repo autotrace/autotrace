@@ -69,10 +69,8 @@ static at_bool spline_linear_enough (spline_type *, curve_type,
   fitting_opts_type *);
 static curve_list_array_type split_at_corners (
   pixel_outline_list_type, fitting_opts_type *);
-static at_bool test_subdivision_point (curve_type, unsigned,
-  vector_type *, fitting_opts_type *);
-static coordinate_type real_to_int_coord (real_coordinate_type);
-static at_real distance (real_coordinate_type, real_coordinate_type);
+static at_coord real_to_int_coord (at_real_coord);
+static at_real distance (at_real_coord, at_real_coord);
 
 /* Get a new set of fitting options */
 #ifdef _EXPORTING
@@ -162,9 +160,9 @@ __stdcall fitted_splines (pixel_outline_list_type pixel_outline_list,
 spline_list_array_type
 fitted_splines (pixel_outline_list_type pixel_outline_list,
   fitting_opts_type *fitting_opts,
-  progress_func notify_progress, 
+  at_progress_func notify_progress, 
   at_address progress_data,
-  testcancel_func test_cancel,
+  at_testcancel_func test_cancel,
   at_address testcancel_data)
 #endif
 {
@@ -639,7 +637,7 @@ find_vectors (unsigned test_index, pixel_outline_type outline,
 {
   int i;
   unsigned n_done;
-  coordinate_type candidate = O_COORDINATE (outline, test_index);
+  at_coord candidate = O_COORDINATE (outline, test_index);
 
   in->dx = 0.0;
   in->dy = 0.0;
@@ -767,7 +765,7 @@ remove_knee_points (curve_type curve, at_bool clockwise)
 {
   unsigned i;
   unsigned offset = CURVE_CYCLIC (curve) ? 0 : 1;
-  coordinate_type previous
+  at_coord previous
     = real_to_int_coord (CURVE_POINT (curve, CURVE_PREV (curve, offset)));
   curve_type trimmed_curve = copy_most_of_curve (curve);
 
@@ -776,9 +774,9 @@ remove_knee_points (curve_type curve, at_bool clockwise)
 
   for (i = offset; i < CURVE_LENGTH (curve) - offset; i++)
     {
-      coordinate_type current
+      at_coord current
         = real_to_int_coord (CURVE_POINT (curve, i));
-      coordinate_type next
+      at_coord next
         = real_to_int_coord (CURVE_POINT (curve, CURVE_NEXT (curve, i)));
       vector_type prev_delta = IPsubtract (previous, current);
       vector_type next_delta = IPsubtract (next, current);
@@ -841,7 +839,7 @@ filter (curve_type curve, fitting_opts_type *fitting_opts)
            this_point++)
         {
           vector_type in, out, sum;
-          real_coordinate_type new_point, prev_new_point;
+          at_real_coord new_point, prev_new_point;
 
           /* Calculate the vectors in and out, computed by looking at n points
              on either side of this_point. Experimental it was found that 2 is
@@ -849,7 +847,7 @@ filter (curve_type curve, fitting_opts_type *fitting_opts)
 
           signed int prev, prevprev; /* have to be signed */
           unsigned int next, nextnext;
-          real_coordinate_type candidate = CURVE_POINT (curve, this_point);
+          at_real_coord candidate = CURVE_POINT (curve, this_point);
 
           prev_new_point.x = FLT_MAX;
           prev_new_point.y = FLT_MAX;
@@ -1232,7 +1230,7 @@ set_initial_parameter_values (curve_type curve)
 
   for (p = 1; p < CURVE_LENGTH (curve); p++)
     {
-      real_coordinate_type point = CURVE_POINT (curve, p),
+      at_real_coord point = CURVE_POINT (curve, p),
                            previous_p = CURVE_POINT (curve, p - 1);
       at_real d = distance (point, previous_p);
       CURVE_T (curve, p) = CURVE_T (curve, p - 1) + d;
@@ -1305,7 +1303,7 @@ find_half_tangent (curve_type c, at_bool to_start_point, unsigned *n_points,
   unsigned p;
   int factor = to_start_point ? 1 : -1;
   unsigned tangent_index = (to_start_point || c->cyclic) ? 0 : c->length - 1;
-  real_coordinate_type tangent_point = CURVE_POINT (c, tangent_index);
+  at_real_coord tangent_point = CURVE_POINT (c, tangent_index);
   vector_type tangent = { 0.0, 0.0 };
   unsigned int surround;
 
@@ -1315,7 +1313,7 @@ find_half_tangent (curve_type c, at_bool to_start_point, unsigned *n_points,
   for (p = 1; p <= surround; p++)
     {
       int this_index = p * factor + tangent_index;
-      real_coordinate_type this_point;
+      at_real_coord this_point;
 
       if (this_index < 0 || this_index >= (int) c->length)
         break;
@@ -1352,9 +1350,9 @@ find_error (curve_type curve, spline_type spline, unsigned *worst_point)
 
   for (this_point = 0; this_point < CURVE_LENGTH (curve); this_point++)
     {
-      at_real_coordinate_type curve_point = CURVE_POINT (curve, this_point);
+      at_real_coord curve_point = CURVE_POINT (curve, this_point);
       at_real t = CURVE_T (curve, this_point);
-      at_real_coordinate_type spline_point = evaluate_spline (spline, t);
+      at_real_coord spline_point = evaluate_spline (spline, t);
       at_real this_error = distance (curve_point, spline_point);
       if (this_error >= worst_error)
         {
@@ -1439,7 +1437,7 @@ spline_linear_enough (spline_type *spline, curve_type curve,
   for (this_point = 0; this_point < CURVE_LENGTH (curve); this_point++)
     {
       at_real t = CURVE_T (curve, this_point);
-      real_coordinate_type spline_point = evaluate_spline (*spline, t);
+      at_real_coord spline_point = evaluate_spline (*spline, t);
 
       distance += (at_real) fabs (A * spline_point.x + B * spline_point.y + C)
                    / (at_real) sqrt (A * A + B * B);
@@ -1549,10 +1547,10 @@ append_index (index_list_type *list, unsigned new_index)
 
 /* Turn an real point into a integer one.  */
 
-static coordinate_type
-real_to_int_coord (real_coordinate_type real_coord)
+static at_coord
+real_to_int_coord (at_real_coord real_coord)
 {
-  coordinate_type int_coord;
+  at_coord int_coord;
 
   int_coord.x = ROUND (real_coord.x);
   int_coord.y = ROUND (real_coord.y);
@@ -1563,7 +1561,7 @@ real_to_int_coord (real_coordinate_type real_coord)
 /* Return the Euclidean distance between P1 and P2.  */
 
 static at_real
-distance (real_coordinate_type p1, real_coordinate_type p2)
+distance (at_real_coord p1, at_real_coord p2)
 {
   return (at_real) hypot (p1.x - p2.x, p1.y - p2.y);
 }

@@ -20,7 +20,7 @@
 #ifndef DESPECKLE_H
 #define DESPECKLE_H
 
-#include "ptypes.h"
+#include "types.h"
 #include "bitmap.h"
 
 /* Despeckle - Despeckle a 8 or 24 bit image

@@ -1,6 +1,6 @@
 /* output-pdf.c: utility routines for PDF output */
 
-#include "ptypes.h"
+#include "types.h"
 #include "spline.h"
 #include "color.h"
 #include "output-pdf.h"
@@ -8,8 +8,6 @@
 #include "autotrace.h"
 #include <time.h>
 #include <string.h>
-
-static at_string now (void);
 
 #define SIGN(x) ((x) > 0 ? 1 : (x) < 0 ? -1 : 0)
 #define ROUND(x) ((int) ((int) (x) + .5 * SIGN (x)))

@@ -2,7 +2,7 @@
    and each pixel participates via one or more edges. */
 
 #include "message.h"
-#include "ptypes.h"
+#include "types.h"
 #include "bitmap.h"
 #include "color.h"
 #include "bitmap.h"
@@ -61,7 +61,7 @@ static void append_pixel_outline (pixel_outline_list_type *,
 static pixel_outline_type new_pixel_outline (void);
 static void concat_pixel_outline (pixel_outline_type *,
   const pixel_outline_type*);
-static void append_outline_pixel (pixel_outline_type *, coordinate_type);
+static void append_outline_pixel (pixel_outline_type *, at_coord);
 static at_bool is_marked_edge (edge_type, unsigned short, unsigned short, bitmap_type);
 static at_bool is_outline_edge (edge_type, bitmap_type, unsigned short, unsigned short,
   color_type);
@@ -80,7 +80,7 @@ static at_bool next_unmarked_outline_pixel(unsigned short *, unsigned short *,
 static at_bool is_open_junction(unsigned short, unsigned short,
   bitmap_type, bitmap_type);
 
-static coordinate_type NextPoint(bitmap_type, edge_type *, unsigned short *, unsigned short *, 
+static at_coord NextPoint(bitmap_type, edge_type *, unsigned short *, unsigned short *, 
   color_type, at_bool, bitmap_type);
 
 
@@ -90,13 +90,13 @@ static coordinate_type NextPoint(bitmap_type, edge_type *, unsigned short *, uns
 #ifdef _EXPORTING
 __declspec(dllexport) pixel_outline_list_type
 __stdcall find_outline_pixels (bitmap_type bitmap, color_type *bg_color,
-			       progress_func notify_progress, address progress_data,
+			       at_progress_func notify_progress, address progress_data,
 			       testcancel_func test_cancel, address testcancel_data)
 #else
      pixel_outline_list_type
 find_outline_pixels (bitmap_type bitmap, color_type *bg_color,
-		     progress_func notify_progress, at_address progress_data,
-		     testcancel_func test_cancel, at_address testcancel_data)
+		     at_progress_func notify_progress, at_address progress_data,
+		     at_testcancel_func test_cancel, at_address testcancel_data)
 		     
 #endif
 {
@@ -195,7 +195,7 @@ find_one_outline (bitmap_type bitmap, edge_type original_edge,
   pixel_outline_type outline;
   unsigned short row = original_row, col = original_col;
   edge_type edge = original_edge;
-  coordinate_type pos;
+  at_coord pos;
 
   pos.x = col + ((edge == RIGHT) || (edge == BOTTOM) ? 1 : 0);
   pos.y = BITMAP_HEIGHT (bitmap) - row + ((edge == TOP) || (edge == RIGHT) ? 1 : 0);
@@ -225,13 +225,13 @@ find_one_outline (bitmap_type bitmap, edge_type original_edge,
 #ifdef _EXPORTING
 __declspec(dllexport) pixel_outline_list_type
 __stdcall find_centerline_pixels (bitmap_type bitmap, color_type bg_color,
-				  progress_func notify_progress, address progress_data,
-				  testcancel_func test_cancel, address testcancel_data)
+				  at_progress_func notify_progress, address progress_data,
+				  at_testcancel_func test_cancel, address testcancel_data)
 #else
 pixel_outline_list_type
 find_centerline_pixels(bitmap_type bitmap, color_type bg_color,
-		       progress_func notify_progress, at_address progress_data,
-		       testcancel_func test_cancel, at_address testcancel_data)
+		       at_progress_func notify_progress, at_address progress_data,
+		       at_testcancel_func test_cancel, at_address testcancel_data)
 #endif
 {
     pixel_outline_list_type outline_list;
@@ -313,9 +313,8 @@ find_one_centerline(bitmap_type bitmap, edge_type original_edge,
     pixel_outline_type outline = new_pixel_outline();
     unsigned short row = original_row, col = original_col;
     unsigned short prev_row, prev_col;
-    edge_type edge = original_edge;
     direction_type search_dir = EAST;
-    coordinate_type pos;
+    at_coord pos;
 
     outline.open = false;
     outline.color = GET_COLOR(bitmap, row, col);
@@ -437,7 +436,7 @@ concat_pixel_outline(pixel_outline_type *o1, const pixel_outline_type *o2)
     O_LENGTH(*o1) += o2_length - 1;
     /* Resize o1 to the sum of the lengths of o1 and o2 minus one (because
        the two lists are assumed to share the same starting pixel). */
-    XREALLOC(o1->data, O_LENGTH(*o1) * sizeof(coordinate_type));
+    XREALLOC(o1->data, O_LENGTH(*o1) * sizeof(at_coord));
     /* Shift the contents of o1 to the end of the new array to make room
        to prepend o2. */
     for (src = o1_length - 1, dst = O_LENGTH(*o1) - 1; src >= 0; src--, dst--)
@@ -451,10 +450,10 @@ concat_pixel_outline(pixel_outline_type *o1, const pixel_outline_type *o2)
 /* Add a point to the pixel list. */
 
 static void
-append_outline_pixel (pixel_outline_type *o, coordinate_type c)
+append_outline_pixel (pixel_outline_type *o, at_coord c)
 {
   O_LENGTH (*o)++;
-  XREALLOC (o->data, O_LENGTH (*o) * sizeof (coordinate_type));
+  XREALLOC (o->data, O_LENGTH (*o) * sizeof (at_coord));
   O_COORDINATE (*o, O_LENGTH (*o) - 1) = c;
 }
 
@@ -691,10 +690,10 @@ is_marked_edge (edge_type edge, unsigned short row, unsigned short col, bitmap_t
 }
 
 
-static coordinate_type NextPoint(bitmap_type bitmap, edge_type *edge, unsigned short *row, unsigned short *col,
+static at_coord NextPoint(bitmap_type bitmap, edge_type *edge, unsigned short *row, unsigned short *col,
   color_type color, at_bool clockwise, bitmap_type marked)
 {
-  coordinate_type pos;
+  at_coord pos;
 
   if (!clockwise)
     switch(*edge)

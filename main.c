@@ -1,8 +1,6 @@
 /* main.c: main driver for autotrace -- convert bitmaps to splines. */
 
 #include "autotrace.h"
-#include "input.h"
-#include "output.h"
 #include "message.h"
 #include "cmdline.h"
 #include "logreport.h"
@@ -130,14 +128,14 @@ main (int argc, char * argv[])
 				progress_reporter, &progress_stat,
 				NULL, NULL);
 
-  at_output_write (output_writer,
-		   output_file, 
-		   output_name,
-		   0, 0, 
-		   at_bitmap_get_width(bitmap), 
-		   at_bitmap_get_height(bitmap),
-		   dpi,
-		   splines);
+  at_splines_write (splines,
+		    output_file, 
+		    output_name,
+		    0, 0, 
+		    at_bitmap_get_width(bitmap), 
+		    at_bitmap_get_height(bitmap),
+		    dpi,
+		    output_writer);
   
   if (output_file != stdout)
     fclose (output_file);
@@ -290,8 +288,8 @@ read_command_line (int argc, char * argv[],
 		  char *ishortlist, *oshortlist;
           fprintf (stderr, "Usage: %s [options] <input_name>.\n", argv[0]);
           fprintf (stderr, USAGE1);
-          fprintf (stderr, USAGE2, ishortlist = input_shortlist(),
-			oshortlist = output_shortlist());
+          fprintf (stderr, USAGE2, ishortlist = at_input_shortlist(),
+			oshortlist = at_output_shortlist());
 		  free (ishortlist);
 		  free (oshortlist);
 	      fprintf (stderr, 

@@ -1,9 +1,8 @@
 /* output-swf.c - output in SWF format */
 
-
-
 #include "spline.h"
 #include "output-swf.h"
+#include <ming.h>
 
 #define FPS 24.0
 #define IMGID 1

@@ -79,8 +79,7 @@ libautotrace_a_SOURCES =\
 		color.h 			\
 		pxl-outline.h                   \
                 despeckle.c                     \
-                despeckle.h			\
-		ptypes.h
+                despeckle.h			
 
 autotraceinclude_HEADERS=\
 		types.h 			\

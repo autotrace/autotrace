@@ -6,10 +6,7 @@ Uses the Ming SWF library from http://www.opaque.net/ming/
 #ifndef OUTPUTSWF_H
 #define OUTPUTSWF_H 
 
-#include <stdio.h>
-#include "ptypes.h"
-#include "spline.h"
-#include <ming.h>
+#include "output.h"
 
 int output_swf_writer(FILE* file, at_string name,
 		      int llx, int lly, int urx, int ury, int dpi,

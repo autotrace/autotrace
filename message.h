@@ -5,7 +5,7 @@
 #define MESSAGE_H
 
 #include "logreport.h"
-#include "ptypes.h"
+#include "types.h"
 #include <stdio.h>
 #include <stdlib.h>
 

@@ -6,9 +6,7 @@
 #ifndef OUTPUT_P2E_H
 #define OUTPUT_P2E_H
 
-#include <stdio.h>
-#include "ptypes.h"
-#include "spline.h"
+#include "output.h"
 
 int output_p2e_writer (FILE* file, at_string name,
 		       int llx, int lly, int urx, int ury, int dpi,

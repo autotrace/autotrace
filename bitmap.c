@@ -1,9 +1,7 @@
 /* bitmap.c: operations on bitmaps. */
 
-#include "ptypes.h"
 #include "bitmap.h"
 #include "xstd.h"
-#include <string.h>
 
 bitmap_type
 new_bitmap (unsigned short width, unsigned short height)

@@ -3,7 +3,7 @@
 #ifndef CURVE_H
 #define CURVE_H
 
-#include "ptypes.h"
+#include "autotrace.h"
 #include "vector.h"
 
 
@@ -15,7 +15,7 @@
 
 typedef struct
 {
-  real_coordinate_type coord;
+  at_real_coord coord;
   at_real t;
 } point_type;
 
@@ -79,10 +79,10 @@ extern curve_type copy_most_of_curve (curve_type c);
 extern void free_curve (curve_type c);
 
 /* Append the point P to the end of C's list.  */
-extern void append_pixel (curve_type c, coordinate_type p);
+extern void append_pixel (curve_type c, at_coord p);
 
 /* Like `append_pixel', for a point in real coordinates.  */
-extern void append_point (curve_type c, real_coordinate_type p);
+extern void append_point (curve_type c, at_real_coord p);
 
 /* Write some or all, respectively, of the curve C in human-readable
    form to the log file, if logging is enabled.  */
@@ -134,7 +134,7 @@ typedef struct
 
 extern curve_list_array_type new_curve_list_array (void);
 extern void free_curve_list_array (curve_list_array_type *,
-				   progress_func, 
+				   at_progress_func, 
 				   at_address);
 extern void append_curve_list (curve_list_array_type *, curve_list_type);
 

@@ -4,9 +4,7 @@
 #ifndef OUTPUT_EPS_H
 #define OUTPUT_EPS_H
 
-#include <stdio.h>
-#include "ptypes.h"
-#include "spline.h"
+#include "output.h"
 
 int output_eps_writer (FILE* file, at_string name,
 		       int llx, int lly, int urx, int ury, int dpi,

@@ -41,14 +41,14 @@ typedef void *at_address;
 typedef float at_real;
 
 /* Cartesian points.  */
-typedef struct
+typedef struct _at_coord
 {
   unsigned short x, y;
-} at_coordinate_type;
+} at_coord;
 
-typedef struct
+typedef struct _at_real_coord
 {
   at_real x, y;
-} at_real_coordinate_type;
+} at_real_coord;
 
 #endif /* not TYPES_H */

@@ -21,7 +21,7 @@ Foundation, Inc., 675 Mass Ave, Cambridge, MA 02139, USA.  */
 
 #ifndef FILENAME_H
 #define FILENAME_H 
-#include "ptypes.h"
+#include "types.h"
 
 /* If NAME has a suffix, return a pointer to its first character (i.e.,
    the one after the `.'); otherwise, return NULL.  */

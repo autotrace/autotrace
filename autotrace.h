@@ -20,16 +20,18 @@
 #ifndef AUTOTRACE_H
 #define AUTOTRACE_H
 
-#include "types.h"
 #include <stdio.h>
 
 #ifdef __cplusplus
 extern "C" {
 #endif /* __cplusplus */
 
-/*
+/* ===================================================================== *
  * Typedefs
- */
+ * ===================================================================== */
+
+#include "types.h"
+
 typedef struct _at_fitting_opts_type at_fitting_opts_type;
 typedef struct _at_bitmap_type at_bitmap_type;
 typedef struct _at_color_type at_color_type;
@@ -67,7 +69,7 @@ enum _at_polynomial_degree
    straight line defined by the endpoints.  */
 struct _at_spline_type
 {
-  at_real_coordinate_type v[4];	/* The control points.  */
+  at_real_coord v[4];	/* The control points.  */
   at_polynomial_degree degree;
   at_real linearity;
 };
@@ -193,17 +195,21 @@ typedef void           (* at_progress_func)    (at_real percentage,
  */
 typedef at_bool          (*  at_testcancel_func) (at_address client_data);
 
-/*
+/* ===================================================================== *
  * Functions
- */
+ * ----------------------------------------------------------------------*/
 
-/* Option related */
+/*
+ * Option related
+ */
 at_fitting_opts_type * at_fitting_opts_new(void);
 at_fitting_opts_type * at_fitting_opts_copy (at_fitting_opts_type * original); 
 void at_fitting_opts_free(at_fitting_opts_type * opts);
 /* TODO internal data access, copy */
 
-/* Bitmap related */
+/*
+ * Bitmap related 
+ */
 at_bitmap_type * at_bitmap_new (at_input_read_func input_reader,
 				at_string filename);
 unsigned short at_bitmap_get_width (at_bitmap_type * bitmap);
@@ -211,14 +217,9 @@ unsigned short at_bitmap_get_height (at_bitmap_type * bitmap);
 void at_bitmap_free (at_bitmap_type * bitmap);
 /* TODO internal data access */
 
-/* Input related */
-at_input_read_func at_input_get_handler (at_string filename);
-at_input_read_func at_input_get_handler_by_suffix (at_string suffix);
-char ** at_input_list_new (void);
-void at_input_list_free(char ** list);
-/* at_input_read_add_handler (at_string suffix, at_input_read_func); */
-
-/* Spline related */
+/* 
+ * Spline related
+ */
 at_splines_type * at_splines_new (at_bitmap_type * bitmap,
 				  at_fitting_opts_type * opts);
 /* notify_progress is called repeatedly inside at_splines_new_full
@@ -246,34 +247,51 @@ at_splines_type * at_splines_new_full (at_bitmap_type * bitmap,
 				       at_address progress_data,
 				       at_testcancel_func test_cancel,
 				       at_address testcancel_data);
-
+void at_splines_write(at_splines_type * splines,
+		      FILE * writeto,
+		      char * name,
+		      int llx, int lly, int urx, int ury, int dpi,
+		      at_output_write_func output_writer);
 void at_splines_free (at_splines_type * splines);
 /* TODO internal data access */
 
-/* Output related */
-at_output_write_func at_output_get_handler (at_string filename);
-at_output_write_func at_output_get_handler_by_suffix (at_string suffix);
-
-void 
-at_output_write(at_output_write_func output_writer,
-		FILE * writeto,
-		char * name,
-		int llx, int lly, int urx, int ury, int dpi,
-		at_splines_type * splines);
-char ** at_output_list_new (void);
-void at_output_list_free(char ** list);
-/* at_output_write_add_handler (at_string suffix, at_output_write_func); */
-
-/* Color related */
+/*
+ * Color related 
+ */
 at_color_type * at_color_new (unsigned char r, 
 			      unsigned char g,
 			      unsigned char b);
 at_color_type * at_color_copy (at_color_type * original);
 void at_color_free(at_color_type * color);
 
-/* Version and other informations 
-   long_format == true: "AutoTrace version x.y"
-   long_format == false: "x.y" */
+/* 
+ * Input related 
+ */
+at_input_read_func at_input_get_handler (at_string filename);
+at_input_read_func at_input_get_handler_by_suffix (at_string suffix);
+char ** at_input_list_new (void);
+void at_input_list_free(char ** list);
+char * at_input_shortlist (void); /* Do free by yourself */
+int at_input_add_handler (at_string suffix, 
+			  at_string description,
+			  at_input_read_func func);
+
+/* 
+ * Output related
+ */
+at_output_write_func at_output_get_handler (at_string filename);
+at_output_write_func at_output_get_handler_by_suffix (at_string suffix);
+char ** at_output_list_new (void);
+void at_output_list_free(char ** list);
+char * at_output_shortlist (void); /* Do free by yourself */
+int   at_output_add_handler (at_string suffix, 
+			     at_string description, 
+			     at_output_write_func func);
+
+/* 
+ * Version and other informations 
+ * long_format == true: "AutoTrace version x.y"
+ * long_format == false: "x.y" */
 const char * at_version (at_bool long_format);
 const char * at_home_site ();
 

@@ -3,7 +3,7 @@
 #ifndef INPUT_TGA_H
 #define INPUT_TGA_H
 
-#include "bitmap.h"
+#include "input.h"
 
 bitmap_type tga_load_image (at_string filename);
 

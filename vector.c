@@ -19,7 +19,7 @@ static at_real acos_d (at_real);
 /* Given the point COORD, return the corresponding vector.  */
 
 vector_type
-make_vector (const real_coordinate_type c)
+make_vector (const at_real_coord c)
 {
   vector_type v;
 
@@ -32,10 +32,10 @@ make_vector (const real_coordinate_type c)
 
 /* And the converse: given a vector, return the corresponding point.  */
 
-real_coordinate_type
+at_real_coord
 vector_to_point (const vector_type v)
 {
-  real_coordinate_type coord;
+  at_real_coord coord;
 
   coord.x = v.dx;
   coord.y = v.dy;
@@ -118,10 +118,10 @@ Vangle (const vector_type in_vector, const vector_type out_vector)
 }
 
 
-real_coordinate_type
-Vadd_point (const real_coordinate_type c, const vector_type v)
+at_real_coord
+Vadd_point (const at_real_coord c, const vector_type v)
 {
-  real_coordinate_type new_c;
+  at_real_coord new_c;
 
   new_c.x = c.x + v.dx;
   new_c.y = c.y + v.dy;
@@ -129,10 +129,10 @@ Vadd_point (const real_coordinate_type c, const vector_type v)
 }
 
 
-real_coordinate_type
-Vsubtract_point (const real_coordinate_type c, const vector_type v)
+at_real_coord
+Vsubtract_point (const at_real_coord c, const vector_type v)
 {
-  real_coordinate_type new_c;
+  at_real_coord new_c;
 
   new_c.x = c.x - v.dx;
   new_c.y = c.y - v.dy;
@@ -140,10 +140,10 @@ Vsubtract_point (const real_coordinate_type c, const vector_type v)
 }
 
 
-coordinate_type
-Vadd_int_point (const coordinate_type c, const vector_type v)
+at_coord
+Vadd_int_point (const at_coord c, const vector_type v)
 {
-  coordinate_type a;
+  at_coord a;
 
   a.x = (unsigned short) ROUND ((at_real) c.x + v.dx);
   a.y = (unsigned short) ROUND ((at_real) c.y + v.dy);
@@ -164,10 +164,10 @@ Vabs (const vector_type v)
 
 /* Operations on points.  */
 
-real_coordinate_type
-Padd (const real_coordinate_type coord1, const real_coordinate_type coord2)
+at_real_coord
+Padd (const at_real_coord coord1, const at_real_coord coord2)
 {
-  real_coordinate_type sum;
+  at_real_coord sum;
 
   sum.x = coord1.x + coord2.x;
   sum.y = coord1.y + coord2.y;
@@ -176,10 +176,10 @@ Padd (const real_coordinate_type coord1, const real_coordinate_type coord2)
 }
 
 
-real_coordinate_type
-Pmult_scalar (const real_coordinate_type coord, const at_real r)
+at_real_coord
+Pmult_scalar (const at_real_coord coord, const at_real r)
 {
-  real_coordinate_type answer;
+  at_real_coord answer;
 
   answer.x = coord.x * r;
   answer.y = coord.y * r;
@@ -189,7 +189,7 @@ Pmult_scalar (const real_coordinate_type coord, const at_real r)
 
 
 vector_type
-Psubtract (const real_coordinate_type c1, const real_coordinate_type c2)
+Psubtract (const at_real_coord c1, const at_real_coord c2)
 {
   vector_type v;
 
@@ -204,7 +204,7 @@ Psubtract (const real_coordinate_type c1, const real_coordinate_type c2)
 /* Operations on integer points.  */
 
 vector_type
-IPsubtract (const coordinate_type coord1, const coordinate_type coord2)
+IPsubtract (const at_coord coord1, const at_coord coord2)
 {
   vector_type v;
 
@@ -215,10 +215,10 @@ IPsubtract (const coordinate_type coord1, const coordinate_type coord2)
 }
 
 
-coordinate_type
-IPsubtractP (const coordinate_type c1, const coordinate_type c2)
+at_coord
+IPsubtractP (const at_coord c1, const at_coord c2)
 {
-  coordinate_type c;
+  at_coord c;
 
   c.x = c1.x - c2.x;
   c.y = c1.y - c2.y;
@@ -227,10 +227,10 @@ IPsubtractP (const coordinate_type c1, const coordinate_type c2)
 }
 
 
-coordinate_type
-IPadd (const coordinate_type c1, const coordinate_type c2)
+at_coord
+IPadd (const at_coord c1, const at_coord c2)
 {
-  coordinate_type c;
+  at_coord c;
 
   c.x = c1.x + c2.x;
   c.y = c1.y + c2.y;
@@ -239,10 +239,10 @@ IPadd (const coordinate_type c1, const coordinate_type c2)
 }
 
 
-coordinate_type
-IPmult_scalar (const coordinate_type c, const int i)
+at_coord
+IPmult_scalar (const at_coord c, const int i)
 {
-  coordinate_type a;
+  at_coord a;
 
   a.x = (unsigned short) (c.x * i);
   a.y = (unsigned short) (c.y * i);
@@ -251,10 +251,10 @@ IPmult_scalar (const coordinate_type c, const int i)
 }
 
 
-real_coordinate_type
-IPmult_real (const coordinate_type c, const at_real r)
+at_real_coord
+IPmult_real (const at_coord c, const at_real r)
 {
-  real_coordinate_type a;
+  at_real_coord a;
 
   a.x = c.x * r;
   a.y = c.y * r;
@@ -264,7 +264,7 @@ IPmult_real (const coordinate_type c, const at_real r)
 
 
 at_bool
-IPequal (const coordinate_type c1, const coordinate_type c2)
+IPequal (const at_coord c1, const at_coord c2)
 {
   return ((c1.x == c2.x) && (c1.y == c2.y));
 }

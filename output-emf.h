@@ -7,9 +7,7 @@
 #ifndef __OUTPUT_EMF_H
 #define __OUTPUT_EMF_H
 
-#include <stdio.h>
-#include "ptypes.h"
-#include "spline.h"
+#include "output.h"
 
 int output_emf_writer(FILE* file, at_string name,
 		      int llx, int lly, int urx, int ury, int dpi,

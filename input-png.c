@@ -21,14 +21,14 @@
 #include <stdlib.h>
 #include <string.h>
 
-#include "ptypes.h"
+#include "types.h"
 #include "bitmap.h"
 #include "message.h"
 #include "xstd.h"
 #include <png.h>
 #include "input-png.h"
 
-static volatile char rcsid[]="$Id: input-png.c,v 1.5 2001/12/23 09:15:10 masata-y Exp $";
+static volatile char rcsid[]="$Id: input-png.c,v 1.6 2001/12/23 16:18:41 masata-y Exp $";
 
 /* for pre-1.0.6 versions of libpng */
 #ifndef png_jmpbuf

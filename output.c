@@ -25,10 +25,10 @@
 struct output_format_entry {
     const char * name;
     const char * descr;
-    output_write writer;
+    at_output_write_func writer;
 };
 
-
+#define END   {NULL, NULL, NULL}
 static struct output_format_entry output_formats[] = {
     {"eps",	"Encapsulated PostScript",	output_eps_writer},
     {"ai",	"Adobe Illustrator",		output_eps_writer},
@@ -40,28 +40,28 @@ static struct output_format_entry output_formats[] = {
     {"swf",	"Shockwave Flash 3",		output_swf_writer},
 #endif /* HAVE_LIBSWF */
     {"emf",     "Enhanced Metafile format",     output_emf_writer},
-    {"mif",     "FrameMaker MIF format",       output_mif_writer},
+    {"mif",     "FrameMaker MIF format",        output_mif_writer},
     {"er",      "Elastic Reality Shape file",   output_er_writer},
     {"dxf12",   "DXF format (without splines)", output_dxf12_writer},
-    {"dxf",     "default DXF format", output_dxf12_writer},
-    {"epd",     "EPD format",   output_epd_writer},
-    {"pdf",     "PDF format",                 output_pdf_writer},
-    {"cgm",     "Computer Graphics Metafile", output_cgm_writer},
-    {NULL,	NULL}
+    {"dxf",     "default DXF format",           output_dxf12_writer},
+    {"epd",     "EPD format",                   output_epd_writer},
+    {"pdf",     "PDF format",                   output_pdf_writer},
+    {"cgm",     "Computer Graphics Metafile",   output_cgm_writer},
+    END
 };
 
-output_write
-output_get_handler(at_string filename)
+at_output_write_func
+at_output_get_handler(at_string filename)
 {
   char * ext = find_suffix (filename);
   if (ext == NULL)
     ext = "";
   
-  return output_get_handler_by_suffix (ext);
+  return at_output_get_handler_by_suffix (ext);
 }
 
-output_write 
-output_get_handler_by_suffix(at_string name)
+at_output_write_func
+at_output_get_handler_by_suffix(at_string name)
 {
     struct output_format_entry *entry;
 
@@ -75,7 +75,7 @@ output_get_handler_by_suffix(at_string name)
 }
 
 char **
-output_list (void)
+at_output_list_new (void)
 {
   char ** list;
   int count = 0;
@@ -97,8 +97,14 @@ output_list (void)
   return list;
 }
 
+void
+at_output_list_free(char ** list)
+{
+  free(list);
+}
+
 char *
-output_shortlist (void)
+at_output_shortlist (void)
 {
   char * list;
   int count = 0;
@@ -124,4 +130,12 @@ output_shortlist (void)
   strcat (list, " or ");
   strcat (list, (char *) entry[i].name);
   return list;
+}
+
+int
+at_output_add_handler (at_string suffix, 
+		       at_string description, 
+		       at_output_write_func func)
+{
+  return 0;
 }

@@ -1,7 +1,7 @@
 /* spline.c: spline and spline list (represented as arrays) manipulation. */
 
 #include "message.h"
-#include "ptypes.h"
+#include "types.h"
 #include "spline.h"
 #include "vector.h"
 #include "xstd.h"
@@ -33,7 +33,7 @@ print_spline (FILE *f, spline_type s)
    of de Casteljau's algorithm.  See Schneider's thesis, p.37.
    The variable names are taken from there.  */
 
-real_coordinate_type
+at_real_coord
 evaluate_spline (spline_type s, at_real t)
 {
   spline_type V[4];    /* We need degree+1 splines, but assert degree <= 3.  */
@@ -50,9 +50,9 @@ evaluate_spline (spline_type s, at_real t)
   for (j = 1; j <= degree; j++)
     for (i = 0; i <= degree - j; i++)
       {
-        real_coordinate_type t1 = Pmult_scalar (V[j - 1].v[i], one_minus_t);
-        real_coordinate_type t2 = Pmult_scalar (V[j - 1].v[i + 1], t);
-        real_coordinate_type temp = Padd (t1, t2);
+        at_real_coord t1 = Pmult_scalar (V[j - 1].v[i], one_minus_t);
+        at_real_coord t2 = Pmult_scalar (V[j - 1].v[i + 1], t);
+        at_real_coord temp = Padd (t1, t2);
         V[j].v[i].x = temp.x;
         V[j].v[i].y = temp.y;
       }

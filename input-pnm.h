@@ -3,8 +3,7 @@
 #ifndef INPUT_PNM_H
 #define INPUT_PNM_H
 
-#include "ptypes.h"
-#include "bitmap.h"
+#include "input.h"
 
 bitmap_type pnm_load_image (at_string filename);
 

@@ -8,7 +8,6 @@
 
 #include <stdio.h>
 #include <string.h>
-#include "ptypes.h"
 #include "spline.h"
 #include "xstd.h"
 
@@ -166,7 +165,7 @@ static at_bool write16(FILE *fdes, UI16 data)
 
 /* EMF record-type function definitions */
 
-static int WriteMoveTo(FILE* fdes, real_coordinate_type *pt)
+static int WriteMoveTo(FILE* fdes, at_real_coord *pt)
 {
   int recsize = sizeof(UI32) * 4;
   

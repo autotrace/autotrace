@@ -3,6 +3,24 @@
 
 #include "output-fig.h"
 #include "xstd.h"
+#include "color.h"
+
+/* use FIG_X and FIG_Y to convert from local units (pixels) to FIG ones */
+/* assume 1 pixel is equal to 1/80 inches (old FIG unit) */
+/* Offset by 300 units (1/4 inch) */
+
+#define FIG_X(x) (int)((x * 15.0) + 300.0)
+#define FIG_Y(y) (int)(((ury - y) * 15.0) + 300.0)
+
+/* the basic colours */
+#define FIG_BLACK	0
+#define FIG_BLUE	1
+#define FIG_GREEN	2
+#define FIG_CYAN	3
+#define FIG_RED		4
+#define FIG_MAGENTA	5
+#define FIG_YELLOW	6
+#define FIG_WHITE	7
 
 static at_real bezpnt(at_real, at_real, at_real, at_real, at_real);
 static void out_fig_splines(FILE *, spline_list_array_type, int, int, int, int);

@@ -3,7 +3,7 @@
 #ifndef IMAGE_HEADER_H
 #define IMAGE_HEADER_H
 
-#include "ptypes.h"
+#include "types.h"
 
 /* The important general information about the image data.
    See `get_{img,pbm}_header' for the full details of the headers for

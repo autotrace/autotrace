@@ -4,7 +4,7 @@
 #include "curve.h"
 #include "xstd.h"
 
-static real_coordinate_type int_to_real_coord (coordinate_type);
+static at_real_coord int_to_real_coord (at_coord);
 
 /* Return an entirely empty curve.  */
 
@@ -55,14 +55,14 @@ free_curve (curve_type curve)
 
 
 void
-append_pixel (curve_type curve, coordinate_type coord)
+append_pixel (curve_type curve, at_coord coord)
 {
   append_point (curve, int_to_real_coord (coord));
 }
 
 
 void
-append_point (curve_type curve, real_coordinate_type coord)
+append_point (curve_type curve, at_real_coord coord)
 {
   CURVE_LENGTH (curve)++;
   XREALLOC (curve->point_list, CURVE_LENGTH (curve) * sizeof(point_type));
@@ -241,7 +241,7 @@ new_curve_list_array (void)
 
 void
 free_curve_list_array (curve_list_array_type *curve_list_array,
-		       progress_func notify_progress, 
+		       at_progress_func notify_progress, 
 		       at_address client_data)
 {
   unsigned this_list;
@@ -273,10 +273,10 @@ append_curve_list (curve_list_array_type *curve_list_array, curve_list_type curv
 
 /* Turn an integer point into a real one.  */
 
-static real_coordinate_type
-int_to_real_coord (coordinate_type int_coord)
+static at_real_coord
+int_to_real_coord (at_coord int_coord)
 {
-  real_coordinate_type real_coord;
+  at_real_coord real_coord;
 
   real_coord.x = int_coord.x;
   real_coord.y = int_coord.y;

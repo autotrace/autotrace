@@ -1,7 +1,7 @@
 /* input.c: input routines
    Copyright (C) 1999 Bernhard Herzog. */
 
-#include "input.h"
+#include "autotrace.h"
 #include "input-pnm.h"
 #include "input-bmp.h"
 #include "input-tga.h"
@@ -14,45 +14,43 @@
 #include "input-magick.h"
 #endif /* HAVE_MAGICK */
 
-#include "bitmap.h"
-
 #include "xstd.h"
 #include "filename.h"
 #include "strgicmp.h"
 #include <string.h>
 
 struct input_format_entry {
-  input_read reader;
-  const char * descr;
   const char * name;
-
+  const char * descr;
+  at_input_read_func reader;
 };
 
+#define END   {NULL, NULL, NULL}
 static struct input_format_entry input_formats[] = {
 #ifdef HAVE_LIBPNG
-  { png_load_image,   "Portable network graphics",      "PNG" },
+  { "PNG",   "Portable network graphics",      png_load_image},
 #endif /* HAVE_LIBPNG */
-  { tga_load_image,   "Truevision Targa image",         "TGA" },
-  { pnm_load_image,   "Portable bitmap format",         "PBM" },
-  { pnm_load_image,   "Portable anymap format",         "PNM" },
-  { pnm_load_image,   "Portable graymap format",        "PGM" },
-  { pnm_load_image,   "Portable pixmap format",         "PPM" },
-  { bmp_load_image,   "Microsoft Windows bitmap image", "BMP" },
-  {NULL, NULL, NULL}
+  { "TGA",   "Truevision Targa image",         tga_load_image },
+  { "PBM",   "Portable bitmap format",         pnm_load_image },
+  { "PNM",   "Portable anymap format",         pnm_load_image },
+  { "PGM",   "Portable graymap format",        pnm_load_image },
+  { "PPM",   "Portable pixmap format",         pnm_load_image },
+  { "BMP",   "Microsoft Windows bitmap image", bmp_load_image },
+  END
 };
 
-input_read
-input_get_handler (at_string filename)
+at_input_read_func
+at_input_get_handler (at_string filename)
 {
   char * ext = find_suffix (filename);
   if (ext == NULL)
      ext = "";
 
-  return input_get_handler_by_suffix (ext);
+  return at_input_get_handler_by_suffix (ext);
 }
 
-input_read
-input_get_handler_by_suffix (at_string suffix)
+at_input_read_func
+at_input_get_handler_by_suffix (at_string suffix)
 {
   struct input_format_entry * format;
   for (format = input_formats ; format->name; format++)
@@ -63,14 +61,14 @@ input_get_handler_by_suffix (at_string suffix)
         }
     }
 #if HAVE_MAGICK
-  return (input_read)magick_load_image;
+  return (at_input_read_func)magick_load_image;
 #else
   return NULL;
 #endif /* HAVE_MAGICK */
 }
 
 char **
-input_list (void)
+at_input_list_new (void)
 {
   char ** list;
   int count, count_int = 0;
@@ -149,8 +147,14 @@ input_list (void)
   return list;
 }
 
+void
+at_input_list_free(char ** list)
+{
+  free(list);
+}
+
 char *
-input_shortlist (void)
+at_input_shortlist (void)
 {
   char * list;
   int count_int = 0, count;
@@ -238,4 +242,12 @@ count = count_int;
   strcat (list, " or ");
   strcat (list, (char *) entry[i].name);
   return list;
+}
+
+int
+at_input_add_handler (at_string suffix, 
+		      at_string description,
+		      at_input_read_func func)
+{
+  return 0;
 }

@@ -4,8 +4,6 @@
 
 #include "fit.h"
 #include "bitmap.h"
-#include "input.h"
-#include "output.h"
 #include "spline.h"
 
 #include "xstd.h"
@@ -43,29 +41,6 @@ at_fitting_opts_free(at_fitting_opts_type * opts)
   if (opts->bgColor != NULL)
     free (opts->bgColor);
   free(opts);
-}
-
-at_input_read_func
-at_input_get_handler (at_string filename)
-{
-  return input_get_handler(filename);
-}
-
-at_input_read_func
-at_input_get_handler_by_suffix (at_string suffix)
-{
-  return input_get_handler_by_suffix(suffix);
-}
-
-char **
-at_input_list_new ()
-{
-  return input_list();
-}
-void
-at_input_list_free(char ** list)
-{
-  free(list);
 }
 
 at_bitmap_type *
@@ -175,47 +150,22 @@ at_splines_new_full (at_bitmap_type * bitmap,
 }
 
 void 
-at_splines_free (at_splines_type * splines)
-{
-  free_spline_list_array (splines); 
-  free(splines);
-}
-/* TODO internal data access */
-
-at_output_write_func 
-at_output_get_handler (at_string filename)
-{
-  return output_get_handler(filename);
-}
-
-at_output_write_func 
-at_output_get_handler_by_suffix (at_string suffix)
-{
-  return output_get_handler_by_suffix(suffix);
-}
-
-void 
-at_output_write(at_output_write_func output_writer,
-		FILE * writeto,
-		char * name,
-		int llx, int lly, int urx, int ury, int dpi,
-		at_splines_type * splines)
+at_splines_write(at_splines_type * splines,
+		 FILE * writeto,
+		 char * name,
+		 int llx, int lly, int urx, int ury, int dpi,
+		 at_output_write_func output_writer)
 {
   if (!name)
     name = "";
   (*output_writer) (writeto, name, llx, lly, urx, ury, dpi, *splines);
 }
 
-char **
-at_output_list_new ()
+void 
+at_splines_free (at_splines_type * splines)
 {
-  return output_list();
-}
-
-void
-at_output_list_free(char ** list)
-{
-  free(list);
+  free_spline_list_array (splines); 
+  free(splines);
 }
 
 at_color_type * 

@@ -1,7 +1,7 @@
 /* output-epd.c: utility routines for EPD output
    (http://epd.sourceforge.net). */
 
-#include "ptypes.h"
+#include "types.h"
 #include "spline.h"
 #include "color.h"
 #include "output-epd.h"

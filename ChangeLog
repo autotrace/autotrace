@@ -1,4 +1,46 @@
+2001-12-24  Masatake YAMATO  <yamato@redhat.com>
+
+	* strgicmp.c (strgnicmp): Added parentheses around
+	conditions.
+	(main): Added test.
+
+	* output-fig.h: Move the defines to output-fig.c.
+
+2001-12-23  Martin Weber <martweb@gmx.net>
+
+	* output-cgm.c: Fix bugs.
+
+	Message-ID: <3C25CDF4.4C0CC024@gmx.net>.
+	
 2001-12-23  Masatake YAMATO  <yamato@redhat.com>
+
+	* main.c (main): Use at_splines_write, at_input_shortlist
+	and at_output_shortlist.
+
+	* output.h, input.h: Remove declarations. Move them to autotrace.h.
+
+	* input.c (input_format_entry, input_formats): 
+	Change the order of fields.
+
+	* bitmap.c: Don't include string.h.
+
+	* autotrace.[ch]: rename at_output_write to
+	at_splines_write.
+	(at_output_add_handler, at_input_add_handler):
+	New stubs.
+
+	* autotrace.c: Move input and output functions
+	to input.c and output.c.
+
+	* types.h (at_real_coord): Renamed from at_real_coordinate_type.
+	(at_coord): Renamed from at_coordinate_type.
+	Remove progress_func and testcancel_func.
+
+	* *: Remove ptypes.h. 
+
+2001-12-23  Masatake YAMATO  <yamato@redhat.com>
+
+	* ptypes.h: Removed.
 
 	* output-emf.c (WriteHeader): Move a global variable
 	`editor' to here.

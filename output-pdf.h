@@ -4,8 +4,10 @@
 #define OUTPUT_PDF_H
 
 #include <stdio.h>
-#include "ptypes.h"
+#include "types.h"
 #include "spline.h"
+
+#include "output.h"
 
 int output_pdf_writer (FILE* file, at_string name,
 		       int llx, int lly, int urx, int ury, int dpi,

@@ -5,7 +5,6 @@
 
 #include <stdio.h>
 #include "autotrace.h"
-#include "ptypes.h"
 
 typedef at_polynomial_degree polynomial_degree;
 typedef at_spline_type spline_type;
@@ -29,7 +28,7 @@ typedef at_spline_type spline_type;
 extern void print_spline (FILE *, spline_type);
 
 /* Evaluate SPLINE at the given T value.  */
-extern real_coordinate_type evaluate_spline (spline_type spline, at_real t);
+extern at_real_coord evaluate_spline (spline_type spline, at_real t);
 #endif
 
 /* Each outline in a character is typically represented by many

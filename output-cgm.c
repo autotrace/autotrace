@@ -1,4 +1,4 @@
-#include "ptypes.h"
+#include "types.h"
 #include "spline.h"
 #include "color.h"
 #include "output-cgm.h"
@@ -6,10 +6,10 @@
 #include "autotrace.h"
 #include <string.h>
 
-#define CGM_BEGINMETAFILE        0x0028
-#define CGM_BEGINPICTURE         0x0061
+#define CGM_BEGINMETAFILE        0x0020
+#define CGM_BEGINPICTURE         0x0060
 #define CGM_METAFILEVERSION      0x1022
-#define CGM_METAFILEDESCRIPTION  0x1041
+#define CGM_METAFILEDESCRIPTION  0x1040
 
 #define FLOAT_TO_UI16(num) ((UI16)(num * scale))
 
@@ -36,7 +36,6 @@ static at_bool write8(FILE *fdes, UI8 data)
 {
   int count = 0;
 
-  
   count = fwrite(&data, 1, 1, fdes);
   
   return (count == sizeof(UI8)) ? true : false;
@@ -47,7 +46,13 @@ static at_bool output_beginmetafilename(FILE *fdes, UI8 *string)
 {
   int count = 0, len = strlen (string);
  
-  count += write16(fdes, CGM_BEGINMETAFILE);
+  if (len + 1 < 0x001F)
+    count += write16(fdes, CGM_BEGINMETAFILE + len + 1);
+  else
+    {
+      count += write16(fdes, CGM_BEGINMETAFILE + 0x001F);
+      count += write16(fdes, len + 1);
+	}
 
   count += write8(fdes, len);
 
@@ -68,7 +73,13 @@ static at_bool output_beginpicture(FILE *fdes, UI8 *string)
 {
   int count = 0, len = strlen (string);
  
-  count += write16(fdes, CGM_BEGINPICTURE + len);
+  if (len + 1 < 0x001F)
+    count += write16(fdes, CGM_BEGINPICTURE + len + 1);
+  else
+    {
+      count += write16(fdes, CGM_BEGINPICTURE + 0x001F);
+      count += write16(fdes, len + 1);
+	}
 
   count += write8(fdes, len);
 
@@ -85,11 +96,17 @@ static at_bool output_beginpicture(FILE *fdes, UI8 *string)
   return true;
 }
 
-static at_bool output_metafiledescription(FILE *fdes, const UI8 *string)
+static at_bool output_metafiledescription(FILE *fdes, UI8 *string)
 {
   int count = 0, len = strlen (string);
  
-  count += write16(fdes, CGM_METAFILEDESCRIPTION + len);
+  if (len + 1 < 0x001F)
+    count += write16(fdes, CGM_METAFILEDESCRIPTION + len + 1);
+  else
+    {
+      count += write16(fdes, CGM_METAFILEDESCRIPTION + 0x001F);
+      count += write16(fdes, len + 1);
+	}
 
   count += write8(fdes, len);
 
@@ -111,16 +128,19 @@ int output_cgm_writer(FILE* cgm_file, at_string name,
 		     spline_list_array_type shape)
 {
   unsigned this_list;
-
-  color_type last_color = {0,0,0};
-
+  char *des;
+  const char * version_string = at_version(true);
 
   output_beginmetafilename (cgm_file, name);
 
   write16 (cgm_file, CGM_METAFILEVERSION);
   write16 (cgm_file, 0x0002);
 
-  output_metafiledescription (cgm_file, at_version(true));
+  des = (char *) malloc (strlen ("created by ") + strlen (version_string) + 1);
+  strcpy (des, "created by ");
+  strcat (des, version_string);
+  output_metafiledescription (cgm_file, des);
+  free (des);
 
   write16 (cgm_file, 0x1166); /* metafile element list */
   write16 (cgm_file, 0x0001);
@@ -149,10 +169,12 @@ int output_cgm_writer(FILE* cgm_file, at_string name,
       spline_list_type list = SPLINE_LIST_ARRAY_ELT (shape, this_list);
 
 	  if (this_list > 0)
-	    if (shape.centerline)
-		  write16 (cgm_file, 0x0200); /* end a compound line */
-		else
-		  write16 (cgm_file, 0x0120); /* end a figure */
+	    {
+	      if (shape.centerline)
+		write16 (cgm_file, 0x0200); /* end a compound line */
+	      else
+		write16 (cgm_file, 0x0120); /* end a figure */
+	    }
 
       if (shape.centerline)
         write16 (cgm_file, 0x5083);/* line */
@@ -177,7 +199,7 @@ int output_cgm_writer(FILE* cgm_file, at_string name,
         }
 
 	  if (shape.centerline)
-	    write16 (cgm_file, 0x01E0); /* beg­n a compound line */
+	    write16 (cgm_file, 0x01E0); /* begin a compound line */
 	  else
 		write16 (cgm_file, 0x0100); /* begin a figure */   
 
@@ -188,8 +210,7 @@ int output_cgm_writer(FILE* cgm_file, at_string name,
 
           if (SPLINE_DEGREE (s) == LINEARTYPE)
 		  {
-            write16 (cgm_file, 0x403F); /* polyline */
-            write16 (cgm_file, 0x0008);
+            write16 (cgm_file, 0x4028); /* polyline */
             write16 (cgm_file, (UI16) START_POINT (s).x);
             write16 (cgm_file, ury - (UI16) START_POINT (s).y);
             write16 (cgm_file, (UI16) END_POINT (s).x);
@@ -198,7 +219,7 @@ int output_cgm_writer(FILE* cgm_file, at_string name,
           else
 		  {
             write16 (cgm_file, 0x4352); /* polybezier */
-            write16 (cgm_file, 0x0002);
+            write16 (cgm_file, 0x0002); /* continuous */
             write16 (cgm_file, (UI16) START_POINT (s).x);
             write16 (cgm_file, ury - (UI16) START_POINT (s).y);
             write16 (cgm_file, (UI16) CONTROL1 (s).x);
@@ -212,10 +233,12 @@ int output_cgm_writer(FILE* cgm_file, at_string name,
   }
 
   if (SPLINE_LIST_ARRAY_LENGTH(shape) > 0)
-	if (shape.centerline)
-      write16 (cgm_file, 0x0200); /* end a compound line */
-	else
-	  write16 (cgm_file, 0x0120); /* end a figure */
+    {
+      if (shape.centerline)
+	write16 (cgm_file, 0x0200); /* end a compound line */
+      else
+	write16 (cgm_file, 0x0120); /* end a figure */
+    }
 
   write16 (cgm_file, 0x00A0); /* end picture */
 
@@ -224,4 +247,5 @@ int output_cgm_writer(FILE* cgm_file, at_string name,
   return(0);
 
 }
+
 

@@ -3,8 +3,7 @@
 #ifndef INPUT_MAGICK_H
 #define INPUT_MAGICK_H
 
-#include "ptypes.h"
-#include "bitmap.h"
+#include "input.h"
 
 bitmap_type magick_load_image (at_string filename);
 
