@@ -46,6 +46,7 @@
 #if HAVE_LIBPSTOEDIT
 #include "output-pstoedit.h"
 #endif /* HAVE_LIBPSTOEDIT */
+#include "output-pov.h"
 
 struct output_format_entry {
     const char * name;
@@ -72,6 +73,7 @@ static struct output_format_entry output_formats[] = {
     {"pdf",     "PDF format",                   output_pdf_writer},
     {"cgm",     "Computer Graphics Metafile",   output_cgm_writer},
     {"dr2d",    "IFF DR2D format",              output_dr2d_writer},
+    {"pov",     "Povray format",                output_pov_writer},
     END
 };
 

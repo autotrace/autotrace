@@ -1,3 +1,7 @@
+2003-02-08  Martin Weber <martweb@gmx.net>
+
+	* output.c, output-pov.[c,h]: Added new povray output filter.
+	
 2003-02-08  Masatake YAMATO  <yamato@redhat.com>
 
 	* HACKING: Write about ACLOCAL_FLAGS.
