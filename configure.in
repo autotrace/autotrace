@@ -165,9 +165,10 @@ dnl Martin Kerscher <kerscher@theorie.physik.uni-muenchen.de>
 dnl
 AC_MSG_CHECKING([whether the host is Darwin])
 case $host_os in
-     darwin) LDFLAGS="-Xlinker -multiply_defined -Xlinker suppress ${LDFLAGS}"
+     darwin*) LDFLAGS="-Xlinker -multiply_defined -Xlinker suppress ${LDFLAGS}"
      AC_MSG_RESULT([yes])
-     AC_MSG_WARN([* linker messages that warns symbols are multiply defined are suppressed *])
+     AC_MSG_WARN([linker messages that warns symbols are multiply defined 
+are suppressed])
      ;;
      *)	
      AC_MSG_RESULT([no])
