@@ -1,3 +1,10 @@
+2002-10-07  Martin Weber <martweb@gmx.net>
+
+	* fit.c (find_tangent): fixed a bug in tangent
+	calculation.
+
+	Message-ID: <3DA09336.DB788C68@gmx.net>.
+
 2002-10-06  Masatake YAMATO  <yamato@redhat.com>
 
 	* pxl-outline.c (free_pixel_outline): New function.

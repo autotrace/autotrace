@@ -1372,7 +1372,7 @@ find_tangent (curve_type curve, at_bool to_start_point, at_bool cross_curve,
           tangent = find_half_tangent (curve, to_start_point, &n_points,
             tangent_surround);
 
-          if ((cross_curve) || (CURVE_CYCLIC (curve) == true))
+          if ((cross_curve == true) || (CURVE_CYCLIC (curve) == true))
             {
               curve_type adjacent_curve
                 = (to_start_point == true) ? PREVIOUS_CURVE (curve) : NEXT_CURVE (curve);
@@ -1391,7 +1391,11 @@ find_tangent (curve_type curve, at_bool to_start_point, at_bool cross_curve,
       while (tangent.dx == 0.0 && tangent.dy == 0.0);
 
       assert (n_points > 0);
-      **curve_tangent = Vmult_scalar (tangent, (at_real)(1.0 / n_points));
+	  **curve_tangent = Vmult_scalar (tangent, (at_real)(1.0 / n_points));
+	  if ((CURVE_CYCLIC (curve) == true) && CURVE_START_TANGENT (curve))
+		  *CURVE_START_TANGENT (curve) = **curve_tangent;
+	  if  ((CURVE_CYCLIC (curve) == true) && CURVE_END_TANGENT (curve))
+		  *CURVE_END_TANGENT (curve) = **curve_tangent;
     }
   else
     LOG ("(already computed) ");
