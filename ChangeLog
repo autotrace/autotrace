@@ -1,3 +1,9 @@
+2001-03-14  Masatake YAMATO  <yamato@redhat.com>
+
+	* configure.in: Check zlib.
+	Print the required version of libpng. Suggested by 
+	Martin. Message-ID: <3AABC7D4.1E7CDAA@gmx.net>.
+
 2001-03-13  Masatake YAMATO  <yamato@redhat.com>
 
 	Applied a patch from Martin.

@@ -32,8 +32,8 @@ if test "x$MAGICK_CONFIG" = "xMagick-config" ; then
 		AC_DEFINE(HAVE_MAGICK)
 	else
 		MAGICK_CFLAGS=
-		AC_MSG_WARN([Magick-config is found but magick/api.h is not found in $MAGICK_CFLAGS])
- 		AC_MSG_WARN([Check Magick-config.])
+		AC_MSG_WARN([*** Magick-config is found but magick/api.h is not found in $MAGICK_CFLAGS ***])
+ 		AC_MSG_WARN([*** Check Magick-config. ***])
 	fi
 fi
 AM_CONDITIONAL(HAVE_MAGICK, test x$HAVE_MAGICK = xyes)
@@ -41,12 +41,21 @@ AM_CONDITIONAL(HAVE_MAGICK, test x$HAVE_MAGICK = xyes)
 dnl
 dnl LIBPNG
 dnl
+
+dnl Test for zlib (from gimp-1.1.29)
+HAVE_ZLIB=no
+AC_CHECK_LIB(z, gzsetparams,
+      	     AC_CHECK_HEADER(zlib.h,
+	                     HAVE_ZLIB=yes,
+	                     AC_MSG_WARN(*** ZLIB header files not found: PNG Input will be disabled. ***)),
+	     AC_MSG_WARN(*** ZLIB library files not found: PNG Input will be disabled. ***))
+
+dnl Test for libpng
 HAVE_LIBPNG_STAGE1=no
 AC_CHECK_LIB(png, png_get_image_width,
 	HAVE_LIBPNG_STAGE1=yes ,,-lz)
 
 HAVE_LIBPNG=no
-
 if test "x$HAVE_LIBPNG_STAGE1" = "xyes" ; then
 	AC_CHECK_LIB(png, png_read_png,
 		HAVE_LIBPNG=yes ,,-lz)
@@ -55,8 +64,9 @@ if test "x$HAVE_LIBPNG_STAGE1" = "xyes" ; then
 		AC_SUBST(LIBPNG_LDFLAGS)
 		AC_DEFINE(HAVE_LIBPNG)
 	else
-	   AC_MSG_WARN([libpng exists but cannot find png_read_png in the libpng.])
-	   AC_MSG_WARN([libpng might be old.])
+	   AC_MSG_WARN([*** libpng exists but cannot find png_read_png in the libpng. ***])
+	   AC_MSG_WARN([*** libpng might be old. ***])
+	   AC_MSG_WARN([*** You need libpng 1.0.6 or higher. ***])
 	fi
 fi
 AM_CONDITIONAL(HAVE_LIBPNG, test x$HAVE_LIBPNG = xyes)
@@ -77,12 +87,12 @@ if test "${swf_header_found}" = yes ; then
 		AC_SUBST(LIBSWF_LDFLAGS)
 		AC_DEFINE(HAVE_LIBSWF)
 	else
- 		AC_MSG_WARN([Cannot find libming.])
-		AC_MSG_WARN([SWF output is disabled.])
+ 		AC_MSG_WARN([*** Cannot find libming. ***])
+		AC_MSG_WARN([*** SWF output is disabled. ***])
 	fi
 else
-	AC_MSG_WARN([Cannot find ming.h.])
-	AC_MSG_WARN([SWF output is disabled.])
+	AC_MSG_WARN([*** Cannot find ming.h. ***])
+	AC_MSG_WARN([*** SWF output is disabled. ***])
 fi
 AM_CONDITIONAL(HAVE_LIBSWF, test x$HAVE_LIBSWF = xyes)
 
