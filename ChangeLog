@@ -1,6 +1,18 @@
 2001-11-21  Martin Weber <martweb@gmx.net>
 
-	* READM, THANKS, NEWS: Updated(<3BFBEB8D.E493F888@gmx.net>).
+	* output.h (OUTPUT_SUFFIX_LIST): Removed dxf12.
+	Added epd.
+
+	* input-magick.h: Include ptypes.h
+
+	* autotrace.dsp: Updated.
+
+	(Message-ID: <3BFC1CA5.996CD642@gmx.net>)
+	
+2001-11-21  Martin Weber <martweb@gmx.net>
+
+	* READM, THANKS, NEWS: Updated.
+	(Message-ID: <3BFBEB8D.E493F888@gmx.net>)
 	
 2001-11-21  Masatake YAMATO  <yamato@redhat.com>
 

@@ -253,6 +253,14 @@ SOURCE=".\output-emf.h"
 # End Source File
 # Begin Source File
 
+SOURCE=".\output-epd.c"
+# End Source File
+# Begin Source File
+
+SOURCE=".\output-epd.h"
+# End Source File
+# Begin Source File
+
 SOURCE=".\output-eps.c"
 # End Source File
 # Begin Source File
@@ -306,6 +314,10 @@ SOURCE=.\output.c
 # Begin Source File
 
 SOURCE=.\output.h
+# End Source File
+# Begin Source File
+
+SOURCE=.\ptypes.h
 # End Source File
 # Begin Source File
 
