@@ -1,4 +1,4 @@
-/* outline.c: find the outlines of a bitmap image; each outline is made up of one or more pixels;
+/* pxl-outline.c: find the outlines of a bitmap image; each outline is made up of one or more pixels;
    and each pixel participates via one or more edges. */
 
 #include "message.h"

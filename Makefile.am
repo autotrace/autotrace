@@ -1,6 +1,7 @@
 EXTRA_DIST=swf.h output-swf.c output-swf.h  \
 input-magick.h input-magick.c input-png.c input-png.h \
-autotrace-config.af vc++6.0.txt autotrace.dsp autotrace.dsw
+autotrace-config.af vc++6.0.txt autotrace.dsp autotrace.dsw \
+autotrace.m4
 
 AUTOMAKE_OPTIONS = foreign no-dependencies
 
@@ -95,6 +96,9 @@ autotrace_SOURCES=\
 
 libautotrace_a_INCLUDES = $(MAGICK_CFLAGS)
 autotrace_LDADD = libautotrace.a $(MAGICK_LDFLAGS) $(LIBPNG_LDFLAGS) -lm
+
+m4datadir = $(datadir)/aclocal
+m4data_DATA = autotrace.m4
 
 bin_SCRIPTS=autotrace-config
 BUILT_SOURCES=autotrace-config

@@ -1,3 +1,11 @@
+2001-03-02  Masatake YAMATO  <yamato@redhat.com>
+
+	* pxl-outline.c: Put file name on the head of file.
+
+	* Makefile.am: Added autotrace.m4 supports.
+
+	* autotrace.m4: New file.
+
 2001-02-28  Masatake YAMATO  <yamato@redhat.com>
 
  	Applied a patch from Martin.
