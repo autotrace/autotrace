@@ -21,24 +21,24 @@ static string now (void);
 
 /* This should be used for outputting a string S on a line by itself.  */
 #define OUT_LINE(s)                                 \
-  fprintf (ps_file, "%s\n", s)
+  fprintf (epd_file, "%s\n", s)
 
 /* These output their arguments, preceded by the indentation.  */
 #define OUT1(s, e)                                  \
-  fprintf (ps_file, s, e)
+  fprintf (epd_file, s, e)
 
 #define OUT2(s, e1, e2)                             \
-  fprintf (ps_file, s, e1, e2)
+  fprintf (epd_file, s, e1, e2)
 
 #define OUT3(s, e1, e2, e3)                         \
-  fprintf (ps_file, s, e1, e2, e3)
+  fprintf (epd_file, s, e1, e2, e3)
 
 #define OUT4(s, e1, e2, e3, e4)                     \
-  fprintf (ps_file, s, e1, e2, e3, e4)
+  fprintf (epd_file, s, e1, e2, e3, e4)
 
 /* These macros just output their arguments.  */
-#define OUT_STRING(s)	fprintf (ps_file, "%s", s)
-#define OUT_REAL(r)	fprintf (ps_file, r == (ROUND (r = ROUND((real)6.0*r)/(real)6.0))				\
+#define OUT_STRING(s)	fprintf (epd_file, "%s", s)
+#define OUT_REAL(r)	fprintf (epd_file, r == (ROUND (r = ROUND((real)6.0*r)/(real)6.0))				\
                                   ? "%.0f " : "%.3f ", r)
 
 /* For a PostScript command with two real arguments, e.g., lineto.  OP
@@ -72,16 +72,16 @@ static string now (void);
 /* This should be called before the others in this file.  It opens the
    output file `OUTPUT_NAME.ps', and writes some preliminary boilerplate. */
 
-static int output_epd_header(FILE* ps_file, string name,
+static int output_epd_header(FILE* epd_file, string name,
 			     int llx, int lly, int urx, int ury)
 {
   string time;
 
   OUT_LINE ("%EPD-1.0");
-  OUT1 ("% Created by %s\n", version_string);
-  OUT1 ("% Title: %s\n", name);
-  OUT1 ("% CreationDate: %s\n", time = now ());
-  OUT4 ("%BBox(%d,%d,%d,%d\n", llx, lly, urx, ury);
+  OUT1 ("%% Created by %s\n", version_string);
+  OUT1 ("%% Title: %s\n", name);
+  OUT1 ("%% CreationDate: %s\n", time = now ());
+  OUT4 ("%%BBox(%d,%d,%d,%d)\n", llx, lly, urx, ury);
 
   free (time);
 
@@ -92,7 +92,7 @@ static int output_epd_header(FILE* ps_file, string name,
    SHAPE.  */
 
 static void
-out_splines (FILE * ps_file, spline_list_array_type shape)
+out_splines (FILE * epd_file, spline_list_array_type shape)
 {
   unsigned this_list;
 
@@ -131,7 +131,7 @@ out_splines (FILE * ps_file, spline_list_array_type shape)
                           END_POINT (s).x, END_POINT (s).y,
                           "c");
         }
-      OUT_LINE ((shape.centerline || list.open) ? "f" : "S");
+      OUT_LINE ((shape.centerline || list.open) ? "S" : "f");
 
     }
 }

@@ -1,5 +1,13 @@
 2001-11-24  Martin Weber <martweb@gmx.net>
 
+	* output-epd.c: "ps_file"->"epd_file".
+	(output_epd_header): "%%"->"%".
+	(out_splines): swap "S"<->"f" in OUT_LINE.
+
+	(Message-ID: <3BFEA7B6.E4CDB9F5@gmx.net>). 
+	
+2001-11-24  Martin Weber <martweb@gmx.net>
+
 	* output-epd.c (out_splines): Fix a 
 	bugs in output formats.
 	"*U"->"h", "B"->"S".
