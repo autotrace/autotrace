@@ -1,3 +1,9 @@
+2002-08-27  Masatake YAMATO  <yamato@redhat.com>
+
+	* logreport.h (at_log_report): Renamed from
+	log_report. I guess the symbol `log_report' 
+	conflicts with something defined on debian libc.
+
 2002-07-10  Martin Weber <martweb@gmx.net>
 
 	* output.c (at_spline_list_foreach, at_spline_list_array_foreach): 

@@ -16,7 +16,8 @@ extern FILE __declspec(dllimport) *log_file;
 
 #else
 /* The file we write information to.  */
-extern FILE *log_file;
+extern FILE *at_log_file;
+#define log_report at_log_report
 #endif
 
 extern void flush_log_output (void);
