@@ -5,6 +5,7 @@
 
 #include "autotrace.h"
 #include "types.h"
+#include <glib.h>
 
 #ifdef __cplusplus
 extern "C" {
@@ -28,7 +29,15 @@ gboolean at_exception_got_fatal(at_exception_type * exception);
 void at_exception_fatal(at_exception_type * exception,
 			const gchar* message);
 void at_exception_warning(at_exception_type * exception,
-			  const gchar* message);
+			  const gchar * message);
+
+
+#define AT_ERROR at_error_quark()
+GQuark at_error_quark (void);
+typedef enum
+{
+  AT_ERROR_WRONG_COLOR_STRING,
+} AtError;
 
 #ifdef __cplusplus
 }

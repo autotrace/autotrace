@@ -92,7 +92,6 @@ libautotrace_la_SOURCES =\
 		spline.h 			\
 		curve.h 			\
 		vector.h 			\
-		color.h 			\
 		pxl-outline.h                   \
                 despeckle.c                     \
                 despeckle.h			\
@@ -109,7 +108,8 @@ autotraceinclude_HEADERS=\
 		autotrace.h                     \
 		input.h				\
 		output.h 			\
-		exception.h
+		exception.h			\
+		color.h 
 
 libautotrace_la_LDFLAGS = -version-info $(LT_CURRENT):$(LT_REVISION):$(LT_AGE)
 

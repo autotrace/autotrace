@@ -190,7 +190,7 @@ fitted_splines (pixel_outline_list_type pixel_outline_list,
 
       memcpy (&(curve_list_splines.color),
         &(O_LIST_OUTLINE(pixel_outline_list, this_list).color),
-        sizeof (color_type));
+        sizeof (at_color_type));
       append_spline_list (&char_splines, curve_list_splines);
     }
  cleanup:
@@ -245,7 +245,7 @@ fit_curve_list (curve_list_type curve_list,
 	          y = height - (unsigned)(coord->y) - 1;
 
 	          /* Each (x, y) is a point on the skeleton of the curve, which
-		         might be offset from the true centerline, where the width
+		         might be offset from the TRUE centerline, where the width
 		         is maximal.  Therefore, use as the local line width the
 		         maximum distance over the neighborhood of (x, y).  */
 	          width = dist->d[y][x];
@@ -800,7 +800,7 @@ remove_adjacent_corners (index_list_type *list, unsigned last_index,
    Since the first and last points are corners (unless the curve is
    cyclic), it doesn't make sense to remove those.  */
 
-/* This evaluates to true if the vector V is zero in one direction and
+/* This evaluates to TRUE if the vector V is zero in one direction and
    nonzero in the other.  */
 #define ONLY_ONE_ZERO(v)                                                \
   (((v).dx == 0.0 && (v).dy != 0.0) || ((v).dy == 0.0 && (v).dx != 0.0))
@@ -1296,7 +1296,6 @@ fit_one_spline (curve_type curve,
                                   Vmult_scalar (t2_hat, alpha2));
   SPLINE_DEGREE (spline) = CUBICTYPE;
 
- cleanup:
   return spline;
 }
 
@@ -1333,8 +1332,8 @@ set_initial_parameter_values (curve_type curve)
 }
 
 /* Find an approximation to the tangent to an endpoint of CURVE (to the
-   first point if TO_START_POINT is true, else the last).  If
-   CROSS_CURVE is true, consider points on the adjacent curve to CURVE.
+   first point if TO_START_POINT is TRUE, else the last).  If
+   CROSS_CURVE is TRUE, consider points on the adjacent curve to CURVE.
 
    It is important to compute an accurate approximation, because the
    control points that we eventually decide upon to fit the curve will

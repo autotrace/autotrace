@@ -41,12 +41,12 @@ typedef ColorFreq *Histogram;
 typedef struct { 
     int             desired_number_of_colors; /* Number of colors we will allow */ 
     int             actual_number_of_colors; /* Number of colors actually needed */ 
-    color_type      cmap[256]; /* colormap created by quantization */
+    at_color_type      cmap[256]; /* colormap created by quantization */
     ColorFreq       freq[256]; 
     Histogram       histogram; /* holds the histogram */ 
 } QuantizeObj; 
  
-void quantize(bitmap_type*, long ncolors, const color_type *bgColor,
+void quantize(bitmap_type*, long ncolors, const at_color_type *bgColor,
     QuantizeObj**, at_exception_type * exp); 
 
 void quantize_object_free(QuantizeObj * obj);

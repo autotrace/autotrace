@@ -103,10 +103,10 @@ static        unsigned char   todelete[512] = {
               0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 
               1, 0, 1, 1, 1, 0, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1}; 
 
-static color_type background = { 0xff, 0xff, 0xff };
+static at_color_type background = { 0xff, 0xff, 0xff };
 
 
-void thin_image(bitmap_type *image, const color_type *bg, at_exception_type * exp)
+void thin_image(bitmap_type *image, const at_color_type *bg, at_exception_type * exp)
 { 
     /* This is nasty as we need to call thin once for each  
      * colour in the image the way I do this is to keep a second  
@@ -167,7 +167,7 @@ void thin_image(bitmap_type *image, const color_type *bg, at_exception_type * ex
 
 	    if (background.r == background.g && background.g == background.b)
 		bg_color = background.r;
-	    else bg_color = COLOR_LUMINANCE(background);
+	    else bg_color = at_color_luminance(&background);
 
 	    for (n = num_pixels - 1; n >= 0L; --n)
 	    {
@@ -301,7 +301,7 @@ void thin1(bitmap_type *image, unsigned char colour)
 
       if (background.r == background.g && background.g == background.b)
 	  bg_color = background.r;
-      else bg_color = COLOR_LUMINANCE(background);
+      else bg_color = at_color_luminance(&background);
 
       LOG (" Thinning image.....\n "); 
       xsize = BITMAP_WIDTH(*image); 

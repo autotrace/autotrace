@@ -33,7 +33,7 @@
 
 typedef struct {
   char *tag;
-  color_type c;
+  at_color_type c;
 } ColorT;
 
 typedef struct {
@@ -111,7 +111,7 @@ int output_mif_writer(FILE* ps_file, gchar* name,
   int i;
   ColorT col_tbl[256];
   int n_ctbl = 0;
-  color_type curr_color = {0,0,0};
+  at_color_type curr_color = {0,0,0};
 
 
   cbox.llx = llx;
@@ -127,7 +127,7 @@ int output_mif_writer(FILE* ps_file, gchar* name,
     curr_color = (list.clockwise && shape.background_color != NULL)? *(shape.background_color) : list.color;
     
     for( i=0; i<n_ctbl; i++ )
-      if( COLOR_EQUAL(curr_color, col_tbl[i].c) ) break;
+      if( at_color_equal(&curr_color, &col_tbl[i].c) ) break;
 
     if( i >= n_ctbl ){
       col_tbl[n_ctbl].tag = strdup(colorstring(curr_color.r, curr_color.g, curr_color.b));
@@ -169,7 +169,7 @@ int output_mif_writer(FILE* ps_file, gchar* name,
     spline_type first = SPLINE_LIST_ELT (list, 0);
 
     for( i=0; i<n_ctbl; i++ )
-      if( COLOR_EQUAL(curr_color, col_tbl[i].c) ) break;
+      if( at_color_equal(&curr_color, &col_tbl[i].c) ) break;
 
     fprintf(ps_file, " %s\n",
       (shape.centerline || list.open) ? 
@@ -187,7 +187,7 @@ int output_mif_writer(FILE* ps_file, gchar* name,
       } else {
         gfloat temp;
 	gfloat dt = (gfloat) (1.0/7.0);
-	/*smooth = true;*/
+	/*smooth = TRUE;*/
 	for( temp=dt; fabs(temp-(gfloat)1.0)>dt; temp+=dt ){
 	  print_coord(ps_file,
 	    bezpnt(temp,START_POINT(s).x,CONTROL1(s).x,CONTROL2(s).x,END_POINT(s).x),

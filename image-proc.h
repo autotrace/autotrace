@@ -32,7 +32,7 @@ extern void free_distance_map(distance_map_type*);
 
 
 extern void medial_axis(bitmap_type *bitmap, distance_map_type *dist,
-    const color_type *bg_color);
+    const at_color_type *bg_color);
 
 
 /* Binarize a grayscale or color image. */

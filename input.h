@@ -46,7 +46,7 @@ extern int at_input_add_handler (const gchar* suffix,
 				 const gchar* description,
 				 at_input_func reader);
 /* at_input_add_handler_full
-   If OVERRIDE is true and if the old handler for suffix is existed,
+   If OVERRIDE is TRUE and if the old handler for suffix is existed,
    remove the old handler first then add new handler.  
    If OVERRIDE is false, do nothing. */
 extern int at_input_add_handler_full (const gchar* suffix, 

@@ -9,7 +9,7 @@
 #include <math.h>
 
 /* Numerical errors sometimes make a floating point number just slightly
-   larger or smaller than its true value.  When it matters, we need to
+   larger or smaller than its TRUE value.  When it matters, we need to
    compare with some tolerance, REAL_EPSILON, defined in kbase.h.  */
 
 gboolean

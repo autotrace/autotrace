@@ -279,9 +279,9 @@ int output_ugs_writer (FILE* file, gchar* name,
 		       gpointer usar_data)
 {
 	/* Write the header.  */
-	fprintf (file, "symbol %#x design-size %ld\n",
+	fprintf (file, "symbol %#lx design-size %ld\n",
 		ugs_charcode, ugs_design_pixels);
-	fprintf (file, "\tadvance-width %d\n", ugs_advance_width);
+	fprintf (file, "\tadvance-width %ld\n", ugs_advance_width);
 
 	upperx = ugs_advance_width - ugs_max_col - 1;
 	uppery = ugs_max_row;

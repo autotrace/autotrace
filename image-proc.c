@@ -200,13 +200,13 @@ free_distance_map(distance_map_type *dist)
 #if 0
 void
 medial_axis(bitmap_type *bitmap, distance_map_type *dist,
-    const color_type *bg_color)
+    const at_color_type *bg_color)
 {
     unsigned x, y, test;
     unsigned w, h;
     unsigned char *b;
     float **d, f;
-    color_type bg;
+    at_color_type bg;
 
     assert(bitmap != NULL);
 
@@ -353,10 +353,10 @@ ip_thin(bitmap_type input_b)
     for (i = 0; i < num_bytes; i++)
 	b.bitmap[i] = (b.bitmap[i] == BLACK ? 1 : 0);
 
-    again = true;
+    again = TRUE;
     while (again)
     {
-	again = false;
+	again = FALSE;
 
 	for (y = 1; y < h - 1; y++)
 	{
@@ -378,7 +378,7 @@ ip_thin(bitmap_type input_b)
 		    get_edge(b, y, x, &t);
 		    if (t.t01) *BITMAP_PIXEL(b, y, x) |= 4;
 		    *BITMAP_PIXEL(b, y, x) |= 2;
-		    again = true;
+		    again = TRUE;
 	    }
 	}
 
@@ -403,7 +403,7 @@ ip_thin(bitmap_type input_b)
 		    if (k) continue;
 
 		    *BITMAP_PIXEL(b, y, x) |= 02;
-		    again = true;
+		    again = TRUE;
 	    }
 	}
 

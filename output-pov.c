@@ -61,7 +61,7 @@ out_splines (FILE * pov_file, spline_list_array_type shape)
   unsigned this_list;
   spline_list_type list;
 
-  color_type last_color = {0,0,0};
+  at_color_type last_color = {0,0,0};
 
 
   for (this_list = 0; this_list < SPLINE_LIST_ARRAY_LENGTH (shape);
@@ -78,7 +78,7 @@ out_splines (FILE * pov_file, spline_list_array_type shape)
          test_list++)
 	    {
 	      spline_list_type testlist = SPLINE_LIST_ARRAY_ELT (shape, test_list);
-          if (!COLOR_EQUAL(testlist.color, list.color))
+          if (!at_color_equal(&testlist.color, &list.color))
             break;
 		  number += SPLINE_LIST_LENGTH (testlist) * 4;
 		}
@@ -87,7 +87,7 @@ out_splines (FILE * pov_file, spline_list_array_type shape)
 
       if (this_list > 0)
 	    {
-			if (!COLOR_EQUAL(list.color, last_color))
+			if (!at_color_equal(&list.color, &last_color))
 			  {
 		        OUT3 ("\n  pigment {rgb<%.3f, %.3f, %.3f>}\n", (double) last_color.r/255.0,
                   (double) last_color.g/255.0,(double) last_color.b/255.0);
@@ -98,7 +98,7 @@ out_splines (FILE * pov_file, spline_list_array_type shape)
 		      OUT_LINE (",");
 		}
 
-      if (this_list == 0 || !COLOR_EQUAL(list.color, last_color))
+      if (this_list == 0 || !at_color_equal(&list.color, &last_color))
 		{
           OUT_LINE ("prism {");
           OUT_LINE ("  bezier_spline");

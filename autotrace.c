@@ -160,7 +160,7 @@ at_bitmap_new(unsigned short width,
 }
 
 at_bitmap_type *
-at_bitmap_copy(at_bitmap_type * src)
+at_bitmap_copy(const at_bitmap_type * src)
 {
   at_bitmap_type * dist;
   unsigned short width, height, planes;
@@ -208,23 +208,53 @@ at_bitmap_free (at_bitmap_type * bitmap)
 }
 
 unsigned short
-at_bitmap_get_width (at_bitmap_type * bitmap)
+at_bitmap_get_width (const at_bitmap_type * bitmap)
 {
   return bitmap->width;
 }
 
 unsigned short
-at_bitmap_get_height (at_bitmap_type * bitmap)
+at_bitmap_get_height (const at_bitmap_type * bitmap)
 {
   return bitmap->height;
 }
 
 unsigned short
-at_bitmap_get_planes (at_bitmap_type * bitmap)
+at_bitmap_get_planes (const at_bitmap_type * bitmap)
 {
   /* Here we use cast rather changing the type definition of 
      at_bitmap_type::np to keep binary compatibility. */
   return (unsigned short) bitmap->np;
+}
+
+void
+at_bitmap_get_color (const at_bitmap_type * bitmap,
+		     unsigned int row, unsigned int col,
+		     at_color_type * color)
+{
+  unsigned char *p;
+  g_return_if_fail (color);
+  g_return_if_fail (bitmap);
+  
+  p  = AT_BITMAP_PIXEL (*bitmap, row, col);
+  if (at_bitmap_get_planes (bitmap) >= 3)
+    at_color_set(color, p[0], p[1], p[2]);
+  else
+    at_color_set(color, p[0], p[0], p[0]);
+}
+
+gboolean
+at_bitmap_equal_color(const at_bitmap_type * bitmap,
+		      unsigned int row, unsigned int col,
+		      at_color_type * color)
+{
+  at_color_type c;
+  
+  g_return_val_if_fail (bitmap, FALSE);
+  g_return_val_if_fail (color, FALSE);
+  
+  at_bitmap_get_color(bitmap, row, col, &c);
+  return at_color_equal(&c, color);
 }
 
 at_splines_type * 
@@ -308,7 +338,7 @@ at_splines_new_full (at_bitmap_type * bitmap,
      the execution is canceled; use CANCEL_THEN_CLEANUP_PIXELS. */
   if (opts->centerline)
     {
-      color_type background_color = { 0xff, 0xff, 0xff };
+      at_color_type background_color = { 0xff, 0xff, 0xff };
       if (opts->background_color) 
         background_color = *opts->background_color;
 
@@ -396,43 +426,6 @@ at_splines_free (at_splines_type * splines)
   free(splines);
 }
 
-at_color_type * 
-at_color_new (unsigned char r, 
-	      unsigned char g,
-	      unsigned char b)
-{
-  at_color_type * color;
-  XMALLOC (color, sizeof (at_color_type));
-  color->r = r;
-  color->g = g;
-  color->b = b;
-  return color;
-}
-
-at_color_type *
-at_color_copy (at_color_type * original)
-{
-  if (original == NULL)
-    return NULL;
-  return at_color_new(original->r, 
-		      original->g, 
-		      original->b);
-}
-
-gboolean
-at_color_equal (at_color_type * c1, at_color_type * c2)
-{
-  if (c1 == c2 || COLOR_EQUAL(*c1, *c2))
-    return TRUE;
-  else
-    return FALSE;
-}
-
-void 
-at_color_free(at_color_type * color)
-{
-  free(color);
-}
 
 const char *
 at_version (gboolean long_format)
@@ -474,3 +467,4 @@ at_fitting_opts_doc_func(char * string)
 {
   return _(string);
 }
+

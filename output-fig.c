@@ -46,7 +46,7 @@
 static gfloat bezpnt(gfloat, gfloat, gfloat, gfloat, gfloat);
 static void out_fig_splines(FILE *, spline_list_array_type, int, int, int, int,
 			    at_exception_type *);
-static int get_fig_colour(color_type, at_exception_type *);
+static int get_fig_colour(at_color_type, at_exception_type *);
 static void fig_col_init(void);
 
 /* colour information */
@@ -58,7 +58,7 @@ static struct {
 }       fig_hash[544];
 
 static struct {
-        unsigned char r,g,b;
+        at_color_type c;
         int alternate;
 }       fig_colour_map[544];
 
@@ -150,14 +150,14 @@ static void out_fig_splines(FILE * file, spline_list_array_type shape,
 	 this_list++)
     {
 	spline_list_type list = SPLINE_LIST_ARRAY_ELT (shape, this_list);
-	color_type curr_color = (list.clockwise && shape.background_color != NULL) ? *(shape.background_color) : list.color;
+	at_color_type curr_color = (list.clockwise && shape.background_color != NULL) ? *(shape.background_color) : list.color;
 	spline_colours[this_list] = get_fig_colour(curr_color, exp);
     }
     /* Output colours */
     if (LAST_FIG_COLOUR > 32) {
 	for (i=32; i<LAST_FIG_COLOUR; i++) {
-	    fprintf(file,"0 %d #%.2x%.2x%.2x\n",i,fig_colour_map[i].r,
-		fig_colour_map[i].g,fig_colour_map[i].b);
+	    fprintf(file,"0 %d #%.2x%.2x%.2x\n",i,fig_colour_map[i].c.r,
+		    fig_colour_map[i].c.g,fig_colour_map[i].c.b);
 	}
     }
 /*	Each "spline list" in the array appears to be a group of splines */
@@ -355,44 +355,44 @@ static void fig_col_init(void)
     /*	populate the first 8 primary colours	*/
     /* Black */
     fig_hash[0].colour = FIG_BLACK;
-    fig_colour_map[FIG_BLACK].r = 0;
-    fig_colour_map[FIG_BLACK].g = 0;
-    fig_colour_map[FIG_BLACK].b = 0;
+    fig_colour_map[FIG_BLACK].c.r = 0;
+    fig_colour_map[FIG_BLACK].c.g = 0;
+    fig_colour_map[FIG_BLACK].c.b = 0;
     /* White */
     fig_hash[543].colour = FIG_WHITE;
-    fig_colour_map[FIG_WHITE].r = 255;
-    fig_colour_map[FIG_WHITE].g = 255;
-    fig_colour_map[FIG_WHITE].b = 255;
+    fig_colour_map[FIG_WHITE].c.r = 255;
+    fig_colour_map[FIG_WHITE].c.g = 255;
+    fig_colour_map[FIG_WHITE].c.b = 255;
     /* Red */
     fig_hash[255].colour = FIG_RED;
-    fig_colour_map[FIG_RED].r = 255;
-    fig_colour_map[FIG_RED].g = 0;
-    fig_colour_map[FIG_RED].b = 0;
+    fig_colour_map[FIG_RED].c.r = 255;
+    fig_colour_map[FIG_RED].c.g = 0;
+    fig_colour_map[FIG_RED].c.b = 0;
     /* Green */
     fig_hash[161].colour = FIG_GREEN;
-    fig_colour_map[FIG_GREEN].r = 0;
-    fig_colour_map[FIG_GREEN].g = 255;
-    fig_colour_map[FIG_GREEN].b = 0;
+    fig_colour_map[FIG_GREEN].c.r = 0;
+    fig_colour_map[FIG_GREEN].c.g = 255;
+    fig_colour_map[FIG_GREEN].c.b = 0;
     /* Blue */
     fig_hash[127].colour = FIG_BLUE;
-    fig_colour_map[FIG_BLUE].r = 0;
-    fig_colour_map[FIG_BLUE].g = 0;
-    fig_colour_map[FIG_BLUE].b = 255;
+    fig_colour_map[FIG_BLUE].c.r = 0;
+    fig_colour_map[FIG_BLUE].c.g = 0;
+    fig_colour_map[FIG_BLUE].c.b = 255;
     /* Cyan */
     fig_hash[198].colour = FIG_CYAN;
-    fig_colour_map[FIG_CYAN].r = 0;
-    fig_colour_map[FIG_CYAN].g = 255;
-    fig_colour_map[FIG_CYAN].b = 255;
+    fig_colour_map[FIG_CYAN].c.r = 0;
+    fig_colour_map[FIG_CYAN].c.g = 255;
+    fig_colour_map[FIG_CYAN].c.b = 255;
     /* Magenta */
     fig_hash[382].colour = FIG_MAGENTA;
-    fig_colour_map[FIG_MAGENTA].r = 255;
-    fig_colour_map[FIG_MAGENTA].g = 0;
-    fig_colour_map[FIG_MAGENTA].b = 255;
+    fig_colour_map[FIG_MAGENTA].c.r = 255;
+    fig_colour_map[FIG_MAGENTA].c.g = 0;
+    fig_colour_map[FIG_MAGENTA].c.b = 255;
     /* Yellow */
     fig_hash[416].colour = FIG_YELLOW;
-    fig_colour_map[FIG_YELLOW].r = 255;
-    fig_colour_map[FIG_YELLOW].g = 255;
-    fig_colour_map[FIG_YELLOW].b = 0;
+    fig_colour_map[FIG_YELLOW].c.r = 255;
+    fig_colour_map[FIG_YELLOW].c.g = 255;
+    fig_colour_map[FIG_YELLOW].c.b = 0;
 }
 
 /*
@@ -400,21 +400,21 @@ static void fig_col_init(void)
  * If unknown, create a new colour index and return that.
  */
 
-static int get_fig_colour(color_type this_colour, at_exception_type * exp)
+static int get_fig_colour(at_color_type this_colour, at_exception_type * exp)
 {
     int hash,i,this_ind;
 
     hash = fig_col_hash(this_colour);
 
 /*  Special case: black _IS_ zero: */
-    if ((hash == 0) && (COLOR_EQUAL(fig_colour_map[0],this_colour)))
+    if ((hash == 0) && (at_color_equal(&(fig_colour_map[0].c), &this_colour)))
 	{return(0);}
 
     if (fig_hash[hash].colour == 0) {
 	fig_hash[hash].colour = LAST_FIG_COLOUR;
-	fig_colour_map[LAST_FIG_COLOUR].r = this_colour.r;
-	fig_colour_map[LAST_FIG_COLOUR].g = this_colour.g;
-	fig_colour_map[LAST_FIG_COLOUR].b = this_colour.b;
+	fig_colour_map[LAST_FIG_COLOUR].c.r = this_colour.r;
+	fig_colour_map[LAST_FIG_COLOUR].c.g = this_colour.g;
+	fig_colour_map[LAST_FIG_COLOUR].c.b = this_colour.b;
 	LAST_FIG_COLOUR++;
 	if (LAST_FIG_COLOUR >= MAX_FIG_COLOUR) {
 	  LOG1("Output-Fig: too many colours: %d", LAST_FIG_COLOUR);
@@ -427,15 +427,15 @@ static int get_fig_colour(color_type this_colour, at_exception_type * exp)
 	this_ind = fig_hash[hash].colour;
 figcolloop:
 	/* If colour match return current colour */
-	if (COLOR_EQUAL(fig_colour_map[this_ind],this_colour)) {
+	if (at_color_equal(&(fig_colour_map[this_ind].c), &this_colour)) {
 		return(this_ind);
 	}
 	/* If next colour zero - set it, return */
 	if (fig_colour_map[this_ind].alternate == 0) {
 	    fig_colour_map[this_ind].alternate = LAST_FIG_COLOUR;
-	    fig_colour_map[LAST_FIG_COLOUR].r = this_colour.r;
-	    fig_colour_map[LAST_FIG_COLOUR].g = this_colour.g;
-	    fig_colour_map[LAST_FIG_COLOUR].b = this_colour.b;
+	    fig_colour_map[LAST_FIG_COLOUR].c.r = this_colour.r;
+	    fig_colour_map[LAST_FIG_COLOUR].c.g = this_colour.g;
+	    fig_colour_map[LAST_FIG_COLOUR].c.b = this_colour.b;
 	    LAST_FIG_COLOUR++;
 	    if (LAST_FIG_COLOUR >= MAX_FIG_COLOUR) {
 	      LOG1("Output-Fig: too many colours: %d", LAST_FIG_COLOUR);

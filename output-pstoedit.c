@@ -65,7 +65,6 @@ static int output_pstoedit_writer (FILE* file, gchar* name,
 
 
 static gboolean unusable_writer_p(const gchar* name);
-static const gchar* get_symbolicname(const gchar* suffix);
 
 static void remove_temporary_file (const gchar* tmpfile_name);
 static FILE * make_temporary_file(char *template, char * mode);

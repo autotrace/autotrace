@@ -227,7 +227,7 @@ out_splines (FILE *pdf_file, spline_list_array_type shape, size_t *length)
   unsigned this_list;
   spline_list_type list;
 
-  color_type last_color = {0,0,0};
+  at_color_type last_color = {0,0,0};
 
   for (this_list = 0; this_list < SPLINE_LIST_ARRAY_LENGTH (shape);
        this_list++)
@@ -238,7 +238,7 @@ out_splines (FILE *pdf_file, spline_list_array_type shape, size_t *length)
       list = SPLINE_LIST_ARRAY_ELT (shape, this_list);
       first = SPLINE_LIST_ELT (list, 0);
 
-      if (this_list == 0 || !COLOR_EQUAL(list.color, last_color))
+      if (this_list == 0 || !at_color_equal(&list.color, &last_color))
         {
           if (this_list > 0)
             {
@@ -286,7 +286,7 @@ out_splines (FILE *pdf_file, spline_list_array_type shape, size_t *length)
       list = SPLINE_LIST_ARRAY_ELT (shape, this_list);
       first = SPLINE_LIST_ELT (list, 0);
 
-      if (this_list == 0 || !COLOR_EQUAL(list.color, last_color))
+      if (this_list == 0 || !at_color_equal(&list.color, &last_color))
         {
           if (this_list > 0)
             {

@@ -36,26 +36,18 @@ extern "C" {
  * ===================================================================== */
 
 #include "types.h"
+#include "color.h"
 
 typedef struct _at_fitting_opts_type at_fitting_opts_type;
 typedef struct _at_input_opts_type   at_input_opts_type;
 typedef struct _at_output_opts_type  at_output_opts_type;
-typedef struct _at_bitmap_type at_bitmap_type;
-typedef struct _at_color_type at_color_type;
-typedef enum _at_polynomial_degree at_polynomial_degree;
-typedef struct _at_spline_type at_spline_type;
-typedef struct _at_spline_list_type at_spline_list_type;
+typedef struct _at_bitmap_type       at_bitmap_type;
+typedef enum   _at_polynomial_degree at_polynomial_degree;
+typedef struct _at_spline_type       at_spline_type;
+typedef struct _at_spline_list_type  at_spline_list_type;
 typedef struct _at_spline_list_array_type at_spline_list_array_type;
 #define at_splines_type at_spline_list_array_type 
 typedef enum _at_msg_type at_msg_type;
-
-/* Color in RGB */
-struct _at_color_type
-{
-  unsigned char r;
-  unsigned char g;
-  unsigned char b;
-};
 
 /* Third degree is the highest we deal with.  */
 enum _at_polynomial_degree
@@ -265,7 +257,7 @@ typedef void           (* at_progress_func)    (gfloat percentage,
 
 /*
  * Test cancel
- * Return true if auto-tracing should be stopped.
+ * Return TRUE if auto-tracing should be stopped.
  */
 typedef gboolean          (*  at_testcancel_func) (gpointer client_data);
 
@@ -328,14 +320,20 @@ at_bitmap_type * at_bitmap_read (at_bitmap_reader * reader,
 at_bitmap_type * at_bitmap_new(unsigned short width,
 			       unsigned short height,
 			       unsigned int planes);
-at_bitmap_type * at_bitmap_copy(at_bitmap_type * src);
+at_bitmap_type * at_bitmap_copy(const at_bitmap_type * src);
 
 /* We have to export functions that supports internal datum 
    access. Such functions might be useful for 
    at_bitmap_new user. */
-unsigned short at_bitmap_get_width (at_bitmap_type * bitmap);
-unsigned short at_bitmap_get_height (at_bitmap_type * bitmap);
-unsigned short at_bitmap_get_planes (at_bitmap_type * bitmap);
+unsigned short at_bitmap_get_width  (const at_bitmap_type * bitmap);
+unsigned short at_bitmap_get_height (const at_bitmap_type * bitmap);
+unsigned short at_bitmap_get_planes (const at_bitmap_type * bitmap);
+void at_bitmap_get_color (const at_bitmap_type * bitmap,
+			  unsigned int row, unsigned int col,
+			  at_color_type * color);
+gboolean at_bitmap_equal_color(const at_bitmap_type * bitmap,
+			       unsigned int row, unsigned int col,
+			       at_color_type * color);
 void at_bitmap_free (at_bitmap_type * bitmap);
 
 
@@ -401,16 +399,6 @@ void at_splines_write(at_spline_writer * writer,
 void at_splines_free (at_splines_type * splines);
 
 /* --------------------------------------------------------------------- *
- * Color related 
- * --------------------------------------------------------------------- */
-at_color_type * at_color_new   (unsigned char r, 
-				unsigned char g,
-			        unsigned char b);
-at_color_type * at_color_copy  (at_color_type * original);
-gboolean         at_color_equal (at_color_type * c1, at_color_type * c2);
-void            at_color_free  (at_color_type * color);
-
-/* --------------------------------------------------------------------- *
  * Input related 
  * --------------------------------------------------------------------- */
 at_bitmap_reader * at_input_get_handler (gchar* filename);
@@ -442,8 +430,8 @@ char * at_output_shortlist (void);
 /* at_version
 
    args:
-   LONG_FORMAT == true: "AutoTrace version x.y"
-   LONG_FORMAT == false: "x.y" 
+   LONG_FORMAT == TRUE: "AutoTrace version x.y"
+   LONG_FORMAT == FALSE: "x.y" 
 
    return value: Don't free. It is allocated statically */
 const char * at_version (gboolean long_format);

@@ -50,3 +50,12 @@ at_exception_warning(at_exception_type * exception,
 			     exception->client_data);
     }
 }
+
+GQuark
+at_error_quark (void)
+{
+  static GQuark q = 0;
+  if (q == 0)
+    q = g_quark_from_static_string ("at-error-quark");
+  return q;
+}

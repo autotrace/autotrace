@@ -107,7 +107,7 @@ static struct Chunk * BuildCMAP(spline_list_array_type shape) {
 	this_list_length = SPLINE_LIST_ARRAY_LENGTH(shape);
 	for (this_list = 0; this_list < this_list_length; this_list++) {
 		spline_list_type list = SPLINE_LIST_ARRAY_ELT(shape, this_list);
-        color_type curr_color = curr_color = (list.clockwise && shape.background_color != NULL)? *(shape.background_color) : list.color;
+        at_color_type curr_color = curr_color = (list.clockwise && shape.background_color != NULL)? *(shape.background_color) : list.color;
 
 		Red = curr_color.r;
 		Green = curr_color.g;
@@ -399,7 +399,7 @@ static struct Chunk ** GeneratexPLY(struct Chunk * CMAP, spline_list_array_type 
 	for (this_list = 0; this_list < this_list_length; this_list++) {
 		spline_list_type list = SPLINE_LIST_ARRAY_ELT(shape, this_list);
 		spline_type first = SPLINE_LIST_ELT(list, 0);
-        color_type curr_color = curr_color = (list.clockwise && shape.background_color != NULL)? *(shape.background_color) : list.color;
+        at_color_type curr_color = curr_color = (list.clockwise && shape.background_color != NULL)? *(shape.background_color) : list.color;
 
 		StrokeOrFill = (shape.centerline || list.open);
 		this_spline_length = SPLINE_LIST_LENGTH(list);

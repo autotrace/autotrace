@@ -1,18 +1,49 @@
-/* color.h: declarations for color handling. */
+/* color.h: declarations for color handling. 
+   
+  Copyright (C) 2000, 2001, 2002 Martin Weber
 
-#ifndef COLOR_H
-#define COLOR_H
+  The author can be contacted at <martweb@gmx.net>
 
-#include "autotrace.h"
-#include "bitmap.h"
+  This program is free software; you can redistribute it and/or modify
+  it under the terms of the GNU General Public License as published by
+  the Free Software Foundation; either version 2 of the License, or
+  (at your option) any later version.
 
-typedef at_color_type color_type;
+  This program is distributed in the hope that it will be useful,
+  but WITHOUT ANY WARRANTY; without even the implied warranty of
+  MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+  GNU General Public License for more details.
 
+  You should have received a copy of the GNU General Public License
+  along with this program; if not, write to the Free Software
+  Foundation, Inc., 675 Mass Ave, Cambridge, MA 02139, USA. */
+
+#ifndef AT_COLOR_H
+#define AT_COLOR_H
+
+#include <glib.h>
+#include <glib-object.h>
+
+typedef struct _at_color_type        at_color_type;
+struct _at_color_type
+{
+  guint8 r;
+  guint8 g;
+  guint8 b;
+};
+
+at_color_type *  at_color_new   (guint8 r, 
+				 guint8 g,
+				 guint8 b);
+at_color_type *  at_color_parse (const gchar * string, GError ** err);
+at_color_type *  at_color_copy  (const at_color_type * original);
+gboolean         at_color_equal (const at_color_type * c1, const at_color_type * c2);
+void             at_color_set   (at_color_type * c1, guint8 r, guint8 g, guint8 b);
 /* RGB to grayscale */
-#define COLOR_LUMINANCE(c) ((unsigned char)(((c).r) * 0.30 + ((c).g) * 0.59 + ((c).b) * 0.11 + 0.5))
+unsigned char    at_color_luminance (const at_color_type * color);
+void             at_color_free  (at_color_type * color);
 
-#define COLOR_EQUAL(c1,c2) (((c1).r == (c2).r) && ((c1).g == (c2).g) && ((c1).b == (c2).b))
+GType at_color_get_type (void);
+#define AT_TYPE_COLOR (at_color_get_type ())
 
-color_type GET_COLOR (at_bitmap_type, unsigned int, unsigned int);
-
-#endif /* not COLOR_H */
+#endif /* not AT_COLOR_H */

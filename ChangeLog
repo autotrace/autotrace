@@ -1,3 +1,74 @@
+2003-08-05  Masatake YAMATO  <yamato@redhat.com>
+
+	* curve.c (log_curve): Use %lx.
+
+	* output-pstoedit.c: Remove get_symbolicname decl.
+
+	* output-ugs.c (output_ugs_writer): Use %ld.
+
+	* thin-image.h: Use at_color_type instead of color_type.
+	color_type is obsoleted.
+
+	* fit.c: Likewise.
+
+	* image-proc.c: Likewise. Use TRUE and FALSE
+	instead of true and false.
+	
+	* image-proc.h: Likewise.
+
+	* median.c: Likewise.
+
+	* output-dr2d.c: Likewise.
+
+	* output-dxf.c: Likewise.
+
+	* output-epd.c: Likewise.
+
+	* output-eps.c: Likewise.
+
+	* output-fig.c: Likewise.
+	(fig_hash): Use at_color_type.c instead
+	of r, g, b. 
+
+	* output-mif.c: Likewise.
+
+	* output-p2e.c: Likewise.
+
+	* output-pdf.c: Likewise.
+
+	* output-pov.c: Likewise.
+
+	* output-svg.c: Likewise.
+
+	* pxl-outline.c: Likewise.
+	Use at_bitmap_get_color instead of GET_COLOR. 
+	Use at_bitmap_equal_color.
+
+	* pxl-outline.h: Likewise.
+
+	* quantize.h (quantize): Likewise.
+
+	* thin-image.c: Likewise. Use at_color_luminance instead
+	of COLOR_LUMINANCE.
+
+	* autotrace.c (at_bitmap_get_color, at_bitmap_equal_color): New functions.
+
+	* autotrace.h: at color type is moved to color.h.
+
+	* color.c: Rewrote.
+
+	* color.h: color_type is removed. Use at_color_type.
+
+	* exception.c (at_error_quark): New function.
+
+	* exception.h (AtError, at_error_quark, AT_ERROR): New 
+	data type, macro and decl.
+
+	* main.c (read_command_line): Use at_color_parse.
+	hctoi is removed.
+
+	* Makefile.am (autotraceinclude_HEADERS): Added color.h.
+	
 2003-07-05  Masatake YAMATO  <yamato@redhat.com>
 
 	* configure.in (AC_MSG_ERROR): Fix a typo.
