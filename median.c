@@ -839,15 +839,16 @@ static QuantizeObj *initialize_median_cut(int num_colors)
 
 
 void quantize(bitmap_type *image, long ncolors, const color_type *bgColor,
-    QuantizeObj **iQuant) 
+	      QuantizeObj **iQuant, at_exception * exp)
 {
     QuantizeObj *quantobj;
     unsigned int spp = BITMAP_PLANES(*image);
  
     if (spp != 3 && spp != 1)
     {
-	WARNING1("quantize: %u-plane images are not supported", spp);
-	return;
+      LOG1 ("quantize: %u-plane images are not supported", spp);
+      at_exception_fatal(exp, "quantize: wrong plane images are passed");
+      return;
     }
 
     /* If a pointer was sent in, let's use it. */ 

@@ -1,3 +1,29 @@
+2002-01-05  Masatake YAMATO  <yamato@redhat.com>
+
+	* vector.c (acos_d): Use exception.
+	Return 0.0.
+
+	* thin-image.c (thin_image): Fatal if wrong planes.
+
+	* spline.c (print_spline): Use assert instead
+	of FATAL macro.
+
+	* pxl-outline.[hc]: Use exception instead
+	of FATAL.
+
+	* median.c (quantize): Fatal if wrong planes.
+
+	* quantize.h (quantize): Likewise.
+	
+	* fit.c (find_corners): Pass exception context to
+	Vangle.
+
+	* autotrace.c (at_splines_new_full): Use exception
+	in quantize and thin_image. Handle exception after 
+	find_*_pixels.
+
+	* spline.c (print_spline): Use assert instead of FATAL1.
+
 2002-01-04  Masatake YAMATO  <yamato@redhat.com>
 
 	* main.c (exception_handler): New func. Passed to at_splines_new.

@@ -515,7 +515,9 @@ find_corners (pixel_outline_type pixel_outline,
       /* Check if the angle is small enough.  */
       find_vectors (p, pixel_outline, &in_vector, &out_vector,
             fitting_opts->corner_surround);
-      corner_angle = Vangle (in_vector, out_vector);
+      corner_angle = Vangle (in_vector, out_vector, exception);
+      if (at_exception_got_fatal(exception))
+	goto cleanup;
 
       if (fabs (corner_angle) <= fitting_opts->corner_threshold)
         {
@@ -557,7 +559,9 @@ find_corners (pixel_outline_type pixel_outline,
               q = i % O_LENGTH (pixel_outline);
               find_vectors (q, pixel_outline, &in_vector, &out_vector,
                             fitting_opts->corner_surround);
-              corner_angle = Vangle (in_vector, out_vector);
+              corner_angle = Vangle (in_vector, out_vector, exception);
+	      if (at_exception_got_fatal(exception))
+		goto cleanup;
 
               /* If we come across a corner that is just as good as the
                  best one, we should make it a corner, too.  This
@@ -612,6 +616,7 @@ find_corners (pixel_outline_type pixel_outline,
 			     O_LENGTH (pixel_outline) - (pixel_outline.open ? 2 : 1),
 			     fitting_opts->remove_adj_corners,
      			     exception);
+ cleanup:  
   return corner_list;
 }
 

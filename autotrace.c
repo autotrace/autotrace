@@ -155,11 +155,19 @@ at_splines_new_full (at_bitmap_type * bitmap,
   image_header.height = at_bitmap_get_height(bitmap);
 
   if (opts->color_count > 0)
-    quantize (bitmap, opts->color_count, opts->bgColor, &myQuant);
+    {
+      quantize (bitmap, opts->color_count, opts->bgColor, &myQuant, &exp);
+      if (at_exception_got_fatal(&exp))
+	return splines;
+    }
   CANCEL_THEN_RETURN();
 
-  if (opts->centerline) 
-    thin_image (bitmap, opts->bgColor); 
+  if (opts->centerline)
+    {
+      thin_image (bitmap, opts->bgColor, &exp);
+      if (at_exception_got_fatal(&exp))
+	return splines;
+    }
   CANCEL_THEN_RETURN();
 
   /* Hereafter, pixels is allocated. pixels must be freed if 
@@ -171,12 +179,15 @@ at_splines_new_full (at_bitmap_type * bitmap,
 
     pixels = find_centerline_pixels(*bitmap, bg_color, 
 				    notify_progress, progress_data,
-				    test_cancel, testcancel_data);
+				    test_cancel, testcancel_data, &exp);
   }
   else
     pixels = find_outline_pixels(*bitmap, opts->bgColor, 
 				 notify_progress, progress_data,
-				 test_cancel, testcancel_data);
+				 test_cancel, testcancel_data, &exp);
+  if (at_exception_got_fatal(&exp))
+    /* TODO: splines is empty? */
+    goto cleanup;
   CANCEL_THEN_CLEANUP();
 
   
@@ -188,6 +199,7 @@ at_splines_new_full (at_bitmap_type * bitmap,
 			     notify_progress, progress_data,
 			     test_cancel, testcancel_data);
   if (at_exception_got_fatal(&exp))
+    /* TODO: splines is empty? */
     goto cleanup;
 
   if (CANCELP)

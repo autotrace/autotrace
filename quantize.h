@@ -2,6 +2,7 @@
 
 #include "bitmap.h"
 #include "color.h"
+#include "exception.h"
 
 #ifndef QUANTIZE_H
 #define QUANTIZE_H
@@ -29,7 +30,7 @@ typedef struct {
 } QuantizeObj; 
  
 void quantize(bitmap_type*, long ncolors, const color_type *bgColor,
-    QuantizeObj**); 
+    QuantizeObj**, at_exception * exp); 
 
 #endif /* NOT QUANTIZE_H */
 

@@ -4,6 +4,7 @@
 #define PXL_OUTLINE_H
 
 #include "autotrace.h"
+#include "exception.h"
 #include "bitmap.h"
 #include "color.h"
 
@@ -52,13 +53,15 @@ typedef struct
 extern pixel_outline_list_type __declspec(dllexport) __stdcall 
 find_outline_pixels (bitmap_type, color_type *bg_color, 
 		     at_progress_func notify_progress, address progress_data,
-		     at_testcancel_func test_cancel, address testcancel_data);
+		     at_testcancel_func test_cancel, address testcancel_data,
+		     at_exception * exp);
 
 /* Find all pixels on the center line of the character C.  */
 extern pixel_outline_list_type __declspec(dllexport) __stdcall 
 find_centerline_pixels (bitmap_type, color_type bg_color, 
 			at_progress_func notify_progress, address progress_data,
-			at_testcancel_func test_cancel, address testcancel_data);
+			at_testcancel_func test_cancel, address testcancel_data,
+			at_exception * exp);
 
 /* Free the memory in the list.  */
 extern void __declspec(dllexport) __stdcall 
@@ -69,13 +72,15 @@ free_pixel_outline_list (pixel_outline_list_type *);
 extern pixel_outline_list_type __declspec(dllimport) __stdcall 
 find_outline_pixels (bitmap_type, color_type *bg_color, 
 		     at_progress_func notify_progress, address progress_data,
-		     at_testcancel_func test_cancel, address testcancel_data);
+		     at_testcancel_func test_cancel, address testcancel_data,
+		     at_exception * exp);
 
 /* Find all pixels on the center line of the character C.  */
 extern pixel_outline_list_type __declspec(dllimport) __stdcall 
 find_centerline_pixels (bitmap_type, color_type bg_color, 
 			at_progress_func notify_progress, address progress_data,
-			at_testcancel_func test_cancel, address testcancel_data);
+			at_testcancel_func test_cancel, address testcancel_data,
+			at_exception * exp);
 
 /* Free the memory in the list.  */
 extern void __declspec(dllimport) __stdcall 
@@ -86,13 +91,15 @@ free_pixel_outline_list (pixel_outline_list_type *);
 extern pixel_outline_list_type 
 find_outline_pixels (bitmap_type, color_type *bg_color, 
 		     at_progress_func notify_progress, at_address progress_data,
-		     at_testcancel_func test_cancel, at_address testcancel_data);
+		     at_testcancel_func test_cancel, at_address testcancel_data,
+		     at_exception * exp);
 
 /* Find all pixels on the center line of the character C.  */
 extern pixel_outline_list_type 
 find_centerline_pixels (bitmap_type, color_type bg_color, 
 			at_progress_func notify_progress, at_address progress_data,
-			at_testcancel_func test_cancel, at_address testcancel_data);
+			at_testcancel_func test_cancel, at_address testcancel_data,
+			at_exception * exp);
 
 /* Free the memory in the list.  */
 extern void free_pixel_outline_list (pixel_outline_list_type *);

@@ -12,6 +12,8 @@
 void
 print_spline (FILE *f, spline_type s)
 {
+  assert(SPLINE_DEGREE (s) == LINEARTYPE || SPLINE_DEGREE (s) == CUBICTYPE);
+
   if (SPLINE_DEGREE (s) == LINEARTYPE)
     fprintf (f, "(%.3f,%.3f)--(%.3f,%.3f).\n",
                 START_POINT (s).x, START_POINT (s).y,
@@ -23,9 +25,6 @@ print_spline (FILE *f, spline_type s)
                 CONTROL1 (s).x, CONTROL1 (s).y,
                 CONTROL2 (s).x, CONTROL2 (s).y,
                 END_POINT (s).x, END_POINT (s).y);
-
-  else
-    FATAL1 ("print_spline: strange degree (%d)", SPLINE_DEGREE (s));
 }
 
 

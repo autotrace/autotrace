@@ -6,8 +6,9 @@
 #include <math.h>
 #include <errno.h>
 #include <assert.h>
+#include <string.h>
 
-static at_real acos_d (at_real);
+static at_real acos_d (at_real, at_exception * exp);
 
 #ifndef M_PI
 #define M_PI 3.14159265
@@ -109,12 +110,12 @@ Vmult_scalar (const vector_type v, const at_real r)
    degrees, in the range zero to 180.  */
 
 at_real
-Vangle (const vector_type in_vector, const vector_type out_vector)
+Vangle (const vector_type in_vector, const vector_type out_vector, at_exception * exp)
 {
   vector_type v1 = normalize (in_vector);
   vector_type v2 = normalize (out_vector);
 
-  return acos_d (Vdot (v2, v1));
+  return acos_d (Vdot (v2, v1), exp);
 }
 
 
@@ -270,7 +271,7 @@ IPequal (const at_coord c1, const at_coord c2)
 }
 
 static at_real
-acos_d (at_real v)
+acos_d (at_real v, at_exception * exp)
 {
   at_real a;
 
@@ -282,7 +283,11 @@ acos_d (at_real v)
   errno = 0;
   a = (at_real) acos (v);
   if (errno == ERANGE || errno == EDOM)
-    FATAL_PERROR ("acosd");
-
+    {
+      at_exception_fatal(exp, strerror(errno));
+      return 0.0;
+    }
+  
+  
   return a * (at_real) 180.0 / (at_real) M_PI;
 }

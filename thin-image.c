@@ -84,7 +84,7 @@ static        unsigned char   todelete[512] = {
 static color_type background = { 0xff, 0xff, 0xff };
 
 
-void thin_image(bitmap_type *image, const color_type *bg)
+void thin_image(bitmap_type *image, const color_type *bg, at_exception * exp)
 { 
     /* This is nasty as we need to call thin once for each  
      * colour in the image the way I do this is to keep a second  
@@ -161,10 +161,12 @@ void thin_image(bitmap_type *image, const color_type *bg)
 
 	default:
 	{
-	    WARNING1("thin_image: %u-plane images are not supported", spp);
-	    break;
+	  LOG1 ("thin_image: %u-plane images are not supported", spp);
+	  at_exception_fatal(exp, "thin_image: wrong plane images are passed");
+	  goto cleanup;
 	}
-    } 
+    }
+ cleanup:
     free (bm.bitmap); 
 } 
 
