@@ -121,7 +121,8 @@ at_splines_new_full (at_bitmap_type * bitmap,
 #define CANCEL_THEN_RETURN() if (CANCELP) return splines;
 #define CANCEL_THEN_CLEANUP() if (CANCELP) goto cleanup;
 
-  despeckle (bitmap, opts->despeckle_level, opts->despeckle_tightness);
+  if (opts->despeckle_level > 0)
+    despeckle (bitmap, opts->despeckle_level, opts->despeckle_tightness);
   CANCEL_THEN_RETURN();
   
   image_header.width = at_bitmap_get_width(bitmap);

@@ -17,6 +17,7 @@
 #include "output-emf.h"
 #include "output-dxf.h"
 #include "output-epd.h"
+#include "output-pdf.h"
 
 struct output_format_entry {
     const char * name;
@@ -39,6 +40,7 @@ static struct output_format_entry output_formats[] = {
     {"er",      "Elastic Reality Shape file",   output_er_writer},
     {"dxf",     "DXF format",   output_dxf_writer},
     {"epd",     "EPD format",   output_epd_writer},
+    {"pdf",     "PDF format",                 output_pdf_writer},
     {NULL,	NULL}
 };
 

@@ -4,7 +4,7 @@ What's new in AutoTrace 0.28?
 - Cancel point
 - Efforts to make libautotrace.a thread-safe
 - Clean up library name space (all exported symbols have "at_" prefix)
-- DXF and EPD export
+- DXF, EPD and PDF export
 - Despeckling filter
 
 What's new in AutoTrace 0.27

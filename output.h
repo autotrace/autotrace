@@ -13,7 +13,7 @@
 #define SWF_SUFFIX ""
 #endif /* HAVE_LIBSWF */
 
-#define OUTPUT_SUFFIX_LIST "er, emf, eps, ai, sk, p2e, svg, " SWF_SUFFIX "dxf, epd and fig"
+#define OUTPUT_SUFFIX_LIST "er, emf, eps, ai, sk, p2e, svg, " SWF_SUFFIX "dxf, epd, pdf and fig"
 
 typedef at_output_write_func output_write;
 

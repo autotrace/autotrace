@@ -449,7 +449,7 @@ despeckle (/* in/out */ bitmap_type *bitmap,
 
   if (planes != 3)
     {
-      WARNING1 ("despeckle: %u-plane images are not supported", planes);
+      FATAL1 ("despeckle: %u-plane images are not supported", planes);
       return;
     }
 

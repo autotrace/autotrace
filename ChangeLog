@@ -1,3 +1,28 @@
+2001-11-25  Masatake YAMATO  <yamato@redhat.com>
+
+	* Makefile.am (output_src): Added output-pdf.[hc].
+
+2001-11-24  Martin Weber <martweb@gmx.net>
+
+	* output-pdf.[ch]: New files.
+	
+        * output.h (OUTPUT_SUFFIX_LIST): Added pdf.
+	
+        * NEWS: Upadted.
+
+	* output.c: Added output_pdf_writer.
+	
+	* despeckle.c (despeckle): Use FATAL1
+	instead of WARNING1.
+
+	* autotrace.dsp: Updated.
+
+	* autotrace.c(at_splines_new_full): Validated
+	opts->despeckle_level that is passed to despeckle.
+
+	Message-ID: <3BFF770F.E7B644F3@gmx.net>,
+	Message-ID: <3BFECAB0.A3FFDC52@gmx.net>.
+
 2001-11-24  Martin Weber <martweb@gmx.net>
 
         * despeckle.c: Almost Rewrote.
