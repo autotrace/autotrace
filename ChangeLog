@@ -1,3 +1,8 @@
+2002-01-23  Masatake YAMATO  <yamato@redhat.com>
+
+	* main.c (USAGE1::dpi): Write about emf.
+	Suggested by Stewart C. Russell <stewart@ref.collins.co.uk>.
+
 2002-01-19  Masatake YAMATO  <yamato@redhat.com>
 
 	* autotrace.c (at_bitmap_init): XMALLOC->XCALLOC 
