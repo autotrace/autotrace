@@ -1,3 +1,9 @@
+2002-04-15  Martin Weber <martweb@gmx.net>
+
+	* fit.c (find_half_tangent): 
+	(find_tangent): Fixed a bug in tangent 
+	calculation.
+	
 2002-04-15  Masatake YAMATO  <yamato@redhat.com>
 
 	* COPYING.LIB: New file.

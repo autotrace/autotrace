@@ -1304,21 +1304,27 @@ find_tangent (curve_type curve, at_bool to_start_point, at_bool cross_curve,
   if (*curve_tangent == NULL)
     {
       XMALLOC (*curve_tangent, sizeof (vector_type));
-      tangent = find_half_tangent (curve, to_start_point, &n_points,
+	  do
+	    {
+          tangent = find_half_tangent (curve, to_start_point, &n_points,
             tangent_surround);
 
-      if ((cross_curve) || (CURVE_CYCLIC (curve) == true))
-        {
-          curve_type adjacent_curve
-            = to_start_point ? PREVIOUS_CURVE (curve) : NEXT_CURVE (curve);
-          vector_type tangent2
-            = find_half_tangent (adjacent_curve, !to_start_point, &n_points,
-                        tangent_surround);
+          if ((cross_curve) || (CURVE_CYCLIC (curve) == true))
+            {
+              curve_type adjacent_curve
+                = to_start_point ? PREVIOUS_CURVE (curve) : NEXT_CURVE (curve);
+              vector_type tangent2
+                = find_half_tangent (adjacent_curve, !to_start_point, &n_points,
+                tangent_surround);
 
-          LOG2 ("(adjacent curve half tangent (%.3f,%.3f)) ",
+              LOG2 ("(adjacent curve half tangent (%.3f,%.3f)) ",
                 tangent2.dx, tangent2.dy);
-          tangent = Vadd (tangent, tangent2);
+              tangent = Vadd (tangent, tangent2);
+            }
+	      tangent_surround--;
+
         }
+      while (tangent.dx == 0.0 && tangent.dy == 0.0);
 
       assert (n_points > 0);
       **curve_tangent = Vmult_scalar (tangent, (at_real)(1.0 / n_points));
@@ -1339,7 +1345,7 @@ find_half_tangent (curve_type c, at_bool to_start_point, unsigned *n_points,
 {
   unsigned p;
   int factor = to_start_point ? 1 : -1;
-  unsigned tangent_index = (to_start_point || c->cyclic) ? 0 : c->length - 1;
+  unsigned tangent_index = to_start_point ? 0 : c->length - 1;
   at_real_coord tangent_point = CURVE_POINT (c, tangent_index);
   vector_type tangent = { 0.0, 0.0 };
   unsigned int surround;
