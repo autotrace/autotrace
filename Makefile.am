@@ -41,9 +41,7 @@ libautotrace_a_SOURCES= version.c               \
 		bitmap.c 			\
 		spline.c 			\
 		curve.c 			\
-		image-header.h    		\
 		epsilon-equal.c 		\
-		epsilon-equal.h 		\
 		vector.c 			\
 		color.c 			\
 		autotrace.c			\
@@ -53,10 +51,11 @@ libautotrace_a_SOURCES= version.c               \
 		median.c 			\
 	        thin-image.c			\
 		logreport.c 			\
-		find-suffix.c 		
-
+		filename.c                      \
+                xstd.c
 
 autotraceinclude_HEADERS=\
+		image-header.h    		\
 		fit.h  				\
 		bitmap.h 			\
 		spline.h 			\
@@ -64,41 +63,29 @@ autotraceinclude_HEADERS=\
 		types.h 			\
 		vector.h 			\
 		color.h 			\
-		xmem.h 				\
 		autotrace.h                     \
 		output.h 			\
 		input.h 			\
 		pxl-outline.h 			\
 		median.h 			\
 	        quantize.h                      \
-	        thin-image.h			\
-		logreport.h 			\
-		find-suffix.h 		
+	        thin-image.h
+
+noinst_HEADERS = filename.h                     \
+		xstd.h                          \
+		epsilon-equal.h 		\
+		logreport.h			\
+		usefull.h                       \
+		message.h
 
 autotrace_SOURCES=\
 		atou.c 				\
 		atou.h 				\
 		main.c				\
-		remove-suffx.c			\
-		remove-suffx.h 			\
-		make-suffix.c 			\
-		make-suffix.h 			\
 		cmdline.h 			\
-		message.h 			\
-		concat3.c 			\
 		getopt.c 			\
-		concat3.h 			\
 		getopt.h 			\
-		substring.c 			\
-		getopt1.c 			\
-		substring.h 			\
-		usefull.h 			\
-		extend-fname.c 			\
-		extend-fname.h 			\
-		xfile.h 			\
-		xfopen.c 			\
-		xfseek.c 			\
-		xmem.h 				
+		getopt1.c
 
 libautotrace_a_INCLUDES = $(MAGICK_CFLAGS)
 autotrace_LDADD = libautotrace.a $(MAGICK_LDFLAGS) $(LIBPNG_LDFLAGS) -lm

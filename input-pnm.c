@@ -7,7 +7,7 @@
 #include "bitmap.h"
 #include "input-pnm.h"
 #include "message.h"
-#include "xmem.h"
+#include "xstd.h"
 
 #include <math.h>
 #include <ctype.h>

@@ -4,7 +4,7 @@
 #include "types.h"
 #include "spline.h"
 #include "vector.h"
-#include "xmem.h"
+#include "xstd.h"
 #include <assert.h>
 
 /* Print a spline in human-readable form.  */

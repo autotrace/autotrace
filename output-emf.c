@@ -9,7 +9,7 @@
 #include <string.h>
 #include "types.h"
 #include "spline.h"
-#include "xmem.h"
+#include "xstd.h"
 
 /* external declarations */
 

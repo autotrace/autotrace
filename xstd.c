@@ -1,13 +1,7 @@
-/* xfopen.c: fopen and fclose with error checking. */
-
-#include "message.h"
-#include "types.h"
-#include "xfile.h"
+#include "xstd.h"
 #include <errno.h>
 
-/* These routines just check the return status from standard library
-   routines and abort if an error happens.  */
-
+/* xfopen.c: fopen and fclose with error checking. */
 FILE *
 xfopen (string filename, string mode)
 {
@@ -27,4 +21,10 @@ xfclose (FILE *f, string filename)
     FATAL_PERROR (filename);
 }
 
-/* version 0.17 */
+void
+xfseek (FILE *f, long offset, int wherefrom, string filename)
+{
+  if (fseek (f, offset, wherefrom) < 0)
+    FATAL_PERROR (filename);
+}
+

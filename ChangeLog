@@ -1,3 +1,18 @@
+2000-11-18  Masatake YAMATO  <yamato@redhat.com>
+
+	* Makefile.am (autotraceinclude_HEADERS): 
+	Added image-header.h. 
+	(noinst_HEADERS): Added xstd.h, epsilon-equal.h,
+	logreport.h, usefull.h, message.h.
+
+	* (substring.[ch]): Merged into filename.c.
+
+	* (concat3.[ch]): Likewise.
+
+	* xstd.h: xmem.h, xf*.[ch] are unified.
+
+	* filename.[ch]: *-suffi?x and are unified.
+
 2000-11-17  Masatake YAMATO  <yamato@redhat.com>
 
 	Make codes C++-clean. Suggested by 

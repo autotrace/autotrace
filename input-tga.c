@@ -6,7 +6,7 @@
 
 #include "bitmap.h"
 #include "message.h"
-#include "xmem.h"
+#include "xstd.h"
 #include "input-bmp.h"
 
 /* TODO:

@@ -19,7 +19,7 @@
    along with this program; if not, write to the Free Software
    Foundation, 675 Mass Ave, Cambridge, MA 02139, USA.  */
 
-#include "xmem.h"
+#include "xstd.h"
 #include <stdio.h>
 #include <stdlib.h>
 

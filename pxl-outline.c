@@ -7,7 +7,7 @@
 #include "color.h"
 #include "bitmap.h"
 #include "logreport.h"
-#include "xmem.h"
+#include "xstd.h"
 #include "pxl-outline.h"
 #include <assert.h>
 

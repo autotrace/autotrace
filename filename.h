@@ -1,3 +1,6 @@
+/* Function manipulate file names
+   Was: find-suffix, extend-fname, make-suffix, remove-suffix  */
+
 /* remove-suffx.h: declarations for shared routines.
 
 Copyright (C) 1992 Free Software Foundation, Inc.
@@ -16,12 +19,24 @@ You should have received a copy of the GNU General Public License
 along with this program; if not, write to the Free Software
 Foundation, Inc., 675 Mass Ave, Cambridge, MA 02139, USA.  */
 
-#ifndef REMOVE_SUFFX_H
-#define REMOVE_SUFFX_H
+#ifndef FILENAME_H
+#define FILENAME_H 
+#include "types.h"
+
+/* If NAME has a suffix, return a pointer to its first character (i.e.,
+   the one after the `.'); otherwise, return NULL.  */
+extern string find_suffix (string name);
+
+/* If NAME has a suffix, simply return it; otherwise, return
+   `NAME.SUFFIX'.  */
+extern string extend_filename (string name, string suffix);
+
+/* Return S with the suffix SUFFIX, removing any suffix already present.
+   For example, `make_suffix ("/foo/bar.baz", "karl")' returns
+   `/foo/bar.karl'.  Returns a string allocated with malloc.  */
+extern string make_suffix (string s, string suffix);
 
 /* Return NAME with any suffix removed.  */
 extern string remove_suffix (string name);
 
-#endif /* not REMOVE_SUFFX_H */
-
-/* version 0.17 */
+#endif /* Not def: FILENAME_H */

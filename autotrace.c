@@ -1,5 +1,5 @@
 #include "autotrace.h"
-#include "xmem.h"
+#include "xstd.h"
 #include "image-header.h"
 #include "quantize.h"
 #include "thin-image.h"

@@ -2,7 +2,7 @@
    Copyright (C) 1999, 2000 Ian MacPhedran. */
 
 #include "output-fig.h"
-#include "xmem.h"
+#include "xstd.h"
 
 static real bezpnt(real, real, real, real, real);
 static void out_fig_splines(FILE *, spline_list_array_type, int, int, int, int);

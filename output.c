@@ -13,7 +13,7 @@
 #include "output-dxf.h"
 #include "output-dxf12.h"
 #include "output-emf.h"
-#include "xmem.h"
+#include "xstd.h"
 #include <string.h>
 
 struct output_format_entry {

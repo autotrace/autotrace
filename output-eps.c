@@ -3,7 +3,7 @@
 #include "types.h"
 #include "spline.h"
 #include "output-eps.h"
-#include "xmem.h"
+#include "xstd.h"
 #include <time.h>
 #include <string.h>
 

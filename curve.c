@@ -2,7 +2,7 @@
 
 #include "logreport.h"
 #include "curve.h"
-#include "xmem.h"
+#include "xstd.h"
 
 static real_coordinate_type int_to_real_coord (coordinate_type);
 

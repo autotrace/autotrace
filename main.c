@@ -1,17 +1,13 @@
 /* autotrace -- convert bitmaps to splines. */
 
-#include "usefull.h"
 #include "types.h"
 #include "message.h"
 #include "cmdline.h"
 #include "logreport.h"
 #include "getopt.h"
 
-#include "extend-fname.h"
-#include "find-suffix.h"
-#include "remove-suffx.h"
-#include "xfile.h"
-#include "xmem.h"
+#include "filename.h"
+#include "xstd.h"
 #include "atou.h"
 #include "autotrace.h"
 

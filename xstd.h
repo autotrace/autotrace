@@ -1,15 +1,20 @@
-/* xmem.h: declarations for shared routines. */
-
-#ifndef XMEM_H
-#define XMEM_H
-
-#include "types.h"
-#include "message.h"
-#include <string.h>
+/* Wrappers for functions in C standard library 
+ Was: xmem, xfile */
 
 /* These call the corresponding function in the standard library, and
    abort if those routines fail. */
 
+#ifndef XSTD_H
+#define XSTD_H 
+
+#include "types.h"
+#include "message.h"
+#include <stdio.h>
+#include <string.h>
+
+/*
+ * XMEM
+ */
 #ifndef __cplusplus
 #define XMALLOC(new_mem, size)									\
 do												\
@@ -92,4 +97,13 @@ do 												\
   } while (0) 
 #endif
 
-#endif /* not XMEM_H */
+/*
+ * XFILE
+ */
+/* Like their stdio counterparts, but abort on error, after calling
+   perror(3) with FILENAME as its argument.  */
+extern FILE *xfopen (string filename, string mode);
+extern void xfclose (FILE *, string filename);
+extern void xfseek (FILE *, long, int, string filename);
+
+#endif /* Not def: XSTD_H */

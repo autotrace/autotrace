@@ -2,7 +2,7 @@
 
 #include "types.h"
 #include "bitmap.h"
-#include "xmem.h"
+#include "xstd.h"
 #include <string.h>
 
 bitmap_type

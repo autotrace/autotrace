@@ -10,7 +10,7 @@ Copyright (C) 2000 Wolfgang Glunz, Martin Weber
 #include "output-p2e.h"
 
 #if old
-#include "xmem.h"
+#include "xstd.h"
 #include <time.h>
 #include <string.h>
 #include <malloc.h>

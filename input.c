@@ -12,8 +12,8 @@
 #include "input-magick.h"
 #endif /* HAVE_MAGICK */
 
-#include "xmem.h"
-#include "find-suffix.h"
+#include "xstd.h"
+#include "filename.h"
 #include <string.h>
 
 #define STREQ(s1, s2) (strcmp (s1, s2) == 0)

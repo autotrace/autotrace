@@ -23,11 +23,11 @@
 
 #include "bitmap.h"
 #include "message.h"
-#include "xmem.h"
+#include "xstd.h"
 #include <png.h>
 #include "input-png.h"
 
-static volatile char rcsid[]="$Id: input-png.c,v 1.1 2000/10/11 14:00:26 masata-y Exp $";
+static volatile char rcsid[]="$Id: input-png.c,v 1.2 2000/11/17 23:21:02 masata-y Exp $";
 
 /* for pre-1.0.6 versions of libpng */
 #ifndef png_jmpbuf
