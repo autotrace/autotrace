@@ -1,11 +1,12 @@
 man_MANS = autotrace.1
-EXTRA_DIST=$(man_MANS) \
-output-swf.c output-swf.h  \
-input-magick.h input-magick.c input-png.c input-png.h \
-autotrace-config.af vc++6.0.txt autotrace.dsp autotrace.dsw \
-autotrace.m4 shape_cubic.c.diff README.MING \
-libming.dsw libming.dsp \
-autotrace.sln autotrace.vcproj libming.sln libming.vcproj 
+EXTRA_DIST=$(man_MANS)						\
+output-swf.c output-swf.h					\
+input-magick.h input-magick.c input-png.c input-png.h		\
+autotrace-config.af vc++6.0.txt autotrace.dsp autotrace.dsw	\
+autotrace.m4 shape_cubic.c.diff README.MING			\
+libming.dsw libming.dsp						\
+autotrace.sln autotrace.vcproj libming.sln libming.vcproj	\
+autotrace.pc.in
 
 AUTOMAKE_OPTIONS = foreign no-dependencies
 
@@ -122,9 +123,13 @@ autotrace_LDADD =                 \
 m4datadir = $(datadir)/aclocal
 m4data_DATA = autotrace.m4
 
+pkgconfigdir = $(libdir)/pkgconfig
+pkgconfig_DATA= autotrace.pc
+
 bin_SCRIPTS=autotrace-config
 BUILT_SOURCES=autotrace-config
 autotrace-config: autotrace-config.in
 
 autotrace-config.in: autotrace-config.af
 	autofig $<
+

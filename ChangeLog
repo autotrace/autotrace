@@ -1,5 +1,12 @@
 2002-02-04  Masatake YAMATO  <yamato@redhat.com>
 
+	* Makefile.am (pkgconfig_DATA, pkgconfigdir): 
+	Added pkgconfig supprots.
+
+	* configure.in: Likewise.
+
+	* autotrace.pc.in: New file.
+
 	* main.c (dot_printer): Rewrite.
 	(main): print an input file name and newline when 
 	report_progress is true.
