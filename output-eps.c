@@ -2,6 +2,7 @@
 
 #include "types.h"
 #include "spline.h"
+#include "color.h"
 #include "output-eps.h"
 #include "xstd.h"
 #include <time.h>

@@ -1,4 +1,11 @@
 #include "autotrace.h"
+
+#include "fit.h"
+#include "bitmap.h"
+#include "input.h"
+#include "output.h"
+#include "spline.h"
+
 #include "xstd.h"
 #include "image-header.h"
 #include "quantize.h"
@@ -140,8 +147,18 @@ at_output_list_free(char ** list)
   free(list);
 }
 
-char *
+const char *
 at_version ()
 {
   return VERSION;
+}
+
+const char * 
+at_home_site ()
+{
+  /* TODO: This should be defined in configure.in
+     -- Masatake */
+  return "http://homepages.go.com/~martweb/AutoTrace.htm"
+    " or "
+    "http://sourceforge.net/projects/autotrace";
 }

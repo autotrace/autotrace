@@ -6,16 +6,11 @@
 #ifndef BITMAP_H
 #define BITMAP_H
 
-#include "types.h"
+#include "autotrace.h"
 #include <stdio.h>
 
 /* The basic structure and macros to access it.  */
-typedef struct
-{
-  dimensions_type dimensions;
-  unsigned char *bitmap;
-  unsigned int np;
-} bitmap_type;
+typedef at_bitmap_type bitmap_type;
 
 /* The dimensions of the bitmap, in pixels.  */
 #define BITMAP_DIMENSIONS(b)  ((b).dimensions)

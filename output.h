@@ -4,16 +4,12 @@
 #ifndef OUTPUT_H
 #define OUTPUT_H
 
-#include <stdio.h>
 #include "types.h"
-#include "spline.h"
+#include "autotrace.h"
 
 #define OUTPUT_SUFFIX_LIST "emf, eps, ai, sk, p2e, svg, swf, dxf, dxf12 and fig"
 
-typedef int (*output_write)(FILE*, string name,
-			    int llx, int lly, int urx, int ury,
-			    spline_list_array_type shape);
-
+typedef at_output_write_func output_write;
 
 output_write output_get_handler(string name);
 char ** output_list (void);

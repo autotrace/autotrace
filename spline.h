@@ -4,30 +4,10 @@
 #define SPLINE_H
 
 #include <stdio.h>
-#include "types.h"
-#include "color.h"
+#include "autotrace.h"
 
-
-/* Third degree is the highest we deal with.  */
-typedef enum
-{
-  LINEARTYPE = 1, QUADRATICTYPE = 2, CUBICTYPE = 3, PARALLELELLIPSETYPE = 4,
-  ELLIPSETYPE = 5, CIRCLETYPE = 6 /* not the real number of points to define a
-  circle but to distinguish between a cubic spline */
-} polynomial_degree;
-
-
-/* A Bezier spline can be represented as four points in the real plane:
-   a starting point, ending point, and two control points.  The
-   curve always lies in the convex hull defined by the four points.  It
-   is also convenient to save the divergence of the spline from the
-   straight line defined by the endpoints.  */
-typedef struct
-{
-  real_coordinate_type v[4];	/* The control points.  */
-  polynomial_degree degree;
-  real linearity;
-} spline_type;
+typedef at_polynomial_degree polynomial_degree;
+typedef at_spline_type spline_type;
 
 #define START_POINT(spl)	((spl).v[0])
 #define CONTROL1(spl)		((spl).v[1])
@@ -46,13 +26,8 @@ extern real_coordinate_type evaluate_spline (spline_type spline, real t);
 
 /* Each outline in a character is typically represented by many
    splines.  So, here is a list structure for that:  */
-typedef struct
-{
-  spline_type *data;
-  unsigned length;
-  bool clockwise;
-  color_type color;
-} spline_list_type;
+typedef at_spline_list_type spline_list_type;
+
 
 /* An empty list will have length zero (and null data).  */
 #define SPLINE_LIST_LENGTH(s_l) ((s_l).length)
@@ -88,13 +63,7 @@ extern void append_spline (spline_list_type *s_list, spline_type s);
 extern void concat_spline_lists (spline_list_type *s1, spline_list_type s2);
 #endif
 
-/* Each character is in general made up of many outlines. So here is one
-   more list structure.  */
-typedef struct
-{
-  spline_list_type *data;
-  unsigned length;
-} spline_list_array_type;
+typedef at_spline_list_array_type spline_list_array_type;
 
 /* Turns out we can use the same definitions for lists of lists as for
    just lists.  But we define the usual names, just in case.  */

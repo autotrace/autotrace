@@ -12,6 +12,8 @@
 #include "input-magick.h"
 #endif /* HAVE_MAGICK */
 
+#include "bitmap.h"
+
 #include "xstd.h"
 #include "filename.h"
 #include <string.h>

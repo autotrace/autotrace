@@ -3,6 +3,10 @@
 #ifndef TYPES_H
 #define TYPES_H
 
+#ifdef __cplusplus
+extern "C" {
+#endif /* __cplusplus */
+
 #ifndef __cplusplus
 /* Booleans.  */
 #ifndef bool
@@ -55,6 +59,10 @@ typedef struct
 #define CIRCLE 8
 #define PARALLEL_ELLIPSE 16
 #define ELLIPSE 32
+
+#ifdef __cplusplus
+}
+#endif /* __cplusplus */
 
 #endif /* not TYPES_H */
 

@@ -56,32 +56,33 @@ libautotrace_a_SOURCES = version.c               \
                 epsilon-equal.h 		\
 	        thin-image.h                    \
 	        quantize.h                      \
-		median.h
-
-autotraceinclude_HEADERS=\
+		median.h                        \
 		image-header.h    		\
 		fit.h  				\
 		bitmap.h 			\
 		spline.h 			\
 		curve.h 			\
-		types.h 			\
 		vector.h 			\
 		color.h 			\
-		autotrace.h                     \
-		output.h 			\
-		input.h 			\
 		pxl-outline.h
+
+autotraceinclude_HEADERS=\
+		types.h 			\
+		autotrace.h
 
 #
 # noinst_HEADERS: headers shared between lib and bin.
 # File not installed and not shared should be in
 # libautotrace_a_SOURCES.
-#
+# TODO: input and output should be in libautotrace_a_SOURCES.
+#      -- Masatake
 noinst_HEADERS = filename.h                     \
 		xstd.h                          \
 		logreport.h			\
 		usefull.h                       \
-		message.h
+		message.h                       \
+		input.h 			\
+		output.h 			
 
 autotrace_SOURCES=\
 		atou.c 				\

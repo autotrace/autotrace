@@ -7,6 +7,7 @@ Copyright (C) 2000 Wolfgang Glunz, Martin Weber
 
 #include "types.h"
 #include "spline.h"
+#include "color.h"
 #include "output-p2e.h"
 
 #if old

@@ -1,3 +1,12 @@
+2000-11-20  Masatake YAMATO  <yamato@redhat.com>
+
+	* autotrace.h: Put typedefs here.
+
+	* autotrace.c (at_home_site): New function.
+
+	* Makefile.am (autotraceinclude_HEADERS): Only 
+	types.h and autotrace.h are installed.
+
 2000-11-18  Masatake YAMATO  <yamato@redhat.com>
 
 	* Makefile.am (autotraceinclude_HEADERS): 

@@ -1,15 +1,15 @@
 /* autotrace -- convert bitmaps to splines. */
 
-#include "types.h"
+#include "autotrace.h"
+#include "input.h"
+#include "output.h"
 #include "message.h"
 #include "cmdline.h"
 #include "logreport.h"
 #include "getopt.h"
-
 #include "filename.h"
 #include "xstd.h"
 #include "atou.h"
-#include "autotrace.h"
 
 #include <string.h>
 #include <assert.h>
@@ -126,7 +126,7 @@ main (int argc, char * argv[])
 /* Reading the options.  */
 
 #define USAGE1 "Options:\
-<input_name> should be a filename, " AT_INPUT_SUFFIX_LIST ".\n"\
+<input_name> should be a filename, " INPUT_SUFFIX_LIST ".\n"\
   GETOPT_USAGE								\
 "align-threshold <real>: if either coordinate of the endpoints on a\n\
   spline is closer than this, make them the same; default is .5.\n\
@@ -158,7 +158,7 @@ filter-percent <percent>: when filtering, use the old point plus this\n\
   much of neighbors to determine the new point; default is 33.\n\
 filter-surround <unsigned>: number of pixels on either side of a point\n\
   to consider when filtering that point; default is 2.\n\
-input-format: " AT_INPUT_SUFFIX_LIST ". \n\
+input-format: " INPUT_SUFFIX_LIST ". \n\
 help: print this message.\n"
 #define USAGE2 "line-reversion-threshold <real>: if a spline is closer to a straight\n\
   line than this, weighted by the square of the curve length, keep it a\n\
@@ -171,7 +171,7 @@ list-input-formats:  print a list of support input formats to stderr.\n\
 log: write detailed progress reports to <input_name>.log.\n\
 output-file <filename>: write to <filename>\n\
 output-format <format>: use format <format> for the output file\n"\
-"  " AT_OUTPUT_SUFFIX_LIST " can be used.\n\
+"  " OUTPUT_SUFFIX_LIST " can be used.\n\
 remove-adjacent-corners: remove corners that are adjacent.\n\
 reparameterize-improve <percent>: if reparameterization\n\
   doesn't improve the fit by this much, as a percentage, stop; default\n\
@@ -295,6 +295,9 @@ read_command_line (int argc, char * argv[],
           fprintf (stderr, "Usage: %s [options] <input_name>.\n", argv[0]);
           fprintf (stderr, USAGE1);
 	  fprintf (stderr, USAGE2);
+	  fprintf (stderr, 
+		   "\nYou can get the source code of autotrace from \n%s\n",
+		   at_home_site());
           exit (0);
         }
 
