@@ -381,8 +381,8 @@ despeckle_iteration (/* in */     int    level,
   int    current_size;
   int    tightness;
 
-  for (i = 0, current_size = 1; i < level; i++, current_size *= 2);
-  tightness = (int) (256 / (1.0 + adaptive_tightness * level));
+  for (i = 0, current_size = 1; i < level; i++, current_size *= 2)
+    tightness = (int) (256 / (1.0 + adaptive_tightness * level));
 
   mask = (unsigned char *) calloc (width * height, sizeof(unsigned char));
   for (y = 0; y < height; y++)
@@ -437,7 +437,7 @@ void
 despeckle (/* in/out */ bitmap_type *bitmap,
            /* in */     int          level,
            /* in */     at_real      tightness,
-	   at_exception * exp)
+	   at_exception * excep)
 {
   int i;
   int planes;
@@ -450,7 +450,7 @@ despeckle (/* in/out */ bitmap_type *bitmap,
   if (planes != 3)
     {
       LOG1 ("despeckle: %u-plane images are not supported", planes);
-      at_exception_fatal(exp, "despeckle: wrong plane images are passed");
+      at_exception_fatal(excep, "despeckle: wrong plane images are passed");
       return;
     }
 

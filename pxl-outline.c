@@ -573,7 +573,7 @@ next_edge (edge_type edge)
 
 /* Return the edge opposite to EDGE.  */
 
-edge_type
+static edge_type
 opposite_edge(edge_type edge)
 {
     return (edge_type)(((int)edge == (int)NO_EDGE) ? edge : (edge + 2) % NUM_EDGES);
@@ -593,7 +593,7 @@ mark_edge (edge_type edge, unsigned short row, unsigned short col, bitmap_type *
 
 /* Mark all edges of the pixel ROW/COL in MARKED. */
 
-void
+static void
 mark_pixel(unsigned short row, unsigned short col, bitmap_type *marked)
 {
     *BITMAP_PIXEL(*marked, row, col) |= ((1 << NUM_EDGES) - 1);
@@ -602,7 +602,7 @@ mark_pixel(unsigned short row, unsigned short col, bitmap_type *marked)
 
 /* Test if the pixel at ROW/COL in MARKED is marked. */
 
-at_bool
+static at_bool
 is_marked_pixel(unsigned short row, unsigned short col, bitmap_type marked)
 {
     unsigned mark = (1 << NUM_EDGES) - 1;
@@ -610,7 +610,7 @@ is_marked_pixel(unsigned short row, unsigned short col, bitmap_type marked)
 }
 
 
-at_bool
+static at_bool
 next_unmarked_outline_pixel(unsigned short *row, unsigned short *col,
     direction_type *dir, bitmap_type character, bitmap_type *marked)
 {
@@ -654,7 +654,7 @@ next_unmarked_outline_pixel(unsigned short *row, unsigned short *col,
 
 /* Return the number of pixels adjacent to pixel ROW/COL that are black. */
 
-unsigned
+static unsigned
 num_neighbors(unsigned short row, unsigned short col, bitmap_type character)
 {
     unsigned dir, count = 0;
@@ -675,7 +675,7 @@ num_neighbors(unsigned short row, unsigned short col, bitmap_type character)
 
 /* Return the number of pixels adjacent to pixel ROW/COL that are marked. */
 
-unsigned
+static unsigned
 num_marked_neighbors(unsigned short row, unsigned short col, bitmap_type marked)
 {
     unsigned dir, count = 0, mark = (1 << NUM_EDGES) - 1;
@@ -696,7 +696,7 @@ num_marked_neighbors(unsigned short row, unsigned short col, bitmap_type marked)
 /* Test if the pixel at ROW/COL lies at a junction through which more
    than one unmarked path passes. */
 
-at_bool
+static at_bool
 is_open_junction(unsigned short row, unsigned short col, bitmap_type character,
     bitmap_type marked)
 {

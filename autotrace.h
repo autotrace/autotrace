@@ -278,12 +278,25 @@ void at_bitmap_free (at_bitmap_type * bitmap);
  *
  * TODO: internal data access
  * --------------------------------------------------------------------- */
+/* at_splines_new
+   
+   args:
+
+   BITMAP is modified in at_splines_new according to opts. Therefore
+   if you need the original bitmap image, you have to make a backup of
+   BITMAP with using at_bitmap_copy.
+
+   MSG_FUNC and MSG_DATA are used to notify a client errors and
+   warning from autotrace. NULL is valid value for MSG_FUNC if
+   the client is not interested in the notifications. */
 at_splines_type * at_splines_new (at_bitmap_type * bitmap,
 				  at_fitting_opts_type * opts,
 				  at_msg_func msg_func, at_address msg_data);
+
 /* at_splines_new_full
 
    args:
+
    NOTIFY_PROGRESS is called repeatedly inside at_splines_new_full
    to notify the progress of the execution. This might be useful for 
    interactive applications. NOTIFY_PROGRESS is called following 
@@ -318,7 +331,7 @@ at_splines_type * at_splines_new_full (at_bitmap_type * bitmap,
    DPI is used only in MIF output. */
 void at_splines_write(at_splines_type * splines,
 		      FILE * writeto,
-		      char * name,
+		      at_string name,
 		      int dpi,
 		      at_output_write_func output_writer,
 		      at_msg_func msg_func, at_address msg_data);

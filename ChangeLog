@@ -1,3 +1,62 @@
+2002-03-20  Masatake YAMATO  <yamato@redhat.com>
+
+	* NEWS: Updated for 0.30.
+
+	* autotrace.h: Added comments for at_splines_new.
+
+2002-03-20  Martin Weber <martweb@gmx.net>
+
+	* fit.c (fitted_splines::total): Removed.
+	(*): Remove `_'(underscore) from variable 
+	names to avoid conflicting with function
+	name. Initialized local variables to 
+	avoid compiler warnings.
+	
+	* thin-image.c: Put cast to avoid compiler
+	warnings.
+	
+	* median.c (generate_histogram_rgb): Added
+	default: to switch-case to avoid compiler
+	warnings.
+	(find_nearby_colors::min_dist): Initialized.
+	
+	* vector.c: Rename local var, exp->excep.
+
+	* pxl-outline.c: Make functions static scope.
+
+	* output-mif.c: Don'e include <time.h>.
+
+	* output-fig.c (fig_col_init): Return nothing.
+	(fig_col_hash): Put parentheses around 
+	the macro arg.
+	(out_fig_splines): Removed unused variable `i'.
+	(get_fig_colour): &->&&. Make static scope.
+
+	* output-cgm.c: Don't count the return 
+	values of write16.
+
+	* input.c (at_input_shortlist): removed a
+	local var `count'.
+	
+	* input-tga.c (TgaSaveVals, TgaSaveInterface): 
+	Removed.
+
+	* input-pnm.c: Rename local var, exp->excep.
+	(PNMSaveVals, PNMSaveInterface): Removed.
+
+	* getopt1.c: Didn't include stdlib.h.
+
+	* getopt.c (exchange): Free temp.
+
+	* despeckle.c (despeckle_iteration): Remove 
+	a ; that was too much at this place.
+	(despeckle): Rename local var, exp->excep.
+
+	* autotrace.[ch] (at_splines_write): Use
+	at_string instead of char *.
+
+	Message-ID: <3C926C28.61B6FBB0@gmx.net>.
+	
 2002-03-16  Masatake YAMATO  <yamato@redhat.com>
 
 	* autotrace.c (at_bitmap_get_planes): New function.

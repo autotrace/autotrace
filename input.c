@@ -158,7 +158,7 @@ char *
 at_input_shortlist (void)
 {
   char * list;
-  int count_int = 0, count;
+  int count_int = 0;
   int length = 0;
   int i;
 #if HAVE_MAGICK
@@ -190,7 +190,6 @@ at_input_shortlist (void)
   magickinfo = info = GetMagickInfo(NULL, &exception);
 #endif
 #endif
-count = count_int;
 #if HAVE_MAGICK
   while (info)
     {
@@ -200,7 +199,6 @@ count = count_int;
       if (info->name && info->description)
 #endif
         {
-          count ++;
 #if (MagickLibVersion < 0x0537)
           length += strlen (info->tag) + 2;
 #else

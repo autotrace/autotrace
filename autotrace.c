@@ -143,7 +143,9 @@ at_splines_new (at_bitmap_type * bitmap,
 			     msg_func, msg_data,
 			     NULL, NULL, NULL, NULL);
 }
-  
+
+/* at_splines_new_full modify its argument: BITMAP 
+   when despeckle, quantize and thin_image are invoked. */
 at_splines_type * 
 at_splines_new_full (at_bitmap_type * bitmap,
 		     at_fitting_opts_type * opts,
@@ -163,7 +165,6 @@ at_splines_new_full (at_bitmap_type * bitmap,
 #define CANCELP (test_cancel && test_cancel(testcancel_data))
 #define CANCEL_THEN_RETURN() if (CANCELP) return splines;
 #define CANCEL_THEN_CLEANUP() if (CANCELP) goto cleanup;
-
   if (opts->despeckle_level > 0)
     {
       despeckle (bitmap, 
@@ -247,7 +248,7 @@ at_splines_new_full (at_bitmap_type * bitmap,
 void 
 at_splines_write(at_splines_type * splines,
 		 FILE * writeto,
-		 char * name,
+		 at_string name,
 		 int dpi,
 		 at_output_write_func output_writer,
 		 at_msg_func msg_func, 

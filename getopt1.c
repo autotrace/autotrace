@@ -16,7 +16,6 @@
    Foundation, 675 Mass Ave, Cambridge, MA 02139, USA.  */
 
 #include "getopt.h"
-#include <stdlib.h>
 
 int
 getopt_long (int argc, char *const *argv, const char *options,

@@ -26,10 +26,10 @@ static at_real bezpnt(at_real, at_real, at_real, at_real, at_real);
 static void out_fig_splines(FILE *, spline_list_array_type, int, int, int, int,
 			    at_exception *);
 static int get_fig_colour(color_type, at_exception *);
-static int fig_col_init();
+static void fig_col_init(void);
 
 /* colour information */
-#define fig_col_hash(col_typ)  ( col_typ.r & 255 ) + ( col_typ.g & 161 ) + ( col_typ.b & 127 )
+#define fig_col_hash(col_typ)  ( ( (col_typ).r & 255 ) + ( (col_typ).g & 161 ) + ( (col_typ).b & 127 ) )
 
 static struct {
         unsigned int colour;
@@ -151,7 +151,7 @@ static void out_fig_splines(FILE * file, spline_list_array_type shape,
 /*	store the spline points in two arrays, control weights in another */
 	int *pointx, *pointy;
 	at_real *contrl;
-        int pointcount=0,is_spline=0,i,j;
+        int pointcount=0,is_spline=0,j;
         int maxlength=SPLINE_LIST_LENGTH (list) * 5 + 1;
 
 	XMALLOC (pointx, maxlength * sizeof (int));
@@ -319,7 +319,7 @@ int output_fig_writer(FILE* file, at_string name,
 	if alternate is 0, set next unused fig number
 */
 
-static int fig_col_init()
+static void fig_col_init(void)
 {
     int i;
 
@@ -366,8 +366,6 @@ static int fig_col_init()
     fig_colour_map[FIG_YELLOW].r = 255;
     fig_colour_map[FIG_YELLOW].g = 255;
     fig_colour_map[FIG_YELLOW].b = 0;
-
-    return(0);
 }
 
 /*
@@ -375,14 +373,14 @@ static int fig_col_init()
  * If unknown, create a new colour index and return that.
  */
 
-int get_fig_colour(color_type this_colour, at_exception * exp)
+static int get_fig_colour(color_type this_colour, at_exception * exp)
 {
     int hash,i,this_ind;
 
     hash = fig_col_hash(this_colour);
 
 /*  Special case: black _IS_ zero: */
-    if ((hash == 0) & (COLOR_EQUAL(fig_colour_map[0],this_colour)))
+    if ((hash == 0) && (COLOR_EQUAL(fig_colour_map[0],this_colour)))
 	{return(0);}
 
     if (fig_hash[hash].colour == 0) {

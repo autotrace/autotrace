@@ -36,7 +36,7 @@ typedef struct _PNMInfo
   int       asciibody;		/* 1 if ascii body, 0 if raw body */
   /* Routine to use to load the pnm body */
   void    (* loader) (PNMScanner *, struct _PNMInfo *, unsigned char *, 
-		      at_exception * exp);
+		      at_exception * excep);
 } PNMInfo;
 
 /* Contains the information needed to write out PNM rows */
@@ -49,18 +49,7 @@ typedef struct _PNMRowInfo
   unsigned char *red;		/* Colormap red */
   unsigned char *grn;		/* Colormap green */
   unsigned char *blu;		/* Colormap blue */
-} PNMRowInfo;
-
-/* Save info  */
-typedef struct
-{
-  int  raw;  /*  raw or ascii  */
-} PNMSaveVals;
-
-typedef struct
-{
-  int  run;  /*  run  */
-} PNMSaveInterface;
+};
 
 #define BUFLEN 512		/* The input buffer size for data returned
 				 * from the scanner.  Note that lines
@@ -76,15 +65,15 @@ typedef struct
 static void   pnm_load_ascii           (PNMScanner *scan,
 					PNMInfo    *info,
 					unsigned char  *pixel_rgn,
-					at_exception * exp);
+					at_exception * excep);
 static void   pnm_load_raw             (PNMScanner *scan,
 					PNMInfo    *info,
 					unsigned char  *pixel_rgn,
-					at_exception * exp);
+					at_exception * excep);
 static void   pnm_load_rawpbm          (PNMScanner *scan,
 					PNMInfo    *info,
 					unsigned char  *pixel_rgn,
-					at_exception * exp);
+					at_exception * excep);
 
 static void   pnmscanner_destroy       (PNMScanner *s);
 static void   pnmscanner_createbuffer  (PNMScanner *s,
@@ -110,7 +99,7 @@ static struct struct_pnm_types
   int    asciibody;
   int    maxval;
   void (* loader) (PNMScanner *, struct _PNMInfo *, unsigned char *pixel_rgn,
-		   at_exception * exp);
+		   at_exception * excep);
 } pnm_types[] =
 {
   { '1', 0, 1,   1, pnm_load_ascii },  /* ASCII PBM */
@@ -132,7 +121,7 @@ at_bitmap_type pnm_load_image (at_string filename,
   int ctr;
   FILE* fd;
   at_bitmap_type bitmap = at_bitmap_init(NULL, 0, 0, 0);
-  at_exception exp = at_exception_new(msg_func, msg_data);
+  at_exception excep = at_exception_new(msg_func, msg_data);
 
   /* open the file */
   fd = fopen (filename, "rb");
@@ -140,7 +129,7 @@ at_bitmap_type pnm_load_image (at_string filename,
   if (fd == NULL)
     {
       LOG("pnm filter: can't open file\n");
-      at_exception_fatal(&exp, "pnm filter: can't open file");
+      at_exception_fatal(&excep, "pnm filter: can't open file");
       return (bitmap);
     }
 
@@ -157,13 +146,13 @@ at_bitmap_type pnm_load_image (at_string filename,
   if (pnmscanner_eof(scan))
     {
       LOG("pnm filter: premature end of file\n");
-      at_exception_fatal (&exp, "pnm filter: premature end of file");
+      at_exception_fatal (&excep, "pnm filter: premature end of file");
       goto cleanup;
     }
   if (buf[0] != 'P' || buf[2])
     {
       LOG1("pnm filter: %s is not a valid file\n", filename);
-      at_exception_fatal (&exp, "pnm filter: invalid file");
+      at_exception_fatal (&excep, "pnm filter: invalid file");
       goto cleanup;
     }
 
@@ -179,7 +168,7 @@ at_bitmap_type pnm_load_image (at_string filename,
   if (!pnminfo->loader)
     {
       LOG ("pnm filter: file not in a supported format\n");
-      at_exception_fatal (&exp, "pnm filter: file not in a supported format");
+      at_exception_fatal (&excep, "pnm filter: file not in a supported format");
       goto cleanup;
     }
       
@@ -188,14 +177,14 @@ at_bitmap_type pnm_load_image (at_string filename,
   if (pnmscanner_eof(scan))
     {
       LOG ("pnm filter: premature end of file\n");
-      at_exception_fatal (&exp, "pnm filter: premature end of file");
+      at_exception_fatal (&excep, "pnm filter: premature end of file");
       goto cleanup;
     }
   pnminfo->xres = isdigit(*buf)?atoi(buf):0;
   if (pnminfo->xres<=0)
     {
       LOG ("pnm filter: invalid xres while loading\n");
-      at_exception_fatal (&exp, "pnm filter: premature end of file");
+      at_exception_fatal (&excep, "pnm filter: premature end of file");
       goto cleanup;
     }
 
@@ -203,14 +192,14 @@ at_bitmap_type pnm_load_image (at_string filename,
   if (pnmscanner_eof(scan))
     {
       LOG ("pnm filter: premature end of file\n");
-      at_exception_fatal (&exp, "pnm filter: premature end of file");
+      at_exception_fatal (&excep, "pnm filter: premature end of file");
       goto cleanup;
     }
   pnminfo->yres = isdigit(*buf)?atoi(buf):0;
   if (pnminfo->yres<=0)
     {
       LOG ("pnm filter: invalid yres while loading\n");
-      at_exception_fatal (&exp, "pnm filter: invalid yres while loading");
+      at_exception_fatal (&excep, "pnm filter: invalid yres while loading");
       goto cleanup;
     }
     
@@ -221,7 +210,7 @@ at_bitmap_type pnm_load_image (at_string filename,
       if (pnmscanner_eof(scan))
 	{
 	  LOG ("pnm filter: premature end of file\n");
-	  at_exception_fatal (&exp, "pnm filter: invalid yres while loading");
+	  at_exception_fatal (&excep, "pnm filter: invalid yres while loading");
 	  goto cleanup;
 	}
 
@@ -230,7 +219,7 @@ at_bitmap_type pnm_load_image (at_string filename,
 	  || (pnminfo->maxval>255 && !pnminfo->asciibody))
 	{
 	  LOG ("pnm filter: invalid maxval while loading\n");
-	  at_exception_fatal (&exp, "pnm filter: invalid maxval while loading");
+	  at_exception_fatal (&excep, "pnm filter: invalid maxval while loading");
 	  goto cleanup;
 	}
     }
@@ -239,7 +228,7 @@ at_bitmap_type pnm_load_image (at_string filename,
 			  (unsigned short) pnminfo->xres,
 			  (unsigned short) pnminfo->yres,
 			  (pnminfo->np)?(pnminfo->np):1);
-  pnminfo->loader (scan, pnminfo, AT_BITMAP_BITS (bitmap), &exp);
+  pnminfo->loader (scan, pnminfo, AT_BITMAP_BITS (bitmap), &excep);
 
  cleanup:
   /* Destroy the scanner */
@@ -258,7 +247,7 @@ static void
 pnm_load_ascii (PNMScanner *scan,
 		PNMInfo    *info,
 		unsigned char *data,
-		at_exception * exp)
+		at_exception * excep)
 {
   unsigned char *d;
   unsigned int x;
@@ -286,7 +275,7 @@ pnm_load_ascii (PNMScanner *scan,
 		if (pnmscanner_eof(scan))
 		  {
 		    LOG ("pnm filter: premature end of file\n");
-		    at_exception_fatal(exp, "pnm filter: premature end of file");
+		    at_exception_fatal(excep, "pnm filter: premature end of file");
 		    return;
 		  }
 		if (info->np)
@@ -315,7 +304,7 @@ static void
 pnm_load_raw (PNMScanner *scan,
 	      PNMInfo    *info,
 	      unsigned char  *data,
-	      at_exception * exp)
+	      at_exception * excep)
 {
   unsigned char *d;
   unsigned int   x, i;
@@ -335,7 +324,7 @@ pnm_load_raw (PNMScanner *scan,
 	      != fread(d, 1, info->xres*info->np, fd))
 	    {
 	      LOG ("pnm filter: premature end of file\n");
-	      at_exception_fatal (exp, "pnm filter: premature end of file\n");
+	      at_exception_fatal (excep, "pnm filter: premature end of file\n");
 	      return ;
 	    }
 
@@ -353,7 +342,7 @@ static void
 pnm_load_rawpbm (PNMScanner *scan,
 		 PNMInfo    *info,
 		 unsigned char  *data,
-		 at_exception * exp)
+		 at_exception * excep)
 {
   unsigned char *buf;
   unsigned char  curbyte;
@@ -377,7 +366,7 @@ pnm_load_rawpbm (PNMScanner *scan,
 	  if (rowlen != fread(buf, 1, rowlen, fd))
 	    {
 	      LOG ("pnm filter: error reading file\n");
-	      at_exception_fatal (exp, "pnm filter: error reading file");
+	      at_exception_fatal (excep, "pnm filter: error reading file");
 	      goto cleanup;
 	    }
 	  bufpos = 0;

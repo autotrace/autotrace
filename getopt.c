@@ -155,6 +155,7 @@ exchange (char **argv)
 
   first_nonopt += (optind - last_nonopt);
   last_nonopt = optind;
+  free (temp);
 }
 
 

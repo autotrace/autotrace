@@ -100,7 +100,9 @@ void thin_image(bitmap_type *image, const color_type *bg, at_exception * exp)
 
     if (bg) background = *bg;
 
-    memcpy(&bm, image, sizeof(bitmap_type)); 
+    bm.height = image->height;
+    bm.width = image->width;
+    bm.np = image->np;
     XMALLOC(bm.bitmap, height * width * spp); 
     memcpy(bm.bitmap, image->bitmap, height * width * spp); 
     /* that clones the image */ 
@@ -208,19 +210,20 @@ void thin3(bitmap_type *image, Pixel colour)
               /* Build initial previous scan buffer.                  */ 
               p = PIXEL_EQUAL(ptr[0], colour); 
               for ( x = 0 ; x < xsize-1 ; x++ ) 
-                  qb[x] = (unsigned char) (p = ((p<<1)&0006) | PIXEL_EQUAL(ptr[x+1], colour)); 
+                  qb[x] = (unsigned char) (p = ((p<<1)&0006) | (unsigned int) PIXEL_EQUAL(ptr[x+1],
+				   colour)); 
  
               /* Scan image for pixel deletion candidates.            */ 
 	      y_ptr = ptr; y1_ptr = ptr + xsize; 
               for (y = 0; y < ysize - 1; y++, y_ptr += xsize, y1_ptr += xsize)
 	      { 
                   q = qb[0]; 
-                  p = ((q<<2)&0330) | PIXEL_EQUAL(y1_ptr[0], colour); 
+                  p = ((q<<2)&0330) | (unsigned int) PIXEL_EQUAL(y1_ptr[0], colour); 
  
                   for ( x = 0 ; x < xsize-1 ; x++ ) { 
                       q = qb[x]; 
                       p = ((p<<1)&0666) | ((q<<3)&0110) | 
-			  PIXEL_EQUAL(y1_ptr[x+1], colour);
+			  (unsigned int) PIXEL_EQUAL(y1_ptr[x+1], colour);
                       qb[x] = (unsigned char) p; 
                       if  ( ((p&m) == 0) && todelete[p] ) { 
                           count++;  /* delete the pixel */ 
@@ -293,7 +296,7 @@ void thin1(bitmap_type *image, unsigned char colour)
               /* Build initial previous scan buffer.                  */ 
               p = (ptr[0] == colour); 
               for ( x = 0 ; x < xsize-1 ; x++ ) 
-                  qb[x] = (unsigned char) (p = ((p<<1)&0006) | (ptr[x+1] == colour)); 
+                  qb[x] = (unsigned char) (p = ((p<<1)&0006) | (unsigned int)(ptr[x+1] == colour)); 
  
               /* Scan image for pixel deletion candidates.            */ 
 	      y_ptr = ptr; y1_ptr = ptr + xsize; 
@@ -304,7 +307,7 @@ void thin1(bitmap_type *image, unsigned char colour)
  
                   for ( x = 0 ; x < xsize-1 ; x++ ) { 
                       q = qb[x]; 
-                      p = ((p<<1)&0666) | ((q<<3)&0110) | (y1_ptr[x+1]==colour); 
+                      p = ((p<<1)&0666) | ((q<<3)&0110) | (unsigned int) (y1_ptr[x+1]==colour); 
                       qb[x] = (unsigned char) p; 
                       if  ( ((p&m) == 0) && todelete[p] ) { 
                           count++; 

@@ -8,7 +8,7 @@
 #include <assert.h>
 #include <string.h>
 
-static at_real acos_d (at_real, at_exception * exp);
+static at_real acos_d (at_real, at_exception * excep);
 
 #ifndef M_PI
 #define M_PI 3.14159265
@@ -273,7 +273,7 @@ IPequal (const at_coord c1, const at_coord c2)
 }
 
 static at_real
-acos_d (at_real v, at_exception * exp)
+acos_d (at_real v, at_exception * excep)
 {
   at_real a;
 
@@ -286,7 +286,7 @@ acos_d (at_real v, at_exception * exp)
   a = (at_real) acos (v);
   if (errno == ERANGE || errno == EDOM)
     {
-      at_exception_fatal(exp, strerror(errno));
+      at_exception_fatal(excep, strerror(errno));
       return 0.0;
     }
   

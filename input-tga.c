@@ -31,16 +31,6 @@
 #define RGB_IMAGE 5
 #define RGBA_IMAGE 6
 
-typedef struct _TgaSaveVals
-{
-  int rle;
-} TgaSaveVals;
-
-typedef struct _TgaSaveInterface
-{
-  int run;
-} TgaSaveInterface;
-
 struct tga_header
 {
   unsigned char idLength;

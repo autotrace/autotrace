@@ -1,3 +1,12 @@
+What's new in AutoTrace 0.30?
+- fixed some bugs in the filtering routine
+- fixed pdf export
+- fixed despeckle
+- better error handling mechanism
+- rpm spec file template(Han-Wen Nienhuys)
+- pkgconfig support
+- man page (R. P. C. Rodgers)
+
 What's new in AutoTrace 0.29?
 - Small bugfix for binary output
 - code rearrangements

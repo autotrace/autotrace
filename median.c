@@ -93,6 +93,8 @@ static void generate_histogram_rgb(Histogram histogram, bitmap_type *image,
 		(*col)++;
 	    }
 	    break;
+        default:	
+	  /* To avoid compiler warning */ ;
     }
 }
 
@@ -469,7 +471,7 @@ static int find_nearby_colors(QuantizeObj *quantobj, int minR, int minG,
     int             maxR, maxG, maxB;
     int             centerR, centerG, centerB;
     int             i, x, ncolors;
-    int             minmaxdist, min_dist, max_dist, tdist;
+    int             minmaxdist, min_dist = 0, max_dist, tdist;
     int             mindist[MAXNUMCOLORS];	/* min distance to colormap entry i */
 
     /* Compute true coordinates of update box's upper corner and center.

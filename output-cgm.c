@@ -44,26 +44,26 @@ static at_bool write8(FILE *fdes, UI8 data)
 
 static at_bool output_beginmetafilename(FILE *fdes, const char *string)
 {
-  int count = 0, len = strlen (string);
+  int len = strlen (string);
  
   if (len + 1 < 0x001F)
-    count += write16(fdes, CGM_BEGINMETAFILE + len + 1);
+    write16(fdes, CGM_BEGINMETAFILE + len + 1);
   else
     {
-      count += write16(fdes, CGM_BEGINMETAFILE + 0x001F);
-      count += write16(fdes, len + 1);
+      write16(fdes, CGM_BEGINMETAFILE + 0x001F);
+      write16(fdes, len + 1);
 	}
 
-  count += write8(fdes, len);
+  write8(fdes, len);
 
   while (*string != '\0')
     {
-	  count += write8(fdes, *string);
+	  write8(fdes, *string);
 	  string++;
     }
 
   if (len % 2 == 0)
-	  count += write8(fdes, 0);
+	  write8(fdes, 0);
 
 
   return true;
@@ -71,26 +71,26 @@ static at_bool output_beginmetafilename(FILE *fdes, const char *string)
 
 static at_bool output_beginpicture(FILE *fdes, const char *string)
 {
-  int count = 0, len = strlen (string);
+  int len = strlen (string);
  
   if (len + 1 < 0x001F)
-    count += write16(fdes, CGM_BEGINPICTURE + len + 1);
+    write16(fdes, CGM_BEGINPICTURE + len + 1);
   else
     {
-      count += write16(fdes, CGM_BEGINPICTURE + 0x001F);
-      count += write16(fdes, len + 1);
+      write16(fdes, CGM_BEGINPICTURE + 0x001F);
+      write16(fdes, len + 1);
 	}
 
-  count += write8(fdes, len);
+  write8(fdes, len);
 
   while (*string != '\0')
     {
-	  count += write8(fdes, *string);
+	  write8(fdes, *string);
 	  string++;
     }
 
   if (len % 2 == 0)
-	  count += write8(fdes, 0);
+	  write8(fdes, 0);
 
 
   return true;
@@ -98,26 +98,26 @@ static at_bool output_beginpicture(FILE *fdes, const char *string)
 
 static at_bool output_metafiledescription(FILE *fdes, const char *string)
 {
-  int count = 0, len = strlen (string);
+  int len = strlen (string);
  
   if (len + 1 < 0x001F)
-    count += write16(fdes, CGM_METAFILEDESCRIPTION + len + 1);
+    write16(fdes, CGM_METAFILEDESCRIPTION + len + 1);
   else
     {
-      count += write16(fdes, CGM_METAFILEDESCRIPTION + 0x001F);
-      count += write16(fdes, len + 1);
+      write16(fdes, CGM_METAFILEDESCRIPTION + 0x001F);
+      write16(fdes, len + 1);
 	}
 
-  count += write8(fdes, len);
+  write8(fdes, len);
 
   while (*string != '\0')
     {
-	  count += write8(fdes, *string);
+	  write8(fdes, *string);
 	  string++;
     }
 
   if (len % 2 == 0)
-	  count += write8(fdes, 0);
+	  write8(fdes, 0);
 
 
   return true;
