@@ -1,3 +1,9 @@
+2001-12-01  Masatake YAMATO  <yamato@redhat.com>
+
+	* README.MING: Write about Visual C++ and libming.*.
+
+	* Makefile.am (EXTRA_DIST): added libming.*.
+	
 2001-12-01  Martin Weber <martweb@gmx.net>
 
 	* input-magick.c: Fixed comments.

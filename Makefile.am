@@ -1,7 +1,8 @@
 EXTRA_DIST=output-swf.c output-swf.h  \
 input-magick.h input-magick.c input-png.c input-png.h \
 autotrace-config.af vc++6.0.txt autotrace.dsp autotrace.dsw \
-autotrace.m4 shape_cubic.c.diff README.MING
+autotrace.m4 shape_cubic.c.diff README.MING \
+libming.dsw libming.dsp
 
 AUTOMAKE_OPTIONS = foreign no-dependencies
 
