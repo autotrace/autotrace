@@ -1,3 +1,13 @@
+2002-01-19  Masatake YAMATO  <yamato@redhat.com>
+
+	* autotrace.c (at_bitmap_init): XMALLOC->XCALLOC 
+	again.
+	I had a mistake at a change in
+	2002-01-05  Masatake YAMATO  <yamato@redhat.com>.
+	What I did is "XMALLOC->XCALLOC" in at_bitmap_new.
+	What I should is "XMALLOC->XCALLOC" in at_bitmap_init.
+	I do in this time What I should.
+
 2002-01-15  Masatake YAMATO  <yamato@redhat.com>
 
 	* output.[ch]: removed fatal. use exception.
