@@ -1,3 +1,11 @@
+2001-12-18  Martin Weber <martweb@gmx.net>
+
+	* autotrace.dsp: Added swf.
+
+	* strgicmp.h (strgnicmp, strgnicmp): Added const to params.
+
+	(Message-ID: <3C1A36C4.C098F815@gmx.net>).
+	
 2001-12-14  Masatake YAMATO  <yamato@redhat.com>
 
 	* output-swf.c (output_swf_writer): roll back to
