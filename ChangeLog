@@ -1,9 +1,34 @@
+2001-03-16  Peter Cucka <pcucka@anim.dreamworks.com>
+
+	* fit.c: 
+	* output-er.c: See following discussion. 
+
+	=============================================
+	Message-ID: <3AB26304.182F7AB2@anim.dreamworks.com>:
+	Martin Weber wrote:
+	> 
+	> I found a bug in centerline tracing. If I have a centerline consisting of a
+	> list of cubic splines, a line of the length 0 is added after the last cubic
+	> spline. This should be removed. Perhaps you can find the problem in fit.c. 
+
+	Martin,
+
+	Thanks for tracking that down.  The problem was that I was appending a
+	corner for both ends of an open curve, when I should, evidently, have
+	only been appending one corner.  I've attached a corrected version of
+	fit.c, and also of output-er.c.
+
+	Peter
+	=============================================
+	
 2001-03-20  Masatake YAMATO  <yamato@redhat.com>
 
 	* configure.in: Check ImageMagick version is higher 
 	than 5.2.1. Use AC_MSG_WARN instead of AC_MSG_ERROR
 	if ImageMagick is not found. The user can build 
 	autotrace without ImageMagick.
+	This change is required by Martin.
+	Message-ID: <3AB26698.DFC2341D@gmx.net>.
 
 2001-03-15  Martin Weber <martweb@gmx.net>
 
