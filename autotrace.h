@@ -156,6 +156,12 @@ struct _at_fitting_opts_type
 
 /* Thin all the lines in the image prior to fitting. */
   bool thin;
+
+/* Despeckle level */
+  int despeckle_level;
+
+/* Despeckle tightness */
+  real despeckle_tightness;
 };
 
 struct _at_bitmap_type

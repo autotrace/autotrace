@@ -140,6 +140,12 @@ fitting_opts_type new_fitting_opts (void)
 /* Thin all the lines in the image prior to fitting. */
   fitting_opts.thin = false;
 
+/* Despeckle level */
+  fitting_opts.despeckle_level = 0;
+
+/* Despeckle tightness */
+  fitting_opts.despeckle_tightness = 2.0;
+
   return (fitting_opts);
 }
 

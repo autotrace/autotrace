@@ -12,6 +12,7 @@
 #include "image-header.h"
 #include "quantize.h"
 #include "thin-image.h"
+#include "despeckle.h"
 
 bool at_centerline = false;
 
@@ -106,6 +107,8 @@ at_splines_new (at_bitmap_type * bitmap,
   pixel_outline_list_type pixels;
   QuantizeObj *myQuant = NULL; /* curently not used */
 
+  despeckle (bitmap, opts->despeckle_level, opts->despeckle_tightness);
+  
   image_header.width = at_bitmap_get_width(bitmap);
   image_header.height = at_bitmap_get_height(bitmap);
 

@@ -10,7 +10,6 @@
 #include "filename.h"
 #include "xstd.h"
 #include "atou.h"
-#include "despeckle.h"
 
 #include <string.h>
 #include <assert.h>
@@ -34,12 +33,6 @@ static bool printed_version;
 
 /* Whether to trace a character's centerline or its outline */
 static bool centerline = false;
-
-/* Despeckle level */
-static int despeckle_level = 0;
-
-/* Despeckle tightness */
-static real despeckle_tightness = 2.0;
 
 /* Whether to write a log file */
 static bool logging = false;
@@ -125,8 +118,6 @@ main (int argc, char * argv[])
     bitmap = at_bitmap_new(input_reader, input_name);
   else
     FATAL ("Unsupported inputformat\n");
-
-  despeckle (bitmap, despeckle_level, despeckle_tightness);
 
   splines = at_splines_new(bitmap, fitting_opts);
 
@@ -265,10 +256,10 @@ read_command_line (int argc, char * argv[],
         fitting_opts->corner_threshold = (real) atof (optarg);
 
       else if (ARGUMENT_IS ("despeckle-level"))
-        despeckle_level = atou (optarg);
+        fitting_opts->despeckle_level = atou (optarg);
 
       else if (ARGUMENT_IS ("despeckle-tightness"))
-        despeckle_tightness = (real) atof (optarg);
+        fitting_opts->despeckle_tightness = (real) atof (optarg);
 
       else if (ARGUMENT_IS ("error-threshold"))
         fitting_opts->error_threshold = (real) atof (optarg);
