@@ -1,5 +1,13 @@
 2002-10-08  Martin Weber <martweb@gmx.net>
 
+	* input-magick.c (input_magick_reader): Use AT_ macros.
+	antialiasing is switched off. Update comments. autotrace
+	is ready for ImageMagick 5.4.9.
+
+	Message-ID: <3DA2FFF4.5D564F9@gmx.net>.
+	
+2002-10-08  Martin Weber <martweb@gmx.net>
+
 	* fit.c (split_at_corners, fit_curve_list): 
 	handle very small objects.
 

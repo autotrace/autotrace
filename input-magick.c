@@ -17,7 +17,7 @@
    Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111-1307
    USA. */
 
-/* This code was tested with ImageMagick 5.2.1-5.4.5
+/* This code was tested with ImageMagick 5.2.1-5.4.9
    it doesn't work with earlier versions */
 
 #ifdef HAVE_CONFIG_H
@@ -53,6 +53,7 @@ at_bitmap_type input_magick_reader(at_string filename,
   GetExceptionInfo(&exception);
   image_info=CloneImageInfo((ImageInfo *) NULL);
   (void) strcpy(image_info->filename,filename);
+  image_info->antialias = 0;
 
   image=ReadImage(image_info,&exception);
   if (image == (Image *) NULL) {
@@ -80,14 +81,13 @@ at_bitmap_type input_magick_reader(at_string filename,
 
   bitmap = at_bitmap_init(NULL, image->columns, image->rows, np);
 
-  /* TODO: Use AT_ macros */
   for(j=0,runcount=0,point=0;j<image->rows;j++)
     for(i=0;i<image->columns;i++) {
       p=GetOnePixel(image,i,j);
-      bitmap.bitmap[point++]=pixel->red; /* if gray: red=green=blue */
+      AT_BITMAP_BITS(bitmap)[point++]=pixel->red; /* if gray: red=green=blue */
       if(np==3) {
-        bitmap.bitmap[point++]=pixel->green;
-        bitmap.bitmap[point++]=pixel->blue;
+        AT_BITMAP_BITS(bitmap)[point++]=pixel->green;
+        AT_BITMAP_BITS(bitmap)[point++]=pixel->blue;
       }
     }
  cleanup:
