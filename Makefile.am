@@ -59,6 +59,7 @@ output-pdf.c output-pdf.h \
 output-mif.c output-mif.h \
 output-cgm.c output-cgm.h \
 output-dr2d.c output-dr2d.h \
++output-pov.c output-pov.h \
 $(output_swf_src) \
 $(output_pstoedit_src)
 

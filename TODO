@@ -15,24 +15,31 @@ Core:
   unwanted gaps anymore.
 - Better thinning algorithm like CAT (Chordal Axis Transformation)
 
+Image preprocessing
+- Framework
+- Using gimp as preprocessor(contact with Masatake YAMATO<yamato@redhat.com>)
+
 Input:
 - Migrate to new plug-in interface using glib(0.32.0)
 - Support of image libraries as freeimage, gdk-pixbuf or paintlib(0.32.0)
 
 Output:
 - Migrate to new plug-in interface using glib(0.32.0)
-- Output API abstraction(0.32.0)
+- Output API abstraction(0.33.0)
 - New export formats like wmf, cdr, cmx, compressed pdf, compressed svg and
   dxf with splines...
 
 Library and its clients:
 - Graphical user interface
-  -- For gnome/gtk+, frontline is under developing.
+  -- using gnome/gtk+, frontline is under developing.
      See http://autotrace.sourceforge.net/frontline
-  -- For KDE/Qt?
+  -- using KDE/Qt (working)
+  -- using Windows native (working)
 
 Misc:
-- Gettextize(0.32.0)
-- Better documentations
+- Gettextize(0.32.0, done)
+- Better documentations(working)
 - Predefined parameter system(discussed as aop file, 0.32.0)
-- Report progress during despeckle is running 
+- Better progress reporter, integrating to Image preprocessor
+- using GError
+
