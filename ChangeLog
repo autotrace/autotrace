@@ -1,5 +1,11 @@
 2001-10-14  Martin Weber  <martweb@gmx.net>
 
+	* autotrace.dsp: adopted to newer versions of ImageMagick. 
+
+	* input-magick.c: Likewise.
+
+2001-10-14  Martin Weber  <martweb@gmx.net>
+
 	* output-dxf.h: changed wrong define constant
 	* curve.c, pxl-outline.c, fit.c: removed warning in 
 	notify_progress for Visual C++

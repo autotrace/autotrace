@@ -1,4 +1,6 @@
-/* input-magick.c: import files via image magick */
+/* input-magick.c: import files via image magick
+   This code was tested with ImageMagick 5.2.0-5.4.0
+   it doesn't work with earlier versions */
 
 #include <stdio.h>
 #include <stdlib.h>
@@ -17,19 +19,27 @@ bitmap_type magick_load_image(string filename)
   PixelPacket p;
   PixelPacket *pixel=&p;
   ExceptionInfo exception;
+#if (MagickLibVersion < 0x0538)
   MagickIncarnate("");
+#else
+  InitializeMagick("");
+#endif
   GetExceptionInfo(&exception);
   image_info=CloneImageInfo((ImageInfo *) NULL);
   (void) strcpy(image_info->filename,filename);
 
   image=ReadImage(image_info,&exception);
   if (image == (Image *) NULL)
-#if (MagickLibVersion <= 0x525)
+#if (MagickLibVersion <= 0x0525)
     MagickError(exception.severity,exception.message,exception.qualifier);
 #else
     MagickError(exception.severity,exception.reason,exception.description);
 #endif
+#if (MagickLibVersion < 0x0540)
   image_type=GetImageType(image);
+#else
+  image_type=GetImageType(image, &exception);
+#endif
   if(image_type == BilevelType || image_type == GrayscaleType)
     np=1;
   else
