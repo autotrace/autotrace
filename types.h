@@ -17,15 +17,19 @@
    along with this program; if not, write to the Free Software
    Foundation, Inc., 675 Mass Ave, Cambridge, MA 02139, USA. */
 
-#ifndef TYPES_H
-#define TYPES_H
+#ifndef AT_TYPES_H
+#define AT_TYPES_H
 
 #include <glib.h>
+
+#ifdef __cplusplus
+extern "C" {
+#endif /* __cplusplus */
 
 /* Cartesian points.  */
 typedef struct _at_coord
 {
-  unsigned short x, y;
+  gushort x, y;
 } at_coord;
 
 typedef struct _at_real_coord
@@ -37,4 +41,4 @@ typedef struct _at_real_coord
 }
 #endif /* __cplusplus */
 
-#endif /* not TYPES_H */
+#endif /* not AT_TYPES_H */

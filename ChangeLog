@@ -1,5 +1,10 @@
 2003-07-04  Masatake YAMATO  <yamato@redhat.com>
 
+	* types.h (_at_coord): Use gushort.
+	use AT_TYPES_H instead of TYPES_H.
+
+2003-07-04  Masatake YAMATO  <yamato@redhat.com>
+
 	* main.c (exception_handler): added const to msg.
 
 	* autotrace.h(at_msg_func): added const to msg.
