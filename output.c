@@ -205,6 +205,7 @@ at_output_shortlist (void)
   struct output_format_entry * entry;
 #if HAVE_LIBPSTOEDIT
   struct DriverDescription_S* driver_description;
+  struct DriverDescription_S* dd_tmp;
 #endif /* HAVE_LIBPSTOEDIT */
 
   for (entry = output_formats; entry->name; entry++)
@@ -215,7 +216,6 @@ at_output_shortlist (void)
 
 #if HAVE_LIBPSTOEDIT
  {
-   struct DriverDescription_S* dd_tmp;
    pstoedit_checkversion(pstoeditdllversion);
    driver_description = getPstoeditDriverInfo_plainC();
    if (driver_description)
@@ -247,24 +247,26 @@ at_output_shortlist (void)
       strcat (list, (char *) entry[i].name);
     }
 #if HAVE_LIBPSTOEDIT
-  while (driver_description->symbolicname)
+  dd_tmp = driver_description;
+  while (dd_tmp->symbolicname)
     {
 
       if (!output_is_static_member(output_formats,
-				   driver_description)
-	  && !output_pstoedit_is_unusable_writer(driver_description->suffix))
+				   dd_tmp)
+	  && !output_pstoedit_is_unusable_writer(dd_tmp->suffix))
 	{
 	  strcat (list, ", ");
-	  strcat (list, driver_description->suffix);
-	  if (!streq(driver_description->suffix, 
-		     driver_description->symbolicname))
+	  strcat (list, dd_tmp->suffix);
+	  if (!streq(dd_tmp->suffix, 
+		     dd_tmp->symbolicname))
 	    {
 	      strcat (list, ", ");
-	      strcat (list, driver_description->symbolicname);
+	      strcat (list, dd_tmp->symbolicname);
 	    }
 	}
-      driver_description++;
+      dd_tmp++;
     }
+  free(driver_description);
 #endif /* HAVE_LIBPSTOEDIT */
   strcat (list, " or ");
   strcat (list, (char *) entry[i].name);
