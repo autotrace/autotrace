@@ -1,5 +1,16 @@
 2003-01-23  Masatake YAMATO  <yamato@redhat.com>
 
+	Copied from sodipodi.
+	
+	* distro, tools-version.sh: New files.
+	distro comes from distro-0.8.1(http://distro.pipfield.ca/).
+	distro and tools-version.sh should be included only in CVS version
+	of sodipodi.
+	
+	* autogen.sh: Call tools-version.sh.
+
+2003-01-23  Masatake YAMATO  <yamato@redhat.com>
+
 	* configure.in: Added the dummy 2nd arg(1) to AC_DEFINE.
 
 	* Makefile.am (SUBDIRS): Added m4. intl is removed.

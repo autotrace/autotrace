@@ -1,5 +1,9 @@
 #! /bin/sh
 
+srcdir=`dirname $0`
+test -z "$srcdir" && srcdir=.
+${srcdir}/tools-version.sh
+
 (autofig --version) < /dev/null > /dev/null 2>&1 || {
   echo
   echo "**Error**: You must have \`autofig' installed to compile Autotrace."
