@@ -1,6 +1,18 @@
+2000-10-11  MenTaLguY <mental@rydia.net>
+
+	(This log entry is written by Masatake YAMATO).
+	
+	* Makefile.am (EXTRA_DIST): Added input-png.*.
+	(input_png_src): Likewise. 
+
+	* configure.in: Added png check code.
+	Masatake YAMATO also added STAGE1 check.
+
+	* input-png.[hc]: New files.	
+
 2000-10-11  Masatake YAMATO  <yamato@redhat.com>
 
-	* main.c: Include input.h only.
+ 	* main.c: Include input.h only.
 	(input_extension): Comment out unused variable.
 	(set_*_input_format): Removed. Use input_get_handler* instead.
 	(INPUT_SUFFIX_LIST): Move to input.h.

@@ -39,16 +39,27 @@ fi
 AM_CONDITIONAL(HAVE_MAGICK, test x$HAVE_MAGICK = xyes)
 
 dnl
-dnl PNG
+dnl LIBPNG
 dnl
-dnl AC_CHECK_LIB(png, png_create_struct,
-dnl 		[LIBS="$LIBS -lpng -lz"
-dnl		 HAVE_LIBPNG=no
-dnl                 AC_DEFINE(HAVE_LIBPNG)
-dnl		],
-dnl		[HAVE_LIBPNG=no]
-dnl		,-lz)
-dnl AM_CONDITIONAL(HAVE_LIBPNG, test x$HAVE_LIBPNG = xyes)
+HAVE_LIBPNG_STAGE1=no
+AC_CHECK_LIB(png, png_get_image_width,
+	HAVE_LIBPNG_STAGE1=yes ,,-lz)
+
+HAVE_LIBPNG=no
+
+if test "x$HAVE_LIBPNG_STAGE1" = "xyes" ; then
+	AC_CHECK_LIB(png, png_read_png,
+		HAVE_LIBPNG=yes ,,-lz)
+	if test "x$HAVE_LIBPNG" = "xyes" ; then
+		LIBPNG_LDFLAGS="-lpng -lz"
+		AC_SUBST(LIBPNG_LDFLAGS)
+		AC_DEFINE(HAVE_LIBPNG)
+	else
+	   AC_MSG_WARN([libpng exists but cannot find png_read_png in the libpng.])
+	   AC_MSG_WARN([libpng might be old.])
+	fi
+fi
+AM_CONDITIONAL(HAVE_LIBPNG, test x$HAVE_LIBPNG = xyes)
 
 dnl
 dnl Vender's cc(not gcc)
