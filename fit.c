@@ -394,8 +394,8 @@ split_at_corners (pixel_outline_list_type pixel_list, fitting_opts_type *fitting
       if (O_LENGTH (pixel_o) > fitting_opts->corner_surround * 2 + 2)
         corner_list = find_corners (pixel_o, fitting_opts);
       else {
-        unsigned int surround;
-        if ((surround = (O_LENGTH (pixel_o) - 3) / 2) >= 4)
+        int surround;
+        if ((surround = (int)(O_LENGTH (pixel_o) - 3) / 2) >= 4)
           {
             unsigned save_corner_surround = fitting_opts->corner_surround;
             fitting_opts->corner_surround = surround;

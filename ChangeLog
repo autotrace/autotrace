@@ -1,3 +1,20 @@
+2001-11-19  Dan Mills <dmills@spamblock.demon.co.uk>
+
+	* fit.c (split_at_corners): 
+	 Here is a patch for another autotrace bug which caused some images
+	 to seemingly hang when processed with the thin option.
+
+	 The problem was caused by the fact that the LHS of the if statement
+	 was evaluated as an unsigned value, thus when pixel_o == 1, the
+	 statement evaluates as if (((unsigned int)(-1)) >= 4) which comes
+	 out to somewhere around (2^32 >= 4), this has the predictable result.
+	 Using signed math overcomes this problem.
+
+2001-11-19  Martin Weber  <martweb@gmx.net>
+	
+	* pxl-outline.c (find_outline_pixels): improved 
+	background handling.
+
 2001-11-19  Masatake YAMATO  <yamato@redhat.com>
 
 	* fit.c (fit_one_spline): Remove wrong fprintf.

@@ -103,7 +103,6 @@ find_outline_pixels (bitmap_type bitmap, color_type *bg_color,
   pixel_outline_list_type outline_list;
   unsigned row, col;
   bitmap_type marked = new_bitmap (BITMAP_WIDTH (bitmap), BITMAP_HEIGHT (bitmap));
-  color_type color;
   unsigned int max_progress = BITMAP_HEIGHT (bitmap) * BITMAP_WIDTH (bitmap);
 
   O_LIST_LENGTH (outline_list) = 0;
@@ -114,6 +113,8 @@ find_outline_pixels (bitmap_type bitmap, color_type *bg_color,
       for (col = 0; col < BITMAP_WIDTH (bitmap); col++)
 	{
 	  edge_type edge;
+	  color_type color;
+	  bool is_background;
 
 	  if (notify_progress)
 	    notify_progress((real)(row * BITMAP_WIDTH(bitmap) + col) / ((real) max_progress * (real)3.0),
@@ -122,7 +123,7 @@ find_outline_pixels (bitmap_type bitmap, color_type *bg_color,
 	  /* A valid edge can be TOP for an outside outline.
 	     Outside outlines are traced counterclockwise */
 	  color = GET_COLOR (bitmap, row, col);
-	  if (!(bg_color && COLOR_EQUAL(color, *bg_color))
+	  if (!(is_background = (bg_color && COLOR_EQUAL(color, *bg_color)))
 	      && is_unmarked_outline_edge (row, col, edge = TOP,
 					   bitmap, marked, color))
 	    {
@@ -150,7 +151,7 @@ find_outline_pixels (bitmap_type bitmap, color_type *bg_color,
                 pixel_outline_type outline;
 
                 /* This lines are for debugging only:*/
-                if (bg_color)
+                if (is_background)
                   {
                     LOG1 ("#%u: (clockwise)", O_LIST_LENGTH (outline_list));
 
