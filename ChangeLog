@@ -1,3 +1,8 @@
+2001-12-23  Masatake YAMATO  <yamato@redhat.com>
+
+	* Makefile.am (EXTRA_DIST): Added
+	autotrace.sln autotrace.vcproj libming.sln libming.vcproj.
+
 2001-12-23  Martin Weber <martweb@gmx.net>
 
 	* libming.sln: New file.
