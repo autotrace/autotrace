@@ -22,10 +22,11 @@
 
 #include "input.h"
 
-at_bitmap_type bmp_load_image (at_string filename,
-			       at_input_opts_type * opts,
-			       at_msg_func msg_func, 
-			       at_address msg_data); 
+
+at_bitmap_type input_bmp_reader (at_string filename,
+				 at_input_opts_type * opts,
+				 at_msg_func msg_func, 
+				 at_address msg_data); 
 
 #endif /* not INPUT_BMP_H */
 

@@ -22,10 +22,10 @@
 
 #include "input.h"
 
-at_bitmap_type pnm_load_image (at_string filename,
-			       at_input_opts_type * opts,
-			       at_msg_func msg_func,
-			       at_address msg_data);
+at_bitmap_type input_pnm_reader (at_string filename,
+				 at_input_opts_type * opts,
+				 at_msg_func msg_func,
+				 at_address msg_data);
 
 #endif /* not INPUT_PNM_H */
 

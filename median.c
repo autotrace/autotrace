@@ -879,7 +879,6 @@ void quantize(bitmap_type *image, long ncolors, const color_type *bgColor,
       { 
         if (*iQuant == NULL) 
           {
-	    fprintf(stderr, "xxx");
             quantobj = initialize_median_cut(ncolors); 
             median_cut_pass1_rgb  (quantobj, image, bgColor); 
             *iQuant = quantobj; 

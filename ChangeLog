@@ -1,3 +1,11 @@
+2002-10-06  Masatake YAMATO  <yamato@redhat.com>
+
+	* median.c (quantize): removed debug print.
+
+	* input*.[ch]: renamed all loader.
+
+	* input-magick.c: added a forgotten argument.
+
 2002-10-04  Masatake YAMATO  <yamato@redhat.com>
 
 	* quantize.h: Added a declaration for 

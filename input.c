@@ -49,14 +49,14 @@ struct input_format_entry {
 #define END   {NULL, NULL, NULL}
 static struct input_format_entry input_formats[] = {
 #ifdef HAVE_LIBPNG
-  { "PNG",   "Portable network graphics",      png_load_image},
+  { "PNG",   "Portable network graphics",      input_png_reader},
 #endif /* HAVE_LIBPNG */
-  { "TGA",   "Truevision Targa image",         tga_load_image },
-  { "PBM",   "Portable bitmap format",         pnm_load_image },
-  { "PNM",   "Portable anymap format",         pnm_load_image },
-  { "PGM",   "Portable graymap format",        pnm_load_image },
-  { "PPM",   "Portable pixmap format",         pnm_load_image },
-  { "BMP",   "Microsoft Windows bitmap image", bmp_load_image },
+  { "TGA",   "Truevision Targa image",         input_tga_reader },
+  { "PBM",   "Portable bitmap format",         input_pnm_reader },
+  { "PNM",   "Portable anymap format",         input_pnm_reader },
+  { "PGM",   "Portable graymap format",        input_pnm_reader },
+  { "PPM",   "Portable pixmap format",         input_pnm_reader },
+  { "BMP",   "Microsoft Windows bitmap image", input_bmp_reader },
   END
 };
 
@@ -86,7 +86,7 @@ at_input_get_handler_by_suffix (at_string suffix)
         }
     }
 #if HAVE_MAGICK
-  return (at_input_read_func)magick_load_image;
+  return (at_input_read_func)input_magick_reader;
 #else
   return NULL;
 #endif /* HAVE_MAGICK */

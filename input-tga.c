@@ -109,10 +109,10 @@ static at_bitmap_type ReadImage (FILE *fp,
 				 struct tga_header *hdr,
 				 at_exception_type * exp);
 at_bitmap_type
-tga_load_image (at_string filename,
-		at_input_opts_type * opts,
-		at_msg_func msg_func, 
-		at_address msg_data)
+input_tga_reader (at_string filename,
+		  at_input_opts_type * opts,
+		  at_msg_func msg_func, 
+		  at_address msg_data)
 {
   FILE *fp;
   struct tga_header hdr;
