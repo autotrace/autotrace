@@ -23,9 +23,8 @@ at least SP 5 otherwise you could get Memory access violations due
 to a bug in earlier versions.
 
 Here the options you can use:
-Usage: autotrace [options] <input_name>.
-Options:<input_name> should be a filename, magick, tga, pbm, pnm, pgm, ppm or bm
-p.
+Usage: autotrace.exe [options] <input_name>.
+Options:<input_name> should be a supported image.
   You can use `--' or `-' to start an option.
   You can use any unambiguous abbreviation for an option name.
   You can separate option names and values with `=' or ` '.
@@ -51,7 +50,7 @@ error-threshold <real>: subdivide fitted curves that are off by
   more pixels than this; default is 2.0.
 filter-iterations <unsigned>: smooth the curve this many times
   before fitting; default is 4.
-input-format: magick, tga, pbm, pnm, pgm, ppm or bmp.
+input-format:  TGA, PBM, PNM, PGM, PPM or BMP.
 help: print this message.
 line-reversion-threshold <real>: if a spline is closer to a straight
   line than this, weighted by the square of the curve length, keep it a
@@ -64,7 +63,7 @@ list-input-formats:  print a list of support input formats to stderr.
 log: write detailed progress reports to <input_name>.log.
 output-file <filename>: write to <filename>
 output-format <format>: use format <format> for the output file
-  er, emf, eps, ai, sk, p2e, svg, dxf, epd, pdf and fig can be used.
+  eps, ai, p2e, sk, svg, fig, swf, emf, er, dxf, dxf12, epd or pdf can be used.
 remove-adjacent-corners: remove corners that are adjacent.
 tangent-surround <unsigned>: number of points on either side of a
   point to consider when computing the tangent at that point; default is 3.
@@ -74,5 +73,5 @@ version: print the version number of this program.
 
 Programmers wanted!!!
 
-Martin Weber: martweb@gmx.net
+Author: Martin Weber (martweb@gmx.net)
 

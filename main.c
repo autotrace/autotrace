@@ -154,8 +154,8 @@ main (int argc, char * argv[])
 
 /* Reading the options.  */
 
-#define USAGE "Options:\
-<input_name> should be a filename, " INPUT_SUFFIX_LIST ".\n"\
+#define USAGE1 "Options:\
+<input_name> should be a supported image.\n"\
   GETOPT_USAGE								\
 "background-color <hexadezimal>: the color of the background that\n\
   should be ignored, for example FFFFFF;\n\
@@ -174,12 +174,12 @@ corner-threshold <angle-in-degrees>: if a pixel, its predecessor(s),\n\
   and its successor(s) meet at an angle smaller than this, it's a\n\
   corner; default is 100.\n\
 despeckle-level <unsigned>: 0..20; default is no despeckling.\n\
-despeckle-tightness <real>: 0.0..8.0; default is 2.0.\n\
-error-threshold <real>: subdivide fitted curves that are off by\n\
+despeckle-tightness <real>: 0.0..8.0; default is 2.0.\n"
+#define USAGE2 "error-threshold <real>: subdivide fitted curves that are off by\n\
   more pixels than this; default is 2.0.\n\
 filter-iterations <unsigned>: smooth the curve this many times\n\
   before fitting; default is 4.\n\
-input-format: " INPUT_SUFFIX_LIST ". \n\
+input-format:  %s. \n\
 help: print this message.\n\
 line-reversion-threshold <real>: if a spline is closer to a straight\n\
   line than this, weighted by the square of the curve length, keep it a\n\
@@ -192,7 +192,7 @@ list-input-formats:  print a list of support input formats to stderr.\n\
 log: write detailed progress reports to <input_name>.log.\n\
 output-file <filename>: write to <filename>\n\
 output-format <format>: use format <format> for the output file\n\
- %s can be used.\n\
+  %s can be used.\n\
 remove-adjacent-corners: remove corners that are adjacent.\n\
 tangent-surround <unsigned>: number of points on either side of a\n\
   point to consider when computing the tangent at that point; default is 3.\n\
@@ -285,11 +285,14 @@ read_command_line (int argc, char * argv[],
 
       else if (ARGUMENT_IS ("help"))
         {
-	  unsigned char *shortlist;
+		  unsigned char *ishortlist, *oshortlist;
           fprintf (stderr, "Usage: %s [options] <input_name>.\n", argv[0]);
-          fprintf (stderr, USAGE, shortlist = output_shortlist());
-	  free (shortlist);
-	  fprintf (stderr, 
+          fprintf (stderr, USAGE1);
+          fprintf (stderr, USAGE2, ishortlist = input_shortlist(),
+			oshortlist = output_shortlist());
+		  free (ishortlist);
+		  free (oshortlist);
+	      fprintf (stderr, 
 		   "\nYou can get the source code of autotrace from \n%s\n",
 		   at_home_site());
           exit (0);

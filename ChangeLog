@@ -1,4 +1,13 @@
 2001-12-01  Martin Weber <martweb@gmx.net>
+	
+	* input.c, input.h, main.c, README: input_list now also lists
+	all formats that are supported by ImageMagick, dynamic generation of
+	input format list.
+
+	(Message-ID: <3C0697FA.F9F1F974@gmx.net> is applied.
+	Message-ID: <3C056389.A35DF08C@gmx.net> is ignored).
+	
+2001-12-01  Martin Weber <martweb@gmx.net>
 
 	* output-dxf.h (output_dxf12_writer): New function.
 
