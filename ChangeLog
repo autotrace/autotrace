@@ -1,3 +1,11 @@
+2001-12-24  Masatake YAMATO  <yamato@redhat.com>
+
+	* configure.in: Version 0.29.
+
+	* autotrace.[ch]: Renamed at_bitmap_new to at_bitmap_read.
+
+	* main.c (main): Likewise.
+
 2001-12-24  Martin Weber <martweb@gmx.net>
 
 	* autotrace.[dsp,vcproj]: removed version.c

@@ -47,7 +47,7 @@ int main()
   at_splines_type * splines;
   at_output_write_func wfunc = at_output_get_handler_by_suffix("eps");
 
-  bitmap = at_bitmap_new(rfunc, fname);
+  bitmap = at_bitmap_read(rfunc, fname);
   splines = at_splines_new(bitmap, opts);
   at_splines_write(splines, stdout, "", 
                    AT_DEFAULT_DPI,

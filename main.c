@@ -120,7 +120,7 @@ main (int argc, char * argv[])
 
   /* Open the main input file.  */
   if (input_reader != NULL)
-    bitmap = at_bitmap_new(input_reader, input_name);
+    bitmap = at_bitmap_read(input_reader, input_name);
   else
     FATAL ("Unsupported inputformat\n");
 

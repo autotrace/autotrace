@@ -231,8 +231,8 @@ void at_fitting_opts_free(at_fitting_opts_type * opts);
  *
  * TODO: internal data access
  * --------------------------------------------------------------------- */
-at_bitmap_type * at_bitmap_new (at_input_read_func input_reader,
-				at_string filename);
+at_bitmap_type * at_bitmap_read (at_input_read_func input_reader,
+				 at_string filename);
 unsigned short at_bitmap_get_width (at_bitmap_type * bitmap);
 unsigned short at_bitmap_get_height (at_bitmap_type * bitmap);
 void at_bitmap_free (at_bitmap_type * bitmap);

@@ -44,7 +44,7 @@ at_fitting_opts_free(at_fitting_opts_type * opts)
 }
 
 at_bitmap_type *
-at_bitmap_new (at_input_read_func input_reader,
+at_bitmap_read (at_input_read_func input_reader,
 	       at_string filename)
 {
   at_bitmap_type * bitmap;
