@@ -1,3 +1,29 @@
+2002-11-16  Masatake YAMATO  <yamato@redhat.com>
+
+	* Makefile.am (libautotrace_la_SOURCES): added intl.h
+	(AM_CPPFLAGS): added locale dir.
+	(autotrace_LDADD): added INTLLIBS.
+	(ACLOCAL_AMFLAGS): Added -I m4.
+
+	* acconfig.h: added PACKAGE and VERSION.
+
+	* autotrace.c (autotrace_init): New function.
+	(at_fitting_opts_doc_func): New function.
+
+	* autotrace.h (autotrace_init): New function.
+	(at_fitting_opts_doc): call at_fitting_opts_doc_func.
+	(at_fitting_opts_doc_func): New function.
+
+	* configure.in: remove AUTOTRACE_ prefix from version
+	number related variable names.
+	use DEFINE_UNQOTED macro instead of SUBST marco.
+	(AM_GNU_GETTEXT): Gettextiz'ed.
+	(AC_OUTPUT): intl/Makefile and po/Makefile.in are added.
+	
+	* main.c: include intl.h and locale.h.
+	(main): set locale.
+	put _() to C strings.
+
 2002-11-15  Martin Weber <martweb@gmx.net>
 
 	* autotrace.c, fit.c, input-tga.c,

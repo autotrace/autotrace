@@ -10,6 +10,8 @@
 
 autofig autotrace-config.af
 
+gettextize --force
+
 if (aclocal-1.5 --version)  < /dev/null > /dev/null 2>&1; then
     aclocal-1.5 $ACLOCAL_FLAGS
 else

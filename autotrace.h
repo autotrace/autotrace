@@ -231,6 +231,12 @@ typedef
 void (* at_msg_func) (at_string msg, at_msg_type msg_type, at_address client_data);
 
 /*
+ * Autotrace initializer
+ */
+#define AUTOTRACE_INIT 
+void autotrace_init (void);
+
+/*
  * IO Handler typedefs
  */
 
@@ -275,8 +281,10 @@ at_fitting_opts_type * at_fitting_opts_new(void);
 at_fitting_opts_type * at_fitting_opts_copy (at_fitting_opts_type * original); 
 void at_fitting_opts_free(at_fitting_opts_type * opts);
 
-/* TODO: Gettextize */
-#define at_fitting_opts_doc(opt) _(at_doc__##opt)
+/* Gettextize */
+#define at_fitting_opts_doc(opt) at_fitting_opts_doc_func(at_doc__##opt)
+/* Don't use next function directly from clients */
+const char * at_fitting_opts_doc_func(char * string);
 
 /* --------------------------------------------------------------------- *
  * Input option related

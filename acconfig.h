@@ -15,7 +15,8 @@
 
 
 /* Other stuff */
-#undef AUTOTRACE_VERSION
+#undef PACKAGE
+#undef VERSION
 #undef AUTOTRACE_WEB
 #undef HAVE_LIBPNG
 #undef HAVE_LIBSWF

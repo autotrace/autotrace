@@ -1,3 +1,4 @@
+SUBDIRS = intl po
 man_MANS = autotrace.1
 EXTRA_DIST=$(man_MANS)						\
 output-swf.c output-swf.h					\
@@ -95,7 +96,8 @@ libautotrace_la_SOURCES =\
 	        exception.c                     \
 		strgicmp.c			\
 		image-proc.c			\
-		image-proc.h
+		image-proc.h			\
+		intl.h
 
 autotraceinclude_HEADERS=\
 		types.h 			\
@@ -126,12 +128,15 @@ autotrace_SOURCES=\
 		strgicmp.h
 
 INCLUDES = $(MAGICK_CFLAGS) $(LIBPSTOEDIT_CFLAGS)
+AM_CPPFLAGS = -DLOCALEDIR=\""$(datadir)/locale"\" 
+
 autotrace_LDADD =				\
 		libautotrace.la			\
 		$(MAGICK_LDFLAGS)		\
 		$(LIBPNG_LDFLAGS)		\
 		$(LIBSWF_LDFLAGS)		\
 		$(LIBPSTOEDIT_LIBS)		\
+		$(INTLLIBS)			\
 		-lm
 
 m4datadir = $(datadir)/aclocal
@@ -152,3 +157,5 @@ dist-hook: autotrace.spec
 
 rpm: dist autotrace.spec
 	rpm -bb autotrace.spec
+
+ACLOCAL_AMFLAGS = -I m4

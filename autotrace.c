@@ -21,6 +21,7 @@
 #ifdef HAVE_CONFIG_H
 #include "config.h"
 #endif /* Def: HAVE_CONFIG_H */
+#include "intl.h"
 
 #include "autotrace.h"
 #include "exception.h"
@@ -443,13 +444,33 @@ const char *
 at_version (at_bool long_format)
 {
   if (long_format)
-    return "AutoTrace version " AUTOTRACE_VERSION;
+    return "AutoTrace version " VERSION;
   else
-    return AUTOTRACE_VERSION;
+    return VERSION;
 }
 
 const char * 
 at_home_site (void)
 {
   return AUTOTRACE_WEB;
+}
+
+void
+autotrace_init (void)
+{
+  static int initialized = 0;
+  if (!initialized)
+    {
+#ifdef ENABLE_NLS
+      setlocale (LC_ALL, "");
+      bindtextdomain (PACKAGE, LOCALEDIR);
+#endif /* Def: ENABLE_NLS */
+      initialized = 1;
+    }
+}
+
+const char *
+at_fitting_opts_doc_func(char * string)
+{
+  return _(string);
 }

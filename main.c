@@ -19,6 +19,12 @@
 #include <assert.h>
 #include <math.h>
 
+#undef N_
+#include "intl.h"
+#ifdef ENABLE_NLS
+#include <locale.h>
+#endif
+
 /* Pointers to functions based on input format.  (-input-format)  */
 static at_input_read_func input_reader = NULL;
 
@@ -79,15 +85,23 @@ main (int argc, char * argv[])
   at_progress_func progress_reporter = NULL;
   int progress_stat = 0;
 
+  autotrace_init();
+
+#ifdef ENABLE_NLS
+  setlocale (LC_ALL, "");
+  bindtextdomain (PACKAGE, LOCALEDIR);
+  textdomain(PACKAGE);
+#endif /* Def: ENABLE_NLS */
+
   fitting_opts 		    = at_fitting_opts_new ();
   output_opts  		    = at_output_opts_new ();
   input_name = read_command_line (argc, argv, fitting_opts, output_opts);
 
   if (strgicmp (output_name, input_name))
-    FATAL("Input and output file may not be the same\n");
+    FATAL(_("Input and output file may not be the same\n"));
 
   if ((input_rootname = remove_suffix (get_basename (input_name))) == NULL)
-	FATAL1 ("Not a valid inputname %s", input_name);
+	FATAL1 (_("Not a valid input file name %s"), input_name);
 
   if (logging)
     log_file = xfopen (logfile_name = extend_filename (input_rootname, "log"), "w");
@@ -114,7 +128,7 @@ main (int argc, char * argv[])
     {
       output_writer = at_output_get_handler_by_suffix(DEFAULT_FORMAT);
       if (output_writer == NULL)
-	FATAL1("Default format %s not supported", DEFAULT_FORMAT);
+	FATAL1(_("Default format %s is not supported"), DEFAULT_FORMAT);
     }
 
   /* Open output file */
@@ -136,7 +150,7 @@ main (int argc, char * argv[])
       at_input_opts_free(input_opts);
     }
   else
-    FATAL ("Unsupported input format");
+    FATAL (_("Unsupported input format"));
 
   if (report_progress)
     {
@@ -292,11 +306,11 @@ read_command_line (int argc, char * argv[],
       if (ARGUMENT_IS ("background-color"))
         {
            if (strlen (optarg) != 6)
-               FATAL ("background-color be six chars long");
-	       fitting_opts->background_color = at_color_new((unsigned char)(hctoi (optarg[0]) * 16 + hctoi (optarg[1])),
-				       (unsigned char)(hctoi (optarg[2]) * 16 + hctoi (optarg[3])),
-				       (unsigned char)(hctoi (optarg[4]) * 16 + hctoi (optarg[5])));
-	    }
+               FATAL (_("background-color should be six chars long"));
+	   fitting_opts->background_color = at_color_new((unsigned char)(hctoi (optarg[0]) * 16 + hctoi (optarg[1])),
+							 (unsigned char)(hctoi (optarg[2]) * 16 + hctoi (optarg[3])),
+							 (unsigned char)(hctoi (optarg[4]) * 16 + hctoi (optarg[5])));
+	}
       else if (ARGUMENT_IS ("centerline"))
 	fitting_opts->centerline = true;
 
@@ -345,14 +359,14 @@ read_command_line (int argc, char * argv[],
       else if (ARGUMENT_IS ("help"))
         {
 	  char *ishortlist, *oshortlist;
-          fprintf (stderr, "Usage: %s [options] <input_name>.\n", argv[0]);
+          fprintf (stderr, _("Usage: %s [options] <input_file_name>.\n"), argv[0]);
           fprintf (stderr, USAGE1);
           fprintf (stderr, USAGE2, ishortlist = at_input_shortlist(),
 		   oshortlist = at_output_shortlist());
 	  free (ishortlist);
 	  free (oshortlist);
 	  fprintf (stderr, 
-		   "\nYou can get the source code of autotrace from \n%s\n",
+		   _("\nYou can get the source code of autotrace from \n%s\n"),
 		   at_home_site());
           exit (0);
         }
@@ -361,7 +375,7 @@ read_command_line (int argc, char * argv[],
         {
 	  input_reader = at_input_get_handler_by_suffix (optarg);
 	  if (!input_reader)
-	    FATAL1 ("Input format %s not supported\n", optarg);
+	    FATAL1 (_("Input format %s is not supported\n"), optarg);
         }
 
       else if (ARGUMENT_IS ("line-threshold"))
@@ -372,13 +386,13 @@ read_command_line (int argc, char * argv[],
 
       else if (ARGUMENT_IS ("list-output-formats"))
         {
-	  fprintf (stderr, "Supported output formats:\n");
+	  fprintf (stderr, _("Supported output formats:\n"));
 	  output_list_formats (stderr);
 	  exit (0);
         }
       else if (ARGUMENT_IS ("list-input-formats"))
         {
-	  fprintf (stderr, "Supported input formats:\n");
+	  fprintf (stderr, _("Supported input formats:\n"));
 	  input_list_formats (stderr);
 	  exit (0);
         }
@@ -390,7 +404,7 @@ read_command_line (int argc, char * argv[],
         {
 	    output_writer = at_output_get_handler_by_suffix (optarg);
 	    if (output_writer == NULL)
-	      FATAL1 ("Output format %s not supported", optarg);
+	      FATAL1 (_("Output format %s is not supported"), optarg);
         }
       else if (ARGUMENT_IS ("preserve_width"))
 	fitting_opts->preserve_width = true;
@@ -402,7 +416,7 @@ read_command_line (int argc, char * argv[],
         fitting_opts->tangent_surround = atou (optarg);
 
       else if (ARGUMENT_IS ("version"))
-        printf ("AutoTrace version %s.\n", at_version(false));
+        printf (_("AutoTrace version %s.\n"), at_version(false));
 
       else if (ARGUMENT_IS ("width-weight-factor"))
 	fitting_opts->width_weight_factor = (at_real) atof (optarg);
@@ -561,5 +575,5 @@ exception_handler(at_string msg, at_msg_type type, at_address data)
   else if (type == AT_MSG_WARNING)
     fprintf (stderr, "%s\n", msg);
   else
-    exception_handler("Wrong type of msg", AT_MSG_FATAL, NULL);
+    exception_handler(_("Wrong type of msg"), AT_MSG_FATAL, NULL);
 }

@@ -1,0 +1,10 @@
+Makefile
+Makefile.in
+Makefile.in.in
+POTFILES
+autotrace.pot
+messages
+*.gmo
+stamp-cat-id
+cat-id-tbl.c
+

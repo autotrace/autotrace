@@ -3,17 +3,18 @@
 # Author: Masatake YAMATO (yamato@redhat.com)
 #
 AC_INIT(fit.c)
-
+PACKAGE=autotrace
 #
 # version setting up for Automake 
 # 
-AUTOTRACE_MAJOR_VERSION=0
-AUTOTRACE_MINOR_VERSION=31
-AUTOTRACE_MICRO_VERSION=1
-AUTOTRACE_VERSION=${AUTOTRACE_MAJOR_VERSION}.${AUTOTRACE_MINOR_VERSION}.${AUTOTRACE_MICRO_VERSION}
-AC_DEFINE_UNQUOTED(AUTOTRACE_VERSION,"$AUTOTRACE_VERSION")
-AC_SUBST(AUTOTRACE_VERSION)
-AM_INIT_AUTOMAKE(autotrace, $AUTOTRACE_VERSION, no-define)
+MAJOR_VERSION=0
+MINOR_VERSION=31
+MICRO_VERSION=1
+VERSION=${MAJOR_VERSION}.${MINOR_VERSION}.${MICRO_VERSION}
+AM_INIT_AUTOMAKE($PACKAGE, $VERSION, no-define)
+AC_DEFINE_UNQUOTED(PACKAGE, "$PACKAGE")
+AC_SUBST(PACKAGE)
+AC_DEFINE_UNQUOTED(VERSION,"$VERSION")
 
 #
 # version setting up for libtool
@@ -43,6 +44,10 @@ dnl AC_ARG_PROGRAM
 AM_SANITY_CHECK
 AC_PROG_INSTALL
 AC_CHECK_HEADERS(malloc.h)
+
+ALL_LINGUAS="ja"
+AM_GNU_GETTEXT
+AC_CHECK_FUNC(gettext,,AC_CHECK_LIB(intl, gettext))
 
 dnl
 dnl ImageMagick
@@ -353,7 +358,8 @@ dnl	    ;;
 dnl  esac
 dnl fi
 
-AC_OUTPUT([Makefile autotrace-config autotrace.pc autotrace.spec], 
+AC_OUTPUT([intl/Makefile po/Makefile.in
+Makefile autotrace-config autotrace.pc autotrace.spec], 
 [chmod a+x autotrace-config])
 
 echo "
