@@ -2,6 +2,7 @@ man_MANS = autotrace.1
 EXTRA_DIST=$(man_MANS)						\
 output-swf.c output-swf.h					\
 input-magick.h input-magick.c input-png.c input-png.h		\
+output-pstoedit.c output-pstoedit.h				\
 autotrace-config.af autotrace-config.in				\
 autotrace.dsp autotrace.dsw					\
 autotrace.m4 shape_cubic.c.diff README.MING			\
