@@ -76,7 +76,9 @@ static struct output_format_entry output_formats[] = {
 };
 
 static at_bool output_is_static_member (struct output_format_entry * entries,
-					at_string name);
+					struct DriverDescription_S* dd);
+
+static at_bool streq (const char * a, const char * b);
 
 at_output_write_func
 at_output_get_handler(at_string filename)
@@ -104,6 +106,7 @@ at_output_get_handler_by_suffix(at_string suffix)
         }
     }
 #if HAVE_LIBPSTOEDIT
+  output_pstoedit_set_last_suffix (suffix);
   return output_pstoedit_writer;
 #else
   return NULL;
@@ -137,9 +140,14 @@ at_output_list_new (void)
        while (dd_tmp->symbolicname)
 	 {
 	   if (!output_is_static_member(output_formats,
-					dd_tmp->suffix)
+					dd_tmp)
 	       && !output_pstoedit_is_unusable_writer(dd_tmp->suffix))
-	     count++;
+	     {
+	       if (streq(dd_tmp->symbolicname, dd_tmp->suffix))
+		 count += 1;
+	       else
+		 count += 2;
+	     }
 	   dd_tmp++;
 	 }
      }
@@ -158,12 +166,19 @@ at_output_list_new (void)
   while (driver_description->symbolicname)
     {
       if (!output_is_static_member(output_formats,
-				   driver_description->suffix)
+				   driver_description)
 	  && !output_pstoedit_is_unusable_writer(driver_description->suffix))
 	{
 	  list[2*i]   = driver_description->suffix;
 	  list[2*i+1] = driver_description->explanation;
 	  i++;
+	  if (!streq(driver_description->suffix,
+		     driver_description->symbolicname))
+	    {
+	      list[2*i]   = driver_description->symbolicname;
+	      list[2*i+1] = driver_description->explanation;
+	      i++;
+	    }
 	}
       driver_description++;
     }
@@ -208,9 +223,13 @@ at_output_shortlist (void)
        while (dd_tmp->symbolicname)
 	 {
 	   if (!output_is_static_member(output_formats,
-					dd_tmp->suffix)
+					dd_tmp)
 	       && !output_pstoedit_is_unusable_writer(dd_tmp->suffix))
-	     length += strlen (dd_tmp->suffix) + 2;
+	     {
+	       length += strlen (dd_tmp->suffix) + 2;
+	       if (!streq(dd_tmp->suffix, dd_tmp->symbolicname))
+		 length += strlen (dd_tmp->symbolicname) + 2;
+	     }
 	   dd_tmp++;
 	 }
      }
@@ -231,11 +250,17 @@ at_output_shortlist (void)
     {
 
       if (!output_is_static_member(output_formats,
-				   driver_description->suffix)
+				   driver_description)
 	  && !output_pstoedit_is_unusable_writer(driver_description->suffix))
 	{
 	  strcat (list, ", ");
 	  strcat (list, driver_description->suffix);
+	  if (!streq(driver_description->suffix, 
+		     driver_description->symbolicname))
+	    {
+	      strcat (list, ", ");
+	      strcat (list, driver_description->symbolicname);
+	    }
 	}
       driver_description++;
     }
@@ -280,13 +305,20 @@ at_spline_list_array_foreach (at_spline_list_array_type *list_array,
  
 static at_bool
 output_is_static_member (struct output_format_entry * entries,
-			 at_string name)
+			 struct DriverDescription_S* dd)
 {
   while (entries->name)
     {
-      if (!strcmp(name, entries->name))
+      if (streq(dd->suffix, entries->name)
+	  || streq(dd->symbolicname, entries->name))
 	return true;
       entries++;
     }
   return false;
+}
+
+static at_bool
+streq (const char * a, const char * b)
+{
+  return !strcmp(a, b);
 }

@@ -47,9 +47,19 @@
 #include <errno.h>
 
 #define BO_DEBUG 0
+#define TMPDIR "/tmp/"
 
+static char * output_pstoedit_suffix = NULL;
 static void remove_tmpfile (at_string tmpfile_name);
+static char * get_symbolicname(char * suffix);
 
+/* This output routine uses two temporary files to keep the
+   both the command line syntax of autotrace and the 
+   pstoedit API. 
+
+   shape -> bo file(tmpfile_name_p2e) 
+   -> specified formatted file(tmpfile_name_pstoedit) 
+   -> file */
 int
 output_pstoedit_writer (FILE* file, at_string name,
 			int llx, int lly, int urx, int ury, int dpi,
@@ -57,15 +67,18 @@ output_pstoedit_writer (FILE* file, at_string name,
 			at_msg_func msg_func, 
 			at_address msg_data)
 {
-  char  tmpfile_name[] = "at-bo-" "XXXXXX";
-  char * suffix;
+  char  tmpfile_name_p2e[] = TMPDIR "at-bo-" "XXXXXX";
+  char  tmpfile_name_pstoedit[] = TMPDIR "at-fo-" "XXXXXX";
+  char * symbolicname;
   int tmpfd;
   FILE * tmpfile;
+  int result = 0;
+  int c;
 
   int argc;
 #define CMD_INDEX         0
-#define SUFFIX_FLAG_INDEX 1
-#define SUFFIX_VAL_INDEX  2
+#define SYMBOLICNAME_FLAG_INDEX 1
+#define SYMBOLICNAME_VAL_INDEX  2
 #define BO_FLAG_INDEX     3
 #define INPUT_INDEX       4
 #define OUTPUT_INDEX      5
@@ -74,24 +87,32 @@ output_pstoedit_writer (FILE* file, at_string name,
   argc = sizeof(argv) / sizeof(char *);
   
   pstoedit_checkversion(pstoeditdllversion);
-  
-  suffix = find_suffix(name);	/* Hack here */
-  if (NULL == suffix)
+
+  if (NULL == output_pstoedit_suffix)
     {
       if (msg_func) 
-	msg_func ("Cannot find suffix in given file name", 
-		  AT_MSG_FATAL, msg_data);
+	msg_func ("Suffix or pstoedit backend driver name is not given", 
+		  AT_MSG_WARNING, msg_data);
       return -1;
     }
-  
-  tmpfd  = mkstemp(tmpfile_name);
+
+  symbolicname = get_symbolicname(output_pstoedit_suffix);
+  if (NULL == symbolicname)
+    {
+      if (msg_func) 
+	msg_func ("Suffix or pstoedit backend driver name is wrong", 
+		  AT_MSG_WARNING, msg_data);
+      return -1;
+    }
+    
+  tmpfd = mkstemp(tmpfile_name_p2e);
   if (tmpfd < 0)
     {
       if (msg_func)
 	{
 	  msg_func ("Fail to create a tmp file that is passed to pstoedit(mkstemp)", 
 		    AT_MSG_WARNING, msg_data);
-	  msg_func (strerror(errno), AT_MSG_FATAL, msg_data);
+	  msg_func (strerror(errno), AT_MSG_WARNING, msg_data);
 	}
       return -1;
     }
@@ -105,21 +126,66 @@ output_pstoedit_writer (FILE* file, at_string name,
 		    AT_MSG_WARNING, msg_data);
 	  msg_func (strerror(errno), AT_MSG_FATAL, msg_data);
 	}
-      return -1;
+      close(tmpfd);
+      result = -1;
+      goto remove_tmp_p2e;
     }
-  
-  output_p2e_writer(tmpfile, tmpfile_name,
+
+  /* 
+   * shape -> bo file 
+   */
+  output_p2e_writer(tmpfile, tmpfile_name_p2e,
 		    llx, lly, urx, ury, dpi,
 		    shape, msg_func, msg_data);
-  
-  argv[SUFFIX_VAL_INDEX] = suffix;
-  argv[INPUT_INDEX]      = tmpfile_name;
-  argv[OUTPUT_INDEX]     = name;
-  pstoedit_plainC(argc, argv, NULL);
-  
   fclose(tmpfile);
-  remove_tmpfile(tmpfile_name);
-  return 0;
+
+  tmpfd = mkstemp(tmpfile_name_pstoedit);
+  if (tmpfd < 0)
+    {
+      if (msg_func)
+	{
+	  msg_func ("Fail to create a tmp file that is passed to pstoedit(mkstemp)", 
+		    AT_MSG_WARNING, msg_data);
+	  msg_func (strerror(errno), AT_MSG_WARNING, msg_data);
+	}
+      result = -1;
+      goto remove_tmp_p2e;
+    }
+
+  /*
+   * bo file -> specified formatted file 
+   */
+  argv[SYMBOLICNAME_VAL_INDEX] = symbolicname;
+  argv[INPUT_INDEX]      = tmpfile_name_p2e;
+  argv[OUTPUT_INDEX]     = tmpfile_name_pstoedit;
+  pstoedit_plainC(argc, argv, NULL);
+
+  /*
+   * specified formatted file(tmpfile_name_pstoedit) -> file  
+   */
+  tmpfile = fdopen(tmpfd, "r");
+  if (NULL == tmpfile)
+    {
+      if (msg_func)
+	{
+	  msg_func ("Fail to create a tmp file that is passed to pstoedit(fdopen)", 
+		    AT_MSG_WARNING, msg_data);
+	  msg_func (strerror(errno), AT_MSG_FATAL, msg_data);
+	}
+      close(tmpfd);
+      result = -1;
+      goto remove_tmp_pstoedit;
+    }
+  fseek(tmpfile, 0, SEEK_SET);
+  while (EOF != (c = fgetc(tmpfile)))
+    fputc(c, file);
+  fclose(tmpfile);
+  
+ remove_tmp_pstoedit:
+  remove_tmpfile(tmpfile_name_pstoedit);
+ remove_tmp_p2e:
+  remove_tmpfile(tmpfile_name_p2e);
+  return result;
 }
 
 static void
@@ -127,6 +193,8 @@ remove_tmpfile (at_string tmpfile_name)
 {
 #if BO_DEBUG == 0
   remove (tmpfile_name);
+#else 
+  fprintf(stderr, "tmp file name: %s\n", tmpfile_name);
 #endif /* Not BO_DEBUG == 0 */  
 }
 
@@ -139,4 +207,36 @@ output_pstoedit_is_unusable_writer(at_string name)
     return true;
   else
     return false;
+}
+
+void
+output_pstoedit_set_last_suffix (const char * suffix)
+{
+  if (output_pstoedit_suffix)
+    free(output_pstoedit_suffix);
+  output_pstoedit_suffix = strdup (suffix);  
+}
+
+/* get_symbolicname --- Return symbolicname associated with SUFFIX 
+   If SUFFIX itself a symbolicname, just return SUFFIX.
+   If SUFFIX doesn't have any associated symbolicname and
+   it is not a suffix registered in pstoedit, reutrn NULL. */
+static char *
+get_symbolicname(char * suffix)
+{
+  struct DriverDescription_S* dd_tmp;
+  dd_tmp = getPstoeditDriverInfo_plainC();
+  if (dd_tmp)
+    {
+      while (dd_tmp->symbolicname)
+	 {
+	   if (0 == strcmp(dd_tmp->suffix, suffix))
+	     return dd_tmp->symbolicname;
+	   else if (0 == strcmp(dd_tmp->symbolicname, suffix))
+	     return suffix;
+	   else
+	     dd_tmp++;
+	 }
+    }
+  return NULL;
 }

@@ -1,4 +1,29 @@
+2002-09-05  Masatake YAMATO  <yamato@redhat.com>
+
+	* output-pstoedit.c (get_symbolicname): New function.
+	(remove_tmpfile): Print tmp file names if BO_DEBUG is 1.
+	(output_pstoedit_writer): Use two temporary files to keep 
+	both the command line syntax of autotrace and the 
+	pstoedit API. 
+	(output_pstoedit_suffix): New variable.
+
+	* output.c (streq): New function.
+	(at_output_get_handler_by_suffix): Call 
+	output_pstoedit_set_last_suffix.
+	(at_output_list_new): Use both suffixes and symbolicnames.
+	(at_output_shortlist): Likewise.
+	(output_is_static_member): Check both suffixes and symbolicnames.
+
+	* output-pstoedit.[ch] (output_pstoedit_set_last_suffix): 
+	New function.
+
+	* main.c (output_list_formats): gave more
+	spaces to the output formats.
+
 2002-08-27  Masatake YAMATO  <yamato@redhat.com>
+
+	* configure.in: 0.30.3.
+	library version is set to 1.0.1.
 
 	* logreport.h (at_log_file): Renamed from
 	log_file. I guess the symbol `log_file'

@@ -28,7 +28,7 @@ int output_pstoedit_writer (FILE* file, at_string name,
 			    at_spline_list_array_type shape,
 			    at_msg_func msg_func, 
 			    at_address msg_data);
-
+void output_pstoedit_set_last_suffix (const char * suffix);
 at_bool output_pstoedit_is_unusable_writer(at_string name);
 
 #endif /* Not def: OUTPUTPSTOEDIT_H */

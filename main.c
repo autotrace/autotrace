@@ -497,7 +497,7 @@ output_list_formats(FILE* file)
     {
       suffix = *list++;
       descr = *list++;
-      fprintf(file, "%5s %s\n", suffix, descr);
+      fprintf(file, "%10s %s\n", suffix, descr);
     }
   
   at_output_list_free(tmp);
