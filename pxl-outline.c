@@ -308,6 +308,8 @@ find_centerline_pixels(bitmap_type bitmap, color_type bg_color,
 			partial_outline =
 			  find_one_centerline(bitmap, edge, row, col, &marked);
 			concat_pixel_outline(&outline, &partial_outline);
+			if (partial_outline.data)
+			    free(partial_outline.data);
 		    }
 		}
 
@@ -316,12 +318,13 @@ find_centerline_pixels(bitmap_type bitmap, color_type bg_color,
 		   bottom edge, and move clockwise.  This happens because of
 		   the order in which we look at the edges. */
 		O_CLOCKWISE(outline) = clockwise;
-/* if (clockwise) */
-if (O_LENGTH(outline) > 1)
+		/* if (clockwise) */
+		if (O_LENGTH(outline) > 1)
 		    append_pixel_outline(&outline_list, outline);
-
 		LOG1("%s)", (outline.open ? "open" : "closed"));
 		LOG1(" [%u].\n", O_LENGTH(outline));
+		if (O_LENGTH(outline) == 1)
+		    free(outline.data);	/* TODO: dirty */
 	    }
 	}
 	if (test_cancel && test_cancel(testcancel_data))

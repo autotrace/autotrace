@@ -91,6 +91,8 @@ at_bitmap_type input_magick_reader(at_string filename,
       }
     }
   /* TODO Resource should be freed. */
- cleanup:  
+ cleanup:
+  DestroyImageInfo(image_info);  
+  DestroyImage(image);
   return(bitmap);
 }

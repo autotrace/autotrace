@@ -1,5 +1,11 @@
 2002-10-06  Masatake YAMATO  <yamato@redhat.com>
 
+	* pxl-outline.c (find_centerline_pixels): free
+	unused outline and partial_outline after using.
+
+	* input-magick.c (input_magick_reader): freed
+	image_info and image.
+
 	* output.c (at_output_shortlist): driverdescription
 	is freed.
 
