@@ -104,12 +104,8 @@ static at_coord real_to_int_coord (at_real_coord);
 static at_real distance (at_real_coord, at_real_coord);
 
 /* Get a new set of fitting options */
-#ifdef _EXPORTING
-__declspec(dllexport) fitting_opts_type
-__stdcall new_fitting_opts (void)
-#else
-fitting_opts_type new_fitting_opts (void)
-#endif
+fitting_opts_type
+new_fitting_opts (void)
 {
   fitting_opts_type fitting_opts;
 
@@ -137,9 +133,8 @@ fitting_opts_type new_fitting_opts (void)
    of the original character to a list of spline lists fitted to those
    pixels.  */
 
-#ifdef _EXPORTING
-__declspec(dllexport) spline_list_array_type
-__stdcall fitted_splines (pixel_outline_list_type pixel_outline_list,
+spline_list_array_type
+fitted_splines (pixel_outline_list_type pixel_outline_list,
   fitting_opts_type *fitting_opts, distance_map_type *,
   unsigned short width, unsigned short height,
   at_exception_type * exception,
@@ -147,17 +142,6 @@ __stdcall fitted_splines (pixel_outline_list_type pixel_outline_list,
   address progress_data,
   testcancel_func test_cancel,
   address testcancel_data)
-#else
-spline_list_array_type
-fitted_splines (pixel_outline_list_type pixel_outline_list,
-  fitting_opts_type *fitting_opts, distance_map_type *dist,
-  unsigned short width, unsigned short height,
-  at_exception_type * exception,
-  at_progress_func notify_progress, 
-  at_address progress_data,
-  at_testcancel_func test_cancel,
-  at_address testcancel_data)
-#endif
 {
   unsigned this_list;
 

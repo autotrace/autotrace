@@ -1,3 +1,7 @@
+2002-11-03  Masatake YAMATO  <yamato@redhat.com>
+
+	* fit.[ch]: Removed unused ifdefs.
+
 2002-10-31  Masatake YAMATO  <yamato@redhat.com>
 
 	* *: width_factor, weight_factor -> width_weight_factor.
