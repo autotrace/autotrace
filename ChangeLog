@@ -1,3 +1,8 @@
+2002-11-09  Masatake YAMATO  <yamato@redhat.com>
+
+	* configure.in: LT_CURRENT=3.
+	See my change at 2002-10-31.
+
 2002-11-09 Martin Weber <martweb@gmx.net>
 
 	* output-dr2d.c (BuildDRHD::FloatAsIEEEBytes): 

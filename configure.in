@@ -18,7 +18,7 @@ AM_INIT_AUTOMAKE(autotrace, $AUTOTRACE_VERSION, no-define)
 #
 # version setting up for libtool
 #
-LT_CURRENT=2
+LT_CURRENT=3
 LT_REVISION=0
 LT_AGE=0
 dnl AC_SUBST(LT_RELEASE)
