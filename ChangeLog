@@ -1,5 +1,15 @@
 2001-12-01  Martin Weber <martweb@gmx.net>
 
+	* output-dxf.h (output_dxf12_writer): New function.
+
+	* output.c (output_formats): Added dxf12.
+
+	* output-dxf.c: Reorganized.
+
+	(Message-ID: <3C053FF6.191A5F26@gmx.net>).
+
+2001-12-01  Martin Weber <martweb@gmx.net>
+
 	* output-swf.c (output_swf_writer): Now using file instead of 
 	name so that it works also to stdout.
 

@@ -38,7 +38,8 @@ static struct output_format_entry output_formats[] = {
 #endif /* HAVE_LIBSWF */
     {"emf",     "Enhanced Metafile format",     output_emf_writer},
     {"er",      "Elastic Reality Shape file",   output_er_writer},
-    {"dxf",     "DXF format",   output_dxf_writer},
+    {"dxf",     "DXF format (with splines)",    output_dxf_writer},
+    {"dxf12",   "DXF format (without splines)", output_dxf12_writer},
     {"epd",     "EPD format",   output_epd_writer},
     {"pdf",     "PDF format",                 output_pdf_writer},
     {NULL,	NULL}
