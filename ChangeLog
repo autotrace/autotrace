@@ -1,3 +1,10 @@
+2002-04-28  Martin Weber <martweb@gmx.net>
+
+	* input-magick.c: Now also tested with ImageMagick till 5.4.5.
+	Wrote about it in the comment area.
+
+	Message-ID: <3CC5CB34.FF990F83@gmx.net>.
+
 2002-04-21  Masatake YAMATO  <yamato@redhat.com>
 
 	* input-magick.c (magick_load_image): Don't use
