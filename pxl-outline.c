@@ -242,9 +242,10 @@ find_one_outline (bitmap_type bitmap, edge_type original_edge,
 
 at_bool is_valid_dir (unsigned short row, unsigned short col, direction_type dir, bitmap_type bitmap, bitmap_type marked)
 {
+  
   return (!is_marked_dir(row, col, dir, marked)
           && COMPUTE_DELTA(ROW, dir)+row > 0
-	  && COMPUTE_DELTA(COL, dir)+col > 0
+		  && COMPUTE_DELTA(COL, dir)+col > 0
           && BITMAP_VALID_PIXEL(bitmap, COMPUTE_DELTA(ROW, dir)+row, COMPUTE_DELTA(COL, dir)+col)
           && COLOR_EQUAL(GET_COLOR(bitmap, COMPUTE_DELTA(ROW, dir)+row, COMPUTE_DELTA(COL, dir)+col),
 			 GET_COLOR(bitmap, row, col)));
@@ -266,7 +267,7 @@ find_centerline_pixels (bitmap_type bitmap, color_type bg_color,
 
   for (row = 0; row < BITMAP_HEIGHT(bitmap); row++)
     {
-      for (col = 0; col < BITMAP_WIDTH(bitmap); col++)
+      for (col = 0; col < BITMAP_WIDTH(bitmap); )
         {
           direction_type dir=EAST;
           pixel_outline_type outline;
@@ -276,27 +277,50 @@ find_centerline_pixels (bitmap_type bitmap, color_type bg_color,
             notify_progress((at_real)(row * BITMAP_WIDTH(bitmap) + col) / ((at_real) max_progress * (at_real)3.0),
                             progress_data);
 
-          if (COLOR_EQUAL(GET_COLOR(bitmap, row, col), bg_color)) continue;
+		  if (COLOR_EQUAL(GET_COLOR(bitmap, row, col), bg_color))
+            {
+	          col++;
+			  continue;
+			}
 
-          if (!is_valid_dir(row, col, dir, bitmap, marked) ||
-			(num_neighbors(COMPUTE_DELTA(ROW, dir)+row, COMPUTE_DELTA(COL, dir)+col, bitmap) > 2
-			&& num_neighbors(COMPUTE_DELTA(ROW, dir)+row, COMPUTE_DELTA(COL, dir)+col, bitmap) > 2))
+          if (!is_valid_dir(row, col, dir, bitmap, marked)
+			  || (!is_valid_dir(COMPUTE_DELTA(ROW, dir)+row, COMPUTE_DELTA(COL, dir)+col, dir, bitmap, marked)
+			  && num_neighbors(row, col, bitmap) > 2)
+			  || num_neighbors(row, col, bitmap) > 4
+			  || num_neighbors(COMPUTE_DELTA(ROW, dir)+row, COMPUTE_DELTA(COL, dir)+col, bitmap) > 4
+              || (is_other_dir_marked(row, col, dir, marked)
+              && is_other_dir_marked(row+COMPUTE_DELTA(ROW, dir), col+COMPUTE_DELTA(COL, dir), dir, marked)))
             {
               dir = SOUTHEAST;
-              if (!is_valid_dir(row, col, dir, bitmap, marked) ||
-			    (num_neighbors(COMPUTE_DELTA(ROW, dir)+row, COMPUTE_DELTA(COL, dir)+col, bitmap) > 2
-			    && num_neighbors(COMPUTE_DELTA(ROW, dir)+row, COMPUTE_DELTA(COL, dir)+col, bitmap) > 2))
+              if (!is_valid_dir(row, col, dir, bitmap, marked)
+			    || (!is_valid_dir(COMPUTE_DELTA(ROW, dir)+row, COMPUTE_DELTA(COL, dir)+col, dir, bitmap, marked)
+			    && num_neighbors(row, col, bitmap) > 2)
+			    || num_neighbors(row, col, bitmap) > 4
+			    || num_neighbors(COMPUTE_DELTA(ROW, dir)+row, COMPUTE_DELTA(COL, dir)+col, bitmap) > 4
+                || (is_other_dir_marked(row, col, dir, marked)
+                && is_other_dir_marked(row+COMPUTE_DELTA(ROW, dir), col+COMPUTE_DELTA(COL, dir), dir, marked)))
                 {
                   dir = SOUTH;
-                  if (!is_valid_dir(row, col, dir, bitmap, marked) ||
-			        (num_neighbors(COMPUTE_DELTA(ROW, dir)+row, COMPUTE_DELTA(COL, dir)+col, bitmap) > 2
-			        && num_neighbors(COMPUTE_DELTA(ROW, dir)+row, COMPUTE_DELTA(COL, dir)+col, bitmap) > 2))
+                  if (!is_valid_dir(row, col, dir, bitmap, marked)
+			        || (!is_valid_dir(COMPUTE_DELTA(ROW, dir)+row, COMPUTE_DELTA(COL, dir)+col, dir, bitmap, marked)
+			        && num_neighbors(row, col, bitmap) > 2)
+			        || num_neighbors(row, col, bitmap) > 4
+			        || num_neighbors(COMPUTE_DELTA(ROW, dir)+row, COMPUTE_DELTA(COL, dir)+col, bitmap) > 4
+                    || (is_other_dir_marked(row, col, dir, marked)
+                    && is_other_dir_marked(row+COMPUTE_DELTA(ROW, dir), col+COMPUTE_DELTA(COL, dir), dir, marked)))
                     {
                       dir = SOUTHWEST;
-                      if (!is_valid_dir(row, col, dir, bitmap, marked) ||
-			            (num_neighbors(COMPUTE_DELTA(ROW, dir)+row, COMPUTE_DELTA(COL, dir)+col, bitmap) > 2
-			            && num_neighbors(COMPUTE_DELTA(ROW, dir)+row, COMPUTE_DELTA(COL, dir)+col, bitmap) > 2))
-                        continue;
+                      if (!is_valid_dir(row, col, dir, bitmap, marked)
+			            || (!is_valid_dir(COMPUTE_DELTA(ROW, dir)+row, COMPUTE_DELTA(COL, dir)+col, dir, bitmap, marked)
+			            && num_neighbors(row, col, bitmap) > 2)
+			            || num_neighbors(row, col, bitmap) > 4
+			            || num_neighbors(COMPUTE_DELTA(ROW, dir)+row, COMPUTE_DELTA(COL, dir)+col, bitmap) > 4
+                        || (is_other_dir_marked(row, col, dir, marked)
+                        && is_other_dir_marked(row+COMPUTE_DELTA(ROW, dir), col+COMPUTE_DELTA(COL, dir), dir, marked)))
+					    {
+						  col++;
+						  continue;
+						}
                     }
                 }
             }
@@ -333,7 +357,7 @@ find_centerline_pixels (bitmap_type bitmap, color_type bg_color,
                   dir = SOUTHWEST;
                   if(!(okay=is_valid_dir(row, col, dir, bitmap, marked)))
                     {
-                      dir = SOUTHWEST;
+                      dir = EAST;
                       if(!(okay=is_valid_dir(row, col, dir, bitmap, marked)))
                         {
                           dir = SOUTH;
@@ -343,11 +367,28 @@ find_centerline_pixels (bitmap_type bitmap, color_type bg_color,
                 }
               else if (dir == SOUTH)
                 {
-                  dir = SOUTHWEST;
+                  dir = EAST;
                   if(!(okay=is_valid_dir(row, col, dir, bitmap, marked)))
                     {
-                      dir = SOUTHWEST;
-                      okay=is_valid_dir(row, col, dir, bitmap, marked);
+                      dir = SOUTHEAST;
+                      if(!(okay=is_valid_dir(row, col, dir, bitmap, marked)))
+                        {
+                          dir = SOUTHWEST;
+                          okay=is_valid_dir(row, col, dir, bitmap, marked);
+                        }
+                    }
+                }
+              else if (dir == SOUTHWEST)
+                {
+                  dir = SOUTHEAST;
+                  if(!(okay=is_valid_dir(row, col, dir, bitmap, marked)))
+                    {
+                      dir = EAST;
+                      if(!(okay=is_valid_dir(row, col, dir, bitmap, marked)))
+                        {
+                          dir = SOUTH;
+                          okay=is_valid_dir(row, col, dir, bitmap, marked);
+                        }
                     }
                 }
               if (okay)
@@ -358,6 +399,8 @@ find_centerline_pixels (bitmap_type bitmap, color_type bg_color,
                   if (partial_outline.data)
                     free(partial_outline.data);
                 }
+			  else
+				col++;
             }        
             
           /* Outside outlines will start at a top edge, and move
@@ -367,7 +410,7 @@ find_centerline_pixels (bitmap_type bitmap, color_type bg_color,
           O_CLOCKWISE(outline) = clockwise;
           if (O_LENGTH(outline) > 1)
             append_pixel_outline(&outline_list, outline);
-          LOG1("%s)", (outline.open ? "open" : "closed"));
+          LOG1("%s)", (outline.open ? " open" : " closed"));
           LOG1(" [%u].\n", O_LENGTH(outline));
           if (O_LENGTH(outline) == 1)
             free_pixel_outline(&outline);
@@ -391,6 +434,7 @@ find_one_centerline(bitmap_type bitmap, direction_type *search_dir,
                     unsigned short original_row, unsigned short original_col, bitmap_type *marked)
 {
   pixel_outline_type outline = new_pixel_outline();
+  direction_type original_dir = *search_dir;
   unsigned short row = original_row, col = original_col;
   unsigned short prev_row, prev_col;
   at_coord pos;
@@ -420,12 +464,13 @@ find_one_centerline(bitmap_type bitmap, direction_type *search_dir,
 
       /* If we've moved to a new pixel, mark all edges of the previous
          pixel so that it won't be revisited. */
-      mark_dir(prev_row, prev_col, *search_dir, marked);
+	  if (!(prev_row == original_row && prev_col == original_col))
+        mark_dir(prev_row, prev_col, *search_dir, marked);
       mark_dir(row, col, (*search_dir+4)%8, marked);
 
       /* If we've returned to the starting pixel, we're done. */
       if (row == original_row && col == original_col)
-        break;
+		break;
 
       /* Add the new pixel to the output list. */
       pos.x = col; pos.y = BITMAP_HEIGHT(bitmap) - row - 1;
@@ -433,6 +478,7 @@ find_one_centerline(bitmap_type bitmap, direction_type *search_dir,
       append_outline_pixel(&outline, pos);
     }
 
+  mark_dir(original_row, original_col, original_dir, marked);
   return outline;
 }
 
@@ -660,7 +706,7 @@ next_unmarked_pixel(unsigned short *row, unsigned short *col,
   while (1);
   if ((*row != orig_row || *col != orig_col) && 
       (!(is_other_dir_marked(orig_row,orig_col,test_dir,*marked)
-         &&is_other_dir_marked(orig_row + COMPUTE_DELTA(ROW, test_dir),*col = orig_col + COMPUTE_DELTA(COL, test_dir),test_dir,*marked))))
+         &&is_other_dir_marked(orig_row + COMPUTE_DELTA(ROW, test_dir), orig_col + COMPUTE_DELTA(COL, test_dir),test_dir,*marked))))
     return true;
   else
     return false;

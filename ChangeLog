@@ -1,3 +1,10 @@
+2002-11-08 Martin Weber <martweb@gmx.net>
+
+	* pxl-outline.c: Big changes again that fix a bug 
+	related to centerline tracing. NOTE: A bug is still existed.
+
+	Message-ID: <3DCAAAD7.F55305EA@gmx.net>.
+
 2002-11-07  Martin Weber <martweb@gmx.net>
 
 	* filename.c: Removed some 64 and 128 bit problems.
