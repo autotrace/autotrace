@@ -110,7 +110,7 @@ static void out_fig_splines(FILE * file, spline_list_array_type shape,
 {
     unsigned this_list;
 /*    int fig_colour, fig_depth, i; */
-    int fig_colour, fig_fill, fig_width, fig_subt, i;
+    int fig_colour, fig_fill, fig_width, fig_subt, fig_spline_close, i;
     int *spline_colours;
 
 /*
@@ -161,6 +161,8 @@ static void out_fig_splines(FILE * file, spline_list_array_type shape,
 	if (list.clockwise) { fig_colour = FIG_WHITE; }
 	    else { fig_colour = spline_colours[this_list]; }
 
+	fig_spline_close = 5;
+
 	for (this_spline = 0; this_spline < SPLINE_LIST_LENGTH (list);
 	     this_spline++)
 	{
@@ -209,14 +211,15 @@ static void out_fig_splines(FILE * file, spline_list_array_type shape,
 	    }
         }
 	if (shape.centerline) {
-	    fig_fill = -1; fig_width = 1;
+	    fig_fill = -1; fig_width = 1; fig_spline_close = 4;
 	} else {
 	    /* Use zero width lines - unit width is too thick */
-	    fig_fill = 20; fig_width = 0;
+	    fig_fill = 20; fig_width = 0; fig_spline_close = 5;
 	}
 	if (is_spline != 0) {
 	    fig_new_depth();
-	    fprintf(file,"3 5 0 %d %d %d %d 0 %d 0.00 0 0 0 %d\n",
+	    fprintf(file,"3 %d 0 %d %d %d %d 0 %d 0.00 0 0 0 %d\n",
+	    fig_spline_close,
 	    fig_width, fig_colour, fig_colour, fig_depth, fig_fill, pointcount);
 	    /* Print out points */
 	    j = 0;

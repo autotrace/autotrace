@@ -625,7 +625,7 @@ static void GetEmfStats(EMFStats *stats, at_string name, spline_list_array_type 
       {
         case LINEARTYPE:
           /* emf stats :: PolyLineTo */
-          nrecords++;
+	  nrecords += nlines;
           filesize += MyWritePolyLineTo(NULL, NULL, nlines);
           break;
         default:
@@ -650,7 +650,7 @@ static void GetEmfStats(EMFStats *stats, at_string name, spline_list_array_type 
   filesize += (WriteBeginPath(NULL) + WriteEndPath(NULL) + WriteFillPath(NULL)) * ncolorchng;
 
   /* emf stats :: header + footer */
-  nrecords++;
+  nrecords += 3;
   filesize += WriteSetWorldTransform(NULL, 0) + WriteEndOfMetafile(NULL) + WriteHeader(NULL, name, 0, 0, 0, 0, 0);
 
   /* emf stats :: SetPolyFillMode */

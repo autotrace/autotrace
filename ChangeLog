@@ -1,3 +1,15 @@
+2002-03-24  Ian MacPhedran <Ian_MacPhedran@engr.USask.Ca>
+
+	* output-fig.c (out_fig_splines): Added a new 
+	local variable, fig_spline_close.
+
+2002-03-20  Martin Weber <martweb@gmx.net>
+
+	* output-emf.c (GetEmfStats, GetEmfStats): 
+	Number of records was not counted correctly.
+
+	Message-ID: <15225.1016698302@www11.gmx.net>.
+
 2002-03-21  Masatake YAMATO  <yamato@redhat.com>
 
 	* Makefile.am (libautotrace_a_SOURCES): Added
