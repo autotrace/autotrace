@@ -1,3 +1,9 @@
+2001-11-27  Martin Weber <martweb@gmx.net>
+
+	* output-swf.c (output_swf_writer, out_splines): 
+	Removed some warnings.
+	(Message-ID: <3C02B6A9.D9EF762D@gmx.net>).
+
 2001-11-28  Ian MacPhedran <Ian_MacPhedran@engr.USask.CA>
 
 	* output-fig.c (out_fig_splines): introduce new local variable,

@@ -27,8 +27,8 @@ out_splines (SWFMovie m, spline_list_array_type shape, int height)
         k = newSWFShape();
  /*       SWFShape_setLine(k, 10, 0x7f, 0, 0, 0xff); */
         SWFShape_setRightFill(k, SWFShape_addSolidFill(k, list.color.r, list.color.g, list.color.b, 0xff));
-        SWFShape_movePenTo(k, (int)(SWFSCALE*START_POINT(first).x),
-			     SWFSCALE*height - (int) (SWFSCALE*START_POINT(first).y));
+        SWFShape_movePenTo(k, SWFSCALE*START_POINT(first).x,
+			     SWFSCALE*height - SWFSCALE*START_POINT(first).y);
      
 	for (this_spline = 0; this_spline < SPLINE_LIST_LENGTH (list);
 	     this_spline++)
@@ -37,17 +37,17 @@ out_splines (SWFMovie m, spline_list_array_type shape, int height)
 
 	    if (SPLINE_DEGREE(s) == LINEARTYPE)
 	    {
-                SWFShape_drawLineTo(k, (int)(SWFSCALE*END_POINT(s).x),
-				      SWFSCALE*height -(int)(SWFSCALE*END_POINT(s).y));
+                SWFShape_drawLineTo(k, SWFSCALE*END_POINT(s).x,
+				      SWFSCALE*height - SWFSCALE*END_POINT(s).y);
 	    }
 	    else
 	    {
-		SWFShape_drawCubicTo (k, (int)(SWFSCALE*CONTROL1(s).x),
-				      SWFSCALE*height -(int)(SWFSCALE*CONTROL1(s).y),
-				      (int)(SWFSCALE*CONTROL2(s).x),
-				      SWFSCALE*height -(int)(SWFSCALE*CONTROL2(s).y),
-				      (int)(SWFSCALE*END_POINT(s).x),
-				      SWFSCALE*height -(int)(SWFSCALE*END_POINT(s).y));
+		SWFShape_drawCubicTo (k, SWFSCALE*CONTROL1(s).x,
+				      SWFSCALE*height - SWFSCALE*CONTROL1(s).y,
+				      SWFSCALE*CONTROL2(s).x,
+				      SWFSCALE*height - SWFSCALE*CONTROL2(s).y,
+				      SWFSCALE*END_POINT(s).x,
+				      SWFSCALE*height - SWFSCALE*END_POINT(s).y);
 
 	    }
         }
@@ -71,7 +71,7 @@ int output_swf_writer(FILE* file, string name,
 
     out_splines(m, shape, height);
 
-    SWFMovie_setDimension(m, (int)(SWFSCALE*width), (int)(SWFSCALE*height));
+    SWFMovie_setDimension(m, SWFSCALE*(float)width, SWFSCALE*(float)height);
     SWFMovie_setRate(m, FPS);
     SWFMovie_nextFrame(m);
     SWFMovie_save(m, name);
