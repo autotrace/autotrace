@@ -231,7 +231,7 @@ report-progress: report tracing status in real time.\n\
 debug-arch: print the type of cpu.\n\
 debug-bitmap: dump loaded bitmap to <input_name>.bitmap.\n\
 version: print the version number of this program.\n\
-width-factor <real>: weight factor for fitting the linewidth.\n\
+width-weight-factor <real>: weight factor for fitting the linewidth.\n\
 "
 
 /* We return the name of the image to process.  */
@@ -273,7 +273,7 @@ read_command_line (int argc, char * argv[],
         { "tangent-surround",           1, 0, 0 },
 	{ "report-progress",            0, (int *) &report_progress, 1},
         { "version",                    0, (int *) &printed_version, 1 },
-	{ "width-factor",               1, 0, 0 },
+	{ "width-weight-factor",               1, 0, 0 },
         { 0, 0, 0, 0 } };
 
   while (true)
@@ -404,8 +404,8 @@ read_command_line (int argc, char * argv[],
       else if (ARGUMENT_IS ("version"))
         printf ("AutoTrace version %s.\n", at_version(false));
 
-      else if (ARGUMENT_IS ("width-factor"))
-	fitting_opts->width_factor = (at_real) atof (optarg);
+      else if (ARGUMENT_IS ("width-weight-factor"))
+	fitting_opts->width_weight_factor = (at_real) atof (optarg);
 
       /* Else it was just a flag; getopt has already done the assignment.  */
     }

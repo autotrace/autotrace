@@ -134,7 +134,7 @@ out_splines(FILE* er_file, spline_list_array_type shape,
 
         if (shape.centerline && shape.preserve_width)
         {
-          at_real w = (at_real) 1.0 / (shape.width_factor);
+          at_real w = (at_real) 1.0 / (shape.width_weight_factor);
 
           fprintf(er_file, "\tWeightKey = {\n");
           fprintf(er_file, "\t\tFrame = 1\n");

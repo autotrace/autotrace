@@ -1,5 +1,7 @@
 2002-10-31  Masatake YAMATO  <yamato@redhat.com>
 
+	* *: width_factor, weight_factor -> width_weight_factor.
+
 	* configure.in: added -lm to the macro
 	that checks libpng. Suggested by jlm <jsado@attbi.com>.
 

@@ -106,7 +106,7 @@ Here the options you can use in the command:
     debug-arch: print the type of cpu.
     debug-bitmap: dump loaded bitmap to <input_name>.bitmap.
     version: print the version number of this program.
-    width-factor: weight factor for fitting the line width.
+    width-weight-factor: weight factor for fitting the line width.
 
 The library is named libautotrace. About the usage of the library
 see autotrace.h.

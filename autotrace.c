@@ -22,6 +22,8 @@
 #include "config.h"
 #endif /* Def: HAVE_CONFIG_H */
 
+#include "intl.h"
+
 #include "autotrace.h"
 #include "exception.h"
 

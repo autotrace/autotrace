@@ -128,7 +128,7 @@ fitting_opts_type new_fitting_opts (void)
   fitting_opts.despeckle_tightness = 2.0;
   fitting_opts.centerline = false;
   fitting_opts.preserve_width = false;
-  fitting_opts.width_factor   = 6.0;
+  fitting_opts.width_weight_factor   = 6.0;
   
   return (fitting_opts);
 }
@@ -168,7 +168,7 @@ fitted_splines (pixel_outline_list_type pixel_outline_list,
 
   char_splines.centerline = fitting_opts->centerline;
   char_splines.preserve_width = fitting_opts->preserve_width;
-  char_splines.width_factor   = fitting_opts->width_factor;
+  char_splines.width_weight_factor = fitting_opts->width_weight_factor;
 
   if (fitting_opts->background_color)
     char_splines.background_color = at_color_copy(fitting_opts->background_color);
@@ -285,7 +285,7 @@ fit_curve_list (curve_list_type curve_list,
 		        if (x + 1 < dist->width && (w = dist->d[y+1][x+1]) > width)
 		          width = w;
 	          }
-	        coord->z = width * (fitting_opts->width_factor);
+	        coord->z = width * (fitting_opts->width_weight_factor);
 	     }
       }
   }

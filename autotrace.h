@@ -111,7 +111,7 @@ struct _at_spline_list_array_type
   at_color_type * background_color;
   at_bool centerline;
   at_bool preserve_width;
-  at_real width_factor;
+  at_real width_weight_factor;
 
 };
 
@@ -200,9 +200,9 @@ N_("preserve-width: whether to preserve linewith with centerline fitting; "	\
 "default doesn't preserve.")
   at_bool preserve_width;
 
-#define  at_doc__width_factor			\
-N_("weight-factor: weight factor for fitting the linewidth")
-  at_real width_factor;
+#define  at_doc__width_weight_factor				\
+N_("width-weight-factor: weight factor for fitting the linewidth")
+  at_real width_weight_factor;
 };
 
 struct _at_input_opts_type
