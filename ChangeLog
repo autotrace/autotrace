@@ -2,7 +2,8 @@
 
 	* autotrace.spec.in: copyed from
 	http://www.cs.uu.nl/~hanwen/public/software/autotrace.spec.
-
+	Contributed by Han-Wen Nienhuys<hanwen@cs.uu.nl>.
+	
 	* configure.in: Added autotrace.spec supports.
 
 	* Masatake.am: Likewise.
