@@ -247,7 +247,7 @@ void thin3(bitmap_type *image, Pixel colour)
                       p = ((p<<1)&0666) | ((q<<3)&0110) | 
 			  (unsigned int) PIXEL_EQUAL(y1_ptr[x+1], colour);
                       qb[x] = (unsigned char) p; 
-                      if  ( ((p&m) == 0) && todelete[p] ) { 
+                      if ((i != 2 || x != 0) && ((p&m) == 0) && todelete[p] ) { 
                           count++;  /* delete the pixel */ 
 			  PIXEL_SET(y_ptr[x], bg_color);
                       } 
@@ -255,25 +255,28 @@ void thin3(bitmap_type *image, Pixel colour)
  
                   /* Process right edge pixel.                        */ 
                   p = (p<<1)&0666; 
-                  if  ( (p&m) == 0 && todelete[p] ) { 
+                  if  (i != 3 && (p&m) == 0 && todelete[p] ) { 
                       count++; 
 		      PIXEL_SET(y_ptr[xsize-1], bg_color);
                   } 
               } 
  
-              /* Process bottom scan line.                            */ 
-	      q = qb[0]; 
-	      p = ((q<<2)&0330); 
- 
-	      y_ptr = ptr + xsize * (ysize - 1);
-              for ( x = 0 ; x < xsize ; x++ ) { 
-                  q = qb[x]; 
-                  p = ((p<<1)&0666) | ((q<<3)&0110); 
-                  if  ( (p&m) == 0 && todelete[p] ) { 
-                      count++; 
-		      PIXEL_SET(y_ptr[x], bg_color);
-                  } 
-              } 
+	      if (i != 1)
+	      {
+            /* Process bottom scan line.                            */ 
+            q = qb[0]; 
+            p = ((q<<2)&0330); 
+
+            y_ptr = ptr + xsize * (ysize - 1);
+            for ( x = 0 ; x < xsize ; x++ ) { 
+              q = qb[x]; 
+              p = ((p<<1)&0666) | ((q<<3)&0110); 
+              if ((i != 2 || x != 0) && (p&m) == 0 && todelete[p]) { 
+                count++; 
+                PIXEL_SET(y_ptr[x], bg_color);
+		      } 
+            } 
+           }
           } 
           LOG2 ("ThinImage: pass %d, %d pixels deleted\n", pc, count); 
       } 

@@ -1,3 +1,18 @@
+2002-09-20  Martin Weber <martweb@gmx.net>
+
+	* color.c (GET_COLOR): Improved speed and better luminance calculation.
+
+	* color.h (COLOR_LUMINANCE): Ditto.
+
+	Message-ID: <32434.1032418120@www62.gmx.net>
+
+2002-09-20  Martin Weber <martweb@gmx.net>
+
+	* thin-image.c (thin3): This fix corrects some problems 
+	with the thinning of regions that touch the image borders.
+
+	Message-ID: <3D88C750.4AE643A5@gmx.net>.
+
 2002-09-18  Masatake YAMATO  <yamato@redhat.com>
 
 	* configure.in: Version 0.30.6.
