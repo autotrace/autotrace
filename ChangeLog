@@ -1,3 +1,7 @@
+2001-12-18  Per Grahn <pergra@foi.se>
+
+        * output-emf.c (output_emf_writer): added `dpi'.
+
 2001-12-19  Masatake YAMATO  <yamato@redhat.com>
 
 	* main.c (read_command_line): Used
