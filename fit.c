@@ -884,8 +884,8 @@ filter (curve_type curve, fitting_opts_type *fitting_opts)
           /* Experimental we have found that division by six is optimal */
           new_point.x += sum.dx / 6;
           new_point.y += sum.dy / 6;
-          if (epsilon_equal (prev_new_point.x, new_point.x)
-              && epsilon_equal (prev_new_point.y, new_point.y))
+          if (fabs (prev_new_point.x - new_point.x) < 0.3
+              && fabs (prev_new_point.y - new_point.y) < 0.3)
             {
               collapsed = true;
               break;

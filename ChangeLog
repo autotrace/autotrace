@@ -1,3 +1,10 @@
+2002-03-06  Martin Weber <martweb@gmx.net>
+
+	* fit.c (filter): fixed a bug in the filtering routine.
+	avoid to use epsilon_equal.
+
+	Message-ID: <3C84F2FD.C35ACD34@gmx.net>.
+
 2002-02-14  Masatake YAMATO  <yamato@redhat.com>
 
 	* autotrace.h (struct _at_fitting_opts_type::despeckle_level): 
