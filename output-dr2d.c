@@ -52,7 +52,7 @@ float LineThickness;
 #define IND_MOVETO 0x00000002
 
 struct Chunk {
-	unsigned char ID[4];
+	char ID[4];
 	unsigned int Size;
 	unsigned char * Data;
 };
@@ -338,8 +338,8 @@ static struct Chunk * BuildLAYR() {
 	}
 
 	ShortAsBytes(0, LAYRData);
-	memset(LAYRData + 2, (char) NULL, 16);
-	strcpy(LAYRData + 2, "Default layer");
+	memset(LAYRData + 2, 0, 16);
+	strcpy((char *) (LAYRData + 2), "Default layer");
 	*(LAYRData + 18) = LF_ACTIVE | LF_DISPLAYED;
 	*(LAYRData + 19) = 0;
 
@@ -513,7 +513,7 @@ static void WriteChunk(FILE * file, struct Chunk * Chunk) {
 	fwrite(SizeBytes, 4, 1, file);
 	fwrite(Chunk->Data, Size, 1, file);
 	if (Size & 0x01) {
-		fprintf(file, "%c", (char) NULL);
+		fprintf(file, "%c", 0);
 	}
 }
 
@@ -630,15 +630,15 @@ static int SizeFloat(float f, char * Format) {
 }
 
 static void IntAsBytes(int value, unsigned char * bytes) {
-	*bytes = (value >> 24) & 0xFF;
-	*(bytes + 1) = (value >> 16) & 0xFF;
-	*(bytes + 2) = (value >> 8) & 0xFF;
-	*(bytes + 3) = value & 0xFF;
+	*bytes = (unsigned char)((value >> 24) & 0xFF);
+	*(bytes + 1) = (unsigned char)((value >> 16) & 0xFF);
+	*(bytes + 2) = (unsigned char)((value >> 8) & 0xFF);
+	*(bytes + 3) = (unsigned char)(value & 0xFF);
 }
 
 static void ShortAsBytes(int value, unsigned char * bytes) {
-	*(bytes + 0) = (value >> 8) & 0xFF;
-	*(bytes + 1) = value & 0xFF;
+	*(bytes + 0) = (unsigned char)((value >> 8) & 0xFF);
+	*(bytes + 1) = (unsigned char)(value & 0xFF);
 }
 
 static void FloatAsIEEEBytes(float value, unsigned char * bytes) {

@@ -627,7 +627,7 @@ static void out_splines (FILE * dxf_file, spline_list_array_type shape)
   unsigned this_list;
   double startx, starty;
   xypnt_head_rec *vec, *res;
-  xypnt pnt, pnt1, pnt_old  = {0,0};
+  xypnt pnt, pnt_old  = {0,0};
   char fin, new_layer=0, layerstr[10];
   int i, first_seg = 1, idx;
 
@@ -743,7 +743,6 @@ static void out_splines (FILE * dxf_file, spline_list_array_type shape)
                      fprintf(dxf_file, "  0\nVERTEX\n  8\n%s\n  10\n%f\n  20\n%f\n",
                             layerstr, (double)pnt.xp/RESOLUTION, (double)pnt.yp/RESOLUTION);
                     }
-                  pnt1 = pnt;
                   xypnt_next_pnt(res, &pnt, &fin);
                   i++;
                  }

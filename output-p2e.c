@@ -178,7 +178,7 @@ out_splines (FILE * ps_file, spline_list_array_type shape)
           OUT_LINE ((shape.centerline || list.open) ? "% strokedpath" : "% filledpath");
           pathnr++;
 #ifdef withrgbcolor
-          // in the long term this can be removed.
+          /* in the long term this can be removed. */
           OUT3 ("%.3f %.3f %.3f setrgbcolor\n",	(real)list.color.r/255.0,
             (real)list.color.g/255.0,
             (real)list.color.b/255.0);

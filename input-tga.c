@@ -279,7 +279,7 @@ ReadImage (FILE              *fp,
   unsigned char *buffer;
   unsigned char *alphas;
 
-  int width, height, bpp, abpp, pbpp, nalphas;
+  unsigned short width, height, bpp, abpp, pbpp, nalphas;
   int j, k;
   int pelbytes, wbytes, bsize, npels, pels;
   int rle, badread;

@@ -1,3 +1,14 @@
+2002-11-15  Martin Weber <martweb@gmx.net>
+
+	* autotrace.c, fit.c, input-tga.c,
+	output-cgm.c, output-dr2d.c, output-dxf.c,
+	output-fig.c, outputp2e.c, pxl-outline.c:
+	Fixed compilation errors and warnings for certain C compilers.
+
+	* output-pstoedit.h: Fixed compilation errors with Visual C++.
+
+	* output.c: Removed unnecessary streq.
+
 2002-11-15  Masatake YAMATO  <yamato@redhat.com>
 
 	* autotrace.h (enum _at_msg_type): Added

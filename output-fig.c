@@ -91,7 +91,7 @@ static void fig_new_depth()
 /* inside global bounds, decrease depth and create new bounds */
 		glob_max_y = loc_max_y ; glob_min_y = loc_min_y ;
 		glob_max_x = loc_max_x ; glob_min_x = loc_min_x ;
-		if (fig_depth) fig_depth--; // don't let it get < 0
+		if (fig_depth) fig_depth--; /* don't let it get < 0 */
 	    }
 	}
 	loc_bbox_flag = 0;

@@ -247,10 +247,10 @@ fit_curve_list (curve_list_type curve_list,
 		         is maximal.  Therefore, use as the local line width the
 		         maximum distance over the neighborhood of (x, y).  */
 	          width = dist->d[y][x];
-	          if (y - 1 >= 0)
+	          if (y >= 1)
 	            {
 		          if ((w = dist->d[y-1][x]) > width) width = w;
-		            if (x - 1 >= 0)
+		            if (x >= 1)
 		              {
 		                if ((w = dist->d[y][x-1]) > width) width = w;
 		                if ((w = dist->d[y-1][x-1]) > width) width = w;
@@ -264,7 +264,7 @@ fit_curve_list (curve_list_type curve_list,
 	        if (y + 1 < height)
 	          {
 		        if ((w = dist->d[y+1][x]) > width) width = w;
-		        if (x - 1 >= 0 && (w = dist->d[y+1][x-1]) > width)
+		        if (x >= 1 && (w = dist->d[y+1][x-1]) > width)
 		          width = w;
 		        if (x + 1 < dist->width && (w = dist->d[y+1][x+1]) > width)
 		          width = w;

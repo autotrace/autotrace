@@ -21,6 +21,7 @@
 #define OUTPUT_PSTOEDIT_H 
 
 #include <pstoedit/pstoedit.h>
+#include <pstoedit/pstoedll.h>
 #include "output.h"
 
 at_output_write_func output_pstoedit_get_writer(const at_string);

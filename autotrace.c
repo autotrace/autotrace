@@ -219,7 +219,9 @@ at_bitmap_get_height (at_bitmap_type * bitmap)
 unsigned short
 at_bitmap_get_planes (at_bitmap_type * bitmap)
 {
-  return bitmap->np;
+  /* Here we use cast rather changing the type definition of 
+     at_bitmap_type::np to keep binary compatibility. */
+  return (unsigned short) bitmap->np;
 }
 
 at_splines_type * 
@@ -425,10 +427,10 @@ at_color_copy (at_color_type * original)
 at_bool
 at_color_equal (at_color_type * c1, at_color_type * c2)
 {
-  if (c1 == c2)
-    return true;
-  else 
-    return (COLOR_EQUAL(*c1, *c2));
+  if (c1 == c2 || COLOR_EQUAL(*c1, *c2))
+	return true;
+  else
+	return false;
 }
 
 void 

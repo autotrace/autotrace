@@ -65,17 +65,17 @@ static at_bool write8(FILE *fdes, UI8 data)
 
 static at_bool output_beginmetafilename(FILE *fdes, const char *string)
 {
-  int len = strlen (string);
+  size_t len = strlen (string);
  
   if (len + 1 < 0x001F)
-    write16(fdes, CGM_BEGINMETAFILE + len + 1);
+    write16(fdes, (UI16)(CGM_BEGINMETAFILE + len + 1));
   else
     {
       write16(fdes, CGM_BEGINMETAFILE + 0x001F);
-      write16(fdes, len + 1);
+      write16(fdes, (UI16)(len + 1));
 	}
 
-  write8(fdes, len);
+  write8(fdes, (UI8)len);
 
   while (*string != '\0')
     {
@@ -95,14 +95,14 @@ static at_bool output_beginpicture(FILE *fdes, const char *string)
   int len = strlen (string);
  
   if (len + 1 < 0x001F)
-    write16(fdes, CGM_BEGINPICTURE + len + 1);
+    write16(fdes, (UI16)(CGM_BEGINPICTURE + len + 1));
   else
     {
       write16(fdes, CGM_BEGINPICTURE + 0x001F);
-      write16(fdes, len + 1);
+      write16(fdes, (UI16)(len + 1));
 	}
 
-  write8(fdes, len);
+  write8(fdes, (UI8)len);
 
   while (*string != '\0')
     {
@@ -122,14 +122,14 @@ static at_bool output_metafiledescription(FILE *fdes, const char *string)
   int len = strlen (string);
  
   if (len + 1 < 0x001F)
-    write16(fdes, CGM_METAFILEDESCRIPTION + len + 1);
+    write16(fdes, (UI16)(CGM_METAFILEDESCRIPTION + len + 1));
   else
     {
       write16(fdes, CGM_METAFILEDESCRIPTION + 0x001F);
-      write16(fdes, len + 1);
+      write16(fdes, (UI16)(len + 1));
 	}
 
-  write8(fdes, len);
+  write8(fdes, (UI8)len);
 
   while (*string != '\0')
     {
@@ -177,10 +177,10 @@ int output_cgm_writer(FILE* cgm_file, at_string name,
   write16 (cgm_file, 0x0001);
 
   write16 (cgm_file, 0x20C8);/* vdc extend */
-  write16 (cgm_file, llx/*0x0000*/);
-  write16 (cgm_file, urx/*0x7FFF*/);
-  write16 (cgm_file, ury/*0x7FFF*/);
-  write16 (cgm_file, lly/*0x0000*/);
+  write16 (cgm_file, (UI16)llx/*0x0000*/);
+  write16 (cgm_file, (UI16)urx/*0x7FFF*/);
+  write16 (cgm_file, (UI16)ury/*0x7FFF*/);
+  write16 (cgm_file, (UI16)lly/*0x0000*/);
 
   write16 (cgm_file, 0x0080);/* begin picture body */
 
@@ -245,22 +245,22 @@ int output_cgm_writer(FILE* cgm_file, at_string name,
 		  {
             write16 (cgm_file, 0x4028); /* polyline */
             write16 (cgm_file, (UI16) START_POINT (s).x);
-            write16 (cgm_file, ury - (UI16) START_POINT (s).y);
+            write16 (cgm_file, (UI16) (ury - START_POINT (s).y));
             write16 (cgm_file, (UI16) END_POINT (s).x);
-            write16 (cgm_file, ury - (UI16) END_POINT (s).y);
+            write16 (cgm_file, (UI16) (ury - END_POINT (s).y));
 		  }
           else
 		  {
             write16 (cgm_file, 0x4352); /* polybezier */
             write16 (cgm_file, 0x0002); /* continuous */
             write16 (cgm_file, (UI16) START_POINT (s).x);
-            write16 (cgm_file, ury - (UI16) START_POINT (s).y);
+            write16 (cgm_file, (UI16) (ury - START_POINT (s).y));
             write16 (cgm_file, (UI16) CONTROL1 (s).x);
-            write16 (cgm_file, ury - (UI16) CONTROL1 (s).y);
+            write16 (cgm_file, (UI16) (ury - CONTROL1 (s).y));
             write16 (cgm_file, (UI16) CONTROL2 (s).x); 
-            write16 (cgm_file, ury - (UI16) CONTROL2 (s).y);
+            write16 (cgm_file, (UI16) (ury - CONTROL2 (s).y));
             write16 (cgm_file, (UI16) END_POINT (s).x);
-            write16 (cgm_file, ury - (UI16) END_POINT (s).y);
+            write16 (cgm_file, (UI16) (ury - END_POINT (s).y));
 		  }
         }
   }

@@ -123,7 +123,7 @@ find_outline_pixels (bitmap_type bitmap, color_type *bg_color,
           /* A valid edge can be TOP for an outside outline.
              Outside outlines are traced counterclockwise */
           color = GET_COLOR (bitmap, row, col);
-          if (!(is_background = (bg_color && COLOR_EQUAL(color, *bg_color)))
+          if (!(is_background = (at_bool)(bg_color && COLOR_EQUAL(color, *bg_color)))
               && is_unmarked_outline_edge (row, col, edge = TOP,
                                            bitmap, marked, color, exp))
             {
@@ -243,12 +243,12 @@ find_one_outline (bitmap_type bitmap, edge_type original_edge,
 at_bool is_valid_dir (unsigned short row, unsigned short col, direction_type dir, bitmap_type bitmap, bitmap_type marked)
 {
   
-  return (!is_marked_dir(row, col, dir, marked)
+  return ((at_bool)(!is_marked_dir(row, col, dir, marked)
           && COMPUTE_DELTA(ROW, dir)+row > 0
 		  && COMPUTE_DELTA(COL, dir)+col > 0
           && BITMAP_VALID_PIXEL(bitmap, COMPUTE_DELTA(ROW, dir)+row, COMPUTE_DELTA(COL, dir)+col)
           && COLOR_EQUAL(GET_COLOR(bitmap, COMPUTE_DELTA(ROW, dir)+row, COMPUTE_DELTA(COL, dir)+col),
-			 GET_COLOR(bitmap, row, col)));
+			 GET_COLOR(bitmap, row, col))));
 }
 
 pixel_outline_list_type
@@ -466,7 +466,7 @@ find_one_centerline(bitmap_type bitmap, direction_type search_dir,
          pixel so that it won't be revisited. */
 	  if (!(prev_row == original_row && prev_col == original_col))
         mark_dir(prev_row, prev_col, search_dir, marked);
-      mark_dir(row, col, (search_dir+4)%8, marked);
+      mark_dir(row, col, (direction_type)((search_dir+4)%8), marked);
 
       /* If we've returned to the starting pixel, we're done. */
       if (row == original_row && col == original_col)
@@ -672,11 +672,9 @@ static at_bool
 next_unmarked_pixel(unsigned short *row, unsigned short *col,
                     direction_type *dir, bitmap_type bitmap, bitmap_type *marked)
 {
-  color_type color;
-  unsigned orig_row = *row, orig_col = *col;
+  unsigned short orig_row = *row, orig_col = *col;
   direction_type orig_dir = *dir, test_dir = *dir;
 
-  color = GET_COLOR(bitmap, *row, *col);
   do
     {
       if (is_valid_dir(orig_row, orig_col, test_dir, bitmap, *marked))
@@ -688,17 +686,17 @@ next_unmarked_pixel(unsigned short *row, unsigned short *col,
         }
 
       if (orig_dir == test_dir)
-        test_dir = (orig_dir + 2) % 8;
+        test_dir = (direction_type)((orig_dir + 2) % 8);
       else if ((orig_dir + 2) % 8 == test_dir)
-        test_dir = (orig_dir + 6) % 8;
+        test_dir = (direction_type)((orig_dir + 6) % 8);
       else if ((orig_dir + 6) % 8 == test_dir)
-        test_dir = (orig_dir + 1) % 8;
+        test_dir = (direction_type)((orig_dir + 1) % 8);
       else if ((orig_dir + 1) % 8 == test_dir)
-        test_dir = (orig_dir + 7) % 8;
+        test_dir = (direction_type)((orig_dir + 7) % 8);
       else if ((orig_dir + 7) % 8 == test_dir)
-        test_dir = (orig_dir + 3) % 8;
+        test_dir = (direction_type)((orig_dir + 3) % 8);
       else if ((orig_dir + 3) % 8 == test_dir)
-        test_dir = (orig_dir + 5) % 8;
+        test_dir = (direction_type)((orig_dir + 5) % 8);
       else if ((orig_dir + 5) % 8 == test_dir)
         break;
     }
