@@ -1,3 +1,7 @@
+2000-10-01  Masatake YAMATO  <yamato@redhat.com>
+
+	* xmem.h: Replaced with new one which is sent from Martin.
+
 2000-09-29  Masatake YAMATO  <yamato@redhat.com>
 
 	* configure.in: Check magick/api.h.
