@@ -1,3 +1,10 @@
+2002-09-29  Martin Weber <martweb@gmx.net>
+
+	* pxl-outline.c: I introduced a bug in pxl-outline.c. 
+	change back to the version used in 0.30.5.
+
+	Message-ID: <3D96120F.2780C779@gmx.net>.
+	
 2002-09-28  Masatake YAMATO  <yamato@redhat.com>
 
 	* input-png.c (read_png): New function that can
