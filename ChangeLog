@@ -1,3 +1,8 @@
+2002-01-02  Masatake YAMATO  <yamato@redhat.com>
+
+	* main.c: Added code to dump loaded bitmap.
+	"--debug-bitmap: dump loaded bitmap to <input_name>.bitmap.\n\"
+	
 2001-12-29  Masatake YAMATO  <yamato@redhat.com>
 
 	* main.c (read_command_line): Added debug-arch.

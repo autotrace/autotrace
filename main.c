@@ -9,6 +9,7 @@
 #include "xstd.h"
 #include "atou.h"
 #include "strgicmp.h"
+#include "input.h"
 
 #include <string.h>
 #include <assert.h>
@@ -37,6 +38,9 @@ static at_bool centerline = false;
 /* Whether to write a log file */
 static at_bool logging = false;
 
+/* Whether to dump a bitmap file */
+static at_bool dumping_bitmap = false;
+
 /* Should adjacent corners be removed?  */
 static at_bool remove_adj_corners;
 
@@ -51,6 +55,8 @@ static char * read_command_line (int, char * [], at_fitting_opts_type *);
 
 static unsigned int hctoi (char c);
 
+static void dump (at_bitmap_type * bitmap, FILE * fp);
+
 void input_list_formats(FILE * file);
 void output_list_formats(FILE* file);
 
@@ -61,13 +67,15 @@ int
 main (int argc, char * argv[])
 {
   at_fitting_opts_type * fitting_opts;
-  char * input_name, * input_rootname, * logfile_name=NULL;
+  char * input_name, * input_rootname;
+  char * logfile_name = NULL, * dumpfile_name = NULL;
   at_splines_type * splines;
   at_bitmap_type * bitmap;
   FILE *output_file;
+  FILE *dump_file;
+
   at_progress_func progress_reporter = NULL;
   at_real progress_stat = 0.0;
-  at_string err_msg;
 
   fitting_opts = at_fitting_opts_new ();
 
@@ -125,11 +133,15 @@ main (int argc, char * argv[])
   else
     FATAL ("Unsupported inputformat\n");
   
-  /* Check error */
-  err_msg = at_error_check (bitmap->error);
-  if (err_msg)
-    FATAL (err_msg);
-
+  /* Dump loaded bitmap if needed */
+  if (dumping_bitmap)
+    {
+      dumpfile_name = extend_filename (input_rootname, "bitmap");
+      dump_file   = xfopen (dumpfile_name, "w");
+      dump(bitmap, dump_file);
+      fclose(dump_file);
+    }
+  
   splines = at_splines_new_full(bitmap, fitting_opts,
 				progress_reporter, &progress_stat,
 				NULL, NULL);
@@ -199,6 +211,7 @@ tangent-surround <unsigned>: number of points on either side of a\n\
   point to consider when computing the tangent at that point; default is 3.\n\
 report-progress: report tracing status in real time.\n\
 debug-arch: print the type of cpu.\n\
+debug-bitmap: dump loaded bitmap to <input_name>.bitmap.\n\
 version: print the version number of this program.\n\
 "
 
@@ -214,6 +227,7 @@ read_command_line (int argc, char * argv[],
     = { { "align-threshold",		1, 0, 0 },
 	{ "background-color",		1, 0, 0 },
 	{ "debug-arch",                 0, 0, 0 },
+	{ "debug-bitmap",               0, (int *) &dumping_bitmap, 1 },
         { "centerline",			0, (int*)&centerline, 1},
         { "color-count",                1, 0, 0 },
         { "corner-always-threshold",    1, 0, 0 },
@@ -228,8 +242,8 @@ read_command_line (int argc, char * argv[],
         { "input-format",		1, 0, 0 },
         { "line-reversion-threshold",	1, 0, 0 },
         { "line-threshold",             1, 0, 0 },
-        { "list-output-formats",               0, 0, 0 },
-        { "list-input-formats",               0, 0, 0 },
+        { "list-output-formats",        0, 0, 0 },
+        { "list-input-formats",         0, 0, 0 },
         { "log",                        0, (int *) &logging, 1 },
         { "output-file",		1, 0, 0 },
         { "output-format",		1, 0, 0 },
@@ -305,14 +319,14 @@ read_command_line (int argc, char * argv[],
 
       else if (ARGUMENT_IS ("help"))
         {
-		  char *ishortlist, *oshortlist;
+	  char *ishortlist, *oshortlist;
           fprintf (stderr, "Usage: %s [options] <input_name>.\n", argv[0]);
           fprintf (stderr, USAGE1);
           fprintf (stderr, USAGE2, ishortlist = at_input_shortlist(),
-			oshortlist = at_output_shortlist());
-		  free (ishortlist);
-		  free (oshortlist);
-	      fprintf (stderr, 
+		   oshortlist = at_output_shortlist());
+	  free (ishortlist);
+	  free (oshortlist);
+	  fprintf (stderr, 
 		   "\nYou can get the source code of autotrace from \n%s\n",
 		   at_home_site());
           exit (0);
@@ -499,4 +513,23 @@ dot_printer(at_real percentage, at_address client_data)
 	}
       *(at_real *)client_data = percentage;
     }
+}
+
+static void
+dump (at_bitmap_type * bitmap, FILE * fp)
+{
+  unsigned short width, height, np;
+  int i, j;
+  int c;
+  unsigned char * p;
+
+  width  = at_bitmap_get_width (bitmap);
+  height = at_bitmap_get_height (bitmap);
+  np 	 = bitmap->np;
+  fprintf(fp, "w=%u, h=%u, np=%u\n", width, height, np);
+
+  fwrite(AT_BITMAP_BITS(*bitmap), 
+	 sizeof(unsigned char),
+	 width * height * np,
+	 fp);
 }
