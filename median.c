@@ -877,19 +877,19 @@ void quantize(bitmap_type *image, long ncolors, const color_type *bgColor,
     /* If a pointer was sent in, let's use it. */ 
     if (iQuant) 
       { 
-	if (*iQuant == NULL) 
-	  { 
-    	quantobj = initialize_median_cut(ncolors); 
-	    median_cut_pass1_rgb  (quantobj, image, bgColor); 
-	    *iQuant = quantobj; 
-	   } 
-	else 
-	    quantobj = *iQuant; 
+        if (*iQuant == NULL) 
+          { 
+            quantobj = initialize_median_cut(ncolors); 
+            median_cut_pass1_rgb  (quantobj, image, bgColor); 
+            *iQuant = quantobj; 
+          } 
+        else 
+	      quantobj = *iQuant; 
       } 
     else 
       {
         quantobj = initialize_median_cut(ncolors);
-	median_cut_pass1_rgb  (quantobj, image, bgColor); 
+        median_cut_pass1_rgb  (quantobj, image, NULL); 
       } 
 		 
 			 

@@ -160,7 +160,8 @@ out_splines (FILE * epd_file, spline_list_array_type shape)
 
 
 int output_epd_writer(FILE* epd_file, at_string name,
-		      int llx, int lly, int urx, int ury, int dpi,
+		      int llx, int lly, int urx, int ury, 
+		      at_output_opts_type * opts,
 		      spline_list_array_type shape,
 		      at_msg_func msg_func, 
 		      at_address msg_data)

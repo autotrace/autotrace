@@ -79,7 +79,8 @@ output_pstoedit_get_writer(const at_string suffix)
    -> file */
 int
 output_pstoedit_writer (FILE* file, at_string name,
-			int llx, int lly, int urx, int ury, int dpi,
+			int llx, int lly, int urx, int ury, 
+			at_output_opts_type * opts,
 			at_spline_list_array_type shape,
 			at_msg_func msg_func, 
 			at_address msg_data)
@@ -132,7 +133,7 @@ output_pstoedit_writer (FILE* file, at_string name,
    * shape -> bo file 
    */
   output_p2e_writer(tmpfile, tmpfile_name_p2e,
-		    llx, lly, urx, ury, dpi,
+		    llx, lly, urx, ury, opts,
 		    shape, msg_func, msg_data);
   fclose(tmpfile);
 

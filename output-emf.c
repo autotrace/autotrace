@@ -390,6 +390,7 @@ static int WriteStrokePath(FILE *fdes)
   return recsize;
 }
 
+#if 0
 static int WriteSetWorldTransform(FILE *fdes, UI32 height)
 {
   int recsize = sizeof(UI32) * 8;
@@ -419,6 +420,7 @@ static int WriteSetWorldTransform(FILE *fdes, UI32 height)
   }
   return recsize;
 }
+#endif /* 0 */
 
 static int WriteCreateSolidPen(FILE *fdes, int hndNum, UI32 colref)
 {
@@ -763,7 +765,8 @@ static void OutputEmf(FILE* fdes, EMFStats *stats, at_string name, int width, in
 
 
 int output_emf_writer(FILE* file, at_string name,
-		      int llx, int lly, int urx, int ury, int dpi,
+		      int llx, int lly, int urx, int ury, 
+		      at_output_opts_type * opts,
 		      spline_list_array_type shape)
 {
   EMFStats stats;

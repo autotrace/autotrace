@@ -145,10 +145,11 @@ static at_bool output_metafiledescription(FILE *fdes, const char *string)
 }
 
 int output_cgm_writer(FILE* cgm_file, at_string name,
-		       int llx, int lly, int urx, int ury, int dpi,
-		       spline_list_array_type shape,
-		       at_msg_func msg_func, 
-		       at_address msg_data)
+		      int llx, int lly, int urx, int ury, 
+		      at_output_opts_type * opts,
+		      spline_list_array_type shape,
+		      at_msg_func msg_func, 
+		      at_address msg_data)
 {
   unsigned this_list;
   char *des;

@@ -41,7 +41,8 @@ to install Ming (http://www.opaque.net/ming/). Also you can export to
 the p2e format. This format can be converted by pstoedit
 (www.pstoedit.net) to a large number of other formats. If you have
 installed the lastes pstoedit(3.32 or newer), autotrace uses pstoedit
-directly.
+directly. However, pstoedit directly supports is still broken. See
+INSTALL for more detail.
 
 Installation
 ============
@@ -118,6 +119,7 @@ Here the options you can use in the command:
     output-format <format>: use format <format> for the output file
       eps, ai, p2e, sk, svg, fig, swf, emf, mif, er, dxf, epd, pdf, cgm or dr2d
       can be used.
+    preserve-width: whether to preserve line width prior to thinning.\n\
     remove-adjacent-corners: remove corners that are adjacent.
     tangent-surround <unsigned>: number of points on either side of a
       point to consider when computing the tangent at that point; default is 3.
@@ -125,6 +127,7 @@ Here the options you can use in the command:
     debug-arch: print the type of cpu.
     debug-bitmap: dump loaded bitmap to <input_name>.bitmap.
     version: print the version number of this program.
+    width-factor: weight factor for fitting the linewidth.
 
 The library is named libautotrace. About the usage of the library
 see autotrace.h.
@@ -144,11 +147,9 @@ gcc sample.c `./autotrace-config --libs` `./autotrace-config --cflags`
       at_splines_type * splines;
       at_output_write_func wfunc = at_output_get_handler_by_suffix("eps");
 
-      bitmap = at_bitmap_read(rfunc, fname);
-      splines = at_splines_new(bitmap, opts);
-      at_splines_write(splines, stdout, "", 
-	               AT_DEFAULT_DPI, 
-	               wfunc);
+      bitmap = at_bitmap_read(rfunc, fname, NULL, NULL, NULL);
+      splines = at_splines_new(bitmap, opts, NULL, NULL);
+      at_splines_write(wfunc, stdout, "", NULL splines, NULL, NULL);
       return 0;
     }
 

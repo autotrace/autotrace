@@ -101,7 +101,8 @@ static void print_coord(FILE* f, at_real x, at_real y)
   Main conversion routine
 ===========================================================================*/
 int output_mif_writer(FILE* ps_file, at_string name,
-		      int llx, int lly, int urx, int ury, int dpi,
+		      int llx, int lly, int urx, int ury, 
+		      at_output_opts_type * opts,
 		      spline_list_array_type shape,
 		      at_msg_func msg_func, at_address msg_data)
 {
@@ -116,7 +117,7 @@ int output_mif_writer(FILE* ps_file, at_string name,
   cbox.lly = lly;
   cbox.urx = urx;
   cbox.ury = ury;
-  cbox.dpi = (at_real) dpi;
+  cbox.dpi = (at_real) opts->dpi;
 
   fprintf(ps_file, "<MIFFile 4.00> #%s\n<Units Upt>\n<ColorCatalog\n", at_version(true));
 

@@ -10,7 +10,7 @@
 
 typedef struct
 {
-  at_real dx, dy;
+  at_real dx, dy, dz;
 } vector_type;
 
 

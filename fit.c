@@ -24,6 +24,7 @@
 #include "config.h"
 #endif /* Def: HAVE_CONFIG_H */
 
+#include "autotrace.h"
 #include "fit.h"
 #include "message.h"
 #include "logreport.h"
@@ -86,7 +87,7 @@ static spline_list_type *fit_curve (curve_type,
   fitting_opts_type *,
   at_exception * exception);
 static spline_list_type fit_curve_list (curve_list_type,
- fitting_opts_type *,
+ fitting_opts_type *, distance_map_type *,
  at_exception * exception);
 static spline_list_type *fit_with_least_squares (curve_type,
  fitting_opts_type *,
@@ -121,12 +122,14 @@ fitting_opts_type new_fitting_opts (void)
   fitting_opts.filter_iterations = 4;
   fitting_opts.line_reversion_threshold = (at_real) .01;
   fitting_opts.line_threshold = (at_real) 1.0;
-  fitting_opts.remove_adj_corners = false;
+  fitting_opts.remove_adjacent_corners = false;
   fitting_opts.tangent_surround = 3;
   fitting_opts.despeckle_level = 0;
   fitting_opts.despeckle_tightness = 2.0;
   fitting_opts.centerline = false;
-
+  fitting_opts.preserve_width = false;
+  fitting_opts.width_factor   = 6.0;
+  
   return (fitting_opts);
 }
 
@@ -137,7 +140,7 @@ fitting_opts_type new_fitting_opts (void)
 #ifdef _EXPORTING
 __declspec(dllexport) spline_list_array_type
 __stdcall fitted_splines (pixel_outline_list_type pixel_outline_list,
-  fitting_opts_type *fitting_opts,
+  fitting_opts_type *fitting_opts, distance_map_type *,
   unsigned short width, unsigned short height,
   at_exception * exception,
   progress_func notify_progress, 
@@ -147,7 +150,7 @@ __stdcall fitted_splines (pixel_outline_list_type pixel_outline_list,
 #else
 spline_list_array_type
 fitted_splines (pixel_outline_list_type pixel_outline_list,
-  fitting_opts_type *fitting_opts,
+  fitting_opts_type *fitting_opts, distance_map_type *dist,
   unsigned short width, unsigned short height,
   at_exception * exception,
   at_progress_func notify_progress, 
@@ -164,6 +167,9 @@ fitted_splines (pixel_outline_list_type pixel_outline_list,
 							exception);
 
   char_splines.centerline = fitting_opts->centerline;
+  char_splines.preserve_width = fitting_opts->preserve_width;
+  char_splines.width_factor   = fitting_opts->width_factor;
+
   if (fitting_opts->background_color)
     char_splines.background_color = at_color_copy(fitting_opts->background_color);
   else
@@ -186,7 +192,7 @@ fitted_splines (pixel_outline_list_type pixel_outline_list,
 
       LOG1 ("\nFitting curve list #%u:\n", this_list);
 
-      curve_list_splines = fit_curve_list (curves, fitting_opts,
+      curve_list_splines = fit_curve_list (curves, fitting_opts, dist,
 					   exception);
       if (at_exception_got_fatal(exception))
 	{
@@ -215,7 +221,7 @@ fitted_splines (pixel_outline_list_type pixel_outline_list,
 
 static spline_list_type
 fit_curve_list (curve_list_type curve_list,
-		fitting_opts_type *fitting_opts,
+		fitting_opts_type *fitting_opts, distance_map_type *dist,
 		at_exception * exception)
 {
   curve_type curve;
@@ -240,6 +246,53 @@ fit_curve_list (curve_list_type curve_list,
                           CURVE_LIST_CLOCKWISE (curve_list));
     }
 
+  if (dist != NULL)
+    {
+      unsigned this_point;
+      unsigned height = dist->height;
+      for (this_curve = 0; this_curve < curve_list_length; this_curve++)
+        {
+	      curve = CURVE_LIST_ELT (curve_list, this_curve);
+	      for (this_point = 0; this_point < CURVE_LENGTH (curve); this_point++)
+	        {
+	          unsigned x, y;
+	          float width, w;
+	          at_real_coord *coord = &CURVE_POINT(curve, this_point);
+	          x = (unsigned)(coord->x);
+	          y = height - (unsigned)(coord->y) - 1;
+
+	          /* Each (x, y) is a point on the skeleton of the curve, which
+		         might be offset from the true centerline, where the width
+		         is maximal.  Therefore, use as the local line width the
+		         maximum distance over the neighborhood of (x, y).  */
+	          width = dist->d[y][x];
+	          if (y - 1 >= 0)
+	            {
+		          if ((w = dist->d[y-1][x]) > width) width = w;
+		            if (x - 1 >= 0)
+		              {
+		                if ((w = dist->d[y][x-1]) > width) width = w;
+		                if ((w = dist->d[y-1][x-1]) > width) width = w;
+		              }
+		            if (x + 1 < dist->width)
+		              {
+		                if ((w = dist->d[y][x+1]) > width) width = w;
+		                if ((w = dist->d[y-1][x+1]) > width) width = w;
+		              }
+			  }
+	        if (y + 1 < height)
+	          {
+		        if ((w = dist->d[y+1][x]) > width) width = w;
+		        if (x - 1 >= 0 && (w = dist->d[y+1][x-1]) > width)
+		          width = w;
+		        if (x + 1 < dist->width && (w = dist->d[y+1][x+1]) > width)
+		          width = w;
+	          }
+	        coord->z = width * (fitting_opts->width_factor);
+	     }
+      }
+  }
+
   /* We filter all the curves in CURVE_LIST at once; otherwise, we would
      look at an unfiltered curve when computing tangents.  */
 
@@ -262,7 +315,7 @@ fit_curve_list (curve_list_type curve_list,
      and three points isn't enough to determine a spline.  Therefore,
      the fitting will fail.  */
   curve = CURVE_LIST_ELT (curve_list, 0);
-  if (CURVE_CYCLIC (curve) && CURVE_LENGTH (curve) != 3)
+  if ((CURVE_CYCLIC (curve) == true) && CURVE_LENGTH (curve) != 3)
     append_point (curve, CURVE_POINT (curve, 0));
 
   /* Finally, fit each curve in the list to a list of splines.  */
@@ -431,7 +484,10 @@ split_at_corners (pixel_outline_list_type pixel_list, fitting_opts_type *fitting
           for (p = 0; p < O_LENGTH (pixel_o); p++)
             append_pixel (curve, O_COORDINATE (pixel_o, p));
 
-          CURVE_CYCLIC (curve) = !curve_list.open;
+          if (curve_list.open == true)
+			CURVE_CYCLIC (curve) = false;
+		  else
+			CURVE_CYCLIC (curve) = true;
         }
       else
         { /* Each curve consists of the points between (inclusive) each pair
@@ -637,7 +693,7 @@ find_corners (pixel_outline_type pixel_outline,
        line, which usually interrupts the continuity dreadfully.  */
     remove_adjacent_corners (&corner_list,
 			     O_LENGTH (pixel_outline) - (pixel_outline.open ? 2 : 1),
-			     fitting_opts->remove_adj_corners,
+			     fitting_opts->remove_adjacent_corners,
      			     exception);
  cleanup:  
   return corner_list;
@@ -660,10 +716,8 @@ find_vectors (unsigned test_index, pixel_outline_type outline,
   unsigned n_done;
   at_coord candidate = O_COORDINATE (outline, test_index);
 
-  in->dx = 0.0;
-  in->dy = 0.0;
-  out->dx = 0.0;
-  out->dy = 0.0;
+  in->dx = in->dy = in->dz = 0.0;
+  out->dx = out->dy = out->dz = 0.0;
 
   /* Add up the differences from p of the `corner_surround' points
      before p.  */
@@ -790,12 +844,12 @@ static void
 remove_knee_points (curve_type curve, at_bool clockwise)
 {
   unsigned i;
-  unsigned offset = CURVE_CYCLIC (curve) ? 0 : 1;
+  unsigned offset = (CURVE_CYCLIC (curve) == true) ? 0 : 1;
   at_coord previous
     = real_to_int_coord (CURVE_POINT (curve, CURVE_PREV (curve, offset)));
   curve_type trimmed_curve = copy_most_of_curve (curve);
 
-  if (!CURVE_CYCLIC (curve))
+  if (CURVE_CYCLIC (curve) == false)
     append_pixel (trimmed_curve, real_to_int_coord (CURVE_POINT (curve, 0)));
 
   for (i = offset; i < CURVE_LENGTH (curve) - offset; i++)
@@ -819,7 +873,7 @@ remove_knee_points (curve_type curve, at_bool clockwise)
         }
     }
 
-  if (!CURVE_CYCLIC (curve))
+  if (CURVE_CYCLIC (curve) == false)
     append_pixel (trimmed_curve, real_to_int_coord (LAST_CURVE_POINT (curve)));
 
   if (CURVE_LENGTH (trimmed_curve) == CURVE_LENGTH (curve))
@@ -839,7 +893,7 @@ static void
 filter (curve_type curve, fitting_opts_type *fitting_opts)
 {
   unsigned iteration, this_point;
-  unsigned offset = CURVE_CYCLIC (curve) ? 0 : 1;
+  unsigned offset = (CURVE_CYCLIC (curve) == true) ? 0 : 1;
   at_real_coord prev_new_point;
 
   /* We must have at least three points---the previous one, the current
@@ -854,6 +908,7 @@ filter (curve_type curve, fitting_opts_type *fitting_opts)
 
   prev_new_point.x = FLT_MAX;
   prev_new_point.y = FLT_MAX;
+  prev_new_point.z = FLT_MAX;
 
   for (iteration = 0; iteration < fitting_opts->filter_iterations;
    iteration++)
@@ -886,8 +941,7 @@ filter (curve_type curve, fitting_opts_type *fitting_opts)
 
           /* Add up the differences from p of the `surround' points
              before p.  */
-          in.dx = 0.0;
-          in.dy = 0.0;
+          in.dx = in.dy = in.dz = 0.0;
 
           in = Vadd (in, Psubtract (CURVE_POINT (curve, prev), candidate));
           if (prevprev >= 0)
@@ -895,8 +949,7 @@ filter (curve_type curve, fitting_opts_type *fitting_opts)
 
           /* And the points after p.  Don't use more points after p than we
              ended up with before it.  */
-          out.dx = 0.0;
-          out.dy = 0.0;
+          out.dx = out.dy = out.dz = 0.0;
 
           out = Vadd (out, Psubtract (CURVE_POINT (curve, next), candidate));
           if (nextnext < CURVE_LENGTH (curve))
@@ -908,8 +961,10 @@ filter (curve_type curve, fitting_opts_type *fitting_opts)
           /* We added 2*n+2 points, so we have to divide the sum by 2*n+2 */
           new_point.x += sum.dx / 6;
           new_point.y += sum.dy / 6;
+          new_point.z += sum.dz / 6;
           if (fabs (prev_new_point.x - new_point.x) < 0.3
-              && fabs (prev_new_point.y - new_point.y) < 0.3)
+              && fabs (prev_new_point.y - new_point.y) < 0.3
+			  && fabs (prev_new_point.z - new_point.z) < 0.3)
             {
               collapsed = true;
               break;
@@ -1043,7 +1098,7 @@ fit_with_least_squares (curve_type curve, fitting_opts_type *fitting_opts,
   spline = best_spline;
   error = best_error;
 
-  if (error < fitting_opts->error_threshold && !CURVE_CYCLIC(curve))
+  if (error < fitting_opts->error_threshold && CURVE_CYCLIC(curve) == false)
     {
       /* The points were fitted with a
          spline.  We end up here whenever a fit is accepted.  We have
@@ -1306,11 +1361,11 @@ find_tangent (curve_type curve, at_bool to_start_point, at_bool cross_curve,
   unsigned tangent_surround)
 {
   vector_type tangent;
-  vector_type **curve_tangent = to_start_point ? &(CURVE_START_TANGENT (curve))
+  vector_type **curve_tangent = (to_start_point == true) ? &(CURVE_START_TANGENT (curve))
                                                : &(CURVE_END_TANGENT (curve));
   unsigned n_points = 0;
 
-  LOG1 ("  tangent to %s: ", to_start_point ? "start" : "end");
+  LOG1 ("  tangent to %s: ", (to_start_point == true) ? "start" : "end");
 
   if (*curve_tangent == NULL)
     {
@@ -1323,13 +1378,14 @@ find_tangent (curve_type curve, at_bool to_start_point, at_bool cross_curve,
           if ((cross_curve) || (CURVE_CYCLIC (curve) == true))
             {
               curve_type adjacent_curve
-                = to_start_point ? PREVIOUS_CURVE (curve) : NEXT_CURVE (curve);
+                = (to_start_point == true) ? PREVIOUS_CURVE (curve) : NEXT_CURVE (curve);
               vector_type tangent2
-                = find_half_tangent (adjacent_curve, !to_start_point, &n_points,
+                = (to_start_point == false) ? find_half_tangent (adjacent_curve, true, &n_points,
+                tangent_surround) : find_half_tangent (adjacent_curve, true, &n_points,
                 tangent_surround);
 
-              LOG2 ("(adjacent curve half tangent (%.3f,%.3f)) ",
-                tangent2.dx, tangent2.dy);
+              LOG3 ("(adjacent curve half tangent (%.3f,%.3f,%.3f)) ",
+                tangent2.dx, tangent2.dy, tangent2.dz);
               tangent = Vadd (tangent, tangent2);
             }
 	      tangent_surround--;
@@ -1343,7 +1399,7 @@ find_tangent (curve_type curve, at_bool to_start_point, at_bool cross_curve,
   else
     LOG ("(already computed) ");
 
-  LOG2 ("(%.3f,%.3f).\n", (*curve_tangent)->dx, (*curve_tangent)->dy);
+  LOG3 ("(%.3f,%.3f,%.3f).\n", (*curve_tangent)->dx, (*curve_tangent)->dy, (*curve_tangent)->dz);
 }
 
 /* Find the change in y and change in x for `tangent_surround' (a global)
@@ -1433,9 +1489,10 @@ find_error (curve_type curve, spline_type spline, unsigned *worst_point,
         LOG ("  Every point fit perfectly.\n");
       else
         {
-          LOG4 ("  Worst error (at (%.3f,%.3f), point #%u) was %.3f.\n",
+          LOG5 ("  Worst error (at (%.3f,%.3f,%.3f), point #%u) was %.3f.\n",
               CURVE_POINT (curve, *worst_point).x,
-              CURVE_POINT (curve, *worst_point).y, *worst_point, worst_error);
+              CURVE_POINT (curve, *worst_point).y,
+              CURVE_POINT (curve, *worst_point).z, *worst_point, worst_error);
           LOG1 ("  Total error was %.3f.\n", total_error);
           LOG2 ("  Average error (over %u points) was %.3f.\n",
               CURVE_LENGTH (curve), total_error / CURVE_LENGTH (curve));
@@ -1452,53 +1509,36 @@ static at_bool
 spline_linear_enough (spline_type *spline, curve_type curve,
   fitting_opts_type *fitting_opts)
 {
-  at_real A, B, C, slope;
+  at_real A, B, C;
   unsigned this_point;
   at_real dist = 0.0, start_end_dist, threshold;
 
   LOG ("Checking linearity:\n");
 
-  start_end_dist = (at_real) sqrt (SQUARE (END_POINT (*spline).x - START_POINT
-    (*spline).x) + SQUARE (END_POINT (*spline).y - START_POINT (*spline).y));
-  LOG1 ("start_end_distance is %.3f.\n", start_end_dist);
-  /* For a line described by Ax + By + C = 0, the distance d from a
-     point (x0,y0) to that line is:
+  A = END_POINT(*spline).x - START_POINT(*spline).x;
+  B = END_POINT(*spline).y - START_POINT(*spline).y;
+  C = END_POINT(*spline).z - START_POINT(*spline).z;
 
-     d = | Ax0 + By0 + C | / sqrt (A^2 + B^2).
+  start_end_dist = (at_real) (SQUARE(A) + SQUARE(B) + SQUARE(C));
+  LOG1 ("start_end_distance is %.3f.\n", sqrt(start_end_dist));
 
-     We can find A, B, and C from the starting and ending points,
-     unless the line defined by those two points is vertical.  */
+  LOG3 ("  Line endpoints are (%.3f, %.3f, %.3f) and ", START_POINT(*spline).x, START_POINT(*spline).y, START_POINT(*spline).z);
+  LOG3 ("(%.3f, %.3f, %.3f)\n", END_POINT(*spline).x, END_POINT(*spline).y, END_POINT(*spline).z);
 
-  if (epsilon_equal (START_POINT (*spline).x, END_POINT (*spline).x))
-    {
-      A = 1;
-      B = 0;
-      C = -START_POINT (*spline).x;
-    }
-  else
-    {
-      /* Plug the spline's starting and ending points into the two-point
-         equation for a line, that is,
-
-         (y - y1) = ((y2 - y1)/(x2 - x1)) * (x - x1)
-
-         to get the values for A, B, and C.  */
-
-      slope = ((END_POINT (*spline).y - START_POINT (*spline).y)
-               / (END_POINT (*spline).x - START_POINT (*spline).x));
-      A = -slope;
-      B = 1;
-      C = slope * START_POINT (*spline).x - START_POINT (*spline).y;
-    }
-  LOG3 ("  Line is %.3fx + %.3fy + %.3f = 0.\n", A, B, C);
+  /* LOG3 ("  Line is %.3fx + %.3fy + %.3f = 0.\n", A, B, C); */
 
   for (this_point = 0; this_point < CURVE_LENGTH (curve); this_point++)
     {
+      at_real a, b, c, w;
       at_real t = CURVE_T (curve, this_point);
       at_real_coord spline_point = evaluate_spline (*spline, t);
 
-      dist += (at_real) fabs (A * spline_point.x + B * spline_point.y + C)
-                   / (at_real) sqrt (A * A + B * B);
+      a = spline_point.x - START_POINT(*spline).x;
+      b = spline_point.y - START_POINT(*spline).y;
+      c = spline_point.z - START_POINT(*spline).z;
+      w = (A*a + B*b + C*c) / start_end_dist;
+
+      dist += (at_real)sqrt(SQUARE(a-A*w) + SQUARE(b-B*w) + SQUARE(c-C*w));
     }
   LOG1 ("  Total distance is %.3f, ", dist);
 
@@ -1624,6 +1664,7 @@ real_to_int_coord (at_real_coord real_coord)
 static at_real
 distance (at_real_coord p1, at_real_coord p2)
 {
-  at_real x = p1.x - p2.x, y = p1.y - p2.y;
-  return (at_real) sqrt (x * x + y * y);
+  at_real x = p1.x - p2.x, y = p1.y - p2.y, z = p1.z - p2.z;
+  return (at_real) sqrt (SQUARE(x)
+    + SQUARE(y) + SQUARE(z));
 }

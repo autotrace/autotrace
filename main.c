@@ -36,20 +36,11 @@ static at_output_write_func output_writer = NULL;
 /* Whether to print version information */
 static at_bool printed_version;
 
-/* Whether to trace a character's centerline or its outline */
-static at_bool centerline = false;
-
 /* Whether to write a log file */
 static at_bool logging = false;
 
 /* Whether to dump a bitmap file */
 static at_bool dumping_bitmap = false;
-
-/* Should adjacent corners be removed?  */
-static at_bool remove_adj_corners;
-
-/* image dpi used in emf backend. */
-static int dpi = AT_DEFAULT_DPI;
 
 /* Report tracing status in real time (--report-progress) */
 static at_bool report_progress = false;
@@ -57,7 +48,9 @@ static at_bool report_progress = false;
 #define dot_printer_char '|'
 static void dot_printer(at_real percentage, at_address client_data);
 
-static char * read_command_line (int, char * [], at_fitting_opts_type *);
+static char * read_command_line (int, char * [], 
+				 at_fitting_opts_type *,
+				 at_output_opts_type *);
 
 static unsigned int hctoi (char c);
 
@@ -75,6 +68,7 @@ main (int argc, char * argv[])
 {
   at_fitting_opts_type * fitting_opts;
   at_input_opts_type * input_opts;
+  at_output_opts_type * output_opts;
   char * input_name, * input_rootname;
   char * logfile_name = NULL, * dumpfile_name = NULL;
   at_splines_type * splines;
@@ -85,12 +79,9 @@ main (int argc, char * argv[])
   at_progress_func progress_reporter = NULL;
   int progress_stat = 0;
 
-  fitting_opts = at_fitting_opts_new ();
-
-  input_name = read_command_line (argc, argv, fitting_opts);
-
-  fitting_opts->centerline = centerline;
-  fitting_opts->remove_adj_corners = remove_adj_corners;
+  fitting_opts 		    = at_fitting_opts_new ();
+  output_opts  		    = at_output_opts_new ();
+  input_name = read_command_line (argc, argv, fitting_opts, output_opts);
 
   if (strgicmp (output_name, input_name))
     FATAL("Input and output file may not be the same\n");
@@ -167,12 +158,13 @@ main (int argc, char * argv[])
       fclose(dump_file);
     }
 
-  at_splines_write (splines,
+  at_splines_write (output_writer,
 		    output_file, 
 		    output_name,
-		    dpi,
-		    output_writer,
+		    output_opts,
+		    splines,
 		    exception_handler, NULL);
+  at_output_opts_free(output_opts);
   
   if (output_file != stdout)
     fclose (output_file);
@@ -231,6 +223,7 @@ log: write detailed progress reports to <input_name>.log.\n\
 output-file <filename>: write to <filename>\n\
 output-format <format>: use format <format> for the output file\n\
   %s can be used.\n\
+preserve-width: whether to preserve line width prior to thinning.\n\
 remove-adjacent-corners: remove corners that are adjacent.\n\
 tangent-surround <unsigned>: number of points on either side of a\n\
   point to consider when computing the tangent at that point; default is 3.\n\
@@ -238,13 +231,15 @@ report-progress: report tracing status in real time.\n\
 debug-arch: print the type of cpu.\n\
 debug-bitmap: dump loaded bitmap to <input_name>.bitmap.\n\
 version: print the version number of this program.\n\
+width-factor: weight factor for fitting the linewidth.\n\
 "
 
 /* We return the name of the image to process.  */
 
 static char *
 read_command_line (int argc, char * argv[], 
-		   at_fitting_opts_type * fitting_opts)
+		   at_fitting_opts_type * fitting_opts,
+		   at_output_opts_type * output_opts)
 {
   int g;   /* `getopt' return code.  */
   int option_index;
@@ -252,8 +247,8 @@ read_command_line (int argc, char * argv[],
     = { { "align-threshold",		1, 0, 0 },
 	{ "background-color",		1, 0, 0 },
 	{ "debug-arch",                 0, 0, 0 },
-	{ "debug-bitmap",               0, (int *) &dumping_bitmap, 1 },
-        { "centerline",			0, (int*)&centerline, 1},
+	{ "debug-bitmap",               0, (int *)&dumping_bitmap, 1 },
+        { "centerline",			0, 0, 0 },
         { "color-count",                1, 0, 0 },
         { "corner-always-threshold",    1, 0, 0 },
         { "corner-surround",            1, 0, 0 },
@@ -272,11 +267,13 @@ read_command_line (int argc, char * argv[],
         { "log",                        0, (int *) &logging, 1 },
         { "output-file",		1, 0, 0 },
         { "output-format",		1, 0, 0 },
+        { "preserve-width",             0, 0, 0 },
         { "range",                      1, 0, 0 },
-        { "remove-adjacent-corners",     0, (int *) &remove_adj_corners, 1 },
+        { "remove-adjacent-corners",    0, 0, 0 },
         { "tangent-surround",           1, 0, 0 },
 	{ "report-progress",            0, (int *) &report_progress, 1},
         { "version",                    0, (int *) &printed_version, 1 },
+	{ "width-factor",               1, 0, 0 },
         { 0, 0, 0, 0 } };
 
   while (true)
@@ -300,6 +297,9 @@ read_command_line (int argc, char * argv[],
 				       (unsigned char)(hctoi (optarg[2]) * 16 + hctoi (optarg[3])),
 				       (unsigned char)(hctoi (optarg[4]) * 16 + hctoi (optarg[5])));
 	    }
+      else if (ARGUMENT_IS ("centerline"))
+	fitting_opts->centerline = true;
+
       else if (ARGUMENT_IS ("color-count"))
         fitting_opts->color_count = atou (optarg);
 
@@ -334,7 +334,7 @@ read_command_line (int argc, char * argv[],
         fitting_opts->despeckle_tightness = (at_real) atof (optarg);
 
       else if (ARGUMENT_IS ("dpi"))
-	dpi = atou (optarg);
+	output_opts->dpi = atou (optarg);
 
       else if (ARGUMENT_IS ("error-threshold"))
         fitting_opts->error_threshold = (at_real) atof (optarg);
@@ -394,12 +394,20 @@ read_command_line (int argc, char * argv[],
 		    FATAL1 ("Output format %s not supported", optarg);
 	      }
         }
+      else if (ARGUMENT_IS ("preserve_width"))
+	fitting_opts->preserve_width = true;
 
+      else if (ARGUMENT_IS ("remove-adjacent-corners"))
+	fitting_opts->remove_adjacent_corners = true;
+      
       else if (ARGUMENT_IS ("tangent-surround"))
         fitting_opts->tangent_surround = atou (optarg);
 
       else if (ARGUMENT_IS ("version"))
         printf ("AutoTrace version %s.\n", at_version(false));
+
+      else if (ARGUMENT_IS ("width-factor"))
+	fitting_opts->width_factor = (at_real) atof (optarg);
 
       /* Else it was just a flag; getopt has already done the assignment.  */
     }

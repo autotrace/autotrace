@@ -33,7 +33,8 @@
    be removed. -- Masatake */
 at_output_write_func output_pstoedit_get_writer(const at_string);
 int output_pstoedit_writer (FILE* file, at_string name,
-			    int llx, int lly, int urx, int ury, int dpi,
+			    int llx, int lly, int urx, int ury, 
+			    at_output_opts_type * opts,
 			    at_spline_list_array_type shape,
 			    at_msg_func msg_func, 
 			    at_address msg_data);

@@ -195,6 +195,12 @@
 			RelativePath=".\image-header.h">
 		</File>
 		<File
+			RelativePath="image-proc.c">
+		</File>
+		<File
+			RelativePath="image-proc.h">
+		</File>
+		<File
 			RelativePath=".\input-bmp.c">
 		</File>
 		<File

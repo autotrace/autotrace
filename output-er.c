@@ -55,10 +55,11 @@ output_er_header(FILE* er_file, at_string name, int llx, int lly, int urx, int u
 
 static void
 out_splines(FILE* er_file, spline_list_array_type shape,
-    unsigned width, unsigned height)
+	    unsigned width, unsigned height,
+	    at_output_opts_type * opts)
 {
     unsigned this_list, corresp_pt;
-    double x0, y0, x1, y1, x2, y2;
+    double x0, y0, x1, y1, x2, y2, corresp_length;
 
     for (this_list = 0; this_list < SPLINE_LIST_ARRAY_LENGTH(shape);
         this_list++)
@@ -130,14 +131,58 @@ out_splines(FILE* er_file, spline_list_array_type shape,
 
         /* Close PointList and enclosing FormKey. */
         fprintf(er_file, "\t\t}\n\n\t}\n\n");
+
+        if (shape.centerline && shape.preserve_width)
+        {
+          at_real w = (at_real) 1.0 / (shape.width_factor);
+
+          fprintf(er_file, "\tWeightKey = {\n");
+          fprintf(er_file, "\t\tFrame = 1\n");
+          fprintf(er_file, "\t\tPointList = {\n");
+          prev = PREV_SPLINE_LIST_ELT(list, 0);
+          if (list.open || length == 1)
+            SPLINE_DEGREE(prev) = (polynomial_degree) -1;
+          for (this_spline = 0; this_spline < length; this_spline++)
+          {
+      	    spline_type s = SPLINE_LIST_ELT(list, this_spline);
+
+      	    if (SPLINE_DEGREE(prev) == -1)
+              x0 = START_POINT(s).z;
+            else if (SPLINE_DEGREE(prev) == CUBICTYPE)
+              x0 = CONTROL2(prev).z;
+            else /* if (SPLINE_DEGREE(prev) == LINEARTYPE) */
+              x0 = START_POINT(s).z;
+
+            x1 = START_POINT(s).z;
+
+            if (SPLINE_DEGREE(s) == CUBICTYPE)
+	          x2 = CONTROL1(s).z;
+            else
+              x2 = START_POINT(s).z;
+
+            fprintf(er_file, "\t\t\t%g, %g, %g,\n", x0*w, x1*w, x2*w);
+
+            prev = s;
+          }
+          if (list.open || length == 1)
+          {
+            x0 = CONTROL2(prev).z;
+            x2 = x1 = END_POINT(prev).z;
+            fprintf(er_file, "\t\t\t%g, %g, %g,\n", x0*w, x1*w, x2*w);
+          }
+          /* Close PointList and enclosing WeightKey. */
+          fprintf(er_file, "\t\t}\n\n\t}\n\n");
+        }
+
         fprintf(er_file, "\tCorrKey = {\n");
         fprintf(er_file, "\t\tFrame = 1\n");
         fprintf(er_file, "\t\tPointList = {\n");
         fprintf(er_file, "\t\t\t0");
+        corresp_length = out_length - (list.open ? 1.0 : 2.0);
         for (corresp_pt = 1; corresp_pt < NUM_CORRESP_POINTS; corresp_pt++)
         {
-            fprintf(er_file, ", %g",
-                (out_length - 1.0) * corresp_pt / (NUM_CORRESP_POINTS - 1.0));
+            fprintf(er_file, ", %g", corresp_length * corresp_pt
+              / (NUM_CORRESP_POINTS - (list.open ? 1.0 : 0.0)));
         }
         /* Close PointList and enclosing CorrKey. */
         fprintf(er_file, "\n\t\t}\n\n\t}\n\n");
@@ -148,7 +193,8 @@ out_splines(FILE* er_file, spline_list_array_type shape,
 }
 
 int
-output_er_writer(FILE* file, at_string name, int llx, int lly, int urx, int ury, int dpi,
+output_er_writer(FILE* file, at_string name, int llx, int lly, int urx, int ury, 
+		 at_output_opts_type * opts,
 		 spline_list_array_type shape,
 		 at_msg_func msg_func, 
 		 at_address msg_data)
@@ -161,7 +207,7 @@ output_er_writer(FILE* file, at_string name, int llx, int lly, int urx, int ury,
 
     width = urx - llx;
     height = ury - lly;
-    out_splines(file, shape, width, height);
+    out_splines(file, shape, width, height, opts);
 
     return 0;
 }

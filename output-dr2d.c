@@ -70,7 +70,7 @@ static int SizeFloat(float, char *);
 static void ShortAsBytes(int, unsigned char *);
 static void IntAsBytes(int, unsigned char *);
 static void FloatAsIEEEBytes(float, unsigned char *);
-static void ieee2flt(long *, float *);
+/* static void ieee2flt(long *, float *); */
 static void flt2ieee(float *, unsigned char *);
 static void FreeChunk(struct Chunk *);
 static void FreeChunks(struct Chunk **, int);
@@ -563,7 +563,10 @@ static void FreeChunks(struct Chunk ** ChunkList, int NumChunks) {
 	}
 }
 
-int output_dr2d_writer(FILE * file, at_string name, int llx, int lly, int urx, int ury, int dpi, spline_list_array_type shape, at_msg_func msg_func, at_address msg_data) {
+int output_dr2d_writer(FILE * file, at_string name, int llx, int lly, int urx, int ury, 
+		       at_output_opts_type * opts,
+		       spline_list_array_type shape, at_msg_func msg_func, at_address msg_data) 
+{
 	int width = urx - llx;
 	int height = ury - lly;
 	int NumSplines, FORMSize;
@@ -586,7 +589,7 @@ int output_dr2d_writer(FILE * file, at_string name, int llx, int lly, int urx, i
 		XFactor = YFactor;
 	}
 
-	LineThickness = (float)1.0 / dpi;
+	LineThickness = (float)1.0 / opts->dpi;
 
 	DRHDChunk = BuildDRHD(llx, lly, urx, ury);
 	PPRFChunk = BuildPPRF("Inch", Portrait, "A4", 1.0);

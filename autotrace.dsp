@@ -5,17 +5,17 @@
 # TARGTYPE "Win32 (x86) Console Application" 0x0103
 
 CFG=autotrace - Win32 Debug
-!MESSAGE Dies ist kein gültiges Makefile. Zum Erstellen dieses Projekts mit NMAKE
-!MESSAGE verwenden Sie den Befehl "Makefile exportieren" und führen Sie den Befehl
+!MESSAGE Dies ist kein gültiges Makefile. Zum Erstellen dieses Projekts mit NMAKE
+!MESSAGE verwenden Sie den Befehl "Makefile exportieren" und führen Sie den Befehl
 !MESSAGE 
 !MESSAGE NMAKE /f "autotrace.mak".
 !MESSAGE 
-!MESSAGE Sie können beim Ausführen von NMAKE eine Konfiguration angeben
+!MESSAGE Sie können beim Ausführen von NMAKE eine Konfiguration angeben
 !MESSAGE durch Definieren des Makros CFG in der Befehlszeile. Zum Beispiel:
 !MESSAGE 
 !MESSAGE NMAKE /f "autotrace.mak" CFG="autotrace - Win32 Debug"
 !MESSAGE 
-!MESSAGE Für die Konfiguration stehen zur Auswahl:
+!MESSAGE Für die Konfiguration stehen zur Auswahl:
 !MESSAGE 
 !MESSAGE "autotrace - Win32 Release" (basierend auf  "Win32 (x86) Console Application")
 !MESSAGE "autotrace - Win32 Debug" (basierend auf  "Win32 (x86) Console Application")
@@ -183,6 +183,14 @@ SOURCE=.\getopt1.c
 # Begin Source File
 
 SOURCE=".\image-header.h"
+# End Source File
+# Begin Source File
+
+SOURCE=".\image-proc.c"
+# End Source File
+# Begin Source File
+
+SOURCE=".\image-proc.h"
 # End Source File
 # Begin Source File
 

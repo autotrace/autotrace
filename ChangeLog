@@ -1,3 +1,29 @@
+2002-10-02  Masatake YAMATO  <yamato@redhat.com>
+
+	* autotrace.h (at_doc__preserve_width::width_factor): 
+	new member.
+	(struct _at_spline_list_array_type): Likewise.
+	(_, N_): New dummy macro for gettext.
+	
+
+2002-09-29  Masatake YAMATO  <yamato@redhat.com>
+
+	* * (*): at_output_opts_type is introduced.
+
+2002-09-29  Martin Weber <martweb@gmx.net>
+
+	README: added new option
+	image-proc.c: removed warnings
+
+	Message-ID: <3D97211D.85F25D9C@gmx.net>.
+
+2002-09-29  Martin Weber <martweb@gmx.net>
+
+	*: now recognizes the line width
+	median.c: bugfix
+
+	Message-ID: <3D96F758.2B17DAB9@gmx.net>.
+
 2002-09-29  Masatake YAMATO  <yamato@redhat.com>
 
 	* input-png.c (read_png): my_bg.gray is 

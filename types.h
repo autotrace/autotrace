@@ -52,7 +52,7 @@ typedef struct _at_coord
 
 typedef struct _at_real_coord
 {
-  at_real x, y;
+  at_real x, y, z;
 } at_real_coord;
 
 #ifdef __cplusplus

@@ -33,9 +33,12 @@
 
 #include "xstd.h"
 #include "image-header.h"
+#include "image-proc.h"
 #include "quantize.h"
 #include "thin-image.h"
 #include "despeckle.h"
+
+#define AT_DEFAULT_DPI 72
 
 at_fitting_opts_type *
 at_fitting_opts_new(void)
@@ -92,6 +95,29 @@ at_input_opts_free(at_input_opts_type * opts)
 {
   if (opts->background_color != NULL)
     free (opts->background_color);
+  free(opts);
+}
+
+at_output_opts_type *
+at_output_opts_new(void)
+{
+  at_output_opts_type * opts;
+  XMALLOC(opts, sizeof(at_output_opts_type));
+  opts->dpi 	     = AT_DEFAULT_DPI;
+  return opts;
+}
+
+at_output_opts_type *
+at_output_opts_copy(at_output_opts_type * original)
+{
+  at_output_opts_type * opts =  at_output_opts_new();
+  *opts = *original;
+  return opts;
+}
+
+void
+at_output_opts_free(at_output_opts_type * opts)
+{
   free(opts);
 }
 
@@ -216,47 +242,59 @@ at_splines_new_full (at_bitmap_type * bitmap,
   pixel_outline_list_type pixels;
   QuantizeObj *myQuant = NULL; /* curently not used */
   at_exception exp     = at_exception_new(msg_func, msg_data);
+  distance_map_type dist_map, *dist = NULL;
 
 #define CANCELP (test_cancel && test_cancel(testcancel_data))
-#define CANCEL_THEN_RETURN() if (CANCELP) return splines;
-#define CANCEL_THEN_CLEANUP() if (CANCELP) goto cleanup;
+#define FATALP (at_exception_got_fatal(&exp))
+#define FREE_SPLINE do {if (splines) {at_splines_free(splines); splines = NULL;}} while(0)
+#define CANCEL_THEN_CLEANUP_DIST() if (CANCELP) goto cleanup_dist;
+#define CANCEL_THEN_CLEANUP_PIXELS() if (CANCELP) {FREE_SPLINE; goto cleanup_pixels;}
+
+#define FATAL_THEN_RETURN() if (FATALP) return splines;
+#define FATAL_THEN_CLEANUP_DIST() if (FATALP) goto cleanup_dist;
+#define FATAL_THEN_CLEANUP_PIXELS() if (FATALP) {FREE_SPLINE; goto cleanup_pixels;}
+  
   if (opts->despeckle_level > 0)
     {
       despeckle (bitmap, 
 		 opts->despeckle_level, 
 		 opts->despeckle_tightness,
 		 &exp);
-      if (at_exception_got_fatal(&exp))
-	return splines;
+      FATAL_THEN_RETURN();
     }
-  CANCEL_THEN_RETURN();
-  
+
   image_header.width = at_bitmap_get_width(bitmap);
   image_header.height = at_bitmap_get_height(bitmap);
 
   if (opts->color_count > 0)
     {
       quantize (bitmap, opts->color_count, opts->background_color, &myQuant, &exp);
-      if (at_exception_got_fatal(&exp))
-	return splines;
+      FATAL_THEN_RETURN();
     }
-  CANCEL_THEN_RETURN();
 
   if (opts->centerline)
     {
+      if (opts->preserve_width)
+	{
+          /* Preserve line width prior to thinning. */
+          dist_map = new_distance_map(*bitmap, 255, /*padded=*/true, &exp);
+          dist = &dist_map;
+	  FATAL_THEN_RETURN();
+        }
+      /* Hereafter, dist is allocated. dist must be freed if 
+	 the execution is canceled or exception is raised; 
+	 use FATAL_THEN_CLEANUP_DIST. */
       thin_image (bitmap, opts->background_color, &exp);
-      if (at_exception_got_fatal(&exp))
-	return splines;
+      FATAL_THEN_CLEANUP_DIST()
     }
-  CANCEL_THEN_RETURN();
 
   /* Hereafter, pixels is allocated. pixels must be freed if 
-     the execution is canceled; use CANCEL_THEN_CLEANUP. */
+     the execution is canceled; use CANCEL_THEN_CLEANUP_PIXELS. */
   if (opts->centerline)
     {
       color_type background_color = { 0xff, 0xff, 0xff };
       if (opts->background_color) 
-	background_color = *opts->background_color;
+        background_color = *opts->background_color;
 
       pixels = find_centerline_pixels(*bitmap, background_color, 
 				      notify_progress, progress_data,
@@ -266,60 +304,67 @@ at_splines_new_full (at_bitmap_type * bitmap,
     pixels = find_outline_pixels(*bitmap, opts->background_color, 
 				 notify_progress, progress_data,
 				 test_cancel, testcancel_data, &exp);
-  if (at_exception_got_fatal(&exp))
-    /* TODO: splines is empty? */
-    goto cleanup;
-  CANCEL_THEN_CLEANUP();
-
+  FATAL_THEN_CLEANUP_DIST();
+  CANCEL_THEN_CLEANUP_DIST();
   
   XMALLOC(splines, sizeof(at_splines_type)); 
-  *splines = fitted_splines (pixels, opts,
+  *splines = fitted_splines (pixels, opts, dist,
 			     image_header.width,
 			     image_header.height,
 			     &exp,
 			     notify_progress, progress_data,
 			     test_cancel, testcancel_data);
-  if (at_exception_got_fatal(&exp))
-    /* TODO: splines is empty? */
-    goto cleanup;
-
-  if (CANCELP)
-    {
-      at_splines_free (splines);
-      splines = NULL;
-      goto cleanup;
-    }
+  FATAL_THEN_CLEANUP_PIXELS();
+  CANCEL_THEN_CLEANUP_PIXELS();
   
   if (notify_progress)
     notify_progress(1.0, progress_data);
-  
- cleanup:
+
+ cleanup_pixels:
   free_pixel_outline_list (&pixels);
+ cleanup_dist:
+  if (dist)
+    free_distance_map (dist);
   return splines;
-#undef CANCEL_THEN_CLEANUP
-#undef CANCEL_THEN_RETURN
 #undef CANCELP
+#undef FATALP
+#undef FREE_SPLINE
+#undef CANCEL_THEN_CLEANUP_DIST
+#undef CANCEL_THEN_CLEANUP_PIXELS
+
+#undef FATAL_THEN_RETURN
+#undef FATAL_THEN_CLEANUP_DIST
+#undef FATAL_THEN_CLEANUP_PIXELS
+
 }
 
 void 
-at_splines_write(at_splines_type * splines,
-		 FILE * writeto,
-		 at_string name,
-		 int dpi,
-		 at_output_write_func output_writer,
-		 at_msg_func msg_func, 
-		 at_address msg_data)
+at_splines_write (at_output_write_func output_writer,
+		  FILE * writeto,
+		  at_string file_name,
+		  at_output_opts_type * opts,
+		  at_splines_type * splines,
+		  at_msg_func msg_func, at_address msg_data)
 {
+  at_bool new_opts = false;
   int llx, lly, urx, ury;
   llx = 0;
   lly = 0;
   urx = splines->width;
   ury = splines->height;
 
-  if (!name)
-    name = "";
-  (*output_writer) (writeto, name, llx, lly, urx, ury, dpi, *splines,
+  if (!file_name)
+    file_name = "";
+  
+  if (opts == NULL)
+    {
+      new_opts = true;
+      opts     = at_output_opts_new();
+    }
+  (*output_writer) (writeto, file_name, llx, lly, urx, ury, opts, *splines,
 		    msg_func, msg_data);
+  if (new_opts)
+    at_output_opts_free(opts);
 }
 
 void 
@@ -383,5 +428,3 @@ at_home_site (void)
 {
   return AUTOTRACE_WEB;
 }
-
-

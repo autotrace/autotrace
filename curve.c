@@ -302,6 +302,7 @@ int_to_real_coord (at_coord int_coord)
 
   real_coord.x = int_coord.x;
   real_coord.y = int_coord.y;
+  real_coord.z = 0.0;
 
   return real_coord;
 }

@@ -605,14 +605,14 @@ mark_pixel(unsigned short row, unsigned short col, bitmap_type *marked)
 
 
 /* Test if the pixel at ROW/COL in MARKED is marked. */
-
+#if 0
 static at_bool
 is_marked_pixel(unsigned short row, unsigned short col, bitmap_type marked)
 {
     unsigned mark = (1 << NUM_EDGES) - 1;
     return (at_bool)((*BITMAP_PIXEL(marked, row, col) & mark) == mark);
 }
-
+#endif /* 0 */
 
 static at_bool
 next_unmarked_outline_pixel(unsigned short *row, unsigned short *col,

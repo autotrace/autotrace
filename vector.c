@@ -30,6 +30,7 @@ make_vector (const at_real_coord c)
 
   v.dx = c.x;
   v.dy = c.y;
+  v.dz = c.z;
 
   return v;
 }
@@ -52,7 +53,7 @@ vector_to_point (const vector_type v)
 at_real
 magnitude (const vector_type v)
 {
-  return (at_real) sqrt (v.dx*v.dx + v.dy*v.dy);
+  return (at_real) sqrt (v.dx * v.dx + v.dy * v.dy + v.dz * v.dz);
 }
 
 
@@ -68,11 +69,13 @@ normalize (const vector_type v)
   {
     new_v.dx = v.dx / m;
     new_v.dy = v.dy / m;
+    new_v.dz = v.dz / m;
   }
   else
   {
 	new_v.dx = v.dx;
     new_v.dy = v.dy;
+    new_v.dz = v.dz;
   }
 
   return new_v;
@@ -86,6 +89,7 @@ Vadd (const vector_type v1, const vector_type v2)
 
   new_v.dx = v1.dx + v2.dx;
   new_v.dy = v1.dy + v2.dy;
+  new_v.dz = v1.dz + v2.dz;
 
   return new_v;
 }
@@ -94,7 +98,7 @@ Vadd (const vector_type v1, const vector_type v2)
 at_real
 Vdot (const vector_type v1, const vector_type v2)
 {
-  return v1.dx * v2.dx + v1.dy * v2.dy;
+  return v1.dx * v2.dx + v1.dy * v2.dy + v1.dz * v2.dz;
 }
 
 
@@ -105,6 +109,7 @@ Vmult_scalar (const vector_type v, const at_real r)
 
   new_v.dx = v.dx * r;
   new_v.dy = v.dy * r;
+  new_v.dz = v.dz * r;
 
   return new_v;
 }
@@ -132,6 +137,7 @@ Vadd_point (const at_real_coord c, const vector_type v)
 
   new_c.x = c.x + v.dx;
   new_c.y = c.y + v.dy;
+  new_c.z = c.z + v.dz;
   return new_c;
 }
 
@@ -143,6 +149,7 @@ Vsubtract_point (const at_real_coord c, const vector_type v)
 
   new_c.x = c.x - v.dx;
   new_c.y = c.y - v.dy;
+  new_c.z = c.z - v.dz;
   return new_c;
 }
 
@@ -165,6 +172,7 @@ Vabs (const vector_type v)
 
   new_v.dx = (at_real) fabs (v.dx);
   new_v.dy = (at_real) fabs (v.dy);
+  new_v.dz = (at_real) fabs (v.dz);
   return new_v;
 }
 
@@ -178,6 +186,7 @@ Padd (const at_real_coord coord1, const at_real_coord coord2)
 
   sum.x = coord1.x + coord2.x;
   sum.y = coord1.y + coord2.y;
+  sum.z = coord1.z + coord2.z;
 
   return sum;
 }
@@ -190,6 +199,7 @@ Pmult_scalar (const at_real_coord coord, const at_real r)
 
   answer.x = coord.x * r;
   answer.y = coord.y * r;
+  answer.z = coord.z * r;
 
   return answer;
 }
@@ -202,6 +212,7 @@ Psubtract (const at_real_coord c1, const at_real_coord c2)
 
   v.dx = c1.x - c2.x;
   v.dy = c1.y - c2.y;
+  v.dz = c1.z - c2.z;
 
   return v;
 }
@@ -217,6 +228,7 @@ IPsubtract (const at_coord coord1, const at_coord coord2)
 
   v.dx = (at_real) (coord1.x - coord2.x);
   v.dy = (at_real) (coord1.y - coord2.y);
+  v.dz = 0.0;
 
   return v;
 }

@@ -27,6 +27,9 @@
 extern "C" {
 #endif /* __cplusplus */
 
+#define _(x) x
+#define N_(x) x
+ 
 /* ===================================================================== *
  * Typedefs
  * ===================================================================== */
@@ -34,7 +37,8 @@ extern "C" {
 #include "types.h"
 
 typedef struct _at_fitting_opts_type at_fitting_opts_type;
-typedef struct _at_input_opts_type at_input_opts_type;
+typedef struct _at_input_opts_type   at_input_opts_type;
+typedef struct _at_output_opts_type  at_output_opts_type;
 typedef struct _at_bitmap_type at_bitmap_type;
 typedef struct _at_color_type at_color_type;
 typedef enum _at_polynomial_degree at_polynomial_degree;
@@ -94,12 +98,17 @@ struct _at_spline_list_array_type
 {
   at_spline_list_type *data;
   unsigned length;
-  /* whether to trace a character's centerline or its outline  */
-  at_bool centerline;
+
   /* splines bbox */
   unsigned short height, width;
-  /* background color */
+  
+  /* the values for following members are inherited from 
+     at_fitting_opts_type */
   at_color_type * background_color;
+  at_bool centerline;
+  at_bool preserve_width;
+  at_real width_factor;
+
 };
 
 /* Fitting option.
@@ -108,84 +117,98 @@ struct _at_spline_list_array_type
 struct _at_fitting_opts_type
 {
 #define at_doc__background_color					\
-"background-color <hexadezimal>: the color of the background that "	\
+N_("background-color <hexadezimal>: the color of the background that "	\
 "should be ignored, for example FFFFFF; "				\
-"default is no background color."
+"default is no background color.")
   at_color_type *background_color;
 
-#define at_doc__color_count						  \
-"color-count <unsigned>: number of colors a color bitmap is reduced to, " \
-"it does not work on grayscale, allowed are 1..256; "			  \
-"default is 0, that means not color reduction is done." 
+#define at_doc__color_count							\
+N_("color-count <unsigned>: number of colors a color bitmap is reduced to, "	\
+"it does not work on grayscale, allowed are 1..256; "				\
+"default is 0, that means not color reduction is done.")
   unsigned color_count;
 
-#define at_doc__corner_always_threshold					  \
-"corner-always-threshold <angle-in-degrees>: if the angle at a pixel is " \
-"less than this, it is considered a corner, even if it is within "	  \
-"`corner-surround' pixels of another corner; default is 60. "
+#define at_doc__corner_always_threshold						\
+N_("corner-always-threshold <angle-in-degrees>: if the angle at a pixel is "	\
+"less than this, it is considered a corner, even if it is within "		\
+"`corner-surround' pixels of another corner; default is 60. ")
   at_real corner_always_threshold;
 
 #define at_doc__corner_surround						\
-"corner-surround <unsigned>: number of pixels on either side of a "	\
+N_("corner-surround <unsigned>: number of pixels on either side of a "	\
 "point to consider when determining if that point is a corner; "	\
-"default is 4. "
+"default is 4. ")
   unsigned corner_surround;
 
-#define  at_doc__corner_threshold					\
-"corner-threshold <angle-in-degrees>: if a pixel, its predecessor(s), "	\
-"and its successor(s) meet at an angle smaller than this, it's a "	\
-"corner; default is 100. "
+#define  at_doc__corner_threshold						\
+N_("corner-threshold <angle-in-degrees>: if a pixel, its predecessor(s), "	\
+"and its successor(s) meet at an angle smaller than this, it's a "		\
+"corner; default is 100. ")
   at_real corner_threshold;
 
 #define at_doc__error_threshold						\
-"error-threshold <real>: subdivide fitted curves that are off by "	\
-"more pixels than this; default is 2.0. "
+N_("error-threshold <real>: subdivide fitted curves that are off by "	\
+"more pixels than this; default is 2.0. ")
   at_real error_threshold;
 
 #define  at_doc__filter_iterations					\
-"filter-iterations <unsigned>: smooth the curve this many times "	\
-"before fitting; default is 4."
+N_("filter-iterations <unsigned>: smooth the curve this many times "	\
+"before fitting; default is 4.")
   unsigned filter_iterations;
 
-#define at_doc__line_reversion_threshold				 \
-"line-reversion-threshold <real>: if a spline is closer to a straight "	 \
-"line than this, weighted by the square of the curve length, keep it a " \
-"straight line even if it is a list with curves; default is .01. "
+#define at_doc__line_reversion_threshold					\
+N_("line-reversion-threshold <real>: if a spline is closer to a straight "	\
+"line than this, weighted by the square of the curve length, keep it a "	\
+"straight line even if it is a list with curves; default is .01. ")
   at_real line_reversion_threshold;
 
-#define at_doc__line_threshold						\
-"line-threshold <real>: if the spline is not more than this far away "	\
-"from the straight line defined by its endpoints,"			\
-"then output a straight line; default is 1. "
+#define at_doc__line_threshold							\
+N_("line-threshold <real>: if the spline is not more than this far away "	\
+"from the straight line defined by its endpoints,"				\
+"then output a straight line; default is 1. ")
   at_real line_threshold;
 
-#define at_doc__remove_adj_corners				\
-"remove-adjacent-corners: remove corners that are adjacent; "	\
-"default doesn't remove."
-  at_bool remove_adj_corners;
+#define at_doc__remove_adjacent_corners					\
+N_("remove-adjacent-corners: remove corners that are adjacent; "	\
+"default doesn't remove.")
+  at_bool remove_adjacent_corners;
 
 #define at_doc__tangent_surround					\
-"tangent-surround <unsigned>: number of points on either side of a "	\
+N_("tangent-surround <unsigned>: number of points on either side of a "	\
 "point to consider when computing the tangent at that point; "		\
-" default is 3."
+" default is 3.")
   unsigned tangent_surround;
 
 #define at_doc__despeckle_level						\
-"despeckle-level <unsigned>: 0..20; default is no despeckling. "
+N_("despeckle-level <unsigned>: 0..20; default is no despeckling. ")
   unsigned despeckle_level;
 
 #define at_doc__despeckle_tightness				\
-"despeckle-tightness <real>: 0.0..8.0; default is 2.0. "
+N_("despeckle-tightness <real>: 0.0..8.0; default is 2.0. ")
   at_real despeckle_tightness;
 
 #define  at_doc__centerline						\
-"centerline: trace a character's centerline, rather than its outline. "
+N_("centerline: trace a character's centerline, rather than its outline. ")
   at_bool centerline;
+
+#define at_doc__preserve_width							\
+N_("preserve-width: whether to preserve linewith with centerline fitting; "	\
+"default doesn't preserve.")
+  at_bool preserve_width;
+
+#define  at_doc__width_factor			\
+N_("weight factor for fitting the linewidth")
+  at_real width_factor;
 };
 
 struct _at_input_opts_type
 {
   at_color_type *background_color;
+};
+
+struct _at_output_opts_type
+{
+  int dpi;			/* DPI is used only in MIF output.*/
 };
 
 struct _at_bitmap_type
@@ -219,7 +242,7 @@ typedef
 int            (*at_output_write_func) (FILE*, at_string name,
 					int llx, int lly, 
 					int urx, int ury,
-					int dpi,
+					at_output_opts_type * opts,
 					at_splines_type shape,
 					at_msg_func msg_func, 
 					at_address msg_data);
@@ -249,16 +272,27 @@ typedef at_bool          (*  at_testcancel_func) (at_address client_data);
 at_fitting_opts_type * at_fitting_opts_new(void);
 at_fitting_opts_type * at_fitting_opts_copy (at_fitting_opts_type * original); 
 void at_fitting_opts_free(at_fitting_opts_type * opts);
-#define at_fitting_opts_doc(opt) at_doc__##opt 
+
+/* TODO: Gettextize */
+#define at_fitting_opts_doc(opt) _(at_doc__##opt)
 
 /* --------------------------------------------------------------------- *
  * Input option related
  *
- * TODO: internal data access, copy
+ * TODO: internal data access
  * --------------------------------------------------------------------- */
 at_input_opts_type * at_input_opts_new(void);
 at_input_opts_type * at_input_opts_copy(at_input_opts_type * original);
 void at_input_opts_free(at_input_opts_type * opts);
+
+/* --------------------------------------------------------------------- *
+ * Output option related
+ *
+ * TODO: internal data access
+ * --------------------------------------------------------------------- */
+at_output_opts_type * at_output_opts_new(void);
+at_output_opts_type * at_output_opts_copy(at_output_opts_type * original);
+void at_output_opts_free(at_output_opts_type * opts);
 
 /* --------------------------------------------------------------------- *
  * Bitmap related 
@@ -346,16 +380,12 @@ at_splines_type * at_splines_new_full (at_bitmap_type * bitmap,
 				       at_testcancel_func test_cancel,
 				       at_address testcancel_data);
 
-#define AT_DEFAULT_DPI 72
-/* at_splines_write
-   args:
-   DPI is used only in MIF output. */
-void at_splines_write(at_splines_type * splines,
-		      FILE * writeto,
-		      at_string name,
-		      int dpi,
-		      at_output_write_func output_writer,
-		      at_msg_func msg_func, at_address msg_data);
+void at_splines_write(at_output_write_func output_writer,
+		  FILE * writeto,
+		  at_string file_name,
+		  at_output_opts_type * opts,
+		  at_splines_type * splines,
+		  at_msg_func msg_func, at_address msg_data);
 
 void at_splines_free (at_splines_type * splines);
 

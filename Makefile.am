@@ -93,7 +93,9 @@ libautotrace_la_SOURCES =\
                 despeckle.c                     \
                 despeckle.h			\
 	        exception.c                     \
-		strgicmp.c
+		strgicmp.c			\
+		image-proc.c			\
+		image-proc.h
 
 autotraceinclude_HEADERS=\
 		types.h 			\

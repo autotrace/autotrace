@@ -45,10 +45,11 @@ evaluate_spline (spline_type s, at_real t)
   polynomial_degree degree = SPLINE_DEGREE (s);
 
   for (i = 0; i <= degree; i++)
-  {
-    V[0].v[i].x = s.v[i].x;
-    V[0].v[i].y = s.v[i].y;
-  }
+    {
+      V[0].v[i].x = s.v[i].x;
+      V[0].v[i].y = s.v[i].y;
+      V[0].v[i].z = s.v[i].z;
+    }
 
   for (j = 1; j <= degree; j++)
     for (i = 0; i <= degree - j; i++)
@@ -58,6 +59,7 @@ evaluate_spline (spline_type s, at_real t)
         at_real_coord temp = Padd (t1, t2);
         V[j].v[i].x = temp.x;
         V[j].v[i].y = temp.y;
+        V[j].v[i].z = temp.z;
       }
 
   return V[degree].v[0];
