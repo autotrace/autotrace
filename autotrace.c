@@ -48,11 +48,12 @@ at_fitting_opts_free(at_fitting_opts_type * opts)
 
 at_bitmap_type *
 at_bitmap_read (at_input_read_func input_reader,
-	       at_string filename)
+		at_string filename,
+		at_msg_func msg_func, at_address msg_data)
 {
   at_bitmap_type * bitmap;
   XMALLOC(bitmap, sizeof(at_bitmap_type)); 
-  *bitmap = (*input_reader) (filename);
+  *bitmap = (*input_reader) (filename, msg_func, msg_data);
   return bitmap;
 }
 
@@ -222,7 +223,9 @@ at_splines_write(at_splines_type * splines,
 		 FILE * writeto,
 		 char * name,
 		 int dpi,
-		 at_output_write_func output_writer)
+		 at_output_write_func output_writer,
+		 at_msg_func msg_func, 
+		 at_address msg_data)
 {
   int llx, lly, urx, ury;
   llx = 0;
@@ -232,7 +235,8 @@ at_splines_write(at_splines_type * splines,
 
   if (!name)
     name = "";
-  (*output_writer) (writeto, name, llx, lly, urx, ury, dpi, *splines);
+  (*output_writer) (writeto, name, llx, lly, urx, ury, dpi, *splines,
+		    msg_func, msg_data);
 }
 
 void 

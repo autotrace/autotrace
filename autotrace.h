@@ -200,14 +200,18 @@ void (* at_msg_func) (at_string msg, at_msg_type msg_type, at_address client_dat
  * IO Handler typedefs
  */
 typedef 
-at_bitmap_type (*at_input_read_func)   (at_string name);
+at_bitmap_type (*at_input_read_func)   (at_string name,
+					at_msg_func msg_func, 
+					at_address msg_data);
 
 typedef 
 int            (*at_output_write_func) (FILE*, at_string name,
 					int llx, int lly, 
 					int urx, int ury,
 					int dpi,
-					at_splines_type shape);
+					at_splines_type shape,
+					at_msg_func msg_func, 
+					at_address msg_data);
 
 /*
  * Progress handler typedefs
@@ -253,7 +257,8 @@ void at_fitting_opts_free(at_fitting_opts_type * opts);
    In both case, you have to call at_bitmap_free when at_bitmap_type * 
    data are no longer needed. */
 at_bitmap_type * at_bitmap_read (at_input_read_func input_reader,
-				 at_string filename);
+				 at_string filename,
+				 at_msg_func msg_func, at_address msg_data);
 at_bitmap_type * at_bitmap_new(unsigned short width,
 			       unsigned short height,
 			       unsigned int planes);
@@ -313,7 +318,8 @@ void at_splines_write(at_splines_type * splines,
 		      FILE * writeto,
 		      char * name,
 		      int dpi,
-		      at_output_write_func output_writer);
+		      at_output_write_func output_writer,
+		      at_msg_func msg_func, at_address msg_data);
 
 void at_splines_free (at_splines_type * splines);
 

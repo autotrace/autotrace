@@ -52,7 +52,8 @@ out_splines (FILE * file, spline_list_array_type shape)
 
 int output_sk_writer(FILE* file, at_string name,
 		     int llx, int lly, int urx, int ury, int dpi,
-		     spline_list_array_type shape)
+		     spline_list_array_type shape,
+		     at_msg_func msg_func, at_address msg_data)
 {
     fputs("##Sketch 1 0\n", file);
     fputs("document()\n", file);

@@ -6,4 +6,5 @@
 #include <stdio.h>
 #include "types.h"
 #include "spline.h"
+#include "exception.h"
 #endif /* not OUTPUT_H */

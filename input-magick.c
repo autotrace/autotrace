@@ -10,7 +10,9 @@
 #include "input-magick.h"
 #include "bitmap.h"
 
-at_bitmap_type magick_load_image(at_string filename)
+at_bitmap_type magick_load_image(at_string filename,
+				 at_msg_func msg_func, 
+				 at_address msg_data)
 {
   Image *image;
   ImageInfo *image_info;

@@ -7,6 +7,7 @@
 #define INPUT_H
 #include "types.h"
 #include "autotrace.h"
+#include "exception.h"
 
 /* Input handler should be implemented with using 
    following functions and macros. */

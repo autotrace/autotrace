@@ -23,8 +23,9 @@
 #define FIG_WHITE	7
 
 static at_real bezpnt(at_real, at_real, at_real, at_real, at_real);
-static void out_fig_splines(FILE *, spline_list_array_type, int, int, int, int);
-static int get_fig_colour(color_type);
+static void out_fig_splines(FILE *, spline_list_array_type, int, int, int, int,
+			    at_exception *);
+static int get_fig_colour(color_type, at_exception *);
 static int fig_col_init();
 
 /* colour information */
@@ -104,7 +105,8 @@ static at_real bezpnt(at_real t, at_real z1, at_real z2, at_real z3, at_real z4)
 }
 
 static void out_fig_splines(FILE * file, spline_list_array_type shape,
-		int llx, int lly, int urx, int ury)
+			    int llx, int lly, int urx, int ury,
+			    at_exception * exp)
 {
     unsigned this_list;
 /*    int fig_colour, fig_depth, i; */
@@ -116,20 +118,18 @@ static void out_fig_splines(FILE * file, spline_list_array_type shape,
 	create palette hash
 */
 
-/*	Need to create hash table for colours	*/
-    spline_colours=(int *)malloc(sizeof(int)*SPLINE_LIST_ARRAY_LENGTH(shape));
-    if (spline_colours == NULL) {
-	FATAL1("OutputFig: can't get array for %d colours\n",SPLINE_LIST_ARRAY_LENGTH(shape));
-    }
+    /*	Need to create hash table for colours	*/
+    XMALLOC(spline_colours, (sizeof(int)*SPLINE_LIST_ARRAY_LENGTH(shape)));
+
     /* Preload the big 8 */
     fig_col_init();
 
     /*	Load the colours from the splines	*/
     for (this_list = 0; this_list < SPLINE_LIST_ARRAY_LENGTH (shape);
-	  this_list++)
+	 this_list++)
     {
 	spline_list_type list = SPLINE_LIST_ARRAY_ELT (shape, this_list);
-	spline_colours[this_list] = get_fig_colour(list.color);
+	spline_colours[this_list] = get_fig_colour(list.color, exp);
     }
     /* Output colours */
     if (LAST_FIG_COLOUR > 32) {
@@ -299,13 +299,16 @@ static void out_fig_splines(FILE * file, spline_list_array_type shape,
 
 int output_fig_writer(FILE* file, at_string name,
 		      int llx, int lly, int urx, int ury, int dpi,
-		     spline_list_array_type shape)
+		      spline_list_array_type shape,
+		      at_msg_func msg_func, 
+		      at_address msg_data)
 {
+  at_exception exp = at_exception_new(msg_func, msg_data);
 /*	Output header	*/
     fprintf(file,"#FIG 3.2\nLandscape\nCenter\nInches\nLetter\n100.00\nSingle\n-2\n1200 2\n");
 
 /*	Output data	*/
-    out_fig_splines(file, shape, llx, lly, urx, ury);
+    out_fig_splines(file, shape, llx, lly, urx, ury, &exp);
     return 0;
 }
 
@@ -372,7 +375,7 @@ static int fig_col_init()
  * If unknown, create a new colour index and return that.
  */
 
-int get_fig_colour(color_type this_colour)
+int get_fig_colour(color_type this_colour, at_exception * exp)
 {
     int hash,i,this_ind;
 
@@ -389,7 +392,9 @@ int get_fig_colour(color_type this_colour)
 	fig_colour_map[LAST_FIG_COLOUR].b = this_colour.b;
 	LAST_FIG_COLOUR++;
 	if (LAST_FIG_COLOUR >= MAX_FIG_COLOUR) {
-		FATAL1("Output-Fig: too many colours: %d",LAST_FIG_COLOUR);
+	  LOG1("Output-Fig: too many colours: %d", LAST_FIG_COLOUR);
+	  at_exception_fatal(exp, "Output-Fig: too many colours");
+	  return 0;	  
 	}
 	return(fig_hash[hash].colour);
     } else {
@@ -408,7 +413,9 @@ figcolloop:
 	    fig_colour_map[LAST_FIG_COLOUR].b = this_colour.b;
 	    LAST_FIG_COLOUR++;
 	    if (LAST_FIG_COLOUR >= MAX_FIG_COLOUR) {
-		FATAL1("Output-Fig: too many colours: %d",LAST_FIG_COLOUR);
+	      LOG1("Output-Fig: too many colours: %d", LAST_FIG_COLOUR);
+	      at_exception_fatal(exp, "Output-Fig: too many colours");
+	      return 0;	  
 	    }
 	    return(fig_colour_map[this_ind].alternate);
 	}
@@ -416,7 +423,9 @@ figcolloop:
 	this_ind = fig_colour_map[this_ind].alternate;
         /* Sanity check ... if colour too big - abort */
 	if (i++ > MAX_FIG_COLOUR) {
-	    FATAL1("Output-Fig: too many colours (loop): %d",i);
+	  LOG1("Output-Fig: too many colours (loop): %d", i);
+	  at_exception_fatal(exp, "Output-Fig: too many colours (loop)");
+	  return 0;
 	}
 	/* Else loop top */
 	goto figcolloop;

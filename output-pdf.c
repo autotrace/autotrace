@@ -270,7 +270,9 @@ out_splines (FILE *pdf_file, spline_list_array_type shape)
 
 int output_pdf_writer(FILE* pdf_file, at_string name,
 		      int llx, int lly, int urx, int ury, int dpi,
-		      spline_list_array_type shape)
+		      spline_list_array_type shape,
+		      at_msg_func msg_func, 
+		      at_address msg_data)
 {
     int result;
 

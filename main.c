@@ -130,7 +130,7 @@ main (int argc, char * argv[])
 
   /* Open the main input file.  */
   if (input_reader != NULL)
-    bitmap = at_bitmap_read(input_reader, input_name);
+    bitmap = at_bitmap_read(input_reader, input_name, exception_handler, NULL);
   else
     FATAL ("Unsupported inputformat\n");
   
@@ -152,7 +152,8 @@ main (int argc, char * argv[])
 		    output_file, 
 		    output_name,
 		    dpi,
-		    output_writer);
+		    output_writer,
+		    exception_handler, NULL);
   
   if (output_file != stdout)
     fclose (output_file);
@@ -539,11 +540,11 @@ exception_handler(at_string msg, at_msg_type type, at_address data)
 {
   if (type == AT_MSG_FATAL)
     {
-      fprintf (stderr, "%s", msg);
+      fprintf (stderr, "%s\n", msg);
       exit (1);
     }
   else if (type == AT_MSG_WARNING)
-    fprintf (stderr, "%s", msg);
+    fprintf (stderr, "%s\n", msg);
   else
     exception_handler("Wrong type of msg", AT_MSG_FATAL, NULL);
 }

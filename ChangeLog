@@ -1,3 +1,35 @@
+2002-01-15  Masatake YAMATO  <yamato@redhat.com>
+
+	* output.[ch]: removed fatal. use exception.
+
+	* main.c (main): Pass a error handler to read
+	and write functions.
+
+	* input.h: Included exception.h.
+
+	* input.c (at_input_get_handler_by_suffix): Don't
+	cast returned value(magick_load_image).
+
+	* input-*.[ch]: removed fatal. use exception.
+
+	* autotrace.[ch] (at_splines_write): took
+	new args, msg_func and msg_data.
+	(at_bitmap_read): Likewise.
+	(at_input_read_func,at_output_write_func): Likewise.
+	
+2002-01-14  Masatake YAMATO  <yamato@redhat.com>
+
+	* main.c (exception_handler): Append newline to
+	output.
+
+	* output-fig.c (out_fig_splines): Use XMALLOC instead of
+	malloc.
+
+2002-01-12  Masatake YAMATO  <yamato@redhat.com>
+
+	* input-bmp.c (ReadImage): Didn't close
+	fd here. Instead closing at bmp_load_image.
+	
 2002-01-05  Masatake YAMATO  <yamato@redhat.com>
 
 	* autotrace.c (at_bitmap_init): XMALLOC->XCALLOC.

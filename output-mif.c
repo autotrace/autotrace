@@ -82,7 +82,8 @@ static void print_coord(FILE* f, at_real x, at_real y)
 ===========================================================================*/
 int output_mif_writer(FILE* ps_file, at_string name,
 		      int llx, int lly, int urx, int ury, int dpi,
-		      spline_list_array_type shape)
+		      spline_list_array_type shape,
+		      at_msg_func msg_func, at_address msg_data)
 {
   unsigned this_list;
   int i;

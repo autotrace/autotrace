@@ -95,37 +95,55 @@ static struct
 
 
 static at_bitmap_type ReadImage (FILE *fp,
-				 struct tga_header *hdr);
+				 struct tga_header *hdr,
+				 at_exception * exp);
 at_bitmap_type
-tga_load_image (at_string filename)
+tga_load_image (at_string filename,
+		at_msg_func msg_func, 
+		at_address msg_data)
 {
   FILE *fp;
   struct tga_header hdr;
 
-  at_bitmap_type image;
-
-  image.bitmap = NULL;
+  at_bitmap_type image = at_bitmap_init(0, 0, 0, 1);
+  at_exception exp = at_exception_new(msg_func, msg_data);
 
   fp = fopen (filename, "rb");
   if (!fp)
-      FATAL1 ("TGA: can't open \"%s\"\n", filename);
+    {
+      LOG1 ("TGA: can't open \"%s\"\n", filename);
+      at_exception_fatal(&exp, "Cannot open input tga file");
+    }
 
   /* Check the footer. */
   if (fseek (fp, 0L - (sizeof (tga_footer)), SEEK_END)
       || fread (&tga_footer, sizeof (tga_footer), 1, fp) != 1)
-      FATAL1 ("TGA: Cannot read footer from \"%s\"\n", filename);
+    {
+      LOG1 ("TGA: Cannot read footer from \"%s\"\n", filename);
+      at_exception_fatal(&exp, "TGA: Cannot read footer");
+      goto cleanup;
+    }
 
   /* Check the signature. */
 
   if (fseek (fp, 0, SEEK_SET) ||
       fread (&hdr, sizeof (hdr), 1, fp) != 1)
-      FATAL1 ("TGA: Cannot read header from \"%s\"\n", filename);
+    {
+      LOG1 ("TGA: Cannot read header from \"%s\"\n", filename);
+      at_exception_fatal(&exp, "TGA: Cannot read header");
+      goto cleanup;
+    }
 
   /* Skip the image ID field. */
   if (hdr.idLength && fseek (fp, hdr.idLength, SEEK_CUR))
-      FATAL1 ("TGA: Cannot skip ID field in \"%s\"\n", filename);
+    {
+      LOG1 ("TGA: Cannot skip ID field in \"%s\"\n", filename);
+      at_exception_fatal(&exp, "TGA: Cannot skip ID field");
+      goto cleanup;
+    }
 
-  image = ReadImage (fp, &hdr);
+  image = ReadImage (fp, &hdr, &exp);
+ cleanup:  
   fclose (fp);
   return image;
 }
@@ -242,9 +260,10 @@ return nelems;
 
 static at_bitmap_type
 ReadImage (FILE              *fp, 
-           struct tga_header *hdr)
+           struct tga_header *hdr,
+	   at_exception * exp)
 {
-  at_bitmap_type image;
+  at_bitmap_type image = at_bitmap_init(0, 0, 0, 1);
   unsigned char *buffer;
   unsigned char *alphas;
 
@@ -280,21 +299,25 @@ ReadImage (FILE              *fp,
 
   if (abpp + pbpp > bpp)
     {
-      WARNING3 ("TGA: %d bit image, %d bit alpha is greater than %d total bits per pixel\n",
-              pbpp, abpp, bpp);
+      LOG3 ("TGA: %d bit image, %d bit alpha is greater than %d total bits per pixel\n",
+	    pbpp, abpp, bpp);
+      at_exception_warning (exp, "TGA: alpha bit is too great");
 
       /* Assume that alpha bits were set incorrectly. */
       abpp = bpp - pbpp;
-      WARNING1 ("TGA: reducing to %d bit alpha\n", abpp);
+      LOG1("TGA: reducing to %d bit alpha\n", abpp);
+      at_exception_warning (exp, "TGA: alpha bit is reduced");
     }
   else if (abpp + pbpp < bpp)
     {
-      WARNING3 ("TGA: %d bit image, %d bit alpha is less than %d total bits per pixel\n",
-              pbpp, abpp, bpp);
+      LOG3 ("TGA: %d bit image, %d bit alpha is less than %d total bits per pixel\n",
+	    pbpp, abpp, bpp);
+      at_exception_warning(exp, "TGA: alpha bit is too little");
 
       /* Again, assume that alpha bits were set incorrectly. */
       abpp = bpp - pbpp;
-      WARNING1 ("TGA: increasing to %d bit alpha\n", abpp);
+      LOG1 ("TGA: increasing to %d bit alpha\n", abpp);
+      at_exception_warning (exp, "TGA: alpha bit is increased");
     }
 
   rle = 0;
@@ -314,8 +337,11 @@ ReadImage (FILE              *fp,
 
 
       if (bpp != 8)
-	    /* We can only cope with 8-bit indices. */
-          FATAL ("TGA: index sizes other than 8 bits are unimplemented\n");
+	{ /* We can only cope with 8-bit indices. */
+          LOG ("TGA: index sizes other than 8 bits are unimplemented\n");
+	  at_exception_fatal(exp, "TGA: index sizes other than 8 bits are unimplemented");
+	  return image;
+	}
 
       if (abpp)
         dtype = INDEXEDA_IMAGE;
@@ -346,25 +372,43 @@ ReadImage (FILE              *fp,
       break;
 
     default:
-      FATAL1 ("TGA: unrecognized image type %d\n", hdr->imageType);
-}
+      {
+	LOG1 ("TGA: unrecognized image type %d\n", hdr->imageType);
+	at_exception_fatal (exp, "TGA: unrecognized image type");
+	return image;
+      }
+    }
 
   if ((abpp && abpp != 8) ||
       ((itype == RGB || itype == INDEXED) && pbpp != 24) ||
       (itype == GRAY && pbpp != 8))
+    {
       /* FIXME: We haven't implemented bit-packed fields yet. */
-      FATAL ("TGA: channel sizes other than 8 bits are unimplemented\n");
+      LOG ("TGA: channel sizes other than 8 bits are unimplemented\n");
+      at_exception_fatal (exp, 
+			  "TGA: channel sizes other than 8 bits are unimplemented");
+      return image;
+    }
 
   /* Check that we have a color map only when we need it. */
   if (itype == INDEXED)
     {
       if (hdr->colorMapType != 1)
-	    FATAL1 ("TGA: indexed image has invalid color map type %d\n",
-                  hdr->colorMapType);
+	{
+	  LOG1 ("TGA: indexed image has invalid color map type %d\n",
+		hdr->colorMapType);
+	  at_exception_fatal (exp,
+			      "TGA: indexed image has invalid color map type");
+	  return image;
+	}
     }
   else if (hdr->colorMapType != 0)
-      FATAL1 ("TGA: non-indexed image has invalid color map type %d\n",
-              hdr->colorMapType);
+    {
+      LOG1("TGA: non-indexed image has invalid color map type %d\n",
+	   hdr->colorMapType);
+      at_exception_fatal (exp, "TGA: non-indexed image has invalid color map type");
+      return image;
+    }
 
   alphas = 0;
   nalphas = 0;
@@ -377,8 +421,12 @@ ReadImage (FILE              *fp,
       index = (hdr->colorMapIndexHi << 8) | hdr->colorMapIndexLo;
       length = (hdr->colorMapLengthHi << 8) | hdr->colorMapLengthLo;
 
-	  if (length == 0)
-        FATAL1 ("TGA: invalid color map length %d\n", length);
+      if (length == 0)
+	{
+	  LOG1 ("TGA: invalid color map length %d\n", length);
+	  at_exception_fatal(exp, "TGA: invalid color map length");
+	  return image;
+	}
 
       pelbytes = ROUNDUP_DIVIDE (hdr->colorMapSize, 8);
       colors = length + index;
@@ -389,7 +437,11 @@ ReadImage (FILE              *fp,
 
       /* Read in the rest of the colormap. */
       if (fread (cmap + (index * pelbytes), pelbytes, length, fp) != length)
-        FATAL1 ("TGA: error reading colormap (ftell == %ld)\n", ftell (fp));
+	{
+	  LOG1 ("TGA: error reading colormap (ftell == %ld)\n", ftell (fp));
+	  at_exception_fatal(exp, "TGA: error reading colormap");
+	  return image;
+	}
 
       /* If we have an alpha channel, then create a mapping to the alpha
          values. */
@@ -454,7 +506,8 @@ ReadImage (FILE              *fp,
       if (!badread)
         {
           /* Probably premature end of file. */
-          WARNING1 ("TGA: error reading (ftell == %ld)\n", ftell (fp));
+	  LOG1 ("TGA: error reading (ftell == %ld)\n", ftell (fp));
+	  at_exception_warning(exp, "TGA: eroor reading file");
           badread = 1;
         }
  
@@ -531,7 +584,10 @@ ReadImage (FILE              *fp,
     }
 
   if (fgetc (fp) != EOF)
-    WARNING ("TGA: too much input data, ignoring extra...\n");
+    {
+      LOG ("TGA: too much input data, ignoring extra...\n");
+      at_exception_warning(exp, "TGA: too much input data, ignoring extra datum");
+    }
 
   free (buffer);
 

@@ -136,7 +136,9 @@ out_splines (FILE * epd_file, spline_list_array_type shape)
 
 int output_epd_writer(FILE* epd_file, at_string name,
 		      int llx, int lly, int urx, int ury, int dpi,
-		      spline_list_array_type shape)
+		      spline_list_array_type shape,
+		      at_msg_func msg_func, 
+		      at_address msg_data)
 {
     int result;
 

@@ -49,7 +49,8 @@ static int         ReadColorMap  (FILE *,
 				   unsigned char[256][3],
 				   int,
 				   int,
-				   int *);
+				   int *,
+				  at_exception *);
 static unsigned char        *ReadImage     (FILE *,
 				   int,
 				   int,
@@ -60,24 +61,36 @@ static unsigned char        *ReadImage     (FILE *,
 				   int);
 
 at_bitmap_type
-bmp_load_image (at_string filename)
+bmp_load_image (at_string filename,
+		at_msg_func msg_func, 
+		at_address msg_data)
 {
   FILE *fd;
   unsigned char buffer[64];
   int ColormapSize, rowbytes, Maps, Grey;
   unsigned char ColorMap[256][3];
-  at_bitmap_type image;
+  at_bitmap_type image = at_bitmap_init(0, 0, 0, 1);
   unsigned char * image_storage;
-
+  at_exception exp = at_exception_new(msg_func, msg_data);
+  
   fd = fopen (filename, "rb");
 
   if (!fd)
-      FATAL1 ("Can't open \"%s\"\n", filename);
+    {
+      LOG1 ("Can't open \"%s\"\n", filename);
+      at_exception_fatal(&exp, "bmp: cannot open input file");
+      return image;
+    }
+
 
   /* It is a File. Now is it a Bitmap? Read the shortest possible header.*/
 
   if (!ReadOK(fd, buffer, 18) || (strncmp((const char *)buffer,"BM",2)))
-      FATAL ("Not a valid BMP file %s\n");
+    {
+      LOG1 ("Not a valid BMP file %s\n", filename);
+      at_exception_fatal(&exp, "bmp: invalid input file");
+      goto cleanup;
+    }
 
   /* bring them to the right byteorder. Not too nice, but it should work */
 
@@ -92,22 +105,31 @@ bmp_load_image (at_string filename)
   if (Bitmap_File_Head.biSize == 12) /* OS/2 1.x ? */
     {
       if (!ReadOK (fd, buffer, 8))
-          FATAL ("Error reading BMP file header\n");
+	{
+	  LOG ("Error reading BMP file header\n");
+	  at_exception_fatal(&exp, "Error reading BMP file header");
+	  goto cleanup;
+	}
 
       Bitmap_Head.biWidth    = ToS (&buffer[0x00]);   /* 12 */
       Bitmap_Head.biHeight   = ToS (&buffer[0x02]);   /* 14 */
       Bitmap_Head.biPlanes   = ToS (&buffer[0x04]);   /* 16 */
       Bitmap_Head.biBitCnt   = ToS (&buffer[0x06]);   /* 18 */
-	  Bitmap_Head.biCompr = 0;
-	  Bitmap_Head.biSizeIm = 0;
-	  Bitmap_Head.biXPels = Bitmap_Head.biYPels = 0;
-	  Bitmap_Head.biClrUsed = 0;
+      Bitmap_Head.biCompr = 0;
+      Bitmap_Head.biSizeIm = 0;
+      Bitmap_Head.biXPels = Bitmap_Head.biYPels = 0;
+      Bitmap_Head.biClrUsed = 0;
       Maps = 3;
     }
    else if (Bitmap_File_Head.biSize == 40) /* Windows 3.x */
     {
       if (!ReadOK (fd, buffer, Bitmap_File_Head.biSize - 4))
-          FATAL ("Error reading BMP file header\n");
+	{
+	  LOG ("Error reading BMP file header\n");
+	  at_exception_fatal(&exp, "Error reading BMP file header");
+	  goto cleanup;
+	}
+         
 
       Bitmap_Head.biWidth   =ToL (&buffer[0x00]);       /* 12 */
       Bitmap_Head.biHeight  =ToL (&buffer[0x04]);       /* 16 */
@@ -125,8 +147,12 @@ bmp_load_image (at_string filename)
   else if (Bitmap_File_Head.biSize <= 64) /* Probably OS/2 2.x */
     {
       if (!ReadOK (fd, buffer, Bitmap_File_Head.biSize - 4))
-          FATAL ("Error reading BMP file header\n");
-        
+	{
+	  LOG ("Error reading BMP file header\n");
+	  at_exception_fatal(&exp, "Error reading BMP file header");
+	  goto cleanup;
+	}
+      
       Bitmap_Head.biWidth   =ToL (&buffer[0x00]);       /* 12 */
       Bitmap_Head.biHeight  =ToL (&buffer[0x04]);       /* 16 */
       Bitmap_Head.biPlanes  =ToS (&buffer[0x08]);       /* 1A */
@@ -141,7 +167,11 @@ bmp_load_image (at_string filename)
       Maps = 3;
     }
   else
-      FATAL ("Error reading BMP file header\n");
+    {
+      LOG ("Error reading BMP file header\n");
+      at_exception_fatal(&exp, "Error reading BMP file header");
+      goto cleanup;
+    }
 
   /* Valid options 1, 4, 8, 16, 24, 32 */
   /* 16 is awful, we should probably shoot whoever invented it */
@@ -155,15 +185,15 @@ bmp_load_image (at_string filename)
 
   /* Sanity checks */
 
-  if (Bitmap_Head.biHeight == 0 || Bitmap_Head.biWidth == 0)
-      FATAL ("Error reading BMP file header");
-
-  if (Bitmap_Head.biPlanes != 1)
-      FATAL ("Error reading BMP file header");
-
-  if (ColormapSize > 256 || Bitmap_Head.biClrUsed > 256)
-      FATAL ("Error reading BMP file header");
-
+  if ((Bitmap_Head.biHeight == 0 || Bitmap_Head.biWidth == 0)
+      || (Bitmap_Head.biPlanes != 1)
+      || (ColormapSize > 256 || Bitmap_Head.biClrUsed > 256))
+    {
+      LOG ("Error reading BMP file header\n");
+      at_exception_fatal(&exp, "Error reading BMP file header");
+      goto cleanup;
+    }
+     
   /* Windows and OS/2 declare filler so that rows are a multiple of
    * word length (32 bits == 4 bytes)
    */
@@ -177,9 +207,9 @@ bmp_load_image (at_string filename)
 #endif
 
   /* Get the Colormap */
-
-  if (ReadColorMap (fd, ColorMap, ColormapSize, Maps, &Grey) == -1)
-      FATAL ("Cannot read the colormap");
+  ReadColorMap (fd, ColorMap, ColormapSize, Maps, &Grey, &exp);
+  if (at_exception_got_fatal(&exp))
+    goto cleanup;
 
 #ifdef DEBUG
   printf("Colormap read\n");
@@ -197,6 +227,8 @@ bmp_load_image (at_string filename)
 			 (unsigned short) Bitmap_Head.biWidth,
 			 (unsigned short) Bitmap_Head.biHeight,
 			 Grey ? 1 : 3);
+ cleanup:  
+  fclose (fd);
   return (image);
 }
 
@@ -205,7 +237,8 @@ ReadColorMap (FILE   *fd,
 	      unsigned char  buffer[256][3],
 	      int    number,
 	      int    size,
-	      int   *grey)
+	      int   *grey,
+	      at_exception * exp)
 {
   int i;
   unsigned char rgb[4];
@@ -214,8 +247,12 @@ ReadColorMap (FILE   *fd,
   for (i = 0; i < number ; i++)
     {
       if (!ReadOK (fd, rgb, size))
-          FATAL ("Bad colormap\n");
-
+	{
+	  LOG ("Bad colormap\n");
+	  at_exception_fatal (exp, "Bad colormap");
+	  goto cleanup;
+	}
+          
       /* Bitmap save the colors in another order! But change only once! */
 
       buffer[i][0] = rgb[2];
@@ -223,6 +260,7 @@ ReadColorMap (FILE   *fd,
       buffer[i][2] = rgb[0];
       *grey = ((*grey) && (rgb[0]==rgb[1]) && (rgb[1]==rgb[2]));
     }
+ cleanup:
   return 0;
 }
 
@@ -418,7 +456,6 @@ ReadImage (FILE   *fd,
 	;
   }
 
-  fclose (fd);
   if (bpp <= 8)
     {
       unsigned char *temp2, *temp3;
