@@ -208,6 +208,7 @@ void (* at_msg_func) (at_string msg, at_msg_type msg_type, at_address client_dat
 /*
  * IO Handler typedefs
  */
+
 typedef 
 at_bitmap_type (*at_input_read_func)   (at_string name,
 					at_input_opts_type * opts,
@@ -256,6 +257,7 @@ void at_fitting_opts_free(at_fitting_opts_type * opts);
  * TODO: internal data access, copy
  * --------------------------------------------------------------------- */
 at_input_opts_type * at_input_opts_new(void);
+at_input_opts_type * at_input_opts_copy(at_input_opts_type * original);
 void at_input_opts_free(at_input_opts_type * opts);
 
 /* --------------------------------------------------------------------- *

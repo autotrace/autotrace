@@ -77,6 +77,16 @@ at_input_opts_new(void)
   return opts;
 }
 
+at_input_opts_type *
+at_input_opts_copy(at_input_opts_type * original)
+{
+  at_input_opts_type * opts;
+  opts = at_input_opts_new();
+  if (original->background_color)
+    opts->background_color = at_color_copy(original->background_color);
+  return opts;
+}
+
 void
 at_input_opts_free(at_input_opts_type * opts)
 {
@@ -91,9 +101,14 @@ at_bitmap_read (at_input_read_func input_reader,
 		at_input_opts_type * opts,
 		at_msg_func msg_func, at_address msg_data)
 {
+  at_bool new_opts = false;
   at_bitmap_type * bitmap;
   XMALLOC(bitmap, sizeof(at_bitmap_type)); 
+  if (opts == NULL)
+    opts = at_input_opts_new();
   *bitmap = (*input_reader) (filename, opts, msg_func, msg_data);
+  if (new_opts)
+    at_input_opts_free(opts);
   return bitmap;
 }
 
