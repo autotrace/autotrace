@@ -20,16 +20,7 @@
 #ifndef OUTPUT_PSTOEDIT_H
 #define OUTPUT_PSTOEDIT_H 
 
-/* These should be in pstoedit.h */
-#include <pstoedll.h>
-int pstoedit_plainC(int argc,
-		    const char * const argv[],
-		    const char * const psinterpreter  /* if 0, then pstoedit will look for one using whichpi() */
-		    );
-struct DriverDescription_S* getPstoeditDriverInfo_plainC(void);
-void pstoedit_checkversion (unsigned int callersversion);
-
-
+#include <pstoedit/pstoedit.h>
 #include "output.h"
 
 int output_pstoedit_writer (FILE* file, at_string name,

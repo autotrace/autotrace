@@ -1,3 +1,6 @@
+What's new in AutoTrace 0.32.0?
+- added library level pstoedit support
+
 What's new in AutoTrace 0.31.0?
 - corrected output when background-color is used
 - changing the license of sources files input and output 

@@ -1,4 +1,23 @@
+2002-07-01  Masatake YAMATO  <yamato@redhat.com>
+
+	* output-pstoedit.h: Include pstoedit/pstoedit.h.
+
+	* Makefile.am: improved pstoedit supports.
+
+	* autotrace-config.af: Refer LIBPSTOEDIT_LIBS.
+
+	* autotrace.pc.in (Libs): Likewise.
+
 2002-06-30  Masatake YAMATO  <yamato@redhat.com>
+
+	* output.c (at_*_get_handler_by_suffix): Return 
+	NULL if suffix is NULL pointer or an empty string.
+
+	* input.c (at_input_list_new): Pass both NULL and "*"
+	to GetMagickInfo. Suggested by valhalla@imagemagick.org
+	on magick-users@imagemagick.org.
+
+	* Makefile.am (EXTRA_DIST): Added autotrace-config.in.
 
 	* autotrace.c: Remove make_string.
 

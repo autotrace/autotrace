@@ -74,6 +74,10 @@ at_input_read_func
 at_input_get_handler_by_suffix (at_string suffix)
 {
   struct input_format_entry * format;
+  
+  if (!suffix || suffix[0] == '\0')
+    return NULL;
+
   for (format = input_formats ; format->name; format++)
     {
       if (strgicmp (suffix, format->name))
@@ -116,7 +120,10 @@ at_input_list_new (void)
 #if (MagickLibVersion < 0x0534)
   magickinfo = info = GetMagickInfo(NULL);
 #else
-  magickinfo = info = GetMagickInfo(NULL, &exception);
+  info = GetMagickInfo(NULL, &exception);
+  if (info && !info->next)
+    info = GetMagickInfo("*", &exception);
+  magickinfo = info;
 #endif
 #endif
   count = count_int;

@@ -248,14 +248,12 @@ dnl
 HAVE_LIBPSTOEDIT=no
 LIBPSTOEDIT_CFLAGS=
 LIBPSTOEDIT_LIBS=
-dnl LIBPSTOEDIT_CFLAGS=-I/home/jet/src/pstoedit_3.31/src
-dnl LIBPSTOEDIT_LDFLAGS="-L/home/jet/src/pstoedit_3.31/src -lpstoedit"
 AC_ARG_WITH(pstoedit,
-[  --with-pstoedit link with pstoedit library
-  --without-pstoedit link without pstoedit library(default)],,with_pstoedit=$HAVE_LIBPSTOEDIT)
+[  --with-pstoedit link with pstoedit library(default)
+  --without-pstoedit link without pstoedit library],with_pstoedit=$HAVE_LIBPSTOEDIT)
 
 if test x$with_pstoedit != xno; then
-   PKG_CHECK_MODULES(LIBPSTOEDIT, libpstoedit >= 3.32,
+   PKG_CHECK_MODULES(LIBPSTOEDIT, pstoedit >= 3.32.0,
 				  HAVE_LIBPSTOEDIT=yes, 
 				  AC_MSG_WARN([
 *** Cannot find libpstoedit. ***

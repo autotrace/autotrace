@@ -91,6 +91,10 @@ at_output_write_func
 at_output_get_handler_by_suffix(at_string suffix)
 {
   struct output_format_entry * format;
+
+  if (!suffix || suffix[0] == '\0')
+    return NULL;
+
   for (format = output_formats ; format->name; format++)
     {
       if (strgicmp (suffix, format->name))
@@ -114,7 +118,7 @@ at_output_list_new (void)
 
   struct output_format_entry * entry;
 #if HAVE_LIBPSTOEDIT
-  const struct DriverDescription_S* driver_description;
+  struct DriverDescription_S* driver_description;
 #endif /* HAVE_LIBPSTOEDIT */
   
   for (entry = output_formats; entry->name; entry++)

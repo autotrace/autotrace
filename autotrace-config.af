@@ -16,4 +16,4 @@ AF_ARG_VERSION(@VERSION@)
 #dummy because this should always be selected
 AF_LIBRARY(autotrace)
 AF_DEF_CFLAGS([-I@includedir@])
-AF_DEF_LIBS([-L@libdir@ -lautotrace @LIBPNG_LDFLAGS@ @MAGICK_LDFLAGS@ @LIBSWF_LDFLAGS@])
+AF_DEF_LIBS([-L@libdir@ -lautotrace @LIBPNG_LDFLAGS@ @MAGICK_LDFLAGS@ @LIBSWF_LDFLAGS@ @LIBPSTOEDIT_LIBS@])
