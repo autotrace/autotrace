@@ -6,4 +6,6 @@ What's new in AutoTrace 0.27
 - Now works with new versions of ImageMagick
 - Swf output(via libming. You can get libming from
 	     http://www.opaque.net/ming/)
-- The dxf output never worked.
+- The dxf output was removed because it never worked.
+- Speed up and simplification of the fitting routine
+

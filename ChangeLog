@@ -1,7 +1,14 @@
 2001-03-08  Masatake YAMATO  <yamato@redhat.com>
 
-	* NEWS: Write the place where you can libming.
+	Applied a patch from Martin.
+	Message-ID: <18838.984036759@www23.gmx.net>
+	
+	* NEWS: Updated.
 
+2001-03-08  Masatake YAMATO  <yamato@redhat.com>
+
+	* NEWS: Write the place where you can libming.
+	
 	* output-swf.h: Use triangle brackets instead of
 	double quotes to include ming.h.
 
