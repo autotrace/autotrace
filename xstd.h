@@ -9,6 +9,7 @@
 
 #include "types.h"
 #include "message.h"
+#include <assert.h>
 #include <stdio.h>
 #include <string.h>
 
@@ -16,44 +17,36 @@
  * XMEM
  */
 #ifndef __cplusplus
-#define XMALLOC(new_mem, size)									\
-do												\
-  {												\
-    new_mem = (at_address) malloc (size);								\
-												\
-    if (new_mem == NULL)									\
-      FATAL3 ("malloc: request for %u bytes failed in %s line %d",				\
-        (size), __FILE__, (unsigned) __LINE__);							\
+#define XMALLOC(new_mem, size)			\
+do						\
+  {						\
+    new_mem = (at_address) malloc (size);	\
+    assert(new_mem);				\
   } while (0)
 
 
-#define XCALLOC(new_mem, size)									\
-do												\
-  {												\
-    new_mem = (at_address) calloc (size, 1);							\
-												\
-    if (new_mem == NULL)									\
-      FATAL3 ("calloc: request for %u bytes failed in %s line %d",				\
-        (size), __FILE__, (unsigned) __LINE__);							\
+#define XCALLOC(new_mem, size)			\
+do						\
+  {						\
+    new_mem = (at_address) calloc (size, 1);	\
+    assert(new_mem);				\
   } while (0)
 
 
-#define XREALLOC(old_ptr, size)									\
-do 												\
-  {												\
-    at_address new_mem;										\
-												\
-    if (old_ptr == NULL)									\
-      XMALLOC (new_mem, size);									\
-    else											\
-      {												\
-        new_mem = (at_address) realloc (old_ptr, size);						\
-	if (new_mem == NULL)									\
-          FATAL4 ("realloc: request for %lx to be %u bytes failed in %s line %d",		\
-            (unsigned long) (old_ptr), (size), __FILE__, (unsigned) __LINE__);			\
-      }												\
-       												\
-    old_ptr = new_mem;										\
+#define XREALLOC(old_ptr, size)				\
+do							\
+  {							\
+    at_address new_mem;					\
+							\
+    if (old_ptr == NULL)				\
+      XMALLOC (new_mem, size);				\
+    else						\
+      {							\
+        new_mem = (at_address) realloc (old_ptr, size);	\
+        assert(new_mem);				\
+      }							\
+							\
+    old_ptr = new_mem;					\
 } while (0)
 
 

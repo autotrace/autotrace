@@ -135,7 +135,7 @@ at_bitmap_type pnm_load_image (at_string filename,
   at_exception exp = at_exception_new(msg_func, msg_data);
 
   /* open the file */
-  fd = xfopen (filename, "rb");
+  fd = fopen (filename, "rb");
 
   if (fd == NULL)
     {
@@ -249,7 +249,7 @@ at_bitmap_type pnm_load_image (at_string filename,
   free (pnminfo);
 
   /* close the file */
-  xfclose (fd, filename);
+  fclose (fd);
   
   return (bitmap);
 }

@@ -1,5 +1,22 @@
 2002-01-23  Masatake YAMATO  <yamato@redhat.com>
 
+	* input-pnm.c (pnm_load_image): Use
+	fopen instead of xfopen. Use fclose instead
+	of xfclose.
+
+2001-12-24  Martin Weber <martweb@gmx.net>
+
+	* vc++6.0.txt: Removed.
+	Message-ID: <3C4C7155.934E0C5D@gmx.net>.
+
+	* autotrace.vcproj: Added exception.[ch].
+
+	* autotrace.dsp: Likewise.
+
+	Message-ID: <3C4C70AF.60741033@gmx.net>.
+	
+2002-01-23  Masatake YAMATO  <yamato@redhat.com>
+
 	* main.c (USAGE1::dpi): Write about emf.
 	Suggested by Stewart C. Russell <stewart@ref.collins.co.uk>.
 

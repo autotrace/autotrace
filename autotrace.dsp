@@ -145,6 +145,14 @@ SOURCE=".\epsilon-equal.h"
 # End Source File
 # Begin Source File
 
+SOURCE=.\exception.c
+# End Source File
+# Begin Source File
+
+SOURCE=.\exception.h
+# End Source File
+# Begin Source File
+
 SOURCE=.\filename.c
 # End Source File
 # Begin Source File

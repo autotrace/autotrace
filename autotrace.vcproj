@@ -164,6 +164,12 @@
 		<File
 			RelativePath=".\epsilon-equal.h">
 		</File>
+ 		<File
+			RelativePath="exception.c">
+		</File>
+		<File
+			RelativePath="exception.h">
+		</File>
 		<File
 			RelativePath=".\filename.c">
 		</File>
