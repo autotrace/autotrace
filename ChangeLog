@@ -1,3 +1,11 @@
+2002-02-04  Masatake YAMATO  <yamato@redhat.com>
+
+	* main.c (dot_printer): Rewrite.
+	(main): print an input file name and newline when 
+	report_progress is true.
+	(main::progress_stat): Make int.
+	(dot_printer_max_column, dot_printer_char): New defs.
+
 2002-01-31  Masatake YAMATO  <yamato@redhat.com>
 
 	* Makefile.am (man_MANS): Added autotrace.1.

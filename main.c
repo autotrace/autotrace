@@ -49,6 +49,8 @@ static int dpi = AT_DEFAULT_DPI;
 
 /* Report tracing status in real time (--report-progress) */
 static at_bool report_progress = false;
+#define dot_printer_max_column 50
+#define dot_printer_char '|'
 static void dot_printer(at_real percentage, at_address client_data);
 
 static char * read_command_line (int, char * [], at_fitting_opts_type *);
@@ -76,7 +78,7 @@ main (int argc, char * argv[])
   FILE *dump_file;
 
   at_progress_func progress_reporter = NULL;
-  at_real progress_stat = 0.0;
+  int progress_stat = 0;
 
   fitting_opts = at_fitting_opts_new ();
 
@@ -84,9 +86,6 @@ main (int argc, char * argv[])
 
   fitting_opts->centerline = centerline;
   fitting_opts->remove_adj_corners = remove_adj_corners;
-
-  if (report_progress)
-    progress_reporter = dot_printer;
 
   if (strgicmp (output_name, input_name))
     FATAL("Input and output file may not be the same\n");
@@ -143,6 +142,12 @@ main (int argc, char * argv[])
       fclose(dump_file);
     }
   
+  if (report_progress)
+    {
+      progress_reporter = dot_printer;
+      fprintf(stderr, "%-15s", input_name);
+    };
+    
   splines = at_splines_new_full(bitmap, fitting_opts,
 				exception_handler, NULL,
 				progress_reporter, &progress_stat,
@@ -161,6 +166,9 @@ main (int argc, char * argv[])
   at_splines_free (splines); 
   at_bitmap_free (bitmap);
   at_fitting_opts_free(fitting_opts);
+
+  if (report_progress)
+    fputs("\n", stderr);
 
   return 0;
 }
@@ -494,22 +502,16 @@ output_list_formats(FILE* file)
 static void
 dot_printer(at_real percentage, at_address client_data)
 {
-  at_real last = *(at_real *)client_data;
-  if (((percentage - last) >= 0.01 || percentage == 0.0)
-      && (percentage < 0.99))
+  int * current = (int *)client_data;
+  float unit 	= 1.0 / (float)(dot_printer_max_column) ;
+  int maximum = percentage / unit;
+ 
+  while (*current < maximum)
     {
-      if (percentage < 0.33)
-	putc ('o', stderr);
-      else if (percentage < 0.66)
-	putc ('0', stderr);
-      else
-	putc ('O', stderr);
-      *(at_real *)client_data = percentage;
-    } 
-  else if (percentage == 1.0)
-    fputs (" [done]\n", stderr);
+      fputc(dot_printer_char, stderr);
+      (*current)++;
+    }
 }
-
 
 static void
 dump (at_bitmap_type * bitmap, FILE * fp)
