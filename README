@@ -1,0 +1,113 @@
+This program converts bitmaps to vector graphics.
+Here you can find more information:
+http://homepages.go.com/~martweb/AutoTrace.htm
+
+Programmers wanted!!!
+
+Martin Weber: martweb@gmx.net
+
+You can divide the whole thing into two parts, the library part and the main
+program. The program was tested using Linux, HP UX, Solaris, Windows98,
+Windows NT, Windows 2000 and OS/2 4.0. It compiles with GCC,
+Borland C++ Builder, Visual C++ and many other compilers.
+In version 0.20 Macromedia Shockwave Flash support was added. Because it is
+not available in sourcecode you have to download the libswf library at
+http://reality.sgi.com/grafica/flash
+The library is available for Linux, FreeBSD and Irix. on other platforms you
+have to uncomment the swf support.
+The program can be used under the GPL license.
+
+library part:
+bitmap.c
+bitmap.h
+color.c
+color.h
+curve.c
+curve.h
+edge.c
+edge.h
+epsilon-equal.c
+epsilon-equal.h
+fit.c
+fit.h
+logreport.c
+logreport.h
+median.c
+median.h
+message.h
+pxl-outline.c
+pxl-outline.h
+quantize.h
+safe-free.c
+safe-free.h
+spline.c
+spline.h
+types.h
+usefull.h
+vector.c
+vector.h
+xmem.h
+dllmain.c (Windows only)
+
+main part:
+atou.c
+atou.h
+bitmap.h
+cmdline.h
+concat3.c
+concat3.h
+curve.h
+extend-fname.c
+extend-fname.h
+find-suffix.c
+find-suffix.h
+fit.h
+getopt.c
+getopt.h
+getopt1.c
+image-header.h
+input-bmp.c
+input-bmp.h
+input-pbm.c
+input-pbm.h
+libpbm.h
+libpbm1.c
+libpbm2.c
+libpbm4.c
+logreport.h
+main.c
+main.h
+make-suffix.c
+make-suffix.h
+message.h
+output-dxf.c
+output-dxf.h
+output-dxf12.c
+output-dxf12.h
+output-epsf.c
+output-epsf.h
+output-fig.c
+output-fig.h
+output-p2e.c
+output-p2e.h
+putput-sk.c
+output-sk.h
+output-svg.c
+output-svg.h
+output-swf.c
+output-swf.h
+output.c
+output.h
+pbm.h
+pbmplus.h
+pxl-outline.h
+remove-suffx.c
+remove-suffx.h
+spline.h
+substring.c
+substring.h
+swf.h
+types.h
+usefull.h
+
+/* version 0.24a */

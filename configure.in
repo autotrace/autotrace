@@ -1,0 +1,26 @@
+# configure.in for frontline
+#
+# Author: Masatake YAMATO (yamato@redhat.com)
+#
+AC_INIT(fit.c)
+AM_INIT_AUTOMAKE(autotrace, 0.201+frontline, no-define)
+
+AC_PROG_CC
+AC_PROG_CPP
+AC_PROG_RANLIB
+
+AC_CHECK_PROG(GTK_DPS_CONFIG, gtkDPS-config, gtkDPS-config, "")
+
+if test "x$GTK_DPS_CONFIG" = "xgtkDPS-config" ; then
+	AM_PATH_GTK_DPS()
+	AC_DEFINE(FRONTLINE)
+else
+	AC_MSG_WARN(Cannot find GtkDPS; GUI frontend is omitted)
+	GTK_DPS_CFLAGS=""
+	GTK_DPS_LDFLAGS=""
+	AC_SUBST(GTK_DPS_CFLAGS)
+	AC_SUBST(GTK_DPS_LDFLAGS)
+fi
+AM_CONDITIONAL(FRONTLINE, test x$GTK_DPS_CONFIG = xgtkDPS-config)
+
+AC_OUTPUT(Makefile)

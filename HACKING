@@ -1,0 +1,10 @@
+			     -*- text -*-
+		    Note for autotrace developers
+
+* CVS
+
+See https://sourceforge.net/cvs/?group_id=11789 
+
+The module name is autotrace.  After checking out the codes, invoke
+autogen.sh in the distribution. That generates configure.in,
+Makefile.in and so on. autogen.sh invokes automake, autoconf, aclocal.
