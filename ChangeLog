@@ -1,3 +1,26 @@
+2000-10-11  Masatake YAMATO  <yamato@redhat.com>
+
+	* main.c: Include input.h only.
+	(input_extension): Comment out unused variable.
+	(set_*_input_format): Removed. Use input_get_handler* instead.
+	(INPUT_SUFFIX_LIST): Move to input.h.
+	(list-output-formats): A option renamed from list-formats.
+	(list-input-formats): New option.
+
+	* configure.in(AM_INIT_AUTOMAKE): Define package and version.
+
+	* Makefile.am (autotrace_SOURCES): Added input.c and .h.
+
+	* output.h (OUTPUT_SUFFIX_LIST): Move definition from
+	main.c.
+
+	* version.c(version_string): Append VERSION defined 
+	in configure.in.
+
+	* input.[hc]: New file.
+	  input.[hc] is based on a patch from "MenTaLguY"
+	  <mental@rydia.net>.	
+
 2000-10-04  Masatake YAMATO  <yamato@redhat.com>
 
 	* output-emf.c: Revised by 

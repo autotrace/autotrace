@@ -6,12 +6,7 @@
 #include "cmdline.h"
 #include "logreport.h"
 #include "getopt.h"
-#include "input-pnm.h"
-#include "input-bmp.h"
-#include "input-tga.h"
-#if HAVE_MAGICK
-#include "input-magick.h"
-#endif /* HAVE_MAGICK */
+#include "input.h"
 
 #include "fit.h"
 #include "main.h"
@@ -37,8 +32,8 @@ bitmap_type (*load_image) (string) = NULL;
    returns "bar.baz".  */
 static string at_basename (string name);
 
-/* The suffix for the image file.  */
-static string input_extension;
+/* The suffix for the image file.  
+static string input_extension; */
 
 /* The name of the file we're going to write.  (-output-file) */
 static string output_name = "";
@@ -56,16 +51,7 @@ static boolean logging = false;
 static fitting_opts_type fitting_opts;
 
 static void set_input_format (string);
-static void set_pbm_input_format (void);
-static void set_pnm_input_format (void);
-static void set_pgm_input_format (void);
-static void set_ppm_input_format (void);
-static void set_bmp_input_format (void);
-static void set_tga_input_format (void);
-
-#if HAVE_MAGICK
-static void set_magick_input_format (void);
-#endif /* HAVE_MAGICK */
+static int set_input_format_by_suffix (string);
 
 static string read_command_line (int, string []);
 
@@ -153,14 +139,6 @@ main (int argc, string argv[])
 /* This is defined in version.c.  */
 extern string version_string;
 
-#if HAVE_MAGICK
-#define MAGICK_SUFFIX "magick, "
-#else 
-#define MAGICK_SUFFIX ""
-#endif /* HAVE_MAGICK */
-
-#define INPUT_SUFFIX_LIST MAGICK_SUFFIX "tga, pbm, pnm, pgm, ppm or bmp"
-#define OUTPUT_SUFFIX_LIST "emf, eps, ai, sk, p2e, svg, swf, dxf, dxf12 and fig"
 
 #define USAGE1 "Options:\
 <input_name> should be a filename, " INPUT_SUFFIX_LIST ".\n"\
@@ -200,7 +178,8 @@ help: print this message.\n"
 line-threshold <real>: if the spline is not more than this far away\n\
   from the straight line defined by its endpoints,\n\
   then output a straight line; default is 1.\n\
-list-formats: print a list of support output formats to stderr.\n\
+list-output-formats: print a list of support output formats to stderr.\n\
+list-input-formats:  print a list of support input formats to stderr.\n\
 log: write detailed progress reports to <input_name>.log.\n\
 output-file <filename>: write to <filename>\n\
 output-format <format>: use format <format> for the output file\n"\
@@ -246,7 +225,8 @@ read_command_line (int argc, string argv[])
         { "input-format",		1, 0, 0 },
         { "line-reversion-threshold",	1, 0, 0 },
         { "line-threshold",             1, 0, 0 },
-        { "list-formats",               0, 0, 0 },
+        { "list-output-formats",               0, 0, 0 },
+        { "list-input-formats",               0, 0, 0 },
         { "log",                        0, (int *) &logging, 1 },
         { "output-file",		1, 0, 0 },
         { "output-format",		1, 0, 0 },
@@ -312,32 +292,14 @@ read_command_line (int argc, string argv[])
         {
           fprintf (stderr, "Usage: %s [options] <input_name>.\n", argv[0]);
           fprintf (stderr, USAGE1);
-		  fprintf (stderr, USAGE2);
+	  fprintf (stderr, USAGE2);
           exit (0);
         }
 
       else if (ARGUMENT_IS ("input-format"))
         {
-	  if (STREQ ("pbm", optarg))
-	    set_pbm_input_format ();
-	  else if (STREQ ("pnm", optarg))
-	    set_pnm_input_format ();
-	  else if (STREQ ("pgm", optarg))
-	    set_pgm_input_format ();
-	  else if (STREQ ("ppm", optarg))
-	    set_ppm_input_format ();
-	  else if (STREQ ("bmp", optarg))
-	    set_bmp_input_format ();
-	  else if (STREQ ("tga", optarg))
-	    set_tga_input_format ();
-#if HAVE_MAGICK
-	  else if (STREQ ("magick", optarg))
-	    set_magick_input_format ();
-#endif /* HAVE_MAGICK */
-	  else
-	    FATAL2("autotrace: Unknown input format `%s'; expected one of %s", 
-		   INPUT_SUFFIX_LIST,
-		   optarg);
+	  if (!set_input_format_by_suffix (optarg))
+	      FATAL1 ("Output format %s not supported\n", optarg);
         }
 
       else if (ARGUMENT_IS ("line-reversion-threshold"))
@@ -346,10 +308,16 @@ read_command_line (int argc, string argv[])
       else if (ARGUMENT_IS ("line-threshold"))
         fitting_opts.line_threshold = atof (optarg);
 
-      else if (ARGUMENT_IS ("list-formats"))
+      else if (ARGUMENT_IS ("list-output-formats"))
         {
 	  fprintf (stderr, "Supported output formats:\n");
 	  output_list_formats (stderr);
+	  exit (0);
+        }
+      else if (ARGUMENT_IS ("list-input-formats"))
+        {
+	  fprintf (stderr, "Supported input formats:\n");
+	  input_list_formats (stderr);
 	  exit (0);
         }
 
@@ -396,108 +364,15 @@ read_command_line (int argc, string argv[])
 static void
 set_input_format (string filename)
 {
-  /* Try to guess based on FILENAME.  */
-  if ((input_extension = find_suffix (filename)) == NULL)
-    input_extension = "";
-
-  if (STREQ (input_extension, "pnm"))
-    set_pnm_input_format ();
-
-  else if (STREQ (input_extension, "pbm"))
-    set_pbm_input_format ();
-    
-  else if (STREQ (input_extension, "pgm"))
-    set_pgm_input_format ();
-    
-  else if (STREQ (input_extension, "ppm"))
-    set_ppm_input_format ();
-
-  else if (STREQ (input_extension, "bmp"))
-    set_bmp_input_format ();
-  
-  else if (STREQ (input_extension, "tga"))
-    set_tga_input_format ();
-#if HAVE_MAGICK
-  else
-    set_magick_input_format ();
-#else   
-  else /* Can't guess it; quit.  */
-    {
-      fprintf (stderr, "You must supply an input format.\n");
-      fprintf (stderr, "(I can't guess from the filename `%s'.)\n", filename);
-      fprintf (stderr, "For more information, use ``-help''.\n");
-      exit (1);
-    }
-#endif /* HAVE_MAGICK */
+  load_image = input_get_handler (filename);
 }
 
-
-/* Set up for reading a PBM file.  */
-
-static void
-set_pbm_input_format (void)
+static int
+set_input_format_by_suffix (string suffix)
 {
-  load_image = pnm_load_image;
-  input_extension = "pbm";
+  load_image = input_get_handler_by_suffix (suffix);
+  return load_image?1:0;
 }
-
-
-/* Set up for reading an PNM file.  */
-
-static void
-set_pnm_input_format (void)
-{
-  load_image = pnm_load_image;
-  input_extension = "pnm";
-}
-
-
-/* Set up for reading an PGM file.  */
-
-static void
-set_pgm_input_format (void)
-{
-  load_image = pnm_load_image;
-  input_extension = "pgm";
-}
-
-
-/* Set up for reading an PPM file.  */
-
-static void
-set_ppm_input_format (void)
-{
-  load_image = pnm_load_image;
-  input_extension = "ppm";
-}
-
-/* Set up for reading an BMP file.  */
-
-static void
-set_bmp_input_format (void)
-{
-  load_image = ReadBMP;
-  input_extension = "bmp";
-}
-
-/* Set up for reading an TGA file. */
-
-static void
-set_tga_input_format (void)
-{
-  load_image = ReadTGA;
-  input_extension = "tga";
-}
-
-#if HAVE_MAGICK
-/* Set up for reading via ImageMagick */
-static void
-set_magick_input_format (void)
-{
-  load_image = magick_load_image;
-  input_extension = "any";
-}
-#endif /* HAVE_MAGICK */
 
 /* Return NAME with any leading path stripped off.  This returns a
    pointer into NAME.  For example, `basename ("/foo/bar.baz")'

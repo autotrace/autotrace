@@ -3,7 +3,8 @@
 # Author: Masatake YAMATO (yamato@redhat.com)
 #
 AC_INIT(fit.c)
-AM_INIT_AUTOMAKE(autotrace, 0.24a, no-define)
+
+AM_INIT_AUTOMAKE(autotrace, "0.24a")
 
 AC_PROG_CC
 AC_PROG_CPP
@@ -36,6 +37,18 @@ if test "x$MAGICK_CONFIG" = "xMagick-config" ; then
 	fi
 fi
 AM_CONDITIONAL(HAVE_MAGICK, test x$HAVE_MAGICK = xyes)
+
+dnl
+dnl PNG
+dnl
+dnl AC_CHECK_LIB(png, png_create_struct,
+dnl 		[LIBS="$LIBS -lpng -lz"
+dnl		 HAVE_LIBPNG=no
+dnl                 AC_DEFINE(HAVE_LIBPNG)
+dnl		],
+dnl		[HAVE_LIBPNG=no]
+dnl		,-lz)
+dnl AM_CONDITIONAL(HAVE_LIBPNG, test x$HAVE_LIBPNG = xyes)
 
 dnl
 dnl Vender's cc(not gcc)

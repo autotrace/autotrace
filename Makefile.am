@@ -1,5 +1,5 @@
 EXTRA_DIST=swf.h output-swf.c output-swf.h  \
-input-magick.h input-magick.c
+input-magick.h input-magick.c # input-png.c input-png.h 
 
 AUTOMAKE_OPTIONS = foreign no-dependencies
 
@@ -11,10 +11,17 @@ else
 input_magick_src=
 endif
 
+#if HAVE_LIBPNG
+#input_png_src=input-png.c input-png.h 
+#else
+#input_png_src=
+#endif
+
 input_src=input-pnm.c input-pnm.h \
 input-bmp.c input-bmp.h \
 input-tga.c input-tga.h \
 $(input_magick_src)
+#$(input_png_src) 
 
 output_src=output-eps.c output-eps.h \
 output-fig.c  output-fig.h \
@@ -64,8 +71,10 @@ autotrace_SOURCES=$(input_src) ${output_src}	\
 		extend-fname.h 			\
 		version.c 			\
 		output.c 			\
+		input.c 			\
 		xfile.h 			\
 		output.h 			\
+		input.h 			\
 		xfopen.c 			\
 		xfseek.c 			\
 		xmem.h 				\

@@ -8,6 +8,8 @@
 #include "types.h"
 #include "spline.h"
 
+#define OUTPUT_SUFFIX_LIST "emf, eps, ai, sk, p2e, svg, swf, dxf, dxf12 and fig"
+
 typedef int (*output_write)(FILE*, string name,
 			    int llx, int lly, int urx, int ury,
 			    spline_list_array_type shape);
