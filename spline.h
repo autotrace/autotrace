@@ -82,19 +82,9 @@ typedef at_spline_list_array_type spline_list_array_type;
 #define SPLINE_LIST_ARRAY_ELT      AT_SPLINE_LIST_ARRAY_ELT_VALUE
 #define LAST_SPLINE_LIST_ARRAY_ELT LAST_SPLINE_LIST_ELT
 
-#ifndef _IMPORTING
-/* The usual routines.  */
 extern spline_list_array_type new_spline_list_array (void);
 extern void append_spline_list (spline_list_array_type *, spline_list_type);
-#endif
-
-#ifdef _EXPORTING
-extern void __declspec(dllexport) __stdcall free_spline_list_array (spline_list_array_type *);
-#elif _IMPORTING
-extern void __declspec(dllimport) __stdcall free_spline_list_array (spline_list_array_type *);
-#else
 extern void free_spline_list_array (spline_list_array_type *);
-#endif
 
 #endif /* not SPLINE_H */
 

@@ -165,13 +165,8 @@ new_spline_list_array (void)
 
 /* Free the storage in a spline list array.  We don't
    want to free the list if it is empty.  */
-#ifdef _EXPORTING
-__declspec(dllexport) void
-__stdcall free_spline_list_array (spline_list_array_type *spline_list_array)
-#else
 void
 free_spline_list_array (spline_list_array_type *spline_list_array)
-#endif
 {
   unsigned this_list;
 
