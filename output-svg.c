@@ -17,8 +17,10 @@ out_splines (FILE * file, spline_list_array_type shape, int height)
 	spline_list_type list = SPLINE_LIST_ARRAY_ELT (shape, this_list);
 	spline_type first = SPLINE_LIST_ELT (list, 0);
 
-	fprintf(file, "<path style=\"fill:#%02x%02x%02x; stroke:none\" d=\"",
-		list.color.r, list.color.g, list.color.b);
+	fprintf(file, "<path style=\"%s:#%02x%02x%02x; %s:none\" d=\"",
+		(at_centerline || list.open) ? "stroke" : "fill",
+		list.color.r, list.color.g, list.color.b,
+		(at_centerline || list.open) ? "fill" : "stroke");
 	fprintf(file, "M%g %g",
 		START_POINT(first).x, height - START_POINT(first).y);
       
@@ -40,7 +42,7 @@ out_splines (FILE * file, spline_list_array_type shape, int height)
 			END_POINT(s).x, height - END_POINT(s).y);
 	    }
         }
-	fputs("z", file);
+	if (!(at_centerline || list.open)) fputs("z", file);
 	fputs("\"/>\n", file);
     }
 }
@@ -60,5 +62,3 @@ int output_svg_writer(FILE* file, string name,
     
     return 0;
 }
-
-/* version 0.17 */

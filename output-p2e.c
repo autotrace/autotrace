@@ -136,7 +136,7 @@ out_splines (FILE * ps_file, spline_list_array_type shape)
 	    (real)list.color.g/255.0,(real)list.color.b/255.0);
 	}
 
-      OUT_LINE ("% filledpath");
+      OUT_LINE ((at_centerline || list.open) ? "% strokedpath" : "% filledpath");
       OUT_LINE ("newpath");
       OUT_COMMAND2 (START_POINT (first).x, START_POINT (first).y, "moveto");
 
@@ -153,8 +153,8 @@ out_splines (FILE * ps_file, spline_list_array_type shape)
                           END_POINT (s).x, END_POINT (s).y,
                           "curveto");
         }
-      OUT_LINE (" closepath");
-      OUT_LINE ("fill");
+      if (!list.open) OUT_LINE (" closepath");
+      OUT_LINE ((at_centerline || list.open) ? "stroke" : "fill");
       last_color = list.color;
     }
 }

@@ -1,3 +1,13 @@
+2001-02-25  Masatake YAMATO  <yamato@redhat.com>
+
+	Applied two patches from Martin.
+
+	* output-p2e.c: Now supports centerline.
+
+ 	* output-sk.c: Likewise.
+
+	* output-svg.c: Likewise.	
+
 2001-02-25 Ian MacPhedran <Ian_MacPhedran@engr.USask.Ca>
 
 	* output-fig.c: Updated.
