@@ -3,7 +3,6 @@
    See README for the reference. */
 
 #include "fit.h"
-#include "usefull.h"
 #include "message.h"
 #include "logreport.h"
 #include "spline.h"
@@ -24,7 +23,10 @@
 #include <string.h>
 #include <assert.h>
 
-
+#define SQUARE(x) ((x) * (x))
+#define CUBE(x) ((x) * (x) * (x))
+#define ROUND(x) ((int) ((int) (x) + .5 * SIGN (x)))
+#define SIGN(x) ((x) > 0 ? 1 : (x) < 0 ? -1 : 0)
 
 /* We need to manipulate lists of array indices.  */
 
@@ -1969,5 +1971,3 @@ distance (real_coordinate_type p1, real_coordinate_type p2)
 {
   return (real) hypot (p1.x - p2.x, p1.y - p2.y);
 }
-
-/* version 0.24 */

@@ -1,3 +1,22 @@
+2001-03-07  Masatake YAMATO  <yamato@redhat.com>
+
+	Applied patches from Martin.
+	Message-ID: <3AA11A4B.BD319064@gmx.net>.
+	
+	* autotrace.dsp: Removed usefull.h and median.h.
+
+	* Makefile.am (libautotrace_a_SOURCES): Remove median.h.
+
+	* types.h: Removed unnecessary #ifdef __cplusplus.
+
+ 	* usefull.h: File is removed.
+
+	* Makefile.am (noinst_HEADERS): usefull.h is removed.
+
+ 	* fit.c: Likewise.
+
+ 	* output-er.c: Likewise.
+
 2001-03-02  Masatake YAMATO  <yamato@redhat.com>
 
 	* pxl-outline.c: Put file name on the head of file.

@@ -1,6 +1,5 @@
 /* output-er.c: utility routines for Elastic Reality shape file output */
 
-#include "usefull.h"
 #include "types.h"
 #include "spline.h"
 #include "output-er.h"

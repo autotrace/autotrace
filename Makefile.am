@@ -57,7 +57,6 @@ libautotrace_a_SOURCES = version.c               \
                 epsilon-equal.h 		\
 	        thin-image.h                    \
 	        quantize.h                      \
-		median.h                        \
 		image-header.h    		\
 		fit.h  				\
 		bitmap.h 			\
@@ -80,7 +79,6 @@ autotraceinclude_HEADERS=\
 noinst_HEADERS = filename.h                     \
 		xstd.h                          \
 		logreport.h			\
-		usefull.h                       \
 		message.h                       \
 		input.h 			\
 		output.h 			

@@ -225,10 +225,6 @@ SOURCE=.\median.c
 # End Source File
 # Begin Source File
 
-SOURCE=.\median.h
-# End Source File
-# Begin Source File
-
 SOURCE=.\message.h
 # End Source File
 # Begin Source File
@@ -326,10 +322,6 @@ SOURCE=".\thin-image.h"
 # Begin Source File
 
 SOURCE=.\types.h
-# End Source File
-# Begin Source File
-
-SOURCE=.\usefull.h
 # End Source File
 # Begin Source File
 
