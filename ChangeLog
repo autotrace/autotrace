@@ -1,3 +1,19 @@
+2002-04-15  Masatake YAMATO  <yamato@redhat.com>
+
+	* COPYING.LIB: New file.
+
+	* despeckle.*: Change the license to LGPL.
+	
+	* input*.*: Likewise.
+
+	* median.c: Likewise.
+
+	* output-*.*: Likewise.
+
+	* quantize.h: Likewise.
+
+	* thin-image.*: Likewise.
+
 2002-04-03  Martin Weber <martweb@gmx.net>
 
 	* exception.[ch] (at_exception_fatal, at_exception_warning): 

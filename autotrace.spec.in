@@ -4,7 +4,7 @@ Version: @VERSION@
 Release: 1
 Url: http://autotrace.sourceforge.net
 Source: %{name}-%{version}.tar.gz
-Copyright: GPL
+Copyright: GPL and LGPL
 Group: Applications/Graphics
 BuildRoot: %{_tmppath}/%{name}-root
 
@@ -46,6 +46,9 @@ rm -rf $RPM_BUILD_ROOT
 /usr/bin/autotrace
 
 %changelog
+* Tue Apr 16 13:28:35 2002 Masatake<yamato@redhat.com>
+- Added LGPL to Copyright
+
 * Wed Apr  3 2002 Masatake YAMATO<yamato@redhat.com>
 - autotrace.1 -> autotrace.1.gz
 
