@@ -15,7 +15,7 @@ AUTOMAKE_OPTIONS = foreign no-dependencies
 
 autotraceincludedir=$(includedir)/autotrace
 lib_LTLIBRARIES=libautotrace.la
-bin_PROGRAMS=autotrace all
+bin_PROGRAMS=autotrace
 
 if HAVE_MAGICK
 input_magick_src=input-magick.h input-magick.c
@@ -98,6 +98,7 @@ libautotrace_la_SOURCES =\
 		strgicmp.c			\
 		image-proc.c			\
 		image-proc.h			\
+		module.c			\
 		intl.h
 
 autotraceinclude_HEADERS=\
@@ -150,7 +151,6 @@ pkgconfig_DATA= autotrace.pc
 
 bin_SCRIPTS=autotrace-config
 BUILT_SOURCES=autotrace-config
-all_SOURCES = 
 autotrace-config: autotrace-config.in
 
 autotrace-config.in: autotrace-config.af
