@@ -27,9 +27,6 @@
 extern "C" {
 #endif /* __cplusplus */
 
-#ifndef _
-#define _(x) x
-#endif
 #ifndef N_
 #define N_(x) x
 #endif /* Not def: N_ */

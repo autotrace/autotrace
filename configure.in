@@ -9,7 +9,7 @@ AC_INIT(fit.c)
 # 
 AUTOTRACE_MAJOR_VERSION=0
 AUTOTRACE_MINOR_VERSION=31
-AUTOTRACE_MICRO_VERSION=0
+AUTOTRACE_MICRO_VERSION=1
 AUTOTRACE_VERSION=${AUTOTRACE_MAJOR_VERSION}.${AUTOTRACE_MINOR_VERSION}.${AUTOTRACE_MICRO_VERSION}
 AC_DEFINE_UNQUOTED(AUTOTRACE_VERSION,"$AUTOTRACE_VERSION")
 AC_SUBST(AUTOTRACE_VERSION)
@@ -355,3 +355,13 @@ dnl fi
 
 AC_OUTPUT([Makefile autotrace-config autotrace.pc autotrace.spec], 
 [chmod a+x autotrace-config])
+
+echo "
+
+Configuration:
+	imagemagick output support:	$HAVE_MAGICK
+	libpng output support:		$HAVE_LIBPNG
+	swf output support by ming:	$HAVE_LIBSWF
+	pstoedit output support:	$HAVE_LIBPSTOEDIT
+
+"

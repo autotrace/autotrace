@@ -1,5 +1,13 @@
 2002-11-09  Masatake YAMATO  <yamato@redhat.com>
 
+	* configure.in: version 0.31.1.
+	echo building configuration at the
+	end of configure.
+
+2002-11-09  Masatake YAMATO  <yamato@redhat.com>
+
+	* autotrace.h: Don't define _().
+
 	* configure.in: LT_CURRENT=3.
 	See my change at 2002-10-31.
 
