@@ -160,10 +160,7 @@ out_splines (FILE * ps_file, spline_list_array_type shape)
       if (this_list == 0 || !COLOR_EQUAL(list.color, last_color))
         {
           if (this_list > 0)
-            {
-              OUT_LINE ((shape.centerline || list.open) ? "S" : "f");
               OUT_LINE("*U");
-            }
           c = k = 255 - list.color.r;
           m = 255 - list.color.g;
           if (m < k)
@@ -196,12 +193,11 @@ out_splines (FILE * ps_file, spline_list_array_type shape)
                           END_POINT (s).x, END_POINT (s).y,
                           "c");
         }
+      if (SPLINE_LIST_ARRAY_LENGTH(shape) > 0)
+          OUT_LINE ((shape.centerline || list.open) ? "S" : "f");
     }
   if (SPLINE_LIST_ARRAY_LENGTH(shape) > 0)
-    {
-        OUT_LINE ((shape.centerline || list.open) ? "S" : "f");
         OUT_LINE("*U");
-    }
 }
 
 
