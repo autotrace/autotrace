@@ -1,3 +1,8 @@
+2002-10-31  Masatake YAMATO  <yamato@redhat.com>
+
+	* configure.in: added -lm to the macro
+	that checks libpng. Suggested by jlm <jsado@attbi.com>.
+
 2002-10-29  Martin Weber <martweb@gmx.net>
 
 	* pxl-outline.c (is_valid_dir): used

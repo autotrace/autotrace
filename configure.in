@@ -173,7 +173,7 @@ AC_CHECK_LIB(z, gzsetparams,
 dnl Test for libpng
 HAVE_LIBPNG_STAGE1=no
 AC_CHECK_LIB(png, png_get_image_width,
-	HAVE_LIBPNG_STAGE1=yes ,,-lz)
+	HAVE_LIBPNG_STAGE1=yes ,,-lz -lm)
 
 HAVE_LIBPNG=no
 if test "x$HAVE_LIBPNG_STAGE1" = "xyes" ; then
