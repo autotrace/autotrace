@@ -23,12 +23,12 @@
 #include <pstoedit/pstoedit.h>
 #include "output.h"
 
+at_output_write_func output_pstoedit_get_writer(const at_string);
 int output_pstoedit_writer (FILE* file, at_string name,
 			    int llx, int lly, int urx, int ury, int dpi,
 			    at_spline_list_array_type shape,
 			    at_msg_func msg_func, 
 			    at_address msg_data);
-void output_pstoedit_set_last_suffix (const char * suffix);
-at_bool output_pstoedit_is_unusable_writer(at_string name);
+at_bool output_pstoedit_is_unusable_writer(const at_string name);
 
 #endif /* Not def: OUTPUTPSTOEDIT_H */

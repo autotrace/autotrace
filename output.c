@@ -106,8 +106,7 @@ at_output_get_handler_by_suffix(at_string suffix)
         }
     }
 #if HAVE_LIBPSTOEDIT
-  output_pstoedit_set_last_suffix (suffix);
-  return output_pstoedit_writer;
+  return output_pstoedit_get_writer(suffix);
 #else
   return NULL;
 #endif /* HAVE_LIBPSTOEDIT */

@@ -49,9 +49,24 @@
 #define BO_DEBUG 0
 #define TMPDIR "/tmp/"
 
-static char * output_pstoedit_suffix = NULL;
-static void remove_tmpfile (at_string tmpfile_name);
-static char * get_symbolicname(char * suffix);
+static at_string output_pstoedit_suffix = NULL;
+static void remove_tmpfile (const at_string tmpfile_name);
+static const at_string get_symbolicname(const at_string suffix);
+static at_bool set_last_suffix (const at_string suffix);
+
+at_output_write_func
+output_pstoedit_get_writer(const at_string suffix)
+{
+  pstoedit_checkversion(pstoeditdllversion);
+    
+  if (get_symbolicname(suffix))
+    {
+      set_last_suffix (suffix);
+      return output_pstoedit_writer;
+    }
+  else
+    return NULL;
+}
 
 /* This output routine uses two temporary files to keep the
    both the command line syntax of autotrace and the 
@@ -199,7 +214,7 @@ remove_tmpfile (at_string tmpfile_name)
 }
 
 at_bool
-output_pstoedit_is_unusable_writer(at_string name)
+output_pstoedit_is_unusable_writer(const at_string name)
 {
   if (0 == strcmp(name, "sam")
       || 0 == strcmp(name, "dbg")
@@ -209,8 +224,8 @@ output_pstoedit_is_unusable_writer(at_string name)
     return false;
 }
 
-void
-output_pstoedit_set_last_suffix (const char * suffix)
+static at_bool
+set_last_suffix (const at_string suffix)
 {
   if (output_pstoedit_suffix)
     free(output_pstoedit_suffix);
@@ -221,10 +236,14 @@ output_pstoedit_set_last_suffix (const char * suffix)
    If SUFFIX itself a symbolicname, just return SUFFIX.
    If SUFFIX doesn't have any associated symbolicname and
    it is not a suffix registered in pstoedit, reutrn NULL. */
-static char *
-get_symbolicname(char * suffix)
+static const at_string
+get_symbolicname(const at_string suffix)
 {
   struct DriverDescription_S* dd_tmp;
+  
+  if (!suffix)
+    return NULL;
+  
   dd_tmp = getPstoeditDriverInfo_plainC();
   if (dd_tmp)
     {

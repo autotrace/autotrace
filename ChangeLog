@@ -1,4 +1,15 @@
+2002-09-06  Masatake YAMATO  <yamato@redhat.com>
+
+	* main.c: removed unnecessary '\n' in FATAL*.
+	
+	* output.c (at_output_get_handler_by_suffix): used
+	output_pstoedit_get_writer.
+
 2002-09-05  Masatake YAMATO  <yamato@redhat.com>
+
+	* output-pstoedit.[ch]: Use at_string.
+	(output_pstoedit_get_writer): New function.
+	(output_pstoedit_set_last_suffix): deleted.
 
 	* output-pstoedit.c (get_symbolicname): New function.
 	(remove_tmpfile): Print tmp file names if BO_DEBUG is 1.

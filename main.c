@@ -95,7 +95,7 @@ main (int argc, char * argv[])
     FATAL("Input and output file may not be the same\n");
 
   if ((input_rootname = remove_suffix (get_basename (input_name))) == NULL)
-	FATAL1 ("Not a valid inputname %s\n", input_name);
+	FATAL1 ("Not a valid inputname %s", input_name);
 
   if (logging)
     log_file = xfopen (logfile_name = extend_filename (input_rootname, "log"), "w");
@@ -122,7 +122,7 @@ main (int argc, char * argv[])
     {
       output_writer = at_output_get_handler_by_suffix(DEFAULT_FORMAT);
       if (output_writer == NULL)
-	FATAL1("Default format %s not supported\n", DEFAULT_FORMAT);
+	FATAL1("Default format %s not supported", DEFAULT_FORMAT);
     }
 
   /* Open output file */
@@ -135,7 +135,7 @@ main (int argc, char * argv[])
   if (input_reader != NULL)
     bitmap = at_bitmap_read(input_reader, input_name, exception_handler, NULL);
   else
-    FATAL ("Unsupported inputformat\n");
+    FATAL ("Unsupported inputformat");
 
   if (report_progress)
     {
@@ -381,7 +381,7 @@ read_command_line (int argc, char * argv[],
 	    output_writer = at_output_get_handler_by_suffix (optarg);
 	    if (output_writer == NULL)
 	      {
-		    FATAL1 ("Output format %s not supported\n", optarg);
+		    FATAL1 ("Output format %s not supported", optarg);
 	      }
         }
 
