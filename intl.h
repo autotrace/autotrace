@@ -1,7 +1,9 @@
 #ifndef __INTL_H__
 #define __INTL_H__
 
+#ifdef HAVE_CONFIG_H
 #include "config.h"
+#endif /* Def: HAVE_CONFIG_H */
 
 #ifdef ENABLE_NLS
 #include <libintl.h>

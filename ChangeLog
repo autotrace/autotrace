@@ -1,3 +1,8 @@
+2003-01-10  Masatake YAMATO  <yamato@redhat.com>
+
+	* intl.h: include config.h only if HAVE_CONFIG_H
+	is defined. suggested by Martin.
+
 2003-01-08  Martin Weber  <martweb@gmx.net>
 
 	 * input.c, output.c, autotrace.h: compiler warnings for new ImageMagick
