@@ -660,12 +660,12 @@ despeckle_iteration (/* in */     int    level,
 {
   unsigned char *mask;
   int    x, y;
-  int    i;
   int    current_size;
   int    tightness;
 
-  for (i = 0, current_size = 1; i < level; i++, current_size *= 2)
-    tightness = (int) (256 / (1.0 + adaptive_tightness * level));
+  /* Size doubles each iteration level, so current_size = 2^level */
+  current_size = 1 << level;
+  tightness = (int) (256 / (1.0 + adaptive_tightness * level));
 
   mask = (unsigned char *) calloc (width * height, sizeof(unsigned char));
   for (y = 0; y < height; y++)
@@ -718,11 +718,11 @@ despeckle_iteration_8 (/* in */   int    level,
 {
   unsigned char *mask;
   int    x, y;
-  int    i;
   int    current_size;
   int    tightness;
 
-  for (i = 0, current_size = 1; i < level; i++, current_size *= 2)
+  /* Size doubles each iteration level, so current_size = 2^level */
+  current_size = 1 << level;
   tightness = (int) (256 / (1.0 + adaptive_tightness * level));
 
   mask = (unsigned char *) calloc (width * height, sizeof(unsigned char));

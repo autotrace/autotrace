@@ -1,3 +1,7 @@
+2002-11-16  Martin Weber <martweb@gmx.net>
+
+	* despeckle.c: removed unnecessary for loop.
+
 2002-11-16  Masatake YAMATO  <yamato@redhat.com>
 
 	* Makefile.am (libautotrace_la_SOURCES): added intl.h
