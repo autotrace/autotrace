@@ -1,3 +1,7 @@
+2002-03-15  Masatake YAMATO  <yamato@redhat.com>
+
+	* configure.in: Added AM_MAINTAINER_MODE.
+
 2002-03-13  Martin Weber <martweb@gmx.net>
 
 	(Logged by Masatake.)
