@@ -855,7 +855,7 @@ void quantize(bitmap_type *image, long ncolors, const color_type *bgColor,
       { 
 	if (*iQuant == NULL) 
 	  { 
-    	quantobj = initialize_median_cut(ncolors-1); 
+    	quantobj = initialize_median_cut(ncolors); 
 	    median_cut_pass1_rgb  (quantobj, image, bgColor); 
 	    *iQuant = quantobj; 
 	   } 
@@ -864,7 +864,7 @@ void quantize(bitmap_type *image, long ncolors, const color_type *bgColor,
       } 
     else 
       {
-        quantobj = initialize_median_cut(ncolors-1);
+        quantobj = initialize_median_cut(ncolors);
 	median_cut_pass1_rgb  (quantobj, image, bgColor); 
       } 
 		 
