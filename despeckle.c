@@ -53,6 +53,29 @@ calc_error (unsigned char *color1,
 }
 
 
+/* Calculate Error - compute the error between two colors
+ *
+ *   Input parameters:
+ *     Two 8 bit gray scale colors
+ *
+ *   Returns:
+ *     The squared error between the two colors
+ */
+
+static int
+calc_error_8 (unsigned char *color1,
+            unsigned char *color2)
+{
+  int the_error;
+  int temp;
+
+  temp = color1[0] - color2[0];
+  the_error = temp * temp;
+
+  return the_error;
+}
+
+
 /* Find Size - Find the number of adjacent pixels of the same color
  *
  * Input Parameters:
@@ -107,6 +130,60 @@ find_size (/* in */     unsigned char *index,
     {
       count += find_size (index, x, y - 1, width, height, bitmap, mask);
       count += find_size (index, x, y + 1, width, height, bitmap, mask);
+    }
+
+  return count;
+}
+
+
+/* Find Size - Find the number of adjacent pixels of the same color
+ *
+ * Input Parameters:
+ *   An 8 bit image, the current location inside the image, and the palette
+ *   index of the color we are looking for
+ *
+ * Modified Parameters:
+ *   A mask array used to prevent backtracking over already counted pixels
+ *
+ * Returns:
+ *   Number of adjacent pixels found having the same color
+ */
+
+static int
+find_size_8 (/* in */   unsigned char *index,
+           /* in */     int    x,
+           /* in */     int    y,
+           /* in */     int    width,
+           /* in */     int    height,
+           /* in */     unsigned char *bitmap,
+           /* in/out */ unsigned char *mask)
+{
+  int count;
+  int x1, x2;
+
+  if (y < 0 || y >= height ||
+    mask[y * width + x] == 1 ||
+    bitmap[(y * width + x)    ] != index[0])
+      return 0;
+
+  for (x1 = x; x1 >= 0 &&
+	bitmap[(y * width + x1)    ] == index[0] &&
+	mask[y * width + x] != 1; x1--) ;
+  x1++;
+  
+  for (x2 = x; x2 < width &&
+	bitmap[(y * width + x2)    ] == index[0] &&
+	mask[y * width + x] != 1; x2++) ;
+  x2--;
+
+  count = x2 - x1 + 1;
+  for (x = x1; x <= x2; x++)
+    mask[y * width + x] = 1;
+
+  for (x = x1; x <= x2; x++)
+    {
+      count += find_size_8 (index, x, y - 1, width, height, bitmap, mask);
+      count += find_size_8 (index, x, y + 1, width, height, bitmap, mask);
     }
 
   return count;
@@ -208,6 +285,97 @@ find_most_similar_neighbor (/* in */     unsigned char *index,
 }
 
 
+/* Find Most Similar Neighbor - Given a position in an 8bit bitmap and a color
+ * index, traverse over a blob of adjacent pixels having the same value.
+ * Return the color index of the neighbor pixel that has the most similar
+ * color.
+ *
+ * Input parameters:
+ *   8 bit bitmap, the current location inside the image,
+ *   and the color index of the blob
+ *
+ * Modified parameters:
+ *   Mask used to prevent backtracking
+ *
+ * Output parameters:
+ *   Closest index != index and the error between the two colors squared
+ */
+
+static void
+find_most_similar_neighbor_8 (/* in */   unsigned char *index,
+                            /* in/out */ unsigned char **closest_index,
+                            /* in/out */ int   *error_amt,
+                            /* in */     int    x,
+                            /* in */     int    y,
+                            /* in */     int    width,
+                            /* in */     int    height,
+                            /* in */     unsigned char *bitmap,
+                            /* in/out */ unsigned char *mask)
+{
+  int x1, x2;
+  int temp_error;
+  unsigned char *value, *temp;
+
+  if (y < 0 || y >= height || mask[y * width + x] == 2)
+    return;
+
+  temp = &bitmap[(y * width + x)];
+
+  assert (closest_index != NULL);
+
+  if (temp[0] != index[0])
+    {
+      value = temp;
+
+      temp_error = calc_error_8 (index, value);
+
+      if (*closest_index == NULL || temp_error < *error_amt)
+        *closest_index = value, *error_amt = temp_error;
+
+      return;
+    }
+
+  for (x1 = x; x1 >= 0 &&
+	bitmap[(y * width + x1)    ] == index[0]; x1--) ;
+  x1++;
+
+  for (x2 = x; x2 < width &&
+	bitmap[(y * width + x2)    ] == index[0]; x2++) ;
+  x2--;
+
+  if (x1 > 0)
+    {
+      value = &bitmap[(y * width + x1 - 1)    ];
+
+      temp_error = calc_error_8 (index, value);
+
+      if (*closest_index == NULL || temp_error < *error_amt)
+        *closest_index = value, *error_amt = temp_error;
+    }
+
+  if (x2 < width - 1)
+    {
+      value = &bitmap[(y * width + x2 + 1)    ];
+
+      temp_error = calc_error_8 (index, value);
+
+      if (*closest_index == NULL || temp_error < *error_amt)
+        *closest_index = value, *error_amt = temp_error;
+    }
+
+  for (x = x1; x <= x2; x++)
+    mask[y * width + x] = 2;
+
+  for (x = x1; x <= x2; x++)
+    {
+      find_most_similar_neighbor_8 (index, closest_index, error_amt, x, y - 1,
+                                  width, height, bitmap, mask);
+      find_most_similar_neighbor_8 (index, closest_index, error_amt, x, y + 1,
+                                  width, height, bitmap, mask);
+    }
+}
+
+
 /* Fill - change the color of a blob
  *
  * Input parameters:
@@ -250,6 +418,50 @@ fill (/* in */     unsigned char *to_index,
     {
       fill (to_index, x, y - 1, width, height, bitmap, mask);
       fill (to_index, x, y + 1, width, height, bitmap, mask);
+    }
+}
+
+
+/* Fill - change the color of a blob
+ *
+ * Input parameters:
+ *   The new color
+ *
+ * Modified parameters:
+ *   8 bit pixbuf and its mask (used to prevent backtracking)
+ */
+
+static void
+fill_8 (/* in */   unsigned char *to_index,
+      /* in */     int    x,
+      /* in */     int    y,
+      /* in */     int    width,
+      /* in */     int    height,
+      /* in/out */ unsigned char *bitmap,
+      /* in/out */ unsigned char *mask)
+{
+  int x1, x2;
+
+  if (y < 0 || y >= height || mask[y * width + x] != 2)
+    return;
+
+  for (x1 = x; x1 >= 0 && mask[y * width + x1] == 2; x1--) ;
+  x1++;
+  for (x2 = x; x2 < width && mask[y * width + x2] == 2; x2++) ;
+  x2--;
+
+  assert (x1 >= 0 && x2 < width);
+
+  for (x = x1; x <= x2; x++)
+    {
+      bitmap[(y * width + x)    ] = to_index[0];
+      mask[y * width + x] = 3;
+    }
+
+  for (x = x1; x <= x2; x++)
+    {
+      fill_8 (to_index, x, y - 1, width, height, bitmap, mask);
+      fill_8 (to_index, x, y + 1, width, height, bitmap, mask);
     }
 }
 
@@ -357,6 +569,73 @@ recolor (/* in */     double adaptive_tightness,
 }
 
 
+/* Recolor - conditionally change a feature's color to the closest color of all
+ * neighboring pixels
+ *
+ * Input parameters:
+ *   The color palette, current blob size, and adaptive tightness
+ *
+ *   Adaptive Tightness: (integer 1 to 256)
+ *     1   = really tight
+ *     256 = turn off the feature
+ *
+ * Modified parameters:
+ *   8 bit pixbuf and its mask (used to prevent backtracking)
+ *
+ * Returns:
+ *   TRUE  - feature was recolored, thus coalesced
+ *   FALSE - feature wasn't recolored
+ */
+
+static at_bool
+recolor_8 (/* in */   double adaptive_tightness,
+         /* in */     int    x,
+         /* in */     int    y,
+         /* in */     int    width,
+         /* in */     int    height,
+         /* in/out */ unsigned char *bitmap,
+         /* in/out */ unsigned char *mask)
+{
+  unsigned char *index, *to_index;
+  int error_amt;
+
+  index = &bitmap[(y * width + x)    ];
+  to_index = NULL;
+  error_amt = 0;
+
+  find_most_similar_neighbor_8 (index, &to_index, &error_amt,
+                              x, y, width, height, bitmap, mask);
+
+  /* This condition only fails if the bitmap is all the same color */
+  if (to_index != NULL)
+    {
+      double temp_error;
+
+      /* Adaptive */
+      temp_error = calc_error_8 (index, to_index);
+
+      temp_error = sqrt (temp_error / 3.0);
+
+      /*
+       * If the difference between the two colors is too great,
+       * don't coalesce the feature with its neighbor(s).  This prevents a
+       * color from turning into its complement.
+       */
+
+      if (temp_error > adaptive_tightness)
+        fill_8 (index, x, y, width, height, bitmap, mask);
+      else
+        {
+          fill_8 (to_index, x, y, width, height, bitmap, mask);
+
+          return true;
+        }
+    }
+
+  return false;
+}
+
+
 /* Despeckle Iteration - Despeckle all regions smaller than cur_size pixels
  *
  * Input Parameters:
@@ -415,7 +694,65 @@ despeckle_iteration (/* in */     int    level,
 }
 
 
-/* Despeckle - Despeckle an 24 bit image
+/* Despeckle Iteration - Despeckle all regions smaller than cur_size pixels
+ *
+ * Input Parameters:
+ *   Current blob size, maximum blob size
+ *   for all iterations (used to selectively recolor blobs), and adaptive
+ *   tightness
+ *
+ * Modified Parameters:
+ *   The 8 bit pixbuf is despeckled
+ */
+
+static void
+despeckle_iteration_8 (/* in */   int    level,
+                     /* in */     double adaptive_tightness,
+                     /* in */     int    width,
+                     /* in */     int    height,
+                     /* in/out */ unsigned char *bitmap)
+{
+  unsigned char *mask;
+  int    x, y;
+  int    i;
+  int    current_size;
+  int    tightness;
+
+  for (i = 0, current_size = 1; i < level; i++, current_size *= 2)
+  tightness = (int) (256 / (1.0 + adaptive_tightness * level));
+
+  mask = (unsigned char *) calloc (width * height, sizeof(unsigned char));
+  for (y = 0; y < height; y++)
+    {
+      for (x = 0; x < width; x++)
+        {
+          if (mask[y * width + x] == 0)
+            {
+              int size;
+
+              size = find_size_8 (&bitmap[(y * width + x)], x, y,
+                                width, height, bitmap, mask);
+
+              assert (size > 0);
+
+              if (size < current_size)
+                {
+                  if (recolor_8 (tightness,
+                               x, y, width, height,
+                               bitmap, mask))
+                    x--;
+                }
+              else
+                ignore (x, y, width, height, mask);
+            }
+        }
+    }
+
+  free (mask);
+}
+
+
+/* Despeckle - Despeckle an 8/24 bit image
  *
  * Input Parameters:
  *   Color palette, current blob size, and the despeckling level
@@ -447,14 +784,21 @@ despeckle (/* in/out */ bitmap_type *bitmap,
   assert (tightness >= 0.0 && tightness <= 8.0);
   assert (level >= 0 && level <= 20);
 
-  if (planes != 3)
+  if (planes == 3) {
+  for (i = 0; i < level; i++)
+    despeckle_iteration (i, tightness, BITMAP_WIDTH (*bitmap),
+    BITMAP_HEIGHT (*bitmap), BITMAP_BITS(*bitmap));
+  }
+  else if (planes == 1) {
+  for (i = 0; i < level; i++)
+    despeckle_iteration_8 (i, tightness, BITMAP_WIDTH (*bitmap),
+    BITMAP_HEIGHT (*bitmap), BITMAP_BITS(*bitmap));
+  }
+  else
     {
       LOG1 ("despeckle: %u-plane images are not supported", planes);
       at_exception_fatal(excep, "despeckle: wrong plane images are passed");
       return;
     }
 
-  for (i = 0; i < level; i++)
-    despeckle_iteration (i, tightness, BITMAP_WIDTH (*bitmap),
-    BITMAP_HEIGHT (*bitmap), BITMAP_BITS(*bitmap));
 }
