@@ -39,7 +39,9 @@ output formats like dxf, emf, eps, ai, er, fig, svg, epd and sk are
 directly integrated in AutoTrace, but if you need swf export you need
 to install Ming (http://www.opaque.net/ming/). Also you can export to
 the p2e format. This format can be converted by pstoedit
-(www.pstoedit.net) to a large number of other formats.
+(www.pstoedit.net) to a large number of other formats. If you have
+installed the lastes pstoedit(3.32 or newer), autotrace uses pstoedit
+directly.
 
 Installation
 ============
@@ -155,8 +157,7 @@ GUI Frontend
 Frontline, a Gtk+ based GUI frontend, is under development.
 See http://autotrace.sourceforge.net/frontline
 
-Qt based GUI frontend also planed.
-Conntact with Masatake YAMATO (yamato@redhat.com).
+autotrace mailing list is used to discuss frontline.  See next.
 
 More Information
 ================
