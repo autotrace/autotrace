@@ -129,26 +129,29 @@ find_outline_pixels (bitmap_type bitmap, color_type *bg_color)
 
         /* A valid edge can be BOTTOM for an inside outline.
            Inside outlines are traced clockwise */
-        if (row!=0) color = GET_COLOR (bitmap, row-1, col);
+        if (row!=0)
+	  {
+	    color = GET_COLOR (bitmap, row-1, col);
+	    if (!(bg_color && COLOR_EQUAL(color, bg_color[0]))
+	        && is_unmarked_outline_edge (row-1, col, edge = BOTTOM,
+		    bitmap, marked, color))
+	      {
+		pixel_outline_type outline;
 
-	    if (row != 0 && is_unmarked_outline_edge (row-1, col, edge = BOTTOM,
-		  bitmap, marked, color))
-	    {
-          pixel_outline_type outline;
+		/* This lines are for debugging only:
+		   LOG1 ("#%u: (clockwise)", O_LIST_LENGTH (outline_list));*/
 
-          /* This lines are for debugging only:
-          LOG1 ("#%u: (clockwise)", O_LIST_LENGTH (outline_list));*/
+		outline = find_one_outline (bitmap, edge, row-1, col,
+		  &marked, true, true);
 
-          outline = find_one_outline (bitmap, edge, row-1, col, &marked, true, true);
+		/* This lines are for debugging only:
+		   O_CLOCKWISE (outline) = true;
+		   append_pixel_outline (&outline_list, outline);
 
-          /* This lines are for debugging only:
-		  O_CLOCKWISE (outline) = true;
-	      append_pixel_outline (&outline_list, outline);
-
-          LOG1 (" [%u].\n", O_LENGTH (outline));*/
-        }
-
-    }
+		   LOG1 (" [%u].\n", O_LENGTH (outline));*/
+	      }
+	  }
+      }
 
   free_bitmap (&marked);
 
@@ -225,7 +228,7 @@ find_centerline_pixels(bitmap_type bitmap, color_type bg_color)
 	    if (edge != NO_EDGE)
 	    {
 		pixel_outline_type outline;
-		bool clockwise = edge == BOTTOM;
+		bool clockwise = (bool)(edge == BOTTOM);
 
 		LOG2("#%u: (%sclockwise, ", O_LIST_LENGTH(outline_list),
 		    clockwise ? "" : "counter");
@@ -426,8 +429,8 @@ is_unmarked_outline_edge (unsigned row, unsigned col,
                             bitmap_type marked, color_type color)
 {
   return
-    !is_marked_edge (edge, row, col, marked)
-	&& is_outline_edge (edge, character, row, col, color);
+    (bool)(!is_marked_edge (edge, row, col, marked)
+	&& is_outline_edge (edge, character, row, col, color));
 }
 
 
@@ -473,25 +476,25 @@ is_outline_edge (edge_type edge, bitmap_type character,
   switch (edge)
   {
     case LEFT:
-      return col == 0 || !COLOR_EQUAL (GET_COLOR (character, row, col - 1), color);
+      return (bool)(col == 0 || !COLOR_EQUAL (GET_COLOR (character, row, col - 1), color));
 
     case TOP:
-      return row == 0 || !COLOR_EQUAL (GET_COLOR (character, row - 1, col), color);
+      return (bool)(row == 0 || !COLOR_EQUAL (GET_COLOR (character, row - 1, col), color));
 
     case RIGHT:
-      return col == BITMAP_WIDTH (character) - 1
-	    || !COLOR_EQUAL(GET_COLOR (character, row, col + 1), color);
+      return (bool)(col == BITMAP_WIDTH (character) - 1
+	    || !COLOR_EQUAL(GET_COLOR (character, row, col + 1), color));
 
     case BOTTOM:
-      return row == BITMAP_HEIGHT (character) - 1
-	    || !COLOR_EQUAL(GET_COLOR (character, row + 1, col), color);
+      return (bool)(row == BITMAP_HEIGHT (character) - 1
+	    || !COLOR_EQUAL(GET_COLOR (character, row + 1, col), color));
 
     case NO_EDGE:
     default:
       FATAL1 ("is_outline_edge: Bad edge value(%d)", edge);
   }
 
-  return 0; /* NOT REACHED */
+  return false; /* NOT REACHED */
 }
 
 
@@ -541,7 +544,7 @@ bool
 is_marked_pixel(unsigned row, unsigned col, bitmap_type marked)
 {
     unsigned mark = (1 << NUM_EDGES) - 1;
-    return ((*BITMAP_PIXEL(marked, row, col) & mark) == mark);
+    return (bool)((*BITMAP_PIXEL(marked, row, col) & mark) == mark);
 }
 
 
@@ -636,7 +639,7 @@ is_open_junction(unsigned row, unsigned col, bitmap_type character,
     bitmap_type marked)
 {
     unsigned n = num_neighbors(row, col, character);
-    return (n > 2 && (n - num_marked_neighbors(row, col, marked) > 1));
+    return (bool)(n > 2 && (n - num_marked_neighbors(row, col, marked) > 1));
 }
 
 
@@ -646,7 +649,7 @@ static bool
 is_marked_edge (edge_type edge, unsigned row, unsigned col, bitmap_type marked)
 {
   return
-    edge == NO_EDGE ? false : (*BITMAP_PIXEL (marked, row, col) & (1 << edge)) != 0;
+    (bool)(edge == NO_EDGE ? false : (*BITMAP_PIXEL (marked, row, col) & (1 << edge)) != 0);
 }
 
 

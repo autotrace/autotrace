@@ -1,3 +1,10 @@
+2001-03-17  Peter Cucka <pcucka@anim.dreamworks.com>
+
+	* pxl-outline.c: Adding some explicit casts of boolean 
+	expressions to 'bool's, to keep the IRIX compiler from 
+	warning about an "enumerated type mixed with another type". 
+	(Logged by Masatake)
+	
 2001-03-16  Masatake YAMATO  <yamato@redhat.com>
 
 	Applied a patch from Martin.
