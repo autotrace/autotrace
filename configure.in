@@ -49,10 +49,10 @@ if test $with_magick = yes ; then
 			dnl I don't consider ImageMagick 6.x.
 			if test "$MAGICK_VERSION" = "5.2.0" \
 			   || test "$MAGICK_MAJOR_VERSION_CHECK" = 0 \
-               || test "$MAGICK_MINOR_VERSION_CHECK" = 0 ; then
+			   || test "$MAGICK_MINOR_VERSION_CHECK" = 0 ; then
 			   AC_MSG_RESULT(no($MAGICK_VERSION))
 		   	   AC_MSG_WARN([*** Version 5.2.1 or higher is required.             ***])
-               AC_MSG_WARN([*** ImageMagick input handler is disabled.           ***])
+			   AC_MSG_WARN([*** ImageMagick input handler is disabled.           ***])
 			else
  		   		AC_MSG_RESULT(yes($MAGICK_VERSION))
 				AC_SUBST(MAGICK_CFLAGS)
@@ -62,9 +62,12 @@ if test $with_magick = yes ; then
 			fi
 		else
 			AC_MSG_WARN([*** Magick-config is found but magick/api.h is not found in $MAGICK_CFLAGS ***])
- 			AC_MSG_WARN([*** Check Magick-config. ***])
-            AC_MSG_WARN([*** ImageMagick input handler is disabled.           ***])
+ 			AC_MSG_WARN([*** Check Magick-config.                                                   ***])
+			AC_MSG_WARN([*** ImageMagick input handler is disabled.                                 ***])
 		fi
+	else
+		AC_MSG_WARN([*** Magick-config is not found.                      ***])
+		AC_MSG_WARN([*** ImageMagick input handler is disabled.           ***])		
 	fi
 fi
 AM_CONDITIONAL(HAVE_MAGICK, test x$HAVE_MAGICK = xyes)
@@ -96,9 +99,13 @@ if test "x$HAVE_LIBPNG_STAGE1" = "xyes" ; then
 		AC_DEFINE(HAVE_LIBPNG)
 	else
 	   AC_MSG_WARN([*** libpng exists but cannot find png_read_png in the libpng. ***])
-	   AC_MSG_WARN([*** libpng might be old. ***])
-	   AC_MSG_WARN([*** You need libpng 1.0.6 or higher. ***])
+	   AC_MSG_WARN([*** libpng might be old.                                      ***])
+	   AC_MSG_WARN([*** You need libpng 1.0.6 or higher.                          ***])
+	   AC_MSG_WARN([*** Png input handler is disabled.                            ***])
 	fi
+else
+	AC_MSG_WARN([*** Cannot find libpng.            ***])
+	AC_MSG_WARN([*** Png input handler is disabled. ***])
 fi
 AM_CONDITIONAL(HAVE_LIBPNG, test x$HAVE_LIBPNG = xyes)
 
@@ -118,11 +125,11 @@ if test "${swf_header_found}" = yes ; then
 		AC_SUBST(LIBSWF_LDFLAGS)
 		AC_DEFINE(HAVE_LIBSWF)
 	else
- 		AC_MSG_WARN([*** Cannot find libming. ***])
+ 		AC_MSG_WARN([*** Cannot find libming.    ***])
 		AC_MSG_WARN([*** SWF output is disabled. ***])
 	fi
 else
-	AC_MSG_WARN([*** Cannot find ming.h. ***])
+	AC_MSG_WARN([*** Cannot find ming.h.     ***])
 	AC_MSG_WARN([*** SWF output is disabled. ***])
 fi
 AM_CONDITIONAL(HAVE_LIBSWF, test x$HAVE_LIBSWF = xyes)

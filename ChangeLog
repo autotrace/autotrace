@@ -1,3 +1,7 @@
+2001-04-13  Masatake YAMATO  <yamato@redhat.com>
+
+	* configure.in: Warn if libping is not found.
+
 2001-04-12  Martin Weber <martweb@gmx.net>
 
 	Message-ID: <3AD446C7.9045830B@gmx.net>
