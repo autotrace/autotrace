@@ -1,8 +1,13 @@
+2002-10-29  Martin Weber <martweb@gmx.net>
+
+	* fit.c: fix code broken by Masatake at 
+	2002-11-04.
+	
 2002-11-04  Masatake YAMATO  <yamato@redhat.com>
 
 	* fit.c (new_fitting_opts::error_threshold): 
 	Fix the default value to 2.0.
-	
+
 2002-11-03  Masatake YAMATO  <yamato@redhat.com>
 
 	* fit.[ch]: Removed unused ifdefs.

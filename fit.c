@@ -135,13 +135,13 @@ new_fitting_opts (void)
 
 spline_list_array_type
 fitted_splines (pixel_outline_list_type pixel_outline_list,
-  fitting_opts_type *fitting_opts, distance_map_type *,
+  fitting_opts_type *fitting_opts, distance_map_type *dist,
   unsigned short width, unsigned short height,
   at_exception_type * exception,
-  progress_func notify_progress, 
-  address progress_data,
-  testcancel_func test_cancel,
-  address testcancel_data)
+  at_progress_func notify_progress, 
+  at_address progress_data,
+  at_testcancel_func test_cancel,
+  at_address testcancel_data)
 {
   unsigned this_list;
 
