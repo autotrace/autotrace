@@ -280,12 +280,22 @@ if test ${PSTOEDIT_CONFIG_BROKEN} = yes; then
 	CXX_RUNTIME_LIB=
 	CXX_STD_LIB=
 	if test x"$GXX" = xyes; then
-	   AC_CHECK_LIB(g++,main,CXX_RUNTIME_LIB=-lg++)
-	      AC_CHECK_LIB(stdc++,main,CXX_STD_LIB=-lstdc++,,${CXX_RUNTIME_LIB})
-	      fi
-	      AC_MSG_CHECKING([for C++ runtime])
-	      LIBPSTOEDIT_LIBS="${LIBPSTOEDIT_LIBS} ${CXX_STD_LIB} ${CXX_RUNTIME_LIB}"
-	      AC_MSG_RESULT([${CXX_STD_LIB} ${CXX_RUNTIME_LIB}])
+		AC_CHECK_LIB(g++,main,CXX_RUNTIME_LIB=-lg++)
+		AC_CHECK_LIB(stdc++,main,CXX_STD_LIB=-lstdc++,,${CXX_RUNTIME_LIB})
+	fi
+	AC_MSG_CHECKING([for C++ runtime])
+	LIBPSTOEDIT_LIBS="${LIBPSTOEDIT_LIBS} ${CXX_STD_LIB} ${CXX_RUNTIME_LIB}"
+	AC_MSG_RESULT([${CXX_STD_LIB} ${CXX_RUNTIME_LIB}])
+fi
+
+dnl dl library
+dnl --- WORKAROUND for pstoedit 3.32.0
+if test ${PSTOEDIT_CONFIG_BROKEN} = yes; then
+   LIBLD_LDFLAGS=
+   AC_CHECK_LIB(dl,main,[LIBLD_LDFLAGS=-ldl])
+   if test "x${LIBLD_LDFLAGS}" != x; then
+      LIBPSTOEDIT_LIBS="${LIBPSTOEDIT_LIBS} ${LIBLD_LDFLAGS}"
+   fi
 fi
 
 AC_SUBST(LIBPSTOEDIT_CFLAGS)

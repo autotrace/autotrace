@@ -1,3 +1,7 @@
+2002-09-21  Masatake YAMATO  <yamato@redhat.com>
+
+	* configure.in: added -dl to LIBPSTOEDIT_LIBS.
+
 2002-09-20  Martin Weber <martweb@gmx.net>
 
 	* output-er.c: corrected output format.
