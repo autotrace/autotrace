@@ -1,5 +1,12 @@
 2001-11-25  Martin Weber <martweb@gmx.net>
 
+	* output-p2e.c (output_p2e_header, output_p2e_writer): 
+	Output that is totally curve free has to be marked.
+
+	(Message-ID: <3C012785.19621140@gmx.net>).
+	
+2001-11-25  Martin Weber <martweb@gmx.net>
+
 	* output-dxf.c (out_splines): Removed code that was needed due to 
 	an old bug in AutoTrace.
 
