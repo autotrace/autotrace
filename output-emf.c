@@ -4,6 +4,7 @@
 **  Since EMF files are binary files, their persistent
 **  format have to deal with endianess problems
 */
+
 #include <stdio.h>
 #include <string.h>
 #include "types.h"
@@ -46,15 +47,7 @@ typedef unsigned long int  UI32;
 typedef unsigned short int UI16;
 typedef unsigned char      UI8;
 
-typedef signed long int  SI32;
-typedef signed short int SI16;
-typedef signed char      SI8;
-
-typedef struct
-{
-  UI32 x;
-  UI32 y;
-} EMFPoint;
+/* color list type */
 
 typedef struct EMFColorListType
 {
@@ -62,6 +55,7 @@ typedef struct EMFColorListType
   struct EMFColorListType *next;
 } EMFColorList;
 
+/* Emf stats needed for outputting EHNMETAHEADER*/
 
 typedef struct
 {
@@ -72,11 +66,11 @@ typedef struct
 
 /* globals */
 
-EMFColorList *color_list = NULL;
-UI32 *color_table = NULL;
-char *editor;
+EMFColorList *color_list = NULL;  /* Color list */
+UI32 *color_table = NULL;         /* Color table */
+char *editor;                     /* Editor description string */
 
-/* color list functions */
+/* color list & table functions */
 
 int SearchColor(EMFColorList *head, UI32 colref)
 {
@@ -155,26 +149,22 @@ static boolean write16(FILE *fdes, UI16 data)
 {
   int count = 0;
   UI8 outch;
-
+  
   outch = (UI8) (data & 0x0FF);
   count += fwrite(&outch, 1, 1, fdes);
+
   outch = (UI8) ((data >> 8) & 0x0FF);
   count += fwrite(&outch, 1, 1, fdes);
-
+  
   return (count == sizeof(UI16)) ? TRUE : FALSE;
 }
 
-static boolean write8(FILE *fdes, UI8 data)
-{
-  return (fwrite(&data, 1, 1, fdes) == sizeof(UI8)) ? TRUE : FALSE;
-}
-
-/* EMF record-type definitions */
+/* EMF record-type function definitions */
 
 int WriteMoveTo(FILE* fdes, real_coordinate_type *pt)
 {
   int recsize = sizeof(UI32) * 4;
-
+  
   if(fdes != NULL)
   {
     write32(fdes, ENMT_MOVETO);
@@ -189,7 +179,7 @@ int WritePolyLineTo(FILE* fdes, spline_type *spl, int nlines)
 {
   int i;
   int recsize = sizeof(UI32) * (7 + nlines * 2);
-
+  
   if(fdes != NULL)
   {
     write32(fdes, ENMT_POLYLINETO);
@@ -213,7 +203,7 @@ int WritePolyBezierTo(FILE *fdes, spline_type *spl, int ncurves)
 {
   int i;
   int recsize = sizeof(UI32) * (7 + ncurves * 6);
-
+  
   if(fdes != NULL)
   {
     write32(fdes, ENMT_POLYBEZIERTO);
@@ -237,12 +227,10 @@ int WritePolyBezierTo(FILE *fdes, spline_type *spl, int ncurves)
   return recsize;
 }
 
-
-
 int WriteBeginPath(FILE *fdes)
 {
   int recsize = sizeof(UI32) * 2;
-
+  
   if(fdes != NULL)
   {
     write32(fdes, ENMT_BEGINPATH);
@@ -251,12 +239,10 @@ int WriteBeginPath(FILE *fdes)
   return recsize;
 }
 
-
-
 int WriteEndPath(FILE *fdes)
 {
   int recsize = sizeof(UI32) * 2;
-
+  
   if(fdes != NULL)
   {
     write32(fdes, ENMT_ENDPATH);
@@ -265,12 +251,10 @@ int WriteEndPath(FILE *fdes)
   return recsize;
 }
 
-
-
 int WriteStrokeAndFillPath(FILE *fdes)
 {
   int recsize = sizeof(UI32) * 6;
-
+  
   if(fdes != NULL)
   {
     write32(fdes, ENMT_STROKEANDFILLPATH);
@@ -292,7 +276,6 @@ int WriteSetWorldTransform(FILE *fdes, UI32 height)
   {
     /* conversion to float */
     fHeight = (float) height;
-
     /* binary copy for serialization */
     memcpy((void *) &height, (void *) &fHeight, sizeof(UI32));
 
@@ -311,7 +294,7 @@ int WriteSetWorldTransform(FILE *fdes, UI32 height)
 int WriteCreateSolidPen(FILE *fdes, int hndNum, UI32 colref)
 {
   int recsize = sizeof(UI32) * 7;
-
+  
   if(fdes != NULL)
   {
     write32(fdes, ENMT_CREATEPEN);
@@ -325,12 +308,10 @@ int WriteCreateSolidPen(FILE *fdes, int hndNum, UI32 colref)
   return recsize;
 }
 
-
-
 int WriteCreateSolidBrush(FILE *fdes, int hndNum, UI32 colref)
 {
   int recsize = sizeof(UI32) * 6;
-
+  
   if(fdes != NULL)
   {
     write32(fdes, ENMT_CREATEBRUSHINDIRECT);
@@ -339,16 +320,15 @@ int WriteCreateSolidBrush(FILE *fdes, int hndNum, UI32 colref)
     write32(fdes, (UI32) 0x0);  /* solid brush style */
     write32(fdes, (UI32) colref); 
     write32(fdes, (UI32) 0x0);  /* ignored when solid */
+
   }
   return recsize;
 }
 
-
-
 int WriteSelectObject(FILE *fdes, int hndNum)
 {
   int recsize = sizeof(UI32) * 3;
-
+  
   if(fdes != NULL)
   {
     write32(fdes, ENMT_SELECTOBJECT);
@@ -361,7 +341,7 @@ int WriteSelectObject(FILE *fdes, int hndNum)
 int WriteEndOfMetafile(FILE *fdes)
 {
   int recsize = sizeof(UI32) * 5;
-
+  
   if(fdes != NULL)
   {
     write32(fdes, ENMT_EOF);
@@ -369,6 +349,7 @@ int WriteEndOfMetafile(FILE *fdes)
     write32(fdes, (UI32) 0);
     write32(fdes, (UI32) recsize - sizeof(UI32));
     write32(fdes, (UI32) recsize);
+
   }
   return recsize;
 }
@@ -384,57 +365,43 @@ int WriteHeader(FILE *fdes, string name, int width, int height, int fsize, int n
   {
     write32(fdes, ENMT_HEADER);
     write32(fdes, (UI32) recsize);
-
     /* pixel bounds */
     write32(fdes, (UI32) 0);
     write32(fdes, (UI32) 0);
     write32(fdes, (UI32) width);
     write32(fdes, (UI32) height);
-
     /* millimeter bounds */
     write32(fdes, (UI32) 0);
     write32(fdes, (UI32) 0);
     write32(fdes, (UI32) width * WDEVMLMTR * 100 / WDEVPIXEL);
     write32(fdes, (UI32) height * HDEVMLMTR * 100 / HDEVPIXEL);
-
     /* signature " EMF" */
     write32(fdes, (UI32) 0x464D4520);
-
     /* current version */
     write32(fdes, (UI32) 0x00010000);
-
     /* file size */
     write32(fdes, (UI32) fsize);
-
     /* number of records */
     write32(fdes, (UI32) nrec);
-
     /* number of handles */
     write16(fdes, (UI16) nhand);
-
     /* reserved */
     write16(fdes, (UI16) 0);
-
     /* size of description */
     write32(fdes, (UI32) desclen);
-
     /* description offset */
     write32(fdes, (UI32) 100);
-
     /* palette entries */
     write32(fdes, (UI32) 0);
-
     /* device width & height in pixel & millimeters */
     write32(fdes, (UI32) WDEVPIXEL);
     write32(fdes, (UI32) HDEVPIXEL);
     write32(fdes, (UI32) WDEVMLMTR);
     write32(fdes, (UI32) HDEVMLMTR);
-
     /* pixel format & opengl (not used) */
     write32(fdes, (UI32) 0);
     write32(fdes, (UI32) 0);
     write32(fdes, (UI32) 0);
-
     /* description string in Unicode */
     for(i=0;editor[i]; i++)
     {
@@ -452,10 +419,11 @@ int WriteHeader(FILE *fdes, string name, int width, int height, int fsize, int n
   return recsize;
 }
 
-void GetEmfStats(EMFStats *stats, string name, spline_list_array_type shape)
+/* EMF stats collector */
 
+void GetEmfStats(EMFStats *stats, string name, spline_list_array_type shape)
 {
-  int i, j;
+  unsigned int i, j;
   int ncolors = 0;
   int ncolorchng = 0;
   int nrecords = 0;
@@ -481,11 +449,11 @@ void GetEmfStats(EMFStats *stats, string name, spline_list_array_type shape)
       }
       last_color = curr_color;
     }
-
+    
     /* emf stats :: MoveTo */
     nrecords++;
     filesize += WriteMoveTo(NULL,NULL);
-
+    
     /* emf stats :: BeginPath */
     nrecords++;
     filesize += WriteBeginPath(NULL);
@@ -493,7 +461,6 @@ void GetEmfStats(EMFStats *stats, string name, spline_list_array_type shape)
     /* visit each spline */
     last_degree = -1;
     j = 0;
-
     /* the outer loop iterates through spline
        groups of the same degree */
     while(j<SPLINE_LIST_LENGTH(curr_list))
@@ -512,7 +479,6 @@ void GetEmfStats(EMFStats *stats, string name, spline_list_array_type shape)
           break;
         curr_spline = SPLINE_LIST_ELT(curr_list, j);
       }
-
       switch((polynomial_degree)last_degree)
       {
         case LINEARTYPE:
@@ -520,7 +486,6 @@ void GetEmfStats(EMFStats *stats, string name, spline_list_array_type shape)
           nrecords++;
           filesize += WritePolyLineTo(NULL, NULL, nlines);
           break;
-
         default:
           /* emf stats :: PolyBezierTo */
           nrecords++;
@@ -528,7 +493,6 @@ void GetEmfStats(EMFStats *stats, string name, spline_list_array_type shape)
           break;
       }
     }
-
     /* emf stats :: EndPath */
     nrecords++;
     filesize += WriteEndPath(NULL);
@@ -549,35 +513,36 @@ void GetEmfStats(EMFStats *stats, string name, spline_list_array_type shape)
   /* emf stats :: header + footer */
   nrecords++;
   filesize += WriteSetWorldTransform(NULL, 0) + WriteEndOfMetafile(NULL) + WriteHeader(NULL, name, 0, 0, 0, 0, 0);
+  
   stats->ncolors  = ncolors;
   stats->nrecords = nrecords;
   stats->filesize = filesize;
+  
+  /* convert the color list into a color table */
   ColorListToColorTable(&color_list, &color_table, ncolors);
 }
 
-void
+
+/* EMF output */
+
 OutputEmf(FILE* fdes, EMFStats *stats, string name, int width, int height, spline_list_array_type shape)
 {
-  int i, j;
+  unsigned int i, j;
   int color_index;
-  int ncolorchng = 0;
-  int nrecords = 0;
-  int filesize = 0;
   UI32 last_color = 0xFFFFFFFF, curr_color;
   spline_list_type curr_list;
   spline_type curr_spline;
   int last_degree;
   int nlines;
-  EMFPoint pt;
-
+  
   /* output EMF header */
   WriteHeader(fdes, name, width, height, stats->filesize, stats->nrecords, (stats->ncolors * 2) +1);
-
+  
   /* output world tranform */
   WriteSetWorldTransform(fdes, height);
 
   /* output pens & brushes */
-  for(i=0; i<stats->ncolors; i++)
+  for(i=0; i<(unsigned int) stats->ncolors; i++)
   {
     WriteCreateSolidPen(fdes, MK_PEN(i), color_table[i]);
     WriteCreateSolidBrush(fdes, MK_BRUSH(i), color_table[i]);
@@ -607,7 +572,6 @@ OutputEmf(FILE* fdes, EMFStats *stats, string name, int width, int height, splin
 
     /* visit each spline */
     j = 0;
-
     /* the outer loop iterates through spline
        groups of the same degree */
     while(j<SPLINE_LIST_LENGTH(curr_list))
@@ -638,17 +602,20 @@ OutputEmf(FILE* fdes, EMFStats *stats, string name, int width, int height, splin
           break;
       }
     }
-
     /* output EndPath */
     WriteEndPath(fdes);
 
     /* output StrokeAndFillPath */
     WriteStrokeAndFillPath(fdes);
   }
-
+  
   /* output EndOfMetafile */
   WriteEndOfMetafile(fdes);
+
+  /* delete color table */
+  free((void *)color_table);
 }
+
 
 int output_emf_writer(FILE* file, string name,
 		      int llx, int lly, int urx, int ury,
@@ -656,14 +623,24 @@ int output_emf_writer(FILE* file, string name,
 {
   EMFStats stats;
 
-  file = freopen (name, "wb", file);
+  /* test for file descriptor */
+  if(file != stdout)
+    freopen(name, "wb", file);
+  else
+  {
+    fprintf(file, "This driver couldn't write to stdout!\n");
+    return -1;
+  }
+
+  /* Setup editor string */
   editor = version_string;
 
+  /* Get EMF stats */
   GetEmfStats(&stats, name, shape);
-  OutputEmf(file, &stats, name, urx, ury, shape);
 
+  /* Output EMF */
+  OutputEmf(file, &stats, name, urx, ury, shape);
+  
   return 0;
 }
-
-
 

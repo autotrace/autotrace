@@ -1,3 +1,16 @@
+2000-10-04  Masatake YAMATO  <yamato@redhat.com>
+
+	* output-emf.c: Revised by 
+	Enrico Persiani <persiani at students.cs.unibo.it>.
+
+	  1. Fixed a bug that caused crashes when the output 
+	  was redirected to stdout
+
+	  2. Cleaned the code from unused variable definitions
+
+	  3. Removed a data-type (EMFPoint) and a function (write8) 
+	  not used by the main conversion code.
+
 2000-10-03  Masatake YAMATO  <yamato@redhat.com>
 
 	* configure.in: Fix a typo. (MAGIC->MAGICK).
