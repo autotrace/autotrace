@@ -27,10 +27,9 @@
 #include "output-eps.h"
 #include "xstd.h"
 #include "autotrace.h"
-#include <time.h>
+#include "private.h"
 #include <string.h>
-
-static gchar* now (void);
+#include <glib.h>
 
 #define SIGN(x) ((x) > 0 ? 1 : (x) < 0 ? -1 : 0)
 #define ROUND(x) ((int) ((int) (x) + .5 * SIGN (x)))
@@ -101,12 +100,12 @@ static int output_eps_header(FILE* ps_file, gchar* name,
   OUT_LINE ("%!PS-Adobe-3.0 EPSF-3.0");
   OUT1 ("%%%%Creator: Adobe Illustrator by %s\n", at_version(TRUE));
   OUT1 ("%%%%Title: %s\n", name);
-  OUT1 ("%%%%CreationDate: %s\n", time = now ());
+  OUT1 ("%%%%CreationDate: %s\n", time = at_time_string ());
   OUT4 ("%%%%BoundingBox: %d %d %d %d\n", llx, lly, urx, ury);
   OUT_LINE ("%%DocumentData: Clean7Bit");
   OUT_LINE ("%%EndComments");
 
-  free (time);
+  g_free (time);
   /* Prolog to define Illustrator commands.
    *
    * The s and S commands are not used at the moment and could be
@@ -221,18 +220,3 @@ int output_eps_writer(FILE* ps_file, gchar* name,
     OUT_LINE ("%%EOF");
     return 0;
 }
-
-
-static gchar*
-now (void)
-{
-  gchar* time_string;
-  time_t t = time (0);
-
-  XMALLOC (time_string, 26); /* not 25 ! */
-  strcpy (time_string, ctime (&t));
-  time_string[24] = 0; /* No newline. */
-
-  return time_string;
-}
-

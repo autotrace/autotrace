@@ -43,4 +43,5 @@ int at_output_init  (void);
 int at_param_init   (void);
 int at_module_init  (void);
 
+gchar * at_time_string (void);
 #endif /* Not def: PRIVATE_H */

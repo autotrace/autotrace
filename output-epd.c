@@ -28,10 +28,9 @@
 #include "output-epd.h"
 #include "xstd.h"
 #include "autotrace.h"
-#include <time.h>
+#include "private.h"
 #include <string.h>
-
-static gchar* now (void);
+#include <glib.h>
 
 #define SIGN(x) ((x) > 0 ? 1 : (x) < 0 ? -1 : 0)
 #define ROUND(x) ((int) ((int) (x) + .5 * SIGN (x)))
@@ -99,10 +98,10 @@ static int output_epd_header(FILE* epd_file, gchar* name,
   OUT_LINE ("%EPD-1.0");
   OUT1 ("%% Created by %s\n", at_version(TRUE));
   OUT1 ("%% Title: %s\n", name);
-  OUT1 ("%% CreationDate: %s\n", time = now ());
+  OUT1 ("%% CreationDate: %s\n", time = at_time_string ());
   OUT4 ("%%BBox(%d,%d,%d,%d)\n", llx, lly, urx, ury);
 
-  free (time);
+  g_free (time);
 
   return 0;
 }
@@ -176,18 +175,4 @@ int output_epd_writer(FILE* epd_file, gchar* name,
     out_splines(epd_file, shape);
 
     return 0;
-}
-
-
-static gchar*
-now (void)
-{
-  gchar* time_string;
-  time_t t = time (0);
-
-  XMALLOC (time_string, 26); /* not 25 ! */
-  strcpy (time_string, ctime (&t));
-  time_string[24] = 0; /* No newline. */
-
-  return time_string;
 }

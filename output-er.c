@@ -25,10 +25,9 @@
 #include "spline.h"
 #include "output-er.h"
 #include "xstd.h"
-#include <time.h>
+#include "private.h"
 #include <string.h>
-
-static gchar* now(void);
+#include <glib.h>
 
 #define NUM_CORRESP_POINTS 4
 
@@ -41,9 +40,9 @@ output_er_header(FILE* er_file, gchar* name, int llx, int lly, int urx, int ury)
     gchar* time;
 
     fprintf(er_file, "#Elastic Reality Shape File\n\n#Date: %s\n\n",
-        time = now());
+	    time = at_time_string());
 
-    free(time);
+    g_free(time);
 
     fprintf(er_file, "ImageSize = {\n\tWidth = %d\n\tHeight = %d\n}\n\n",
 	urx - llx, ury - lly);
@@ -212,17 +211,3 @@ output_er_writer(FILE* file, gchar* name, int llx, int lly, int urx, int ury,
 
     return 0;
 }
-
-static gchar*
-now(void)
-{
-    gchar* time_string;
-    time_t t = time (0);
-
-    XMALLOC (time_string, 26);  /* not 25 ! */
-    strcpy (time_string, ctime (&t));
-    time_string[24] = 0;  /* No newline. */
-
-    return time_string;
-}
-

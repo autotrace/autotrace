@@ -1,5 +1,12 @@
 2003-08-06  Masatake YAMATO  <yamato@redhat.com>
 
+	* private.h (at_time_string): New decl.
+
+	* autotrace.c (at_time_string): New function.
+
+	* output-*.c (output_*_header): remove `now'.
+	Use at_time_string. use g_free instead of free.
+
 	* *.[ch] (*): at_color_type -> at_color.
 
 2003-08-05  Masatake YAMATO  <yamato@redhat.com>

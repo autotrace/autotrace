@@ -42,6 +42,8 @@
 #include "despeckle.h"
 
 #include <locale.h>
+#include <time.h>
+#include <stdlib.h>
 
 #define AT_DEFAULT_DPI 72
 
@@ -468,3 +470,22 @@ at_fitting_opts_doc_func(char * string)
   return _(string);
 }
 
+gchar *
+at_time_string (void)
+{
+  gchar* time_string;
+  time_t t;
+  gchar * debug;
+
+  debug = getenv ("AT_DATE_ZERO");
+  if (!strcmp(debug, "yes"))
+    t = (time_t)0;
+  else
+    t = time (0);
+
+  time_string = g_new (char, 26); /* not 25 ! */
+  ctime_r(&t, time_string);	  /* _r: reentrant */
+  time_string[24] = 0; /* No newline. */
+
+  return time_string;
+}
