@@ -86,6 +86,8 @@ at_bool is_valid_dir (unsigned short, unsigned short, direction_type, bitmap_typ
 
 static at_coord next_point(bitmap_type, edge_type *, unsigned short *, unsigned short *, 
                            color_type, at_bool, bitmap_type, at_exception_type * );
+static unsigned
+num_neighbors(unsigned short, unsigned short, bitmap_type);
 
 #define CHECK_FATAL() if (at_exception_got_fatal(exp)) goto cleanup;
 
@@ -274,16 +276,24 @@ find_centerline_pixels (bitmap_type bitmap, color_type bg_color,
 
           if (COLOR_EQUAL(GET_COLOR(bitmap, row, col), bg_color)) continue;
 
-          if (!is_valid_dir(row, col, dir, bitmap, marked))
+          if (!is_valid_dir(row, col, dir, bitmap, marked) ||
+			(num_neighbors(COMPUTE_DELTA(ROW, dir)+row, COMPUTE_DELTA(COL, dir)+col, bitmap) > 2
+			&& num_neighbors(COMPUTE_DELTA(ROW, dir)+row, COMPUTE_DELTA(COL, dir)+col, bitmap) > 2))
             {
               dir = SOUTHEAST;
-              if (!is_valid_dir(row, col, dir, bitmap, marked))
+              if (!is_valid_dir(row, col, dir, bitmap, marked) ||
+			    (num_neighbors(COMPUTE_DELTA(ROW, dir)+row, COMPUTE_DELTA(COL, dir)+col, bitmap) > 2
+			    && num_neighbors(COMPUTE_DELTA(ROW, dir)+row, COMPUTE_DELTA(COL, dir)+col, bitmap) > 2))
                 {
                   dir = SOUTH;
-                  if (!is_valid_dir(row, col, dir, bitmap, marked))
+                  if (!is_valid_dir(row, col, dir, bitmap, marked) ||
+			        (num_neighbors(COMPUTE_DELTA(ROW, dir)+row, COMPUTE_DELTA(COL, dir)+col, bitmap) > 2
+			        && num_neighbors(COMPUTE_DELTA(ROW, dir)+row, COMPUTE_DELTA(COL, dir)+col, bitmap) > 2))
                     {
                       dir = SOUTHWEST;
-                      if (!is_valid_dir(row, col, dir, bitmap, marked))
+                      if (!is_valid_dir(row, col, dir, bitmap, marked) ||
+			            (num_neighbors(COMPUTE_DELTA(ROW, dir)+row, COMPUTE_DELTA(COL, dir)+col, bitmap) > 2
+			            && num_neighbors(COMPUTE_DELTA(ROW, dir)+row, COMPUTE_DELTA(COL, dir)+col, bitmap) > 2))
                         continue;
                     }
                 }
@@ -652,6 +662,27 @@ next_unmarked_pixel(unsigned short *row, unsigned short *col,
     return true;
   else
     return false;
+}
+
+
+/* Return the number of pixels adjacent to pixel ROW/COL that are black. */
+
+static unsigned
+num_neighbors(unsigned short row, unsigned short col, bitmap_type bitmap)
+{
+    unsigned dir, count = 0;
+    color_type color = GET_COLOR(bitmap, row, col);
+    for (dir = NORTH; dir <= NORTHEAST; dir++)
+    {
+	int delta_r = COMPUTE_DELTA(ROW, dir);
+	int delta_c = COMPUTE_DELTA(COL, dir);
+	unsigned int test_row = row + delta_r;
+	unsigned int test_col = col + delta_c;
+	if (BITMAP_VALID_PIXEL(bitmap, test_row, test_col)
+	    && COLOR_EQUAL(GET_COLOR(bitmap, test_row, test_col), color))
+	    ++count;
+    }
+    return count;
 }
 
 

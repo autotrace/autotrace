@@ -1,3 +1,10 @@
+2002-10-29  Martin Weber <martweb@gmx.net>
+
+	* pxl-outline.c (num_neighbors): New function.
+	(find_centerline_pixels): Use num_neighbors.
+
+	Message-ID: <3DBEB1A2.4CC602BA@gmx.net>.
+
 2002-10-29  Masatake YAMATO  <yamato@redhat.com>
 
 	* input-magick.c (input_magick_reader): Do DestroyImage
