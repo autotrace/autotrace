@@ -103,7 +103,9 @@ autotrace_SOURCES=\
 		cmdline.h 			\
 		getopt.c 			\
 		getopt.h 			\
-		getopt1.c
+		getopt1.c			\
+		strgicmp.c			\
+		strgicmp.h
 
 INCLUDES = $(MAGICK_CFLAGS)
 autotrace_LDADD =                 \

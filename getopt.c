@@ -20,6 +20,7 @@
    Foundation, 675 Mass Ave, Cambridge, MA 02139, USA.  */
 
 #include "xstd.h"
+#include "strgicmp.h"
 #include <stdio.h>
 #include <stdlib.h>
 
@@ -350,7 +351,7 @@ _getopt_internal (int argc, char *const *argv, const char *optstring,
       /* Test all options for either exact match or abbreviated matches.  */
       for (p = longopts, option_index = 0; p->name;
 	   p++, option_index++)
-	if (!strncmp (p->name, nextchar, s - nextchar))
+	if (strgnicmp (p->name, nextchar, s - nextchar))
 	  {
 	    if ((unsigned) (s - nextchar) == strlen (p->name))
 	      {
@@ -533,4 +534,3 @@ getopt (int argc, char *const *argv, const char *optstring)
 			   0);
 }
 
-/* version 0.17 */

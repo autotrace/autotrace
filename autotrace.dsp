@@ -349,6 +349,14 @@ SOURCE=.\spline.h
 # End Source File
 # Begin Source File
 
+SOURCE=.\strgicmp.c
+# End Source File
+# Begin Source File
+
+SOURCE=.\strgicmp.h
+# End Source File
+# Begin Source File
+
 SOURCE=".\thin-image.c"
 # End Source File
 # Begin Source File

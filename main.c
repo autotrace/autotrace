@@ -10,6 +10,7 @@
 #include "filename.h"
 #include "xstd.h"
 #include "atou.h"
+#include "strgicmp.h"
 
 #include <string.h>
 #include <assert.h>
@@ -60,10 +61,6 @@ void output_list_formats(FILE* file);
 
 #define DEFAULT_FORMAT "eps"
 
-#define STREQ(s1, s2) (strcmp ((char*)s1, (char*)s2) == 0)
-#define STRTOLOWER(str)					\
-while (*str != '\0') {char *c = (str); while (*c != '\0') {*c = tolower (*c); c++;} break;}
-
 
 int
 main (int argc, char * argv[])
@@ -87,7 +84,7 @@ main (int argc, char * argv[])
   if (report_progress)
     progress_reporter = dot_printer;
 
-  if (STREQ (output_name, input_name))
+  if (strgicmp (output_name, input_name))
     FATAL("Input and output file may not be the same\n");
 
   if ((input_rootname = remove_suffix (get_basename (input_name))) == NULL)
@@ -118,7 +115,7 @@ main (int argc, char * argv[])
     }
 
   /* Open output file */
-  if (STREQ (output_name, ""))
+  if (!strcmp (output_name, ""))
     output_file = stdout;
   else
     output_file = xfopen(output_name, "w");

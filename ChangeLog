@@ -1,3 +1,28 @@
+2001-12-12  Masatake YAMATO  <yamato@redhat.com>
+
+	* strgicmp.h (strgnicmp, strgicmp): added type
+	of args.
+
+	* strgicmp.[hc]: removed ^M.
+
+2001-12-11  Martin Weber <martweb@gmx.net>
+
+	Now commandline options are no more case sensitive.
+	
+	* Makefile.am (autotrace_SOURCES): Added strgicmp.[ch].
+
+	* autotrace.dsp: Likewise.
+
+	* main.c: Use strgicmp.
+
+	* getopt.c: Likewise.
+
+	* input.c: Likewise.
+
+	* cmdline.h: Likewise.
+
+	* strgicmp.[ch]: New files.
+	
 2001-12-08  Martin Weber <martweb@gmx.net>
 
 	* input.c (input_list): Fix a bug for magicklib support.

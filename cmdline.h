@@ -5,6 +5,7 @@
 
 #include "getopt.h"
 #include "ptypes.h"
+#include "strgicmp.h"
 #include <string.h>
 
 
@@ -12,7 +13,7 @@
    Assumes the option index is in the variable `option_index', and the
    option table in a variable `long_options'.  */
 
-#define ARGUMENT_IS(a) STREQ (long_options[option_index].name, a)
+#define ARGUMENT_IS(a) strgicmp (long_options[option_index].name, a)
 
 /* Perform common actions at the end of parsing the arguments.  Assumes
    lots of variables: `printed_version', a boolean for whether the
@@ -56,4 +57,3 @@
 
 #endif /* not CMDLINE_H */
 
-/* version 0.25 */

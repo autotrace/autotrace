@@ -18,9 +18,8 @@
 
 #include "xstd.h"
 #include "filename.h"
+#include "strgicmp.h"
 #include <string.h>
-
-#define STREQ(s1, s2) (strcmp (s1, s2) == 0)
 
 struct input_format_entry {
   input_read reader;
@@ -58,7 +57,7 @@ input_get_handler_by_suffix (string suffix)
   struct input_format_entry * format;
   for (format = input_formats ; format->name; format++)
     {
-      if (STREQ (suffix, format->name))
+      if (strgicmp (suffix, format->name))
         {
           return format->reader;
         }
