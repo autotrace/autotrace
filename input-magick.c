@@ -90,7 +90,6 @@ at_bitmap_type input_magick_reader(at_string filename,
         bitmap.bitmap[point++]=pixel->blue;
       }
     }
-  /* TODO Resource should be freed. */
  cleanup:
   DestroyImageInfo(image_info);  
   DestroyImage(image);

@@ -1,3 +1,15 @@
+2002-10-07  Masatake YAMATO  <yamato@redhat.com>
+
+	* input-magick.c (input_magick_reader): removed
+	comments. suggested by Martin.
+
+2002-10-07  Martin Weber <martweb@gmx.net>
+
+	* output-eps.c (out_splines): Now the eps output is 
+	interpreted correctly by CorelDraw.
+
+	Message-ID: <3DA063E6.32835C45@gmx.net>.
+
 2002-10-07  Martin Weber <martweb@gmx.net>
 
 	* fit.c (find_tangent): fixed a bug in tangent
