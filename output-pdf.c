@@ -166,11 +166,11 @@ static int output_pdf_tailor(FILE* pdf_file, int length,
   OUT_LINE ("endobj");
   OUT_LINE ("xref");
   OUT_LINE ("0 7");
-  OUT_LINE ("0000000000 65535 f");
-  OUT_LINE ("0000000009 00000 n");
-  OUT_LINE ("0000000092 00000 n");
-  OUT_LINE ("0000000150 00000 n");
-  OUT_LINE ("0000000225 00000 n");
+  OUT_LINE ("0000000000 65535 f ");
+  OUT_LINE ("0000000009 00000 n ");
+  OUT_LINE ("0000000092 00000 n ");
+  OUT_LINE ("0000000150 00000 n ");
+  OUT_LINE ("0000000225 00000 n ");
   sprintf(temp, "%d", llx);
   tmp = 366;
   tmp += (strlen (temp));
@@ -180,10 +180,10 @@ static int output_pdf_tailor(FILE* pdf_file, int length,
   tmp += (strlen (temp));
   sprintf(temp, "%d", ury);
   tmp += (strlen (temp));
-  OUT1     ("%010d 00000 n\n", tmp);
+  OUT1     ("%010d 00000 n \n", tmp);
   sprintf(temp, "%d", length);
   tmp += 50 + length + strlen(temp);
-  OUT1     ("%010d 00000 n\n", tmp);
+  OUT1     ("%010d 00000 n \n", tmp);
   OUT_LINE ("trailer");
   OUT_LINE ("   << /Size 7");
   OUT_LINE ("      /Root 1 0 R");
@@ -300,7 +300,15 @@ int output_pdf_writer(FILE* pdf_file, at_string name,
 		      at_address msg_data)
 {
     int result;
-	int length = 0;
+    int length = 0;
+
+#ifdef _WINDOWS 
+    if(pdf_file == stdout)
+	  {
+        fprintf(stderr, "This driver couldn't write to stdout!\n");
+        return -1;
+      }
+#endif
 
     result = output_pdf_header(pdf_file, name, llx, lly, urx, ury);
     if (result != 0)

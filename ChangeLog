@@ -1,10 +1,23 @@
+2002-03-13  Martin Weber <martweb@gmx.net>
+
+	(Logged by Masatake.)
+	
+	* output-pdf.c (output_pdf_tailor): 
+	Put a space at the end of  OUT_LINE
+	and OUT1.
+
+	* output-pdf.c (output_pdf_writer): 
+	Print warnings if _WINDOWS is defined.
+
+	Message-ID: <3C8C7F1D.ACD14953@gmx.net>.
+	
 2002-03-13  Masatake YAMATO  <yamato@redhat.com>
 
 	* output-pdf.c (output_pdf_writer): 
 	removed a garbage that I had put.
 	Suggested by Martin.
 
-2002-03-011  Martin Weber <martweb@gmx.net>
+2002-03-11  Martin Weber <martweb@gmx.net>
 
 	* output-pdf.c: Fix a bug in xref table generator.
 
