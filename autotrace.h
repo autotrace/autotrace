@@ -374,9 +374,7 @@ void at_output_list_free(char ** list);
 /* at_output_shortlist
    return value: Do free by yourself */
 char * at_output_shortlist (void); 
-int   at_output_add_handler (at_string suffix, 
-			     at_string description, 
-			     at_output_write_func func);
+
 /* --------------------------------------------------------------------- *
  * Misc
  * --------------------------------------------------------------------- */

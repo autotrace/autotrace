@@ -116,7 +116,7 @@ at_input_list_new (void)
 #if (MagickLibVersion < 0x0534)
   magickinfo = info = GetMagickInfo(NULL);
 #else
-  magickinfo = info = GetMagickInfo("", &exception);
+  magickinfo = info = GetMagickInfo(NULL, &exception);
 #endif
 #endif
   count = count_int;

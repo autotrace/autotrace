@@ -1,5 +1,10 @@
 2002-05-12  Masatake YAMATO  <yamato@redhat.com>
 
+	* input.c (at_input_list_new): Pass NULL to GetMagickInfo
+	instead of empty string.
+
+	* output.h (at_output_add_handler): Moved from autotrace.h.
+
 	* Makefile.am: Made output.h installed.
 	
 	* spline.h: Use macros newly defined in output.h.
