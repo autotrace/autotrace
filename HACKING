@@ -1,6 +1,13 @@
 			     -*- text -*-
 		    Note for autotrace developers
 
+* How to release
+  
+  (1) Version number in configure.in
+  (2) Version number in README
+  (3) CVS tagging
+  (4) sourceforge(https://sourceforge.net/docman/display_doc.php?docid=781&group_id=1)
+
 * CVS
 
 See https://sourceforge.net/cvs/?group_id=11789 

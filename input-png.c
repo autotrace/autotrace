@@ -27,7 +27,7 @@
 #include <png.h>
 #include "input-png.h"
 
-static volatile char rcsid[]="$Id: input-png.c,v 1.2 2000/11/17 23:21:02 masata-y Exp $";
+static volatile char rcsid[]="$Id: input-png.c,v 1.3 2001/03/11 15:14:09 masata-y Exp $";
 
 /* for pre-1.0.6 versions of libpng */
 #ifndef png_jmpbuf
@@ -88,7 +88,7 @@ static int load_image(bitmap_type *image, FILE *stream) {
 
 	width = png_get_image_width(png, info);
 	height = png_get_image_height(png, info);
-	if ( png_get_color_type == PNG_COLOR_TYPE_GRAY ) {
+	if ( png_get_color_type(png, info) == PNG_COLOR_TYPE_GRAY ) {
 		pixel_size = 1;
 	} else {
 		pixel_size = 3;

@@ -1,3 +1,15 @@
+2001-03-12  Masatake YAMATO  <yamato@redhat.com>
+
+	* HACKING: Write about releasing scheme.
+
+	Updated by Martin.
+	Message-ID: <3AAB952E.7A1CE3A9@gmx.net>.
+	* autotrace.dsp: updated.
+
+2001-03-11  Masatake YAMATO  <yamato@redhat.com>
+
+	* input-png.c: Added arguments for png_get_color_type.
+
 2001-03-09  Masatake YAMATO  <yamato@redhat.com>
 
 	Applied a patch from Martin.
