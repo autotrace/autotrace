@@ -127,6 +127,8 @@ else
 fi
 AM_CONDITIONAL(HAVE_LIBSWF, test x$HAVE_LIBSWF = xyes)
 
+AC_CHECK_HEADERS(malloc.h)
+
 dnl
 dnl Vender's cc(not gcc)
 dnl

@@ -14,7 +14,9 @@ Copyright (C) 2000 Wolfgang Glunz, Martin Weber
 #include "xstd.h"
 #include <time.h>
 #include <string.h>
+#if HAVE_MALLOC_H
 #include <malloc.h>
+#endif
 #endif
 
 #define SIGN(x) ((x) > 0 ? 1 : (x) < 0 ? -1 : 0)

@@ -6,7 +6,10 @@
 #include "xstd.h"
 #include <time.h>
 #include <string.h>
+
+#if HAVE_MALLOC_H
 #include <malloc.h>
+#endif
 
 extern string version_string;
 

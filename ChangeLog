@@ -1,3 +1,14 @@
+2001-04-11  Masatake YAMATO  <yamato@redhat.com>
+
+	* output-er.c: Include malloc.h if HAVE_MALLOC_H is
+	defined.
+
+	* output-p2e.c: Likewise.
+
+	* configure.in: Check malloc.h.
+	These changes are suggested by 
+	Peter Cucka<pcucka@anim.dreamworks.com>.
+
 2001-03-25  Masatake YAMATO  <yamato@redhat.com>
 
 	* configure.in: VERSION 0.27a.
