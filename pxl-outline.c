@@ -52,35 +52,35 @@ typedef enum
 #define COMPUTE_COL_DELTA(dir)						\
   ((dir) == WEST ? -1 : (dir) == EAST ? +1 : 0)
 
-static pixel_outline_type find_one_outline (bitmap_type, edge_type, unsigned,
-  unsigned, bitmap_type *, bool, bool);
+static pixel_outline_type find_one_outline (bitmap_type, edge_type, unsigned short,
+  unsigned short, bitmap_type *, bool, bool);
 static pixel_outline_type find_one_centerline (bitmap_type, edge_type,
-  unsigned, unsigned, bitmap_type *);
+  unsigned short, unsigned short, bitmap_type *);
 static void append_pixel_outline (pixel_outline_list_type *,
   pixel_outline_type);
 static pixel_outline_type new_pixel_outline (void);
 static void concat_pixel_outline (pixel_outline_type *,
   const pixel_outline_type*);
 static void append_outline_pixel (pixel_outline_type *, coordinate_type);
-static bool is_marked_edge (edge_type, unsigned, unsigned, bitmap_type);
-static bool is_outline_edge (edge_type, bitmap_type, unsigned, unsigned,
+static bool is_marked_edge (edge_type, unsigned short, unsigned short, bitmap_type);
+static bool is_outline_edge (edge_type, bitmap_type, unsigned short, unsigned short,
   color_type);
 static edge_type next_edge (edge_type);
-static bool is_unmarked_outline_edge (unsigned, unsigned, edge_type,
+static bool is_unmarked_outline_edge (unsigned short, unsigned short, edge_type,
   bitmap_type, bitmap_type, color_type);
-static edge_type next_unmarked_outline_edge (unsigned row, unsigned col,
-  edge_type start, bitmap_type b, bitmap_type marked);
+static edge_type next_unmarked_outline_edge (unsigned short, unsigned short,
+  edge_type, bitmap_type, bitmap_type);
 
-static void mark_edge (edge_type e, unsigned row, unsigned col, bitmap_type *marked);
+static void mark_edge (edge_type e, unsigned short, unsigned short, bitmap_type *);
 static edge_type opposite_edge(edge_type);
 
-static void mark_pixel(unsigned row, unsigned col, bitmap_type *marked);
-static bool next_unmarked_outline_pixel(unsigned *row, unsigned *col,
-  direction_type *dir, bitmap_type character, bitmap_type *marked);
-static bool is_open_junction(unsigned row, unsigned col,
-  bitmap_type character, bitmap_type marked);
+static void mark_pixel(unsigned short, unsigned short, bitmap_type *);
+static bool next_unmarked_outline_pixel(unsigned short *, unsigned short *,
+  direction_type *, bitmap_type, bitmap_type *);
+static bool is_open_junction(unsigned short, unsigned short,
+  bitmap_type, bitmap_type);
 
-static coordinate_type NextPoint(bitmap_type, edge_type *, unsigned int *, unsigned int *, 
+static coordinate_type NextPoint(bitmap_type, edge_type *, unsigned short *, unsigned short *, 
   color_type, bool, bitmap_type);
 
 
@@ -101,7 +101,7 @@ find_outline_pixels (bitmap_type bitmap, color_type *bg_color,
 #endif
 {
   pixel_outline_list_type outline_list;
-  unsigned row, col;
+  unsigned short row, col;
   bitmap_type marked = new_bitmap (BITMAP_WIDTH (bitmap), BITMAP_HEIGHT (bitmap));
   unsigned int max_progress = BITMAP_HEIGHT (bitmap) * BITMAP_WIDTH (bitmap);
 
@@ -189,11 +189,11 @@ find_outline_pixels (bitmap_type bitmap, color_type *bg_color,
 
 static pixel_outline_type
 find_one_outline (bitmap_type bitmap, edge_type original_edge,
-		  unsigned original_row, unsigned original_col,
+		  unsigned short original_row, unsigned short original_col,
 		  bitmap_type *marked, bool clockwise, bool ignore)
 {
   pixel_outline_type outline;
-  unsigned row = original_row, col = original_col;
+  unsigned short row = original_row, col = original_col;
   edge_type edge = original_edge;
   coordinate_type pos;
 
@@ -235,7 +235,7 @@ find_centerline_pixels(bitmap_type bitmap, color_type bg_color,
 #endif
 {
     pixel_outline_list_type outline_list;
-    unsigned row, col;
+    unsigned short row, col;
     bitmap_type marked = new_bitmap(BITMAP_WIDTH(bitmap), BITMAP_HEIGHT (bitmap));
     unsigned int max_progress = BITMAP_HEIGHT (bitmap) * BITMAP_WIDTH (bitmap);
     
@@ -308,11 +308,11 @@ if (O_LENGTH(outline) > 1)
 
 static pixel_outline_type
 find_one_centerline(bitmap_type bitmap, edge_type original_edge,
-    unsigned original_row, unsigned original_col, bitmap_type *marked)
+    unsigned short original_row, unsigned short original_col, bitmap_type *marked)
 {
     pixel_outline_type outline = new_pixel_outline();
-    unsigned row = original_row, col = original_col;
-    unsigned prev_row, prev_col;
+    unsigned short row = original_row, col = original_col;
+    unsigned short prev_row, prev_col;
     edge_type edge = original_edge;
     direction_type search_dir = EAST;
     coordinate_type pos;
@@ -462,7 +462,7 @@ append_outline_pixel (pixel_outline_type *o, coordinate_type c)
 /* Is this really an edge and is it still unmarked? */
 
 static bool
-is_unmarked_outline_edge (unsigned row, unsigned col,
+is_unmarked_outline_edge (unsigned short row, unsigned short col,
 	                    edge_type edge, bitmap_type character,
                             bitmap_type marked, color_type color)
 {
@@ -478,7 +478,7 @@ is_unmarked_outline_edge (unsigned row, unsigned col,
    `next_edge'.  */
 
 static edge_type
-next_unmarked_outline_edge (unsigned row, unsigned col,
+next_unmarked_outline_edge (unsigned short row, unsigned short col,
 	                    edge_type starting_edge, bitmap_type character,
                             bitmap_type marked)
 {
@@ -505,7 +505,7 @@ next_unmarked_outline_edge (unsigned row, unsigned col,
 
 static bool
 is_outline_edge (edge_type edge, bitmap_type character,
-		 unsigned row, unsigned col, color_type color)
+		 unsigned short row, unsigned short col, color_type color)
 {
   /* If this pixel isn't of the same color, it's not part of the outline. */
   if (!COLOR_EQUAL (GET_COLOR (character, row, col), color))
@@ -561,7 +561,7 @@ opposite_edge(edge_type edge)
    NO_EDGE. */
 
 static void
-mark_edge (edge_type edge, unsigned row, unsigned col, bitmap_type *marked)
+mark_edge (edge_type edge, unsigned short row, unsigned short col, bitmap_type *marked)
 {
   *BITMAP_PIXEL (*marked, row, col) |= 1 << edge;
 }
@@ -570,7 +570,7 @@ mark_edge (edge_type edge, unsigned row, unsigned col, bitmap_type *marked)
 /* Mark all edges of the pixel ROW/COL in MARKED. */
 
 void
-mark_pixel(unsigned row, unsigned col, bitmap_type *marked)
+mark_pixel(unsigned short row, unsigned short col, bitmap_type *marked)
 {
     *BITMAP_PIXEL(*marked, row, col) |= ((1 << NUM_EDGES) - 1);
 }
@@ -579,7 +579,7 @@ mark_pixel(unsigned row, unsigned col, bitmap_type *marked)
 /* Test if the pixel at ROW/COL in MARKED is marked. */
 
 bool
-is_marked_pixel(unsigned row, unsigned col, bitmap_type marked)
+is_marked_pixel(unsigned short row, unsigned short col, bitmap_type marked)
 {
     unsigned mark = (1 << NUM_EDGES) - 1;
     return (bool)((*BITMAP_PIXEL(marked, row, col) & mark) == mark);
@@ -587,7 +587,7 @@ is_marked_pixel(unsigned row, unsigned col, bitmap_type marked)
 
 
 bool
-next_unmarked_outline_pixel(unsigned *row, unsigned *col,
+next_unmarked_outline_pixel(unsigned short *row, unsigned short *col,
     direction_type *dir, bitmap_type character, bitmap_type *marked)
 {
     color_type color;
@@ -599,10 +599,10 @@ next_unmarked_outline_pixel(unsigned *row, unsigned *col,
     color = GET_COLOR(character, *row, *col);
     do
     {
-	int delta_r = COMPUTE_DELTA(ROW, test_dir);
-	int delta_c = COMPUTE_DELTA(COL, test_dir);
-	unsigned int test_row = orig_row + delta_r;
-	unsigned int test_col = orig_col + delta_c;
+	short delta_r = COMPUTE_DELTA(ROW, test_dir);
+	short delta_c = COMPUTE_DELTA(COL, test_dir);
+	unsigned short test_row = orig_row + delta_r;
+	unsigned short test_col = orig_col + delta_c;
 
 	test_edge = (edge_type)((test_dir / 2 + 3) % 4);
 	if (BITMAP_VALID_PIXEL(character, test_row, test_col)
@@ -631,7 +631,7 @@ next_unmarked_outline_pixel(unsigned *row, unsigned *col,
 /* Return the number of pixels adjacent to pixel ROW/COL that are black. */
 
 unsigned
-num_neighbors(unsigned row, unsigned col, bitmap_type character)
+num_neighbors(unsigned short row, unsigned short col, bitmap_type character)
 {
     unsigned dir, count = 0;
     color_type color = GET_COLOR(character, row, col);
@@ -652,7 +652,7 @@ num_neighbors(unsigned row, unsigned col, bitmap_type character)
 /* Return the number of pixels adjacent to pixel ROW/COL that are marked. */
 
 unsigned
-num_marked_neighbors(unsigned row, unsigned col, bitmap_type marked)
+num_marked_neighbors(unsigned short row, unsigned short col, bitmap_type marked)
 {
     unsigned dir, count = 0, mark = (1 << NUM_EDGES) - 1;
     for (dir = NORTH; dir <= NORTHEAST; dir++)
@@ -673,7 +673,7 @@ num_marked_neighbors(unsigned row, unsigned col, bitmap_type marked)
    than one unmarked path passes. */
 
 bool
-is_open_junction(unsigned row, unsigned col, bitmap_type character,
+is_open_junction(unsigned short row, unsigned short col, bitmap_type character,
     bitmap_type marked)
 {
     unsigned n = num_neighbors(row, col, character);
@@ -684,14 +684,14 @@ is_open_junction(unsigned row, unsigned col, bitmap_type character,
 /* Test if the edge EDGE at ROW/COL in MARKED is marked.  */
 
 static bool
-is_marked_edge (edge_type edge, unsigned row, unsigned col, bitmap_type marked)
+is_marked_edge (edge_type edge, unsigned short row, unsigned short col, bitmap_type marked)
 {
   return
     (bool)(edge == NO_EDGE ? false : (*BITMAP_PIXEL (marked, row, col) & (1 << edge)) != 0);
 }
 
 
-static coordinate_type NextPoint(bitmap_type bitmap, edge_type *edge, unsigned int *row, unsigned int *col,
+static coordinate_type NextPoint(bitmap_type bitmap, edge_type *edge, unsigned short *row, unsigned short *col,
   color_type color, bool clockwise, bitmap_type marked)
 {
   coordinate_type pos;

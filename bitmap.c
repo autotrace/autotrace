@@ -6,7 +6,7 @@
 #include <string.h>
 
 bitmap_type
-new_bitmap (unsigned int width, unsigned int height)
+new_bitmap (unsigned short width, unsigned short height)
 {
   bitmap_type answer;
   unsigned size = width * height;

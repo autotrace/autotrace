@@ -54,9 +54,6 @@ static void dot_printer(real percentage, address client_data);
 
 static char * read_command_line (int, char * [], at_fitting_opts_type *);
 
-/* Read the string S as a percentage, i.e., a number between 0 and 100.  */
-static real get_percent (char *);
-
 static unsigned int hctoi (char c);
 
 void input_list_formats(FILE * file);
@@ -263,9 +260,9 @@ read_command_line (int argc, char * argv[],
         {
            if (strlen (optarg) != 6)
                FATAL ("background-color be six chars long");
-	       fitting_opts->bgColor = at_color_new(hctoi (optarg[0]) * 16 + hctoi (optarg[1]),
-				       hctoi (optarg[2]) * 16 + hctoi (optarg[3]),
-				       hctoi (optarg[4]) * 16 + hctoi (optarg[5]));
+	       fitting_opts->bgColor = at_color_new((unsigned char)(hctoi (optarg[0]) * 16 + hctoi (optarg[1])),
+				       (unsigned char)(hctoi (optarg[2]) * 16 + hctoi (optarg[3])),
+				       (unsigned char)(hctoi (optarg[4]) * 16 + hctoi (optarg[5])));
 	    }
       else if (ARGUMENT_IS ("color-count"))
         fitting_opts->color_count = atou (optarg);
@@ -371,19 +368,6 @@ get_basename (char * name)
   char * base = strrchr (name, '/');
 #endif
   return base ? base + 1 : name;
-}
-
-
-/* Read the string S as a percentage, i.e., a number between 0 and 100.  */
-
-static real get_percent(char * s)
-{
-  unsigned temp;
-  temp = atou (s);
-  if (temp > 100)
-    FATAL1 ("get_percent: The argument %u should be atmost 100, since \
-it's a percentage", temp);
-  return (real) ((real) temp / 100.0);
 }
 
 

@@ -6,8 +6,7 @@
 #include "ptypes.h"
 #include "bitmap.h"
 
-bitmap_type pnm_load_image (string filename);
+bitmap_type pnm_load_image (at_string filename);
 
 #endif /* not INPUT_PNM_H */
 
-/* version 0.23 */

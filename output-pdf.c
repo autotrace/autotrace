@@ -9,9 +9,7 @@
 #include <time.h>
 #include <string.h>
 
-extern string version_string;
-
-static string now (void);
+static at_string now (void);
 
 #define SIGN(x) ((x) > 0 ? 1 : (x) < 0 ? -1 : 0)
 #define ROUND(x) ((int) ((int) (x) + .5 * SIGN (x)))
@@ -122,7 +120,7 @@ static string now (void);
 /* This should be called before the others in this file. It opens the
    output file `OUTPUT_NAME.pdf', and writes some preliminary boilerplate. */
 
-static int output_pdf_header(FILE* pdf_file, string name,
+static int output_pdf_header(FILE* pdf_file, at_string name,
 			     int llx, int lly, int urx, int ury)
 {
   OUT_LINE ("%PDF-1.2");
@@ -272,7 +270,7 @@ out_splines (FILE *pdf_file, spline_list_array_type shape)
 }
 
 
-int output_pdf_writer(FILE* pdf_file, string name,
+int output_pdf_writer(FILE* pdf_file, at_string name,
 		      int llx, int lly, int urx, int ury, int dpi,
 		      spline_list_array_type shape)
 {

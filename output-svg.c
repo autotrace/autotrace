@@ -48,7 +48,7 @@ out_splines (FILE * file, spline_list_array_type shape, int height)
 }
 
 
-int output_svg_writer(FILE* file, string name,
+int output_svg_writer(FILE* file, at_string name,
 		      int llx, int lly, int urx, int ury, int dpi,
 		      spline_list_array_type shape)
 {

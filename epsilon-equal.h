@@ -16,4 +16,3 @@ extern bool epsilon_equal (real v1, real v2);
 
 #endif /* not EPSILON_EQUAL_H */
 
-/* version 0.25 */

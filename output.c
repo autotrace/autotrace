@@ -49,7 +49,7 @@ static struct output_format_entry output_formats[] = {
 };
 
 output_write
-output_get_handler(string filename)
+output_get_handler(at_string filename)
 {
   char * ext = find_suffix (filename);
   if (ext == NULL)
@@ -59,7 +59,7 @@ output_get_handler(string filename)
 }
 
 output_write 
-output_get_handler_by_suffix(string name)
+output_get_handler_by_suffix(at_string name)
 {
     struct output_format_entry *entry;
 

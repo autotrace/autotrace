@@ -4,7 +4,7 @@
 #include "types.h"
 #include "ptypes.h"
 
-extern bool strgicmp (const unsigned char *s1, const unsigned char *s2);
-extern bool strgnicmp (const unsigned char *s1, const unsigned char *s2, long len);
+extern bool strgicmp (const char *s1, const char *s2);
+extern bool strgnicmp (const char *s1, const char *s2, long len);
 
-#endif /* STRGICMP_H */
+#endif /* not STRGICMP_H */

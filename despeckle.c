@@ -309,8 +309,7 @@ ignore (/* in */     int    x,
  */
 
 static bool
-recolor (/* in */     int    current_size,
-         /* in */     double adaptive_tightness,
+recolor (/* in */     double adaptive_tightness,
          /* in */     int    x,
          /* in */     int    y,
          /* in */     int    width,
@@ -401,7 +400,7 @@ despeckle_iteration (/* in */     int    level,
 
               if (size < current_size)
                 {
-                  if (recolor (current_size, tightness,
+                  if (recolor (tightness,
                                x, y, width, height,
                                bitmap, mask))
                     x--;

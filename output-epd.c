@@ -10,9 +10,7 @@
 #include <time.h>
 #include <string.h>
 
-extern string version_string;
-
-static string now (void);
+static at_string now (void);
 
 #define SIGN(x) ((x) > 0 ? 1 : (x) < 0 ? -1 : 0)
 #define ROUND(x) ((int) ((int) (x) + .5 * SIGN (x)))
@@ -72,10 +70,10 @@ static string now (void);
 /* This should be called before the others in this file.  It opens the
    output file `OUTPUT_NAME.ps', and writes some preliminary boilerplate. */
 
-static int output_epd_header(FILE* epd_file, string name,
+static int output_epd_header(FILE* epd_file, at_string name,
 			     int llx, int lly, int urx, int ury)
 {
-  string time;
+  at_string time;
 
   OUT_LINE ("%EPD-1.0");
   OUT1 ("%% Created by %s\n", version_string);
@@ -136,7 +134,7 @@ out_splines (FILE * epd_file, spline_list_array_type shape)
 }
 
 
-int output_epd_writer(FILE* epd_file, string name,
+int output_epd_writer(FILE* epd_file, at_string name,
 		      int llx, int lly, int urx, int ury, int dpi,
 		      spline_list_array_type shape)
 {
@@ -152,10 +150,10 @@ int output_epd_writer(FILE* epd_file, string name,
 }
 
 
-static string
+static at_string
 now (void)
 {
-  string time_string;
+  at_string time_string;
   time_t t = time (0);
 
   XMALLOC (time_string, 26); /* not 25 ! */

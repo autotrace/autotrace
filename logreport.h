@@ -36,4 +36,3 @@ extern void flush_log_output (void);
 
 #endif /* not LOGREPORT_H */
 
-/* version 0.19 */

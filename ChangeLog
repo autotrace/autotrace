@@ -1,3 +1,43 @@
+2001-12-23  Martin Weber <martweb@gmx.net>
+
+        * (.*): Remove version num in comments.
+	Use at_string instead of string.
+	Change the data type for number.
+	Remove decl of version_string. (e.g. unsigned -> unsigned short)
+
+	* version.c: Include ptypes.h.
+
+	* ptypes.h: Declare version_string. Remove at_string.
+
+	* output-emf.c (OutputEmf, GetEmfStats): Initialized last_color.
+
+	* output-dxf.c (output_layer, out_splines, out_splines): 
+	Initialized local vars.
+
+	* main.c (get_percent): Removed.
+
+	* logreport.h: R.
+
+	* logreport.c: R.
+
+	* input-tga.h: P, R.
+
+	* input-tga.c (tga_load_image): Remove a
+	parameter `filename'.
+	(tga_load_image): Likewise.
+
+	* fit.c (filter_angle, find_curve_vectors): Removed.
+	(fit_with_least_squares): Remove local variable `iteration'.
+
+	* despeckle.c (recolor, despeckle_iteration): 
+	Remove a parameter, `current_size'.
+
+	* autotrace.sln: New file.
+
+	* autotrace.vcproj: Likewise.
+
+	(Message-ID: <3C23045E.E5636FF5@gmx.net>).
+	
 2001-12-18  Per Grahn <pergra@foi.se>
 
         * output-emf.c (output_emf_writer): added `dpi'.

@@ -186,4 +186,3 @@ append_spline_list (spline_list_array_type *l, spline_list_type s)
   LAST_SPLINE_LIST_ARRAY_ELT (*l) = s;
 }
 
-/* version 0.25 */

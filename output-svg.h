@@ -8,11 +8,10 @@
 #include "ptypes.h"
 #include "spline.h"
 
-int output_svg_writer(FILE* file, string name,
+int output_svg_writer(FILE* file, at_string name,
 		      int llx, int lly, int urx, int ury, int dpi,
 		      spline_list_array_type shape);
 
 
 #endif /* not OUTPUT_SVG_H */
 
-/* version 0.17 */

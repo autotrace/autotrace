@@ -16,5 +16,3 @@ epsilon_equal (real v1, real v2)
     || fabs (v1 - v2) <= REAL_EPSILON;
 }
 
-
-/* version 0.26 */

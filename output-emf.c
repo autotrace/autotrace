@@ -12,10 +12,6 @@
 #include "spline.h"
 #include "xstd.h"
 
-/* external declarations */
-
-extern char *version_string;
-
 /* EMF record-number definitions */
 
 #define ENMT_HEADER                1
@@ -77,7 +73,7 @@ typedef struct
 
 static EMFColorList *color_list = NULL;  /* Color list */
 static UI32 *color_table = NULL;         /* Color table */
-static char *editor;                     /* Editor description string */
+static at_string editor;                     /* Editor description string */
 static float scale;
 
 /* color list & table functions */
@@ -462,7 +458,7 @@ static int WriteEndOfMetafile(FILE *fdes)
   return recsize;
 }
 
-static int WriteHeader(FILE *fdes, string name, int width, int height, int fsize, int nrec, int nhand)
+static int WriteHeader(FILE *fdes, at_string name, int width, int height, int fsize, int nrec, int nhand)
 {
   int i, desclen, recsize;
 
@@ -529,14 +525,14 @@ static int WriteHeader(FILE *fdes, string name, int width, int height, int fsize
 
 /* EMF stats collector */
 
-static void GetEmfStats(EMFStats *stats, string name, spline_list_array_type shape)
+static void GetEmfStats(EMFStats *stats, at_string name, spline_list_array_type shape)
 {
   unsigned int i, j;
   int ncolors = 0;
   int ncolorchng = 0;
   int nrecords = 0;
   int filesize = 0;
-  UI32 last_color, curr_color;
+  UI32 last_color = 0xFFFFFFFF, curr_color;
   spline_list_type curr_list;
   spline_type curr_spline;
   int last_degree;
@@ -630,11 +626,11 @@ static void GetEmfStats(EMFStats *stats, string name, spline_list_array_type sha
 
 /* EMF output */
 
-static void OutputEmf(FILE* fdes, EMFStats *stats, string name, int width, int height, spline_list_array_type shape)
+static void OutputEmf(FILE* fdes, EMFStats *stats, at_string name, int width, int height, spline_list_array_type shape)
 {
   unsigned int i, j;
   int color_index;
-  UI32 last_color, curr_color;
+  UI32 last_color = 0xFFFFFFFF, curr_color;
   spline_list_type curr_list;
   spline_type curr_spline;
   int last_degree, open_path = 0;
@@ -751,7 +747,7 @@ static void OutputEmf(FILE* fdes, EMFStats *stats, string name, int width, int h
 }
 
 
-int output_emf_writer(FILE* file, string name,
+int output_emf_writer(FILE* file, at_string name,
 		      int llx, int lly, int urx, int ury, int dpi,
 		      spline_list_array_type shape)
 {

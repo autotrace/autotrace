@@ -42,7 +42,7 @@ static struct input_format_entry input_formats[] = {
 };
 
 input_read
-input_get_handler (string filename)
+input_get_handler (at_string filename)
 {
   char * ext = find_suffix (filename);
   if (ext == NULL)
@@ -52,7 +52,7 @@ input_get_handler (string filename)
 }
 
 input_read
-input_get_handler_by_suffix (string suffix)
+input_get_handler_by_suffix (at_string suffix)
 {
   struct input_format_entry * format;
   for (format = input_formats ; format->name; format++)

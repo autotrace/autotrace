@@ -284,4 +284,3 @@ int_to_real_coord (coordinate_type int_coord)
   return real_coord;
 }
 
-/* version 0.26 */

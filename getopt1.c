@@ -37,4 +37,3 @@ getopt_long_only (int argc, char *const *argv, const char *options,
   return _getopt_internal (argc, argv, options, long_options, opt_index, 1);
 }
 
-/* version 0.17 */

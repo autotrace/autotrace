@@ -4,7 +4,7 @@
 #include "atou.h"
 
 unsigned
-atou (string s)
+atou (at_string s)
 {
   int i = atoi (s);
 
@@ -14,4 +14,3 @@ atou (string s)
   return (unsigned) i;
 }
 
-/* version 0.26 */

@@ -33,7 +33,7 @@ typedef at_bitmap_type bitmap_type;
 
 /* Allocate storage for the bits, set them all to white, and return an
    initialized structure.  */
-extern bitmap_type new_bitmap (unsigned int, unsigned int);
+extern bitmap_type new_bitmap (unsigned short, unsigned short);
 
 /* Free that storage.  */
 extern void free_bitmap (bitmap_type *);

@@ -96,4 +96,3 @@ extern void free_spline_list_array (spline_list_array_type *);
 
 #endif /* not SPLINE_H */
 
-/* version 0.25 */

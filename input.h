@@ -8,8 +8,8 @@
 #include "ptypes.h"
 
 typedef at_input_read_func input_read;
-input_read input_get_handler (string filename);
-input_read input_get_handler_by_suffix (string suffix);
+input_read input_get_handler (at_string filename);
+input_read input_get_handler_by_suffix (at_string suffix);
 char ** input_list (void);
 char * input_shortlist (void);
 

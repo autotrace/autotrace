@@ -4,7 +4,7 @@
 #include <errno.h>
 
 FILE *
-xfopen (string filename, string mode)
+xfopen (at_string filename, at_string mode)
 {
   FILE *f;
 
@@ -22,7 +22,7 @@ xfopen (string filename, string mode)
 
 
 void
-xfclose (FILE *f, string filename)
+xfclose (FILE *f, at_string filename)
 {
   if (f != stdin)
     {
@@ -32,7 +32,7 @@ xfclose (FILE *f, string filename)
 }
 
 void
-xfseek (FILE *f, long offset, int wherefrom, string filename)
+xfseek (FILE *f, long offset, int wherefrom, at_string filename)
 {
   if (fseek (f, offset, wherefrom) < 0)
     FATAL_PERROR (filename);

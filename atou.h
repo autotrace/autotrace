@@ -6,8 +6,7 @@
 #include "ptypes.h"
 #include "atou.h"
 
-unsigned atou (string s);
+unsigned atou (at_string s);
 
 #endif /* not ATOU_H */
 
-/* version 0.26 */

@@ -76,4 +76,3 @@ extern bool IPequal (const coordinate_type, const coordinate_type);
 
 #endif /* not VECTOR_H */
 
-/* version 0.26 */

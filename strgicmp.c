@@ -1,7 +1,7 @@
 #include "strgicmp.h"
 #include <ctype.h>
 
-bool strgicmp (const unsigned char *s1, const unsigned char *s2)
+bool strgicmp (const char *s1, const char *s2)
 {
   if (s1 == NULL || s2 == NULL)
     return (false);
@@ -19,7 +19,7 @@ bool strgicmp (const unsigned char *s1, const unsigned char *s2)
     return (false);
 }
 
-bool strgnicmp (const unsigned char *s1, const unsigned char *s2, long len)
+bool strgnicmp (const char *s1, const char *s2, long len)
 {
   long i = 0;
 

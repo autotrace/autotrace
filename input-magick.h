@@ -6,6 +6,6 @@
 #include "ptypes.h"
 #include "bitmap.h"
 
-bitmap_type magick_load_image (string filename);
+bitmap_type magick_load_image (at_string filename);
 
 #endif /* not INPUT_MAGICK_H */

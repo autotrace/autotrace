@@ -3,18 +3,17 @@
    Copyright (C) 2000 Wolfgang Glunz 
 */
 
-#ifndef P2EOUT_H
-#define P2EOUT_H
+#ifndef OUTPUT_P2E_H
+#define OUTPUT_P2E_H
 
 #include <stdio.h>
 #include "ptypes.h"
 #include "spline.h"
 
-int output_p2e_writer (FILE* file, string name,
+int output_p2e_writer (FILE* file, at_string name,
 		       int llx, int lly, int urx, int ury, int dpi,
 		       spline_list_array_type shape);
 
 
-#endif /* not P2EOUT_H */
+#endif /* not OUTPUT_P2E_H */
 
-/* version 0.24a */

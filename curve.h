@@ -140,4 +140,3 @@ extern void append_curve_list (curve_list_array_type *, curve_list_type);
 
 #endif /* not CURVE_H */
 
-/* version 0.26 */

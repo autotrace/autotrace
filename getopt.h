@@ -104,4 +104,4 @@ extern int _getopt_internal (int argc, char *const *argv,
 #endif /* __cplusplus */
 
 #endif /* GETOPT_H */
-/* version 0.17 */
+

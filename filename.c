@@ -26,19 +26,19 @@ Foundation, Inc., 675 Mass Ave, Cambridge, MA 02139, USA.  */
 
 /* Return a fresh copy of SOURCE[START..LIMIT], or NULL if LIMIT<START.
    If LIMIT>strlen(START), it is reassigned. */
-static string substring (string source, const unsigned start, const unsigned limit);
+static at_string substring (at_string source, const unsigned start, const unsigned limit);
 
 /* Return a fresh copy of S1 followed by S2, et al.  */
-static string concat3 (string, string, string);
+static at_string concat3 (at_string, at_string, at_string);
 
-string
-find_suffix (string name)
+at_string
+find_suffix (at_string name)
 {
-  string dot_pos = strrchr (name, '.');
+  at_string dot_pos = strrchr (name, '.');
 #ifdef WIN32
-  string slash_pos = strrchr (name, '\\');
+  at_string slash_pos = strrchr (name, '\\');
 #else
-  string slash_pos = strrchr (name, '/');
+  at_string slash_pos = strrchr (name, '/');
 #endif
 
   /* If the name is `foo' or `/foo.bar/baz', we have no extension.  */
@@ -48,22 +48,22 @@ find_suffix (string name)
     : dot_pos + 1;
 }
 
-string
-extend_filename (string name, string default_suffix)
+at_string
+extend_filename (at_string name, at_string default_suffix)
 {
-  string new_s;
-  string suffix = find_suffix (name);
+  at_string new_s;
+  at_string suffix = find_suffix (name);
 
   new_s = suffix == NULL
           ? concat3 (name, ".", default_suffix) : name;
   return new_s;
 }
 
-string
-make_suffix (string s, string new_suffix)
+at_string
+make_suffix (at_string s, at_string new_suffix)
 {
-  string new_s;
-  string old_suffix = find_suffix (s);
+  at_string new_s;
+  at_string old_suffix = find_suffix (s);
 
   if (old_suffix == NULL)
     new_s = concat3 (s, ".", new_suffix);
@@ -79,19 +79,19 @@ make_suffix (string s, string new_suffix)
   return new_s;
 }
 
-string
-remove_suffix (string s)
+at_string
+remove_suffix (at_string s)
 {
-  string suffix = find_suffix (s);
+  at_string suffix = find_suffix (s);
 
   return suffix == NULL ? s : suffix - 2 - s < 0 ? NULL : substring (s, 0, suffix - 2 - s);
 }
 
 /* From substring.c */
-static string
-substring (string source, const unsigned start, const unsigned limit)
+static at_string
+substring (at_string source, const unsigned start, const unsigned limit)
 {
-  string result;
+  at_string result;
   unsigned this_char;
   unsigned length = strlen (source);
   unsigned lim = limit;
@@ -115,10 +115,10 @@ substring (string source, const unsigned start, const unsigned limit)
   return result;
 }
 
-static string
-concat3 (string s1, string s2, string s3)
+static at_string
+concat3 (at_string s1, at_string s2, at_string s3)
 {
-  string answer;
+  at_string answer;
   XMALLOC (answer, strlen (s1) + strlen (s2) + strlen (s3) + 1);
   strcpy (answer, s1);
   strcat (answer, s2);

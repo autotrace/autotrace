@@ -18,4 +18,3 @@ typedef struct
 
 #endif /* not IMAGE_HEADER_H */
 
-/* version 0.23 */

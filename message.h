@@ -46,4 +46,3 @@
 
 #endif /* not MESSAGE_H */
 
-/* version 0.25 */

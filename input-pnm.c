@@ -117,7 +117,7 @@ static struct struct_pnm_types
   {  0 , 0, 0,   0, NULL}
 };
 
-bitmap_type pnm_load_image (string filename)
+bitmap_type pnm_load_image (at_string filename)
 {
   char buf[BUFLEN];		/* buffer for random things like scanning */
   PNMInfo *pnminfo;
@@ -192,8 +192,8 @@ bitmap_type pnm_load_image (string filename)
         FATAL ("pnm filter: invalid maxval while loading\n");
     }
 
-  BITMAP_WIDTH (bitmap) = pnminfo->xres;
-  BITMAP_HEIGHT (bitmap) = pnminfo->yres;
+  BITMAP_WIDTH (bitmap) = (unsigned short) pnminfo->xres;
+  BITMAP_HEIGHT (bitmap) = (unsigned short) pnminfo->yres;
 
   BITMAP_PLANES (bitmap) = (pnminfo->np)?(pnminfo->np):1;
   BITMAP_BITS (bitmap) = (unsigned char *) malloc (pnminfo->yres *
@@ -249,7 +249,7 @@ pnm_load_ascii (PNMScanner *scan,
 		switch (info->maxval)
 		  {
 		  case 255:
-		    d[b] = isdigit(*buf)?atoi(buf):0;
+		    d[b] = (unsigned char) (isdigit(*buf)?atoi(buf):0);
 		    break;
 		  case 1:
 		    d[b] = (*buf=='0')?0xff:0x00;

@@ -46,13 +46,13 @@ at_fitting_opts_free(at_fitting_opts_type * opts)
 }
 
 at_input_read_func
-at_input_get_handler (string filename)
+at_input_get_handler (at_string filename)
 {
   return input_get_handler(filename);
 }
 
 at_input_read_func
-at_input_get_handler_by_suffix (string suffix)
+at_input_get_handler_by_suffix (at_string suffix)
 {
   return input_get_handler_by_suffix(suffix);
 }
@@ -70,7 +70,7 @@ at_input_list_free(char ** list)
 
 at_bitmap_type *
 at_bitmap_new (at_input_read_func input_reader,
-	       string filename)
+	       at_string filename)
 {
   at_bitmap_type * bitmap;
   XMALLOC(bitmap, sizeof(at_bitmap_type)); 
@@ -186,13 +186,13 @@ at_splines_free (at_splines_type * splines)
 /* TODO internal data access */
 
 at_output_write_func 
-at_output_get_handler (string filename)
+at_output_get_handler (at_string filename)
 {
   return output_get_handler(filename);
 }
 
 at_output_write_func 
-at_output_get_handler_by_suffix (string suffix)
+at_output_get_handler_by_suffix (at_string suffix)
 {
   return output_get_handler_by_suffix(suffix);
 }

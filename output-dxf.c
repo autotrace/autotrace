@@ -606,7 +606,7 @@ static void out_splines (FILE * dxf_file, spline_list_array_type shape)
   unsigned this_list;
   double startx, starty;
   xypnt_head_rec *vec, *res;
-  xypnt pnt, pnt1, pnt_old;
+  xypnt pnt, pnt1, pnt_old  = {0,0};
   char fin, new_layer=0, layerstr[10];
   int i, first_seg = 1, idx;
 
@@ -615,7 +615,7 @@ static void out_splines (FILE * dxf_file, spline_list_array_type shape)
        this_list++)
     {
       unsigned this_spline;
-      color_type last_color;
+      color_type last_color = {0,0,0};
 
       spline_list_type list = SPLINE_LIST_ARRAY_ELT (shape, this_list);
       spline_type first = SPLINE_LIST_ELT (list, 0);
@@ -761,7 +761,7 @@ void output_layer(FILE *dxf_file,
   for (this_list = 0; this_list < SPLINE_LIST_ARRAY_LENGTH (shape);
        this_list++)
     {
-      color_type last_color;
+      color_type last_color = {0,0,0};
 
       spline_list_type list = SPLINE_LIST_ARRAY_ELT (shape, this_list);
 
@@ -826,7 +826,7 @@ void output_layer(FILE *dxf_file,
 /******************************************************************************
 * DXF output function.
 */
-int output_dxf12_writer(FILE* dxf_file, string name,
+int output_dxf12_writer(FILE* dxf_file, at_string name,
 			int llx, int lly, int urx, int ury, int dpi,
 			spline_list_array_type shape)
 {

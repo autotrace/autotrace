@@ -64,6 +64,11 @@ normalize (const vector_type v)
     new_v.dx = v.dx / m;
     new_v.dy = v.dy / m;
   }
+  else
+  {
+	new_v.dx = v.dx;
+    new_v.dy = v.dy;
+  }
 
   return new_v;
 }
@@ -140,8 +145,8 @@ Vadd_int_point (const coordinate_type c, const vector_type v)
 {
   coordinate_type a;
 
-  a.x = ROUND ((real) c.x + v.dx);
-  a.y = ROUND ((real) c.y + v.dy);
+  a.x = (unsigned short) ROUND ((real) c.x + v.dx);
+  a.y = (unsigned short) ROUND ((real) c.y + v.dy);
   return a;
 }
 
@@ -239,8 +244,8 @@ IPmult_scalar (const coordinate_type c, const int i)
 {
   coordinate_type a;
 
-  a.x = c.x * i;
-  a.y = c.y * i;
+  a.x = (unsigned short) (c.x * i);
+  a.y = (unsigned short) (c.y * i);
 
   return a;
 }
@@ -281,5 +286,3 @@ acos_d (real v)
 
   return a * (real) 180.0 / (real) M_PI;
 }
-
-/* version 0.26 */

@@ -164,8 +164,8 @@ struct _at_fitting_opts_type
 
 struct _at_bitmap_type
 {
-  unsigned height;
-  unsigned width;
+  unsigned short height;
+  unsigned short width;
   unsigned char *bitmap;
   unsigned int np;
 };

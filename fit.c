@@ -25,7 +25,7 @@
 
 #define SQUARE(x) ((x) * (x))
 #define CUBE(x) ((x) * (x) * (x))
-#define ROUND(x) ((int) ((int) (x) + .5 * SIGN (x)))
+#define ROUND(x) ((unsigned short) ((unsigned short) (x) + .5 * SIGN (x)))
 #define SIGN(x) ((x) > 0 ? 1 : (x) < 0 ? -1 : 0)
 
 /* We need to manipulate lists of array indices.  */
@@ -48,9 +48,6 @@ static void remove_adjacent_corners (index_list_type *, unsigned, bool);
 static void change_bad_lines (spline_list_type *,
   fitting_opts_type *);
 static void filter (curve_type, fitting_opts_type *);
-static real filter_angle (vector_type, vector_type);
-static void find_curve_vectors
-  (unsigned, curve_type, unsigned, vector_type *, vector_type *, unsigned *);
 static void find_vectors
   (unsigned, pixel_outline_type, vector_type *, vector_type *, unsigned);
 static index_list_type find_corners (pixel_outline_type,
@@ -920,76 +917,6 @@ filter (curve_type curve, fitting_opts_type *fitting_opts)
   log_curve (curve, false);
 }
 
-/* Return the vectors IN and OUT, computed by looking at SURROUND points
-   on either side of TEST_INDEX.  Also return the number of points in
-   the vectors in COUNT (we make sure they are the same).  */
-
-static void
-find_curve_vectors (unsigned test_index, curve_type curve,
-                    unsigned surround,
-                    vector_type *in, vector_type *out, unsigned *count)
-{
-  signed int i; /* have to be signed */
-  unsigned in_count, out_count;
-  unsigned n_done;
-  real_coordinate_type candidate = CURVE_POINT (curve, test_index);
-
-  /* Add up the differences from p of the `surround' points
-     before p.  */
-  in->dx = 0.0;
-  in->dy = 0.0;
-  for (i = CURVE_PREV (curve, test_index), n_done = 0;
-       i >= 0 && n_done < surround;  /* Do not wrap around.  */
-       i = CURVE_PREV (curve, i), n_done++)
-    *in = Vadd (*in, Psubtract (CURVE_POINT (curve, i), candidate));
-  in_count = n_done;
-
-  /* And the points after p.  Don't use more points after p than we
-     ended up with before it.  */
-  out->dx = 0.0;
-  out->dy = 0.0;
-  for (i = CURVE_NEXT (curve, test_index), n_done = 0;
-       (i < (signed) CURVE_LENGTH (curve)) && (n_done < surround) && (n_done < in_count);
-       i = CURVE_NEXT (curve, (unsigned) i), n_done++)
-    *out = Vadd (*out, Psubtract (CURVE_POINT (curve, i), candidate));
-  out_count = n_done;
-
-  /* If we used more points before p than after p, we have to go back
-     and redo it.  (We could just subtract the ones that were missing,
-     but for this few of points, efficiency doesn't matter.)  */
-  if (out_count < in_count)
-    {
-      in->dx = 0.0;
-      in->dy = 0.0;
-      for (i = CURVE_PREV (curve, test_index), n_done = 0;
-           i >= 0 && n_done < out_count;
-           i = CURVE_PREV (curve, i), n_done++)
-        *in = Vadd (*in, Psubtract (CURVE_POINT (curve, i), candidate));
-      in_count = n_done;
-    }
-
-  assert (in_count == out_count);
-  *count = in_count;
-}
-
-/* Find the angle between the vectors IN and OUT, and bring it into the
-   range [0,45].  */
-
-static real
-filter_angle (vector_type in, vector_type out)
-{
-  real angle = Vangle (in, out);
-
-  /* What we want to do between 90 and 180 is the same as what we
-     want to do between 0 and 90.  */
-  angle = (real) fmod (angle, 1990.0);
-
-  /* And what we want to do between 45 and 90 is the same as
-     between 0 and 45, only reversed.  */
-  if (angle > (real) 45.0) angle = (real) 90.0 - angle;
-
-  return angle;
-}
 
 /* This routine returns the curve fitted to a straight line in a very
    simple way: make the first and last points on the curve be the
@@ -1030,7 +957,6 @@ fit_with_least_squares (curve_type curve, fitting_opts_type *fitting_opts)
   spline_type spline, best_spline;
   spline_list_type *spline_list;
   unsigned worst_point;
-  unsigned iteration = 0;
   real previous_error = FLT_MAX;
 
   LOG ("\nFitting with least squares:\n");

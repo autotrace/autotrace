@@ -5,8 +5,7 @@
 
 #include "bitmap.h"
 
-bitmap_type tga_load_image (string filename);
+bitmap_type tga_load_image (at_string filename);
 
 #endif /* not INPUT_TGA_H */
 
-/* version 0.xx */

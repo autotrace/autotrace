@@ -60,7 +60,7 @@ static unsigned char        *ReadImage     (FILE *,
 				   int);
 
 bitmap_type
-bmp_load_image (string filename)
+bmp_load_image (at_string filename)
 {
   FILE *fd;
   unsigned char buffer[64];
@@ -193,8 +193,8 @@ bmp_load_image (string filename)
 			Bitmap_Head.biCompr,
 			rowbytes,
 			Grey);
-  BITMAP_WIDTH (image) = Bitmap_Head.biWidth;
-  BITMAP_HEIGHT (image) = Bitmap_Head.biHeight;
+  BITMAP_WIDTH (image) = (unsigned short) Bitmap_Head.biWidth;
+  BITMAP_HEIGHT (image) = (unsigned short) Bitmap_Head.biHeight;
   BITMAP_PLANES (image) = Grey ? 1 : 3;
 
   return (image);
@@ -326,8 +326,8 @@ ReadImage (FILE   *fd,
 	      {
 		for (i = 1; (i <= (8 / bpp)) && (xpos < width); i++, xpos++)
 		  {
-		    temp = image + (ypos * rowstride) + (xpos * channels);
-		    *temp=( v & ( ((1<<bpp)-1) << (8-(i*bpp)) ) ) >> (8-(i*bpp));
+		    temp = (unsigned char*) (image + (ypos * rowstride) + (xpos * channels));
+		    *temp= (unsigned char)(( v & ( ((1<<bpp)-1) << (8-(i*bpp)) ) ) >> (8-(i*bpp)));
 		  }
 		if (xpos == width)
 		  {
@@ -362,7 +362,7 @@ ReadImage (FILE   *fd,
 			     i++, xpos++, j++)
 			  {
 			    temp = image + (ypos * rowstride) + (xpos * channels);
-			    *temp = (buffer[1] & (((1<<bpp)-1) << (8 - (i * bpp)))) >> (8 - (i * bpp));
+			    *temp = (unsigned char) ((buffer[1] & (((1<<bpp)-1) << (8 - (i * bpp)))) >> (8 - (i * bpp)));
 			  }
 		      }
 		  }
@@ -377,7 +377,7 @@ ReadImage (FILE   *fd,
 			while ((i <= (8 / bpp)) && (xpos < width))
 			  {
 			    temp = image + (ypos * rowstride) + (xpos * channels);
-			    *temp = (v & (((1<<bpp)-1) << (8-(i*bpp)))) >> (8-(i*bpp));
+			    *temp = (unsigned char) ((v & (((1<<bpp)-1) << (8-(i*bpp)))) >> (8-(i*bpp)));
 			    i++;
 			    xpos++;
 			  }
@@ -463,4 +463,3 @@ ToS (unsigned char *puffer)
   return ((short)(puffer[0] | puffer[1]<<8));
 }
 
-/* version 0.26 */

@@ -1,6 +1,6 @@
 /* thin-image.h: */
-#ifndef THIN_INC
-#define THIN_INC
+#ifndef THIN_IMAGE_H
+#define THIN_IMAGE_H
 
 /*
  * C code from the article
@@ -14,4 +14,4 @@
 
 void  thin_image      (bitmap_type *image, const color_type *bg_color);
 
-#endif
+#endif /* not THIN_IMAGE_H */

@@ -43,7 +43,7 @@ typedef float at_real;
 /* Cartesian points.  */
 typedef struct
 {
-  short x, y;
+  unsigned short x, y;
 } at_coordinate_type;
 
 typedef struct

@@ -33,4 +33,3 @@ void quantize(bitmap_type*, long ncolors, const color_type *bgColor,
 
 #endif /* NOT QUANTIZE_H */
 
-/* version 0.26 */

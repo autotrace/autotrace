@@ -95,10 +95,9 @@ static struct
 
 
 static bitmap_type ReadImage (FILE *fp,
-                         struct tga_header *hdr,
-                         char *filename);
+                         struct tga_header *hdr);
 bitmap_type
-tga_load_image (string filename)
+tga_load_image (at_string filename)
 {
   FILE *fp;
   struct tga_header hdr;
@@ -126,7 +125,7 @@ tga_load_image (string filename)
   if (hdr.idLength && fseek (fp, hdr.idLength, SEEK_CUR))
       FATAL1 ("TGA: Cannot skip ID field in \"%s\"\n", filename);
 
-  image = ReadImage (fp, &hdr, filename);
+  image = ReadImage (fp, &hdr);
   fclose (fp);
   return image;
 }
@@ -243,8 +242,7 @@ return nelems;
 
 static bitmap_type
 ReadImage (FILE              *fp, 
-           struct tga_header *hdr, 
-           char              *filename)
+           struct tga_header *hdr)
 {
   bitmap_type image;
   unsigned char *buffer;
@@ -259,8 +257,8 @@ ReadImage (FILE              *fp,
   int (*myfread)(unsigned char *, int, int, FILE *);
 
   /* Find out whether the image is horizontally or vertically reversed. */
-  char horzrev = hdr->descriptor & TGA_DESC_HORIZONTAL;
-  char vertrev = !(hdr->descriptor & TGA_DESC_VERTICAL);
+  char horzrev = (char) (hdr->descriptor & TGA_DESC_HORIZONTAL);
+  char vertrev = (char) (!(hdr->descriptor & TGA_DESC_VERTICAL));
 
   image.bitmap = NULL;
   
@@ -375,7 +373,6 @@ ReadImage (FILE              *fp,
       /* We need to read in the colormap. */
       int index, colors;
 	  unsigned int length;
-      int tmp;
 
       index = (hdr->colorMapIndexHi << 8) | hdr->colorMapIndexLo;
       length = (hdr->colorMapLengthHi << 8) | hdr->colorMapLengthLo;
@@ -403,7 +400,7 @@ ReadImage (FILE              *fp,
       for (j = 0; j < colors * pelbytes; j += pelbytes)
         {
           /* Swap from BGR to RGB. */
-          tmp = cmap[j];
+          unsigned char tmp = cmap[j];
           cmap[k ++] = cmap[j + 2];
           cmap[k ++] = cmap[j + 1];
           cmap[k ++] = tmp;
@@ -427,9 +424,9 @@ ReadImage (FILE              *fp,
 	  pelbytes = 3;
  
   image.bitmap = (unsigned char *) malloc (width * height * 3 * sizeof(unsigned char));
-  BITMAP_WIDTH (image) = width;
-  BITMAP_HEIGHT (image) = height;
-  BITMAP_PLANES (image) = 3;
+  BITMAP_WIDTH (image) = (unsigned short) width;
+  BITMAP_HEIGHT (image) = (unsigned short) height;
+  BITMAP_PLANES (image) = (unsigned short) 3;
 
    /* Calculate TGA bytes per pixel. */
   bpp = ROUNDUP_DIVIDE (pbpp + abpp, 8);
@@ -494,10 +491,9 @@ ReadImage (FILE              *fp,
   if (pelbytes >= 3)
     {
       /* Rearrange the colors from BGR to RGB. */
-      int tmp;
       for (j = 0; j < bsize; j += pelbytes)
         {
-          tmp = image.bitmap[j];
+          unsigned char tmp = image.bitmap[j];
           image.bitmap[j] = image.bitmap[j + 2];
           image.bitmap[j + 2] = tmp;
         }

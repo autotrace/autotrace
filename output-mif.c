@@ -11,8 +11,6 @@
 #include <math.h>
 #include <string.h>
 
-extern string version_string;
-
 typedef struct {
   char *tag;
   color_type c;
@@ -82,7 +80,7 @@ static void print_coord(FILE* f, real x, real y)
 /*===========================================================================
   Main conversion routine
 ===========================================================================*/
-int output_mif_writer(FILE* ps_file, string name,
+int output_mif_writer(FILE* ps_file, at_string name,
 		      int llx, int lly, int urx, int ury, int dpi,
 		      spline_list_array_type shape)
 {

@@ -7,9 +7,7 @@
 #include <time.h>
 #include <string.h>
 
-extern string version_string;
-
-static string now(void);
+static at_string now(void);
 
 #define NUM_CORRESP_POINTS 4
 
@@ -17,9 +15,9 @@ static string now(void);
    output file and writes some preliminary boilerplate. */
 
 static int
-output_er_header(FILE* er_file, string name, int llx, int lly, int urx, int ury)
+output_er_header(FILE* er_file, at_string name, int llx, int lly, int urx, int ury)
 {
-    string time;
+    at_string time;
 
     fprintf(er_file, "#Elastic Reality Shape File\n\n#Date: %s\n\n",
         time = now());
@@ -126,7 +124,7 @@ out_splines(FILE* er_file, spline_list_array_type shape,
 }
 
 int
-output_er_writer(FILE* file, string name, int llx, int lly, int urx, int ury, int dpi,
+output_er_writer(FILE* file, at_string name, int llx, int lly, int urx, int ury, int dpi,
     spline_list_array_type shape)
 {
     int result;
@@ -142,10 +140,10 @@ output_er_writer(FILE* file, string name, int llx, int lly, int urx, int ury, in
     return 0;
 }
 
-static string
+static at_string
 now(void)
 {
-    string time_string;
+    at_string time_string;
     time_t t = time (0);
 
     XMALLOC (time_string, 26);  /* not 25 ! */

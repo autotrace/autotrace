@@ -279,7 +279,7 @@ static void out_fig_splines(FILE * file, spline_list_array_type shape,
     return;
 }
 
-int output_fig_writer(FILE* file, string name,
+int output_fig_writer(FILE* file, at_string name,
 		      int llx, int lly, int urx, int ury, int dpi,
 		     spline_list_array_type shape)
 {
@@ -405,4 +405,3 @@ figcolloop:
     }
 }
 
-/* version 0.27 */

@@ -17,4 +17,3 @@ color_type GET_COLOR (bitmap_type bitmap, unsigned int row, unsigned int col)
   return (c);
 }
 
-/* version 0.24 */

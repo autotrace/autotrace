@@ -51,4 +51,3 @@ extern fitting_opts_type new_fitting_opts (void);
 
 #endif /* not FIT_H */
 
-/* version 0.24 */
