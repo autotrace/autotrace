@@ -522,7 +522,7 @@ ignore (/* in */     int    x,
  *   FALSE - feature wasn't recolored
  */
 
-static at_bool
+static gboolean
 recolor (/* in */     double adaptive_tightness,
          /* in */     int    x,
          /* in */     int    y,
@@ -557,11 +557,11 @@ recolor (/* in */     double adaptive_tightness,
         {
           fill (to_index, x, y, width, height, bitmap, mask);
 
-          return true;
+          return TRUE;
         }
     }
 
-  return false;
+  return FALSE;
 }
 
 
@@ -583,7 +583,7 @@ recolor (/* in */     double adaptive_tightness,
  *   FALSE - feature wasn't recolored
  */
 
-static at_bool
+static gboolean
 recolor_8 (/* in */   double adaptive_tightness,
          /* in */     int    x,
          /* in */     int    y,
@@ -617,11 +617,11 @@ recolor_8 (/* in */   double adaptive_tightness,
         {
           fill_8 (to_index, x, y, width, height, bitmap, mask);
 
-          return true;
+          return TRUE;
         }
     }
 
-  return false;
+  return FALSE;
 }
 
 
@@ -771,8 +771,8 @@ despeckle_iteration_8 (/* in */   int    level,
 void
 despeckle (/* in/out */            bitmap_type *bitmap,
            /* in */                int          level,
-           /* in */                at_real      tightness,
-           /* in */                at_real      noise_removal,
+           /* in */                gfloat      tightness,
+           /* in */                gfloat      noise_removal,
 	     /* exception handling */ at_exception_type * excep)
 {
   int i, planes, max_level;

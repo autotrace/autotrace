@@ -22,11 +22,11 @@
 
 #include "input.h"
 
-at_bitmap_type input_tga_reader (at_string filename,
+at_bitmap_type input_tga_reader (gchar* filename,
 				 at_input_opts_type * opts,
 				 at_msg_func msg_func, 
-				 at_address msg_data,
-				 at_address user_data);
+				 gpointer msg_data,
+				 gpointer user_data);
 
 #endif /* not INPUT_TGA_H */
 

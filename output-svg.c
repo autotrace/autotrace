@@ -82,13 +82,13 @@ out_splines (FILE * file, spline_list_array_type shape, int height)
 }
 
 
-int output_svg_writer(FILE* file, at_string name,
+int output_svg_writer(FILE* file, gchar* name,
 		      int llx, int lly, int urx, int ury, 
 		      at_output_opts_type * opts,
 		      spline_list_array_type shape,
 		      at_msg_func msg_func, 
-		      at_address msg_data,
-		      at_address user_data)
+		      gpointer msg_data,
+		      gpointer user_data)
 {
     int width = urx - llx;
     int height = ury - lly;

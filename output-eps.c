@@ -30,7 +30,7 @@
 #include <time.h>
 #include <string.h>
 
-static at_string now (void);
+static gchar* now (void);
 
 #define SIGN(x) ((x) > 0 ? 1 : (x) < 0 ? -1 : 0)
 #define ROUND(x) ((int) ((int) (x) + .5 * SIGN (x)))
@@ -59,7 +59,7 @@ static at_string now (void);
 
 /* These macros just output their arguments.  */
 #define OUT_STRING(s)	fprintf (ps_file, "%s", s)
-#define OUT_REAL(r)	fprintf (ps_file, r == (ROUND (r = ROUND((at_real)6.0*r)/(at_real)6.0))				\
+#define OUT_REAL(r)	fprintf (ps_file, r == (ROUND (r = ROUND((gfloat)6.0*r)/(gfloat)6.0))				\
                                   ? "%.0f " : "%.3f ", r)
 
 /* For a PostScript command with two real arguments, e.g., lineto.  OP
@@ -93,13 +93,13 @@ static at_string now (void);
 /* This should be called before the others in this file.  It opens the
    output file `OUTPUT_NAME.ps', and writes some preliminary boilerplate. */
 
-static int output_eps_header(FILE* ps_file, at_string name,
+static int output_eps_header(FILE* ps_file, gchar* name,
 			     int llx, int lly, int urx, int ury)
 {
-  at_string time;
+  gchar* time;
 
   OUT_LINE ("%!PS-Adobe-3.0 EPSF-3.0");
-  OUT1 ("%%%%Creator: Adobe Illustrator by %s\n", at_version(true));
+  OUT1 ("%%%%Creator: Adobe Illustrator by %s\n", at_version(TRUE));
   OUT1 ("%%%%Title: %s\n", name);
   OUT1 ("%%%%CreationDate: %s\n", time = now ());
   OUT4 ("%%%%BoundingBox: %d %d %d %d\n", llx, lly, urx, ury);
@@ -201,13 +201,13 @@ out_splines (FILE * ps_file, spline_list_array_type shape)
 }
 
 
-int output_eps_writer(FILE* ps_file, at_string name,
+int output_eps_writer(FILE* ps_file, gchar* name,
 		      int llx, int lly, int urx, int ury, 
 		      at_output_opts_type * opts,
 		      spline_list_array_type shape,
 		      at_msg_func msg_func, 
-		      at_address msg_data,
-		      at_address user_data)
+		      gpointer msg_data,
+		      gpointer user_data)
 {
     int result;
 
@@ -223,10 +223,10 @@ int output_eps_writer(FILE* ps_file, at_string name,
 }
 
 
-static at_string
+static gchar*
 now (void)
 {
-  at_string time_string;
+  gchar* time_string;
   time_t t = time (0);
 
   XMALLOC (time_string, 26); /* not 25 ! */

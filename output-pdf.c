@@ -54,7 +54,7 @@
 
 /* These macros just output their arguments.  */
 #define OUT_STRING(s)	fprintf (pdf_file, "%s", s)
-#define OUT_REAL(r)	fprintf (pdf_file, r == (ROUND (r = ROUND((at_real)6.0*r)/(at_real)6.0))				\
+#define OUT_REAL(r)	fprintf (pdf_file, r == (ROUND (r = ROUND((gfloat)6.0*r)/(gfloat)6.0))				\
                                   ? "%.0f " : "%.3f ", r)
 
 /* For a PostScript command with two real arguments, e.g., lineto.  OP
@@ -104,7 +104,7 @@
 
 /* These macros just output their arguments.  */
 #define SOUT_STRING(s)	sprintf (temp, "%s", s), *length += strlen(temp)
-#define SOUT_REAL(r)	sprintf (temp, r == (ROUND (r = ROUND((at_real)6.0*r)/(at_real)6.0))				\
+#define SOUT_REAL(r)	sprintf (temp, r == (ROUND (r = ROUND((gfloat)6.0*r)/(gfloat)6.0))				\
                                   ? "%.0f " : "%.3f ", r), *length += strlen(temp)
 
 /* For a PostScript command with two real arguments, e.g., lineto.  OP
@@ -139,7 +139,7 @@
 /* This should be called before the others in this file. It opens the
    output file `OUTPUT_NAME.pdf', and writes some preliminary boilerplate. */
 
-static int output_pdf_header(FILE* pdf_file, at_string name,
+static int output_pdf_header(FILE* pdf_file, gchar* name,
 			     int llx, int lly, int urx, int ury)
 {
   OUT_LINE ("%PDF-1.2");
@@ -322,13 +322,13 @@ out_splines (FILE *pdf_file, spline_list_array_type shape, size_t *length)
 }
 
 
-int output_pdf_writer(FILE* pdf_file, at_string name,
+int output_pdf_writer(FILE* pdf_file, gchar* name,
 		      int llx, int lly, int urx, int ury, 
 		      at_output_opts_type * opts,
 		      spline_list_array_type shape,
 		      at_msg_func msg_func, 
-		      at_address msg_data,
-		      at_address user_data)
+		      gpointer msg_data,
+		      gpointer user_data)
 {
     int result;
     size_t length = 0;

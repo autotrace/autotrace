@@ -42,19 +42,19 @@ static char * output_name = (char *)"";
 static at_spline_writer * output_writer = NULL;
 
 /* Whether to print version information */
-static at_bool printed_version;
+static gboolean printed_version;
 
 /* Whether to write a log file */
-static at_bool logging = false;
+static gboolean logging = FALSE;
 
 /* Whether to dump a bitmap file */
-static at_bool dumping_bitmap = false;
+static gboolean dumping_bitmap = FALSE;
 
 /* Report tracing status in real time (--report-progress) */
-static at_bool report_progress = false;
+static gboolean report_progress = FALSE;
 #define dot_printer_max_column 50
 #define dot_printer_char '|'
-static void dot_printer(at_real percentage, at_address client_data);
+static void dot_printer(gfloat percentage, gpointer client_data);
 
 static char * read_command_line (int, char * [], 
 				 at_fitting_opts_type *,
@@ -68,7 +68,7 @@ static void dump (at_bitmap_type * bitmap, FILE * fp);
 static void input_list_formats(FILE * file);
 static void output_list_formats(FILE* file);
 
-static void exception_handler(at_string msg, at_msg_type type, at_address data);
+static void exception_handler(const gchar* msg, at_msg_type type, gpointer data);
 
 #define DEFAULT_FORMAT "eps"
 
@@ -306,7 +306,7 @@ read_command_line (int argc, char * argv[],
         { "width-weight-factor",               1, 0, 0 },
         { 0, 0, 0, 0 } };
 
-  while (true)
+  while (TRUE)
     {
 
       g = getopt_long_only (argc, argv, "", long_options, &option_index);
@@ -329,7 +329,7 @@ read_command_line (int argc, char * argv[],
 	   input_opts->background_color = at_color_copy(fitting_opts->background_color);
 	}
       else if (ARGUMENT_IS ("centerline"))
-	fitting_opts->centerline = true;
+	fitting_opts->centerline = TRUE;
 
       else if (ARGUMENT_IS ("charcode"))
 	{
@@ -341,13 +341,13 @@ read_command_line (int argc, char * argv[],
         fitting_opts->color_count = atou (optarg);
 
       else if (ARGUMENT_IS ("corner-always-threshold"))
-        fitting_opts->corner_always_threshold = (at_real) atof (optarg);
+        fitting_opts->corner_always_threshold = (gfloat) atof (optarg);
 
       else if (ARGUMENT_IS ("corner-surround"))
         fitting_opts->corner_surround = atou (optarg);
 
       else if (ARGUMENT_IS ("corner-threshold"))
-        fitting_opts->corner_threshold = (at_real) atof (optarg);
+        fitting_opts->corner_threshold = (gfloat) atof (optarg);
 
       else if (ARGUMENT_IS ("debug-arch"))
 	{
@@ -368,16 +368,16 @@ read_command_line (int argc, char * argv[],
         fitting_opts->despeckle_level = atou (optarg);
 
       else if (ARGUMENT_IS ("despeckle-tightness"))
-        fitting_opts->despeckle_tightness = (at_real) atof (optarg);
+        fitting_opts->despeckle_tightness = (gfloat) atof (optarg);
 
       else if (ARGUMENT_IS ("noise-removal"))
-        fitting_opts->noise_removal = (at_real) atof (optarg);
+        fitting_opts->noise_removal = (gfloat) atof (optarg);
 
       else if (ARGUMENT_IS ("dpi"))
         output_opts->dpi = atou (optarg);
 
       else if (ARGUMENT_IS ("error-threshold"))
-        fitting_opts->error_threshold = (at_real) atof (optarg);
+        fitting_opts->error_threshold = (gfloat) atof (optarg);
 
       else if (ARGUMENT_IS ("filter-iterations"))
         fitting_opts->filter_iterations = atou (optarg);
@@ -405,10 +405,10 @@ read_command_line (int argc, char * argv[],
         }
 
       else if (ARGUMENT_IS ("line-threshold"))
-        fitting_opts->line_threshold = (at_real) atof (optarg);
+        fitting_opts->line_threshold = (gfloat) atof (optarg);
 
       else if (ARGUMENT_IS ("line-reversion-threshold"))
-        fitting_opts->line_reversion_threshold = (at_real) atof (optarg);
+        fitting_opts->line_reversion_threshold = (gfloat) atof (optarg);
 
       else if (ARGUMENT_IS ("list-output-formats"))
         {
@@ -433,19 +433,19 @@ read_command_line (int argc, char * argv[],
 	      FATAL1 (_("Output format %s is not supported"), optarg);
         }
       else if (ARGUMENT_IS ("preserve_width"))
-	fitting_opts->preserve_width = true;
+	fitting_opts->preserve_width = TRUE;
 
       else if (ARGUMENT_IS ("remove-adjacent-corners"))
-	fitting_opts->remove_adjacent_corners = true;
+	fitting_opts->remove_adjacent_corners = TRUE;
       
       else if (ARGUMENT_IS ("tangent-surround"))
         fitting_opts->tangent_surround = atou (optarg);
 
       else if (ARGUMENT_IS ("version"))
-        printf (_("AutoTrace version %s.\n"), at_version(false));
+        printf (_("AutoTrace version %s.\n"), at_version(FALSE));
 
       else if (ARGUMENT_IS ("width-weight-factor"))
-	fitting_opts->width_weight_factor = (at_real) atof (optarg);
+	fitting_opts->width_weight_factor = (gfloat) atof (optarg);
 
       /* Else it was just a flag; getopt has already done the assignment.  */
     }
@@ -560,7 +560,7 @@ output_list_formats(FILE* file)
 }
 
 static void
-dot_printer(at_real percentage, at_address client_data)
+dot_printer(gfloat percentage, gpointer client_data)
 {
   int * current = (int *)client_data;
   float unit 	= (float)1.0 / (float)(dot_printer_max_column) ;
@@ -590,7 +590,7 @@ dump (at_bitmap_type * bitmap, FILE * fp)
 }
 
 static void
-exception_handler(at_string msg, at_msg_type type, at_address data)
+exception_handler(const gchar* msg, at_msg_type type, gpointer data)
 {
   if (type == AT_MSG_FATAL)
     {

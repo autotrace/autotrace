@@ -33,27 +33,27 @@ extern "C" {
    following functions and macros. */
 
 typedef 
-at_bitmap_type (*at_input_func)   (at_string name,
+at_bitmap_type (*at_input_func)   (gchar* name,
 				   at_input_opts_type * opts,
 				   at_msg_func msg_func, 
-				   at_address msg_data,
-				   at_address user_data);
+				   gpointer msg_data,
+				   gpointer user_data);
 
 /* at_input_add_handler
    Register an input handler to autotrace. 
    If a handler for the suffix is already existed, do nothing. */
-extern int at_input_add_handler (const at_string suffix, 
-				 const at_string description,
+extern int at_input_add_handler (const gchar* suffix, 
+				 const gchar* description,
 				 at_input_func reader);
 /* at_input_add_handler_full
    If OVERRIDE is true and if the old handler for suffix is existed,
    remove the old handler first then add new handler.  
    If OVERRIDE is false, do nothing. */
-extern int at_input_add_handler_full (const at_string suffix, 
-				      const at_string description,
+extern int at_input_add_handler_full (const gchar* suffix, 
+				      const gchar* description,
 				      at_input_func reader,
-				      at_bool override,
-				      at_address user_data,
+				      gboolean override,
+				      gpointer user_data,
 				      GDestroyNotify user_data_destroy_func);
 
 /* at_bitmap_init

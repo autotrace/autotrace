@@ -1,5 +1,22 @@
 2003-07-04  Masatake YAMATO  <yamato@redhat.com>
 
+	* main.c (exception_handler): added const to msg.
+
+	* autotrace.h(at_msg_func): added const to msg.
+
+	* output.h(at_output_add_handler): remove duplicated declarations.
+
+	* output-ugs.c (output_splines): remove x and lastx.
+	These are not used.
+	(output_ugs_writer): return 0.
+
+	* Makefile.am (libautotrace_la_SOURCES): Added private.h.
+
+	* types.h (at_bool): replaced with gooolean.
+	(at_address): replaced with gpointer.
+	(at_real): replaced with gfloat.
+	(at_string): replaced with gchar *.
+	
 	* exception.h (struct _at_exception_type): Fix a typo.
 
 2003-07-02  Masatake YAMATO  <yamato@redhat.com>	

@@ -10,7 +10,7 @@
 
 typedef struct
 {
-  at_real dx, dy, dz;
+  gfloat dx, dy, dz;
 } vector_type;
 
 
@@ -24,13 +24,13 @@ extern at_real_coord vector_to_point (const vector_type);
 /* Definitions for these common operations can be found in any decent
    linear algebra book, and most calculus books.  */
 
-extern at_real magnitude (const vector_type);
+extern gfloat magnitude (const vector_type);
 extern vector_type normalize (const vector_type);
 
 extern vector_type Vadd (const vector_type, const vector_type);
-extern at_real Vdot (const vector_type, const vector_type);
-extern vector_type Vmult_scalar (const vector_type, const at_real);
-extern at_real Vangle (const vector_type in, const vector_type out, at_exception_type * exp);
+extern gfloat Vdot (const vector_type, const vector_type);
+extern vector_type Vmult_scalar (const vector_type, const gfloat);
+extern gfloat Vangle (const vector_type in, const vector_type out, at_exception_type * exp);
 
 /* These operations could have been named `P..._vector' just as well as
    V..._point, so we may as well allow both names.  */
@@ -59,7 +59,7 @@ extern vector_type Psubtract
 /* These are heavily used in spline fitting.  */
 extern at_real_coord Padd (const at_real_coord,
                                   const at_real_coord);
-extern at_real_coord Pmult_scalar (const at_real_coord, const at_real);
+extern at_real_coord Pmult_scalar (const at_real_coord, const gfloat);
 
 /* Similarly, for points with integer coordinates; here, a subtraction
    operator that does return another point is useful.  */
@@ -71,8 +71,8 @@ extern at_coord IPadd
   (const at_coord, const at_coord);
 extern at_coord IPmult_scalar (const at_coord, const int);
 extern at_real_coord IPmult_real
-  (const at_coord, const at_real);
-extern at_bool IPequal (const at_coord, const at_coord);
+  (const at_coord, const gfloat);
+extern gboolean IPequal (const at_coord, const at_coord);
 
 #endif /* not VECTOR_H */
 

@@ -20,7 +20,7 @@
 #define XMALLOC(new_mem, size)			\
 do						\
   {						\
-    new_mem = (at_address) malloc (size);	\
+    new_mem = (gpointer) malloc (size);	\
     assert(new_mem);				\
   } while (0)
 
@@ -28,7 +28,7 @@ do						\
 #define XCALLOC(new_mem, size)			\
 do						\
   {						\
-    new_mem = (at_address) calloc (size, 1);	\
+    new_mem = (gpointer) calloc (size, 1);	\
     assert(new_mem);				\
   } while (0)
 
@@ -36,13 +36,13 @@ do						\
 #define XREALLOC(old_ptr, size)				\
 do							\
   {							\
-    at_address new_mem;					\
+    gpointer new_mem;					\
 							\
     if (old_ptr == NULL)				\
       XMALLOC (new_mem, size);				\
     else						\
       {							\
-        new_mem = (at_address) realloc (old_ptr, size);	\
+        new_mem = (gpointer) realloc (old_ptr, size);	\
         assert(new_mem);				\
       }							\
 							\
@@ -55,7 +55,7 @@ do							\
 #define XMALLOC(new_mem, size)					\
 do								\
   {								\
-    (at_address&)(new_mem) = (at_address) malloc (size);	\
+    (gpointer&)(new_mem) = (gpointer) malloc (size);	\
      assert(new_mem);						\
   } while (0) 
 
@@ -63,24 +63,24 @@ do								\
 #define XCALLOC(new_mem, sizex)					\
 do								\
   {								\
-    (at_address&)(new_mem) = (void *) calloc (sizex, 1);	\
+    (gpointer&)(new_mem) = (void *) calloc (sizex, 1);	\
     assert(new_mem);						\
   } while (0) 
  
 #define XREALLOC(old_ptr, size)						  \
 do									  \
   {									  \
-    at_address new_mem;							  \
+    gpointer new_mem;							  \
 									  \
     if (old_ptr == NULL)						  \
       XMALLOC (new_mem, (size));					  \
     else								  \
       {									  \
-        (at_address&) new_mem = (at_address) realloc ((old_ptr), (size)); \
+        (gpointer&) new_mem = (gpointer) realloc ((old_ptr), (size)); \
         assert(new_mem);						  \
       }									  \
 									  \
-    (at_address&)old_ptr = new_mem;					  \
+    (gpointer&)old_ptr = new_mem;					  \
   } while (0)
 #endif
 
@@ -89,8 +89,8 @@ do									  \
  */
 /* Like their stdio counterparts, but abort on error, after calling
    perror(3) with FILENAME as its argument.  */
-extern FILE *xfopen (at_string filename, at_string mode);
-extern void xfclose (FILE *, at_string filename);
-extern void xfseek (FILE *, long, int, at_string filename);
+extern FILE *xfopen (gchar* filename, gchar* mode);
+extern void xfclose (FILE *, gchar* filename);
+extern void xfseek (FILE *, long, int, gchar* filename);
 
 #endif /* Not XSTD_H */

@@ -19,16 +19,16 @@ struct _at_exception_type
 {
   at_msg_type msg_type;
   at_msg_func client_func;
-  at_address client_data;
+  gpointer client_data;
 };
 
 at_exception_type at_exception_new(at_msg_func client_func,
-				   at_address client_data);
-at_bool at_exception_got_fatal(at_exception_type * exception);
+				   gpointer client_data);
+gboolean at_exception_got_fatal(at_exception_type * exception);
 void at_exception_fatal(at_exception_type * exception,
-			const at_string message);
+			const gchar* message);
 void at_exception_warning(at_exception_type * exception,
-			  const at_string message);
+			  const gchar* message);
 
 #ifdef __cplusplus
 }

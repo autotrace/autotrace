@@ -91,7 +91,7 @@
 /* This should be called before the others in this file.  It opens the
    output file `OUTPUT_NAME.ps', and writes some preliminary boilerplate. */
 
-static int output_p2e_header(FILE* ps_file, at_string name,
+static int output_p2e_header(FILE* ps_file, gchar* name,
 			     int  llx, int  lly, int  urx, int  ury, spline_list_array_type shape)
 {
   unsigned this_list, with_curves = 1;
@@ -221,13 +221,13 @@ out_splines (FILE * ps_file, spline_list_array_type shape)
 }
 
 
-int output_p2e_writer(FILE* ps_file, at_string name,
+int output_p2e_writer(FILE* ps_file, gchar* name,
 		      int llx, int lly, int urx, int ury, 
 		      at_output_opts_type * opts,
 		      spline_list_array_type shape,
 		      at_msg_func msg_func, 
-		      at_address msg_data,
-		      at_address user_data)
+		      gpointer msg_data,
+		      gpointer user_data)
 {
   int result;
 

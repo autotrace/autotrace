@@ -41,7 +41,7 @@ typedef struct {
   int lly;
   int urx;
   int ury;
-  at_real dpi;
+  gfloat dpi;
 } BboxT;
 
 BboxT cbox;
@@ -77,21 +77,21 @@ static const char * colorstring(int r, int g, int b)
 /*===========================================================================
  Convert Bezier Spline
 ===========================================================================*/
-static at_real bezpnt(at_real t, at_real z1, at_real z2, at_real z3, at_real z4)
+static gfloat bezpnt(gfloat t, gfloat z1, gfloat z2, gfloat z3, gfloat z4)
 {
-  at_real temp, t1;
+  gfloat temp, t1;
   /* Determine ordinate on Bezier curve at length "t" on curve */
-  if (t < (at_real) 0.0) { t = (at_real) 0.0; }
-  if (t > (at_real) 1.0) { t = (at_real) 1.0; }
-  t1 = ((at_real) 1.0 - t);
-  temp = t1*t1*t1*z1 + (at_real)3.0*t*t1*t1*z2 + (at_real)3.0*t*t*t1*z3 + t*t*t*z4;
+  if (t < (gfloat) 0.0) { t = (gfloat) 0.0; }
+  if (t > (gfloat) 1.0) { t = (gfloat) 1.0; }
+  t1 = ((gfloat) 1.0 - t);
+  temp = t1*t1*t1*z1 + (gfloat)3.0*t*t1*t1*z2 + (gfloat)3.0*t*t*t1*z3 + t*t*t*z4;
   return(temp);
 }
 
 /*===========================================================================
   Print a point
 ===========================================================================*/
-static void print_coord(FILE* f, at_real x, at_real y)
+static void print_coord(FILE* f, gfloat x, gfloat y)
 {
   fprintf(f, "  <Point %.2f %.2f>\n",
     x*72.0/cbox.dpi, (cbox.ury-y+1)*72.0/cbox.dpi);
@@ -100,12 +100,12 @@ static void print_coord(FILE* f, at_real x, at_real y)
 /*===========================================================================
   Main conversion routine
 ===========================================================================*/
-int output_mif_writer(FILE* ps_file, at_string name,
+int output_mif_writer(FILE* ps_file, gchar* name,
 		      int llx, int lly, int urx, int ury, 
 		      at_output_opts_type * opts,
 		      spline_list_array_type shape,
-		      at_msg_func msg_func, at_address msg_data,
-		      at_address user_data)
+		      at_msg_func msg_func, gpointer msg_data,
+		      gpointer user_data)
 {
   unsigned this_list;
   int i;
@@ -118,9 +118,9 @@ int output_mif_writer(FILE* ps_file, at_string name,
   cbox.lly = lly;
   cbox.urx = urx;
   cbox.ury = ury;
-  cbox.dpi = (at_real) opts->dpi;
+  cbox.dpi = (gfloat) opts->dpi;
 
-  fprintf(ps_file, "<MIFFile 4.00> #%s\n<Units Upt>\n<ColorCatalog\n", at_version(true));
+  fprintf(ps_file, "<MIFFile 4.00> #%s\n<Units Upt>\n<ColorCatalog\n", at_version(TRUE));
 
   for( this_list=0; this_list < SPLINE_LIST_ARRAY_LENGTH(shape); this_list++ ){
     spline_list_type list = SPLINE_LIST_ARRAY_ELT (shape, this_list);
@@ -163,7 +163,7 @@ int output_mif_writer(FILE* ps_file, at_string name,
 
   for( this_list=0; this_list < SPLINE_LIST_ARRAY_LENGTH(shape); this_list++ ){
     unsigned this_spline;
-    at_bool smooth;
+    gboolean smooth;
 
     spline_list_type list = SPLINE_LIST_ARRAY_ELT (shape, this_list);
     spline_type first = SPLINE_LIST_ELT (list, 0);
@@ -178,17 +178,17 @@ int output_mif_writer(FILE* ps_file, at_string name,
     fprintf(ps_file, "  <ObColor `%s'>\n", col_tbl[i].tag);
 
     print_coord(ps_file, START_POINT (first).x, START_POINT (first).y);
-    smooth = false;
+    smooth = FALSE;
     for( this_spline=0; this_spline < SPLINE_LIST_LENGTH(list); this_spline++ ){
       spline_type s = SPLINE_LIST_ELT (list, this_spline);
 
       if( SPLINE_DEGREE (s) == LINEARTYPE ){
         print_coord(ps_file, END_POINT(s).x, END_POINT(s).y);
       } else {
-        at_real temp;
-	at_real dt = (at_real) (1.0/7.0);
+        gfloat temp;
+	gfloat dt = (gfloat) (1.0/7.0);
 	/*smooth = true;*/
-	for( temp=dt; fabs(temp-(at_real)1.0)>dt; temp+=dt ){
+	for( temp=dt; fabs(temp-(gfloat)1.0)>dt; temp+=dt ){
 	  print_coord(ps_file,
 	    bezpnt(temp,START_POINT(s).x,CONTROL1(s).x,CONTROL2(s).x,END_POINT(s).x),
 	    bezpnt(temp,START_POINT(s).y,CONTROL1(s).y,CONTROL2(s).y,END_POINT(s).y));

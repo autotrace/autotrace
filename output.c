@@ -99,8 +99,8 @@ at_output_format_free(at_output_format_entry * entry)
 }
 
 int
-at_output_add_handler (const at_string suffix, 
-		       const at_string description,
+at_output_add_handler (const gchar* suffix, 
+		       const gchar* description,
 		       at_output_func writer)
 {
   return at_output_add_handler_full (suffix, description, writer, 0,
@@ -108,11 +108,11 @@ at_output_add_handler (const at_string suffix,
 }
 
 int
-at_output_add_handler_full (const at_string suffix, 
-			    const at_string description,
+at_output_add_handler_full (const gchar* suffix, 
+			    const gchar* description,
 			    at_output_func writer,
-			    at_bool override,
-			    at_address user_data,
+			    gboolean override,
+			    gpointer user_data,
 			    GDestroyNotify user_data_destroy_func)
 {
   gchar * gsuffix;
@@ -146,7 +146,7 @@ at_output_add_handler_full (const at_string suffix,
 }
 
 at_spline_writer*
-at_output_get_handler (at_string filename)
+at_output_get_handler (gchar* filename)
 {
   char * ext = find_suffix (filename);
   if (ext == NULL)
@@ -156,7 +156,7 @@ at_output_get_handler (at_string filename)
 }
 
 at_spline_writer *
-at_output_get_handler_by_suffix (at_string suffix)
+at_output_get_handler_by_suffix (gchar* suffix)
 {
   at_output_format_entry * format;
   gchar * gsuffix;
@@ -260,7 +260,7 @@ output_list_strcat (gpointer key, gpointer value, gpointer user_data)
 void
 at_spline_list_foreach (at_spline_list_type * list,
 			AtSplineListForeachFunc func,
-			at_address user_data)
+			gpointer user_data)
 {
   unsigned i;
   for (i = 0; i < AT_SPLINE_LIST_LENGTH(list); i++)
@@ -273,7 +273,7 @@ at_spline_list_foreach (at_spline_list_type * list,
 void
 at_spline_list_array_foreach (at_spline_list_array_type *list_array,
 			      AtSplineListArrayForeachFunc func,
-			      at_address user_data)
+			      gpointer user_data)
 {
   unsigned i;
   for (i = 0; i < AT_SPLINE_LIST_ARRAY_LENGTH(list_array); i++)

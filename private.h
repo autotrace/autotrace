@@ -29,13 +29,13 @@
 struct _at_bitmap_reader
 {
   at_input_func func;
-  at_address data;
+  gpointer data;
 };
 
 struct _at_spline_writer
 {
   at_output_func func;
-  at_address data;
+  gpointer data;
 };
 
 int at_input_init   (void);

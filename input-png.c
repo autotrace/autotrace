@@ -32,7 +32,7 @@
 #include <png.h>
 #include "input-png.h"
 
-static volatile char rcsid[]="$Id: input-png.c,v 1.17 2003/02/13 11:52:36 masata-y Exp $";
+static volatile char rcsid[]="$Id: input-png.c,v 1.18 2003/07/04 05:07:33 masata-y Exp $";
 static png_bytep * read_png(png_structp png_ptr, png_infop info_ptr, at_input_opts_type * opts);
 
 /* for pre-1.0.6 versions of libpng */
@@ -40,7 +40,7 @@ static png_bytep * read_png(png_structp png_ptr, png_infop info_ptr, at_input_op
 #	define png_jmpbuf(png_ptr) (png_ptr)->jmpbuf
 #endif
 
-static void handle_warning(png_structp png, const at_string message) {
+static void handle_warning(png_structp png, const gchar* message) {
         LOG1("PNG warning: %s", message);
 	at_exception_warning((at_exception_type *)png->error_ptr,
 			     message);
@@ -48,7 +48,7 @@ static void handle_warning(png_structp png, const at_string message) {
 	   "PNG warning"); */
 }
 
-static void handle_error(png_structp png, const at_string message) {
+static void handle_error(png_structp png, const gchar* message) {
 	LOG1("PNG error: %s", message);
 	at_exception_fatal((at_exception_type *)png->error_ptr,
 			   message);
@@ -126,9 +126,9 @@ static int load_image(at_bitmap_type *image, FILE *stream, at_input_opts_type * 
 	return result;
 }
 
-at_bitmap_type input_png_reader(at_string filename, at_input_opts_type * opts,
-				at_msg_func msg_func, at_address msg_data,
-				at_address user_data) {
+at_bitmap_type input_png_reader(gchar* filename, at_input_opts_type * opts,
+				at_msg_func msg_func, gpointer msg_data,
+				gpointer user_data) {
 	FILE *stream;
 	at_bitmap_type image = at_bitmap_init(0, 0, 0, 1);
 	at_exception_type exp = at_exception_new(msg_func, msg_data);

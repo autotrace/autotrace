@@ -28,7 +28,7 @@
 #include <time.h>
 #include <string.h>
 
-static at_string now(void);
+static gchar* now(void);
 
 #define NUM_CORRESP_POINTS 4
 
@@ -36,9 +36,9 @@ static at_string now(void);
    output file and writes some preliminary boilerplate. */
 
 static int
-output_er_header(FILE* er_file, at_string name, int llx, int lly, int urx, int ury)
+output_er_header(FILE* er_file, gchar* name, int llx, int lly, int urx, int ury)
 {
-    at_string time;
+    gchar* time;
 
     fprintf(er_file, "#Elastic Reality Shape File\n\n#Date: %s\n\n",
         time = now());
@@ -134,7 +134,7 @@ out_splines(FILE* er_file, spline_list_array_type shape,
 
         if (shape.centerline && shape.preserve_width)
         {
-          at_real w = (at_real) 1.0 / (shape.width_weight_factor);
+          gfloat w = (gfloat) 1.0 / (shape.width_weight_factor);
 
           fprintf(er_file, "\tWeightKey = {\n");
           fprintf(er_file, "\t\tFrame = 1\n");
@@ -193,12 +193,12 @@ out_splines(FILE* er_file, spline_list_array_type shape,
 }
 
 int
-output_er_writer(FILE* file, at_string name, int llx, int lly, int urx, int ury, 
+output_er_writer(FILE* file, gchar* name, int llx, int lly, int urx, int ury, 
 		 at_output_opts_type * opts,
 		 spline_list_array_type shape,
 		 at_msg_func msg_func, 
-		 at_address msg_data,
-		 at_address user_data)
+		 gpointer msg_data,
+		 gpointer user_data)
 {
     int result;
     unsigned width, height;
@@ -213,10 +213,10 @@ output_er_writer(FILE* file, at_string name, int llx, int lly, int urx, int ury,
     return 0;
 }
 
-static at_string
+static gchar*
 now(void)
 {
-    at_string time_string;
+    gchar* time_string;
     time_t t = time (0);
 
     XMALLOC (time_string, 26);  /* not 25 ! */

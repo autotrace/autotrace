@@ -37,11 +37,11 @@ print_spline (FILE *f, spline_type s)
    The variable names are taken from there.  */
 
 at_real_coord
-evaluate_spline (spline_type s, at_real t)
+evaluate_spline (spline_type s, gfloat t)
 {
   spline_type V[4];    /* We need degree+1 splines, but assert degree <= 3.  */
   signed i, j;
-  at_real one_minus_t = (at_real) 1.0 - t;
+  gfloat one_minus_t = (gfloat) 1.0 - t;
   polynomial_degree degree = SPLINE_DEGREE (s);
 
   for (i = 0; i <= degree; i++)

@@ -8,7 +8,7 @@
 #include <errno.h>
 
 FILE *
-xfopen (at_string filename, at_string mode)
+xfopen (gchar* filename, gchar* mode)
 {
   FILE *f;
 
@@ -26,7 +26,7 @@ xfopen (at_string filename, at_string mode)
 
 
 void
-xfclose (FILE *f, at_string filename)
+xfclose (FILE *f, gchar* filename)
 {
   if (f != stdin)
     {
@@ -36,7 +36,7 @@ xfclose (FILE *f, at_string filename)
 }
 
 void
-xfseek (FILE *f, long offset, int wherefrom, at_string filename)
+xfseek (FILE *f, long offset, int wherefrom, gchar* filename)
 {
   if (fseek (f, offset, wherefrom) < 0)
     FATAL_PERROR (filename);

@@ -13,9 +13,9 @@ typedef struct
 {
   at_coord *data;
   unsigned length;
-  at_bool clockwise;
+  gboolean clockwise;
   color_type color;
-  at_bool open;
+  gboolean open;
 } pixel_outline_type;
 
 /* The Nth coordinate in the list.  */
@@ -51,15 +51,15 @@ typedef struct
 /* Find all pixels on the outline in the character C.  */
 extern pixel_outline_list_type
 find_outline_pixels (bitmap_type, color_type *bg_color, 
-		     at_progress_func notify_progress, at_address progress_data,
-		     at_testcancel_func test_cancel, at_address testcancel_data,
+		     at_progress_func notify_progress, gpointer progress_data,
+		     at_testcancel_func test_cancel, gpointer testcancel_data,
 		     at_exception_type * exp);
 
 /* Find all pixels on the center line of the character C.  */
 extern pixel_outline_list_type
 find_centerline_pixels (bitmap_type, color_type bg_color, 
-			at_progress_func notify_progress, at_address progress_data,
-			at_testcancel_func test_cancel, at_address testcancel_data,
+			at_progress_func notify_progress, gpointer progress_data,
+			at_testcancel_func test_cancel, gpointer testcancel_data,
 			at_exception_type * exp);
 
 /* Free the memory in the list.  */

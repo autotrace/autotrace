@@ -55,19 +55,19 @@
 
 /* #define OUTPUT_PSTOEDIT_DEBUG */
 
-static int output_pstoedit_writer (FILE* file, at_string name,
+static int output_pstoedit_writer (FILE* file, gchar* name,
 				   int llx, int lly, int urx, int ury, 
 				   at_output_opts_type * opts,
 				   at_spline_list_array_type shape,
 				   at_msg_func msg_func, 
-				   at_address msg_data,
-				   at_address user_data);
+				   gpointer msg_data,
+				   gpointer user_data);
 
 
-static at_bool unusable_writer_p(const at_string name);
-static const at_string get_symbolicname(const at_string suffix);
+static gboolean unusable_writer_p(const gchar* name);
+static const gchar* get_symbolicname(const gchar* suffix);
 
-static void remove_temporary_file (const at_string tmpfile_name);
+static void remove_temporary_file (const gchar* tmpfile_name);
 static FILE * make_temporary_file(char *template, char * mode);
 
 /* This output routine uses two temporary files to keep the
@@ -78,18 +78,18 @@ static FILE * make_temporary_file(char *template, char * mode);
    -> specified formatted file(tmpfile_name_pstoedit) 
    -> file */
 static int
-output_pstoedit_writer (FILE* file, at_string name,
+output_pstoedit_writer (FILE* file, gchar* name,
 			int llx, int lly, int urx, int ury, 
 			at_output_opts_type * opts,
 			at_spline_list_array_type shape,
 			at_msg_func msg_func, 
-			at_address msg_data,
-			at_address user_data)
+			gpointer msg_data,
+			gpointer user_data)
 {
   at_spline_writer *  p2e_writer = NULL;
   char  tmpfile_name_p2e[] = TMPDIR "at-bo-" "XXXXXX";
   char  tmpfile_name_pstoedit[] = TMPDIR "at-fo-" "XXXXXX";
-  const at_string symbolicname = (const at_string)user_data;
+  const gchar* symbolicname = (const gchar*)user_data;
   FILE * tmpfile;
   int result = 0;
   int c;
@@ -156,8 +156,8 @@ output_pstoedit_writer (FILE* file, at_string name,
   return result;
 }
 
-at_bool
-unusable_writer_p(const at_string suffix)
+gboolean
+unusable_writer_p(const gchar* suffix)
 {
   if (0 == strcmp(suffix, "sam")
       || 0 == strcmp(suffix, "dbg")
@@ -169,9 +169,9 @@ unusable_writer_p(const at_string suffix)
       || 0 == strcmp(suffix, "debug")
       || 0 == strcmp(suffix, "dump")
       || 0 == strcmp(suffix, "ps2as"))
-    return true;
+    return TRUE;
   else
-    return false;
+    return FALSE;
 }
 
 /* make_temporary_file --- Make a temporary file */
@@ -196,7 +196,7 @@ make_temporary_file(char *template, char * mode)
 }
 
 static void
-remove_temporary_file (const at_string tmpfile_name)
+remove_temporary_file (const gchar* tmpfile_name)
 {
 #if BO_DEBUG == 0
   remove (tmpfile_name);

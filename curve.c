@@ -37,7 +37,7 @@ new_curve (void)
   XMALLOC (curve, sizeof (struct curve));
   curve->point_list = NULL;
   CURVE_LENGTH (curve) = 0;
-  CURVE_CYCLIC (curve) = false;
+  CURVE_CYCLIC (curve) = FALSE;
   CURVE_START_TANGENT (curve) = CURVE_END_TANGENT (curve) = NULL;
   PREVIOUS_CURVE (curve) = NEXT_CURVE (curve) = NULL;
 
@@ -110,7 +110,7 @@ append_point (curve_type curve, at_real_coord coord)
   while (0)
 
 void
-log_curve (curve_type curve, at_bool print_t)
+log_curve (curve_type curve, gboolean print_t)
 {
   unsigned this_point;
 
@@ -194,7 +194,7 @@ log_entire_curve (curve_type curve)
   for (this_point = 0; this_point < CURVE_LENGTH (curve); this_point++)
     {
       LOG (" ");
-      LOG_CURVE_POINT (curve, this_point, true);
+      LOG_CURVE_POINT (curve, this_point, TRUE);
       /* Compiler warning `Condition is always true' can be ignored */
     }
 
@@ -264,14 +264,14 @@ new_curve_list_array (void)
 void
 free_curve_list_array (curve_list_array_type *curve_list_array,
 		       at_progress_func notify_progress, 
-		       at_address client_data)
+		       gpointer client_data)
 {
   unsigned this_list;
 
   for (this_list = 0; this_list < CURVE_LIST_ARRAY_LENGTH (*curve_list_array);
        this_list++) {
     if (notify_progress)
-      notify_progress(((at_real)this_list)/(CURVE_LIST_ARRAY_LENGTH (*curve_list_array)*(at_real)3.0)+(at_real)0.666 ,
+      notify_progress(((gfloat)this_list)/(CURVE_LIST_ARRAY_LENGTH (*curve_list_array)*(gfloat)3.0)+(gfloat)0.666 ,
 		      client_data);
     free_curve_list (&CURVE_LIST_ARRAY_ELT (*curve_list_array, this_list));
   }

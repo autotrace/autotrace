@@ -669,8 +669,8 @@ gf_get_char (gf_font_t *font, gf_char_t *sym, unsigned char charcode)
 	return 1;
 }
 
-at_bitmap_type input_gf_reader (at_string filename, at_input_opts_type *opts,
-				at_msg_func msg_func, at_address msg_data, at_address user_data)
+at_bitmap_type input_gf_reader (gchar* filename, at_input_opts_type *opts,
+				at_msg_func msg_func, gpointer msg_data, gpointer user_data)
 {
 	at_exception_type exp = at_exception_new (msg_func, msg_data);
 	at_bitmap_type bitmap = at_bitmap_init (NULL, 0, 0, 0);

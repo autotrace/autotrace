@@ -19,7 +19,7 @@
 struct etyp { int t00, t11, t01, t01s; };
 
 
-static at_bool get_edge(bitmap_type, int y, int x, struct etyp *t);
+static gboolean get_edge(bitmap_type, int y, int x, struct etyp *t);
 static void check(int v1, int v2, int v3, struct etyp *t);
 #endif
 
@@ -31,7 +31,7 @@ static void check(int v1, int v2, int v3, struct etyp *t);
    every non-target point to the nearest target point. */
 
 distance_map_type
-new_distance_map(bitmap_type bitmap, unsigned char target_value, at_bool padded, at_exception_type * exp)
+new_distance_map(bitmap_type bitmap, unsigned char target_value, gboolean padded, at_exception_type * exp)
 {
     signed x, y;
     float d, min;
@@ -185,14 +185,14 @@ free_distance_map(distance_map_type *dist)
     if (dist->d != NULL)
     {
 	for (y = 0; y < h; y++)
-	    free((at_address*)dist->d[y]);
-        free((at_address*)dist->d);
+	    free((gpointer*)dist->d[y]);
+        free((gpointer*)dist->d);
     }
     if (dist->weight != NULL)
     {
 	for (y = 0; y < h; y++)
-	    free((at_address*)dist->weight[y]);
-        free((at_address*)dist->weight);
+	    free((gpointer*)dist->weight[y]);
+        free((gpointer*)dist->weight);
     }
 }
 
@@ -331,7 +331,7 @@ bitmap_type
 ip_thin(bitmap_type input_b)
 {
     unsigned y, x, i;
-    at_bool k, again;
+    gboolean k, again;
     struct etyp t;
     unsigned w = BITMAP_WIDTH(input_b);
     unsigned h = BITMAP_HEIGHT(input_b);
@@ -479,7 +479,7 @@ ip_thin(bitmap_type input_b)
 }
 
 
-at_bool get_edge(bitmap_type b, int y, int x, struct etyp *t)
+gboolean get_edge(bitmap_type b, int y, int x, struct etyp *t)
 {
     t->t00 = 0; t->t01 = 0; t->t01s = 0; t->t11 = 0;
     check(*BITMAP_PIXEL(b, y - 1, x - 1), *BITMAP_PIXEL(b, y - 1, x),

@@ -130,17 +130,17 @@ at_output_opts_free(at_output_opts_type * opts)
 
 at_bitmap_type *
 at_bitmap_read (at_bitmap_reader * reader,
-		at_string filename,
+		gchar* filename,
 		at_input_opts_type * opts,
-		at_msg_func msg_func, at_address msg_data)
+		at_msg_func msg_func, gpointer msg_data)
 {
-  at_bool new_opts = false;
+  gboolean new_opts = FALSE;
   at_bitmap_type * bitmap;
   XMALLOC(bitmap, sizeof(at_bitmap_type)); 
   if (opts == NULL)
     {
       opts     = at_input_opts_new();
-      new_opts = true;
+      new_opts = TRUE;
     }
   *bitmap = (*reader->func) (filename, opts, msg_func, msg_data, reader->data);
   if (new_opts)
@@ -230,7 +230,7 @@ at_bitmap_get_planes (at_bitmap_type * bitmap)
 at_splines_type * 
 at_splines_new (at_bitmap_type * bitmap,
 		at_fitting_opts_type * opts,
-		at_msg_func msg_func, at_address msg_data)
+		at_msg_func msg_func, gpointer msg_data)
 {
   return at_splines_new_full(bitmap, opts, 
 			     msg_func, msg_data,
@@ -243,11 +243,11 @@ at_splines_type *
 at_splines_new_full (at_bitmap_type * bitmap,
 		     at_fitting_opts_type * opts,
 		     at_msg_func msg_func, 
-		     at_address msg_data,
+		     gpointer msg_data,
 		     at_progress_func notify_progress,
-		     at_address progress_data,
+		     gpointer progress_data,
 		     at_testcancel_func test_cancel,
-		     at_address testcancel_data)
+		     gpointer testcancel_data)
 {
   image_header_type image_header;
   at_splines_type * splines = NULL;
@@ -293,7 +293,7 @@ at_splines_new_full (at_bitmap_type * bitmap,
       if (opts->preserve_width)
 	{
           /* Preserve line width prior to thinning. */
-          dist_map = new_distance_map(*bitmap, 255, /*padded=*/true, &exp);
+          dist_map = new_distance_map(*bitmap, 255, /*padded=*/TRUE, &exp);
           dist = &dist_map;
 	  FATAL_THEN_RETURN();
         }
@@ -357,12 +357,12 @@ at_splines_new_full (at_bitmap_type * bitmap,
 void 
 at_splines_write (at_spline_writer * writer,
 		  FILE * writeto,
-		  at_string file_name,
+		  gchar* file_name,
 		  at_output_opts_type * opts,
 		  at_splines_type * splines,
-		  at_msg_func msg_func, at_address msg_data)
+		  at_msg_func msg_func, gpointer msg_data)
 {
-  at_bool new_opts = false;
+  gboolean new_opts = FALSE;
   int llx, lly, urx, ury;
   llx = 0;
   lly = 0;
@@ -374,7 +374,7 @@ at_splines_write (at_spline_writer * writer,
   
   if (opts == NULL)
     {
-      new_opts = true;
+      new_opts = TRUE;
       opts     = at_output_opts_new();
     }
 
@@ -419,13 +419,13 @@ at_color_copy (at_color_type * original)
 		      original->b);
 }
 
-at_bool
+gboolean
 at_color_equal (at_color_type * c1, at_color_type * c2)
 {
   if (c1 == c2 || COLOR_EQUAL(*c1, *c2))
-	return true;
+    return TRUE;
   else
-	return false;
+    return FALSE;
 }
 
 void 
@@ -435,7 +435,7 @@ at_color_free(at_color_type * color)
 }
 
 const char *
-at_version (at_bool long_format)
+at_version (gboolean long_format)
 {
   if (long_format)
     return "AutoTrace version " AUTOTRACE_VERSION;

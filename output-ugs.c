@@ -175,7 +175,6 @@ static void output_splines (FILE *file, spline_list_array_type shape,
 	unsigned l, s;
 	spline_list_type list;
 	spline_type first, t;
-	int x, lastx;
 	double x1, y1, x1a, y1a, x2, y2, x3a, y3a, x3, y3;
 	int ix1, iy1, ix1a, iy1a, ix2, iy2, ix3a, iy3a, ix3, iy3;
 
@@ -273,11 +272,11 @@ static void output_splines (FILE *file, spline_list_array_type shape,
 	fprintf (file, "\tend contour\n");
 }
 
-int output_ugs_writer (FILE* file, at_string name,
+int output_ugs_writer (FILE* file, gchar* name,
 		       int llx, int lly, int urx, int ury, at_output_opts_type *opts,
 		       spline_list_array_type shape, at_msg_func msg_func,
-		       at_address msg_data,
-		       at_address usar_data)
+		       gpointer msg_data,
+		       gpointer usar_data)
 {
 	/* Write the header.  */
 	fprintf (file, "symbol %#x design-size %ld\n",
@@ -301,4 +300,5 @@ int output_ugs_writer (FILE* file, at_string name,
 
 	/* Write the trailer.  */
 	fputs ("end symbol\n\n", file);
+	return 0;
 }

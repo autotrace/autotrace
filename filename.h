@@ -25,18 +25,18 @@ Foundation, Inc., 675 Mass Ave, Cambridge, MA 02139, USA.  */
 
 /* If NAME has a suffix, return a pointer to its first character (i.e.,
    the one after the `.'); otherwise, return NULL.  */
-extern at_string find_suffix (at_string name);
+extern gchar* find_suffix (gchar* name);
 
 /* If NAME has a suffix, simply return it; otherwise, return
    `NAME.SUFFIX'.  */
-extern at_string extend_filename (at_string name, at_string suffix);
+extern gchar* extend_filename (gchar* name, gchar* suffix);
 
 /* Return S with the suffix SUFFIX, removing any suffix already present.
    For example, `make_suffix ("/foo/bar.baz", "karl")' returns
    `/foo/bar.karl'.  Returns a string allocated with malloc.  */
-extern at_string make_suffix (at_string s, at_string suffix);
+extern gchar* make_suffix (gchar* s, gchar* suffix);
 
 /* Return NAME with any suffix removed.  */
-extern at_string remove_suffix (at_string name);
+extern gchar* remove_suffix (gchar* name);
 
 #endif /* Not def: FILENAME_H */

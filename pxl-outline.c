@@ -57,7 +57,7 @@ typedef enum
   ((dir) == WEST ? -1 : (dir) == EAST ? +1 : 0)
 
 static pixel_outline_type find_one_outline (bitmap_type, edge_type, unsigned short,
-                                            unsigned short, bitmap_type *, at_bool, at_bool, at_exception_type *);
+                                            unsigned short, bitmap_type *, gboolean, gboolean, at_exception_type *);
 static pixel_outline_type find_one_centerline (bitmap_type, direction_type,
                                                unsigned short, unsigned short, bitmap_type *);
 static void append_pixel_outline (pixel_outline_list_type *,
@@ -67,25 +67,25 @@ static void free_pixel_outline (pixel_outline_type *);
 static void concat_pixel_outline (pixel_outline_type *,
                                   const pixel_outline_type*);
 static void append_outline_pixel (pixel_outline_type *, at_coord);
-static at_bool is_marked_edge (edge_type, unsigned short, unsigned short, bitmap_type);
-static at_bool is_outline_edge (edge_type, bitmap_type, unsigned short, unsigned short,
+static gboolean is_marked_edge (edge_type, unsigned short, unsigned short, bitmap_type);
+static gboolean is_outline_edge (edge_type, bitmap_type, unsigned short, unsigned short,
                                 color_type, at_exception_type *);
-static at_bool is_unmarked_outline_edge (unsigned short, unsigned short, edge_type,
+static gboolean is_unmarked_outline_edge (unsigned short, unsigned short, edge_type,
                                          bitmap_type, bitmap_type, color_type, at_exception_type *);
 
 static void mark_edge (edge_type e, unsigned short, unsigned short, bitmap_type *);
 static edge_type opposite_edge(edge_type);
 
-static at_bool is_marked_dir(unsigned short, unsigned short, direction_type, bitmap_type);
-static at_bool is_other_dir_marked(unsigned short, unsigned short, direction_type, bitmap_type);
+static gboolean is_marked_dir(unsigned short, unsigned short, direction_type, bitmap_type);
+static gboolean is_other_dir_marked(unsigned short, unsigned short, direction_type, bitmap_type);
 static void mark_dir(unsigned short, unsigned short, direction_type, bitmap_type *);
-static at_bool next_unmarked_pixel(unsigned short *, unsigned short *,
+static gboolean next_unmarked_pixel(unsigned short *, unsigned short *,
                                    direction_type *, bitmap_type, bitmap_type *);
 
-at_bool is_valid_dir (unsigned short, unsigned short, direction_type, bitmap_type, bitmap_type);
+gboolean is_valid_dir (unsigned short, unsigned short, direction_type, bitmap_type, bitmap_type);
 
 static at_coord next_point(bitmap_type, edge_type *, unsigned short *, unsigned short *, 
-                           color_type, at_bool, bitmap_type, at_exception_type * );
+                           color_type, gboolean, bitmap_type, at_exception_type * );
 static unsigned
 num_neighbors(unsigned short, unsigned short, bitmap_type);
 
@@ -96,8 +96,8 @@ num_neighbors(unsigned short, unsigned short, bitmap_type);
 
 pixel_outline_list_type
 find_outline_pixels (bitmap_type bitmap, color_type *bg_color,
-		     at_progress_func notify_progress, at_address progress_data,
-		     at_testcancel_func test_cancel, at_address testcancel_data,
+		     at_progress_func notify_progress, gpointer progress_data,
+		     at_testcancel_func test_cancel, gpointer testcancel_data,
 		     at_exception_type * exp)
 {
   pixel_outline_list_type outline_list;
@@ -114,16 +114,16 @@ find_outline_pixels (bitmap_type bitmap, color_type *bg_color,
         {
           edge_type edge;
           color_type color;
-          at_bool is_background;
+          gboolean is_background;
 
           if (notify_progress)
-            notify_progress((at_real)(row * BITMAP_WIDTH(bitmap) + col) / ((at_real) max_progress * (at_real)3.0),
+            notify_progress((gfloat)(row * BITMAP_WIDTH(bitmap) + col) / ((gfloat) max_progress * (gfloat)3.0),
                             progress_data);
 
           /* A valid edge can be TOP for an outside outline.
              Outside outlines are traced counterclockwise */
           color = GET_COLOR (bitmap, row, col);
-          if (!(is_background = (at_bool)(bg_color && COLOR_EQUAL(color, *bg_color)))
+          if (!(is_background = (gboolean)(bg_color && COLOR_EQUAL(color, *bg_color)))
               && is_unmarked_outline_edge (row, col, edge = TOP,
                                            bitmap, marked, color, exp))
             {
@@ -133,10 +133,10 @@ find_outline_pixels (bitmap_type bitmap, color_type *bg_color,
 
               LOG1 ("#%u: (counterclockwise)", O_LIST_LENGTH (outline_list));
 
-              outline = find_one_outline (bitmap, edge, row, col, &marked, false, false, exp);
+              outline = find_one_outline (bitmap, edge, row, col, &marked, FALSE, FALSE, exp);
               CHECK_FATAL();    /* FREE(DONE) outline_list */
 
-              O_CLOCKWISE (outline) = false;
+              O_CLOCKWISE (outline) = FALSE;
               append_pixel_outline (&outline_list, outline);
 
               LOG1 (" [%u].\n", O_LENGTH (outline));
@@ -163,10 +163,10 @@ find_outline_pixels (bitmap_type bitmap, color_type *bg_color,
                       LOG1 ("#%u: (clockwise)", O_LIST_LENGTH (outline_list));
 
                       outline = find_one_outline (bitmap, edge, row-1, col,
-                                                  &marked, true, false, exp);
+                                                  &marked, TRUE, FALSE, exp);
                       CHECK_FATAL(); /* FREE(DONE) outline_list */
 
-                      O_CLOCKWISE (outline) = true;
+                      O_CLOCKWISE (outline) = TRUE;
                       append_pixel_outline (&outline_list, outline);
 
                       LOG1 (" [%u].\n", O_LENGTH (outline));
@@ -174,7 +174,7 @@ find_outline_pixels (bitmap_type bitmap, color_type *bg_color,
                   else
                     {
                       outline = find_one_outline (bitmap, edge, row-1, col,
-                                                  &marked, true, true, exp);
+                                                  &marked, TRUE, TRUE, exp);
                       CHECK_FATAL(); /* FREE(DONE) outline_list */
                     }
                 }
@@ -204,7 +204,7 @@ find_outline_pixels (bitmap_type bitmap, color_type *bg_color,
 static pixel_outline_type
 find_one_outline (bitmap_type bitmap, edge_type original_edge,
                   unsigned short original_row, unsigned short original_col,
-                  bitmap_type *marked, at_bool clockwise, at_bool ignore,
+                  bitmap_type *marked, gboolean clockwise, gboolean ignore,
                   at_exception_type * exp)
 {
   pixel_outline_type outline;
@@ -240,10 +240,10 @@ find_one_outline (bitmap_type bitmap, edge_type original_edge,
   return outline;
 }
 
-at_bool is_valid_dir (unsigned short row, unsigned short col, direction_type dir, bitmap_type bitmap, bitmap_type marked)
+gboolean is_valid_dir (unsigned short row, unsigned short col, direction_type dir, bitmap_type bitmap, bitmap_type marked)
 {
   
-  return ((at_bool)(!is_marked_dir(row, col, dir, marked)
+  return ((gboolean)(!is_marked_dir(row, col, dir, marked)
           && COMPUTE_DELTA(ROW, dir)+row > 0
 		  && COMPUTE_DELTA(COL, dir)+col > 0
           && BITMAP_VALID_PIXEL(bitmap, COMPUTE_DELTA(ROW, dir)+row, COMPUTE_DELTA(COL, dir)+col)
@@ -253,8 +253,8 @@ at_bool is_valid_dir (unsigned short row, unsigned short col, direction_type dir
 
 pixel_outline_list_type
 find_centerline_pixels (bitmap_type bitmap, color_type bg_color,
-			at_progress_func notify_progress, at_address progress_data,
-			at_testcancel_func test_cancel, at_address testcancel_data,
+			at_progress_func notify_progress, gpointer progress_data,
+			at_testcancel_func test_cancel, gpointer testcancel_data,
 			at_exception_type * exp)
 {
   pixel_outline_list_type outline_list;
@@ -271,10 +271,10 @@ find_centerline_pixels (bitmap_type bitmap, color_type bg_color,
         {
           direction_type dir=EAST;
           pixel_outline_type outline;
-          at_bool clockwise = false;
+          gboolean clockwise = FALSE;
 
           if (notify_progress)
-            notify_progress((at_real)(row * BITMAP_WIDTH(bitmap) + col) / ((at_real) max_progress * (at_real)3.0),
+            notify_progress((gfloat)(row * BITMAP_WIDTH(bitmap) + col) / ((gfloat) max_progress * (gfloat)3.0),
                             progress_data);
 
 		  if (COLOR_EQUAL(GET_COLOR(bitmap, row, col), bg_color))
@@ -337,7 +337,7 @@ find_centerline_pixels (bitmap_type bitmap, color_type bg_color,
           if (outline.open)
             {
               pixel_outline_type partial_outline;
-              at_bool okay = false;
+              gboolean okay = FALSE;
 
               if (dir == EAST)
                 {
@@ -439,7 +439,7 @@ find_one_centerline(bitmap_type bitmap, direction_type search_dir,
   unsigned short prev_row, prev_col;
   at_coord pos;
 
-  outline.open = false;
+  outline.open = FALSE;
   outline.color = GET_COLOR(bitmap, row, col);
 
   /* Add the starting pixel to the output list, changing from bitmap
@@ -458,7 +458,7 @@ find_one_centerline(bitmap_type bitmap, direction_type search_dir,
       if (!next_unmarked_pixel(&row, &col, &search_dir,
                                bitmap, marked))
         {
-          outline.open = true;
+          outline.open = TRUE;
           break;
         }
 
@@ -528,7 +528,7 @@ new_pixel_outline (void)
 
   O_LENGTH (pixel_outline) = 0;
   pixel_outline.data = NULL;
-  pixel_outline.open = false;
+  pixel_outline.open = FALSE;
 
   return pixel_outline;
 }
@@ -583,13 +583,13 @@ append_outline_pixel (pixel_outline_type *o, at_coord c)
 
 /* Is this really an edge and is it still unmarked? */
 
-static at_bool
+static gboolean
 is_unmarked_outline_edge (unsigned short row, unsigned short col,
                           edge_type edge, bitmap_type bitmap,
                           bitmap_type marked, color_type color, at_exception_type * exp)
 {
   return
-    (at_bool)(!is_marked_edge (edge, row, col, marked)
+    (gboolean)(!is_marked_edge (edge, row, col, marked)
               && is_outline_edge (edge, bitmap, row, col, color, exp));
 }
 
@@ -597,29 +597,29 @@ is_unmarked_outline_edge (unsigned short row, unsigned short col,
 /* We check to see if the edge of the pixel at position ROW and COL
    is an outline edge */
 
-static at_bool
+static gboolean
 is_outline_edge (edge_type edge, bitmap_type bitmap,
                  unsigned short row, unsigned short col, color_type color,
                  at_exception_type * exp)
 {
   /* If this pixel isn't of the same color, it's not part of the outline. */
   if (!COLOR_EQUAL (GET_COLOR (bitmap, row, col), color))
-    return false;
+    return FALSE;
 
   switch (edge)
     {
     case LEFT:
-      return (at_bool)(col == 0 || !COLOR_EQUAL (GET_COLOR (bitmap, row, col - 1), color));
+      return (gboolean)(col == 0 || !COLOR_EQUAL (GET_COLOR (bitmap, row, col - 1), color));
 
     case TOP:
-      return (at_bool)(row == 0 || !COLOR_EQUAL (GET_COLOR (bitmap, row - 1, col), color));
+      return (gboolean)(row == 0 || !COLOR_EQUAL (GET_COLOR (bitmap, row - 1, col), color));
 
     case RIGHT:
-      return (at_bool)(col == BITMAP_WIDTH (bitmap) - 1
+      return (gboolean)(col == BITMAP_WIDTH (bitmap) - 1
                        || !COLOR_EQUAL(GET_COLOR (bitmap, row, col + 1), color));
 
     case BOTTOM:
-      return (at_bool)(row == BITMAP_HEIGHT (bitmap) - 1
+      return (gboolean)(row == BITMAP_HEIGHT (bitmap) - 1
                        || !COLOR_EQUAL(GET_COLOR (bitmap, row + 1, col), color));
 
     case NO_EDGE:
@@ -628,7 +628,7 @@ is_outline_edge (edge_type edge, bitmap_type bitmap,
       at_exception_fatal(exp, "is_outline_edge: Bad edge value");
     }
 
-  return false; /* NOT REACHED */
+  return FALSE; /* NOT REACHED */
 }
 
 
@@ -654,21 +654,21 @@ mark_dir(unsigned short row, unsigned short col, direction_type dir, bitmap_type
 
 /* Test if the direction of pixel at ROW/COL in MARKED is marked. */
 
-static at_bool
+static gboolean
 is_marked_dir(unsigned short row, unsigned short col, direction_type dir, bitmap_type marked)
 {
-  return (at_bool)((*BITMAP_PIXEL(marked, row, col) & 1 << dir) != 0);
+  return (gboolean)((*BITMAP_PIXEL(marked, row, col) & 1 << dir) != 0);
 }
 
 
-static at_bool
+static gboolean
 is_other_dir_marked(unsigned short row, unsigned short col, direction_type dir, bitmap_type marked)
 {
-  return (at_bool)((*BITMAP_PIXEL(marked, row, col) & (255 - (1 << dir) - (1 << ((dir + 4) % 8))) ) != 0);
+  return (gboolean)((*BITMAP_PIXEL(marked, row, col) & (255 - (1 << dir) - (1 << ((dir + 4) % 8))) ) != 0);
 }
 
 
-static at_bool
+static gboolean
 next_unmarked_pixel(unsigned short *row, unsigned short *col,
                     direction_type *dir, bitmap_type bitmap, bitmap_type *marked)
 {
@@ -704,9 +704,9 @@ next_unmarked_pixel(unsigned short *row, unsigned short *col,
   if ((*row != orig_row || *col != orig_col) && 
       (!(is_other_dir_marked(orig_row,orig_col,test_dir,*marked)
          &&is_other_dir_marked(orig_row + COMPUTE_DELTA(ROW, test_dir), orig_col + COMPUTE_DELTA(COL, test_dir),test_dir,*marked))))
-    return true;
+    return TRUE;
   else
-    return false;
+    return FALSE;
 }
 
 
@@ -733,15 +733,15 @@ num_neighbors(unsigned short row, unsigned short col, bitmap_type bitmap)
 
 /* Test if the edge EDGE at ROW/COL in MARKED is marked.  */
 
-static at_bool
+static gboolean
 is_marked_edge (edge_type edge, unsigned short row, unsigned short col, bitmap_type marked)
 {
   return
-    (at_bool)(edge == NO_EDGE ? false : (*BITMAP_PIXEL (marked, row, col) & (1 << edge)) != 0);
+    (gboolean)(edge == NO_EDGE ? FALSE : (*BITMAP_PIXEL (marked, row, col) & (1 << edge)) != 0);
 }
 
 static at_coord next_point(bitmap_type bitmap, edge_type *edge, unsigned short *row, unsigned short *col,
-                           color_type color, at_bool clockwise, bitmap_type marked,
+                           color_type color, gboolean clockwise, bitmap_type marked,
                            at_exception_type * exp)
 {
   at_coord pos = {0, 0};

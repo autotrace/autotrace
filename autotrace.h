@@ -79,7 +79,7 @@ struct _at_spline_type
 {
   at_real_coord v[4];	/* The control points.  */
   at_polynomial_degree degree;
-  at_real linearity;
+  gfloat linearity;
 };
 
 /* Each outline in a character is typically represented by many
@@ -88,9 +88,9 @@ struct _at_spline_list_type
 {
   at_spline_type *data;
   unsigned length;
-  at_bool clockwise;
+  gboolean clockwise;
   at_color_type color;
-  at_bool open;
+  gboolean open;
 };
 
 /* Each character is in general made up of many outlines. So here is one
@@ -106,9 +106,9 @@ struct _at_spline_list_array_type
   /* the values for following members are inherited from 
      at_fitting_opts_type */
   at_color_type * background_color;
-  at_bool centerline;
-  at_bool preserve_width;
-  at_real width_weight_factor;
+  gboolean centerline;
+  gboolean preserve_width;
+  gfloat width_weight_factor;
 
 };
 
@@ -138,7 +138,7 @@ N_("color-count <unsigned>: number of colors a color bitmap is reduced to, "	\
 N_("corner-always-threshold <angle-in-degrees>: if the angle at a pixel is "	\
 "less than this, it is considered a corner, even if it is within "		\
 "`corner-surround' pixels of another corner; default is 60. ")
-  at_real corner_always_threshold;
+  gfloat corner_always_threshold;
 
 #define at_doc__corner_surround						\
 N_("corner-surround <unsigned>: number of pixels on either side of a "	\
@@ -150,12 +150,12 @@ N_("corner-surround <unsigned>: number of pixels on either side of a "	\
 N_("corner-threshold <angle-in-degrees>: if a pixel, its predecessor(s), "	\
 "and its successor(s) meet at an angle smaller than this, it's a "		\
 "corner; default is 100. ")
-  at_real corner_threshold;
+  gfloat corner_threshold;
 
 #define at_doc__error_threshold						\
 N_("error-threshold <real>: subdivide fitted curves that are off by "	\
 "more pixels than this; default is 2.0. ")
-  at_real error_threshold;
+  gfloat error_threshold;
 
 #define  at_doc__filter_iterations					\
 N_("filter-iterations <unsigned>: smooth the curve this many times "	\
@@ -166,18 +166,18 @@ N_("filter-iterations <unsigned>: smooth the curve this many times "	\
 N_("line-reversion-threshold <real>: if a spline is closer to a straight "	\
 "line than this, weighted by the square of the curve length, keep it a "	\
 "straight line even if it is a list with curves; default is .01. ")
-  at_real line_reversion_threshold;
+  gfloat line_reversion_threshold;
 
 #define at_doc__line_threshold							\
 N_("line-threshold <real>: if the spline is not more than this far away "	\
 "from the straight line defined by its endpoints,"				\
 "then output a straight line; default is 1. ")
-  at_real line_threshold;
+  gfloat line_threshold;
 
 #define at_doc__remove_adjacent_corners					\
 N_("remove-adjacent-corners: remove corners that are adjacent; "	\
 "default doesn't remove.")
-  at_bool remove_adjacent_corners;
+  gboolean remove_adjacent_corners;
 
 #define at_doc__tangent_surround					\
 N_("tangent-surround <unsigned>: number of points on either side of a "	\
@@ -191,24 +191,24 @@ N_("despeckle-level <unsigned>: 0..20; default is no despeckling. ")
 
 #define at_doc__despeckle_tightness				\
 N_("despeckle-tightness <real>: 0.0..8.0; default is 2.0. ")
-  at_real despeckle_tightness;
+  gfloat despeckle_tightness;
 
 #define at_doc__noise_removal				\
 N_("noise-removal <real>: 1.0..0.0; default is 0.99. ")
-  at_real noise_removal;
+  gfloat noise_removal;
 
 #define  at_doc__centerline						\
 N_("centerline: trace a character's centerline, rather than its outline. ")
-  at_bool centerline;
+  gboolean centerline;
 
 #define at_doc__preserve_width							\
 N_("preserve-width: whether to preserve linewith with centerline fitting; "	\
 "default doesn't preserve.")
-  at_bool preserve_width;
+  gboolean preserve_width;
 
 #define  at_doc__width_weight_factor				\
 N_("width-weight-factor <real>: weight factor for fitting the linewidth.")
-  at_real width_weight_factor;
+  gfloat width_weight_factor;
 };
 
 struct _at_input_opts_type
@@ -238,7 +238,7 @@ enum _at_msg_type
 };
 
 typedef
-void (* at_msg_func) (at_string msg, at_msg_type msg_type, at_address client_data);
+void (* at_msg_func) (const gchar* msg, at_msg_type msg_type, gpointer client_data);
 
 /*
  * Autotrace initializer
@@ -260,14 +260,14 @@ struct _at_spline_writer;
  * Progress handler typedefs
  * 0.0 <= percentage <= 1.0
  */
-typedef void           (* at_progress_func)    (at_real percentage,
-						at_address client_data);
+typedef void           (* at_progress_func)    (gfloat percentage,
+						gpointer client_data);
 
 /*
  * Test cancel
  * Return true if auto-tracing should be stopped.
  */
-typedef at_bool          (*  at_testcancel_func) (at_address client_data);
+typedef gboolean          (*  at_testcancel_func) (gpointer client_data);
 
 /* ===================================================================== *
  * Functions
@@ -322,9 +322,9 @@ void at_output_opts_free(at_output_opts_type * opts);
    In both case, you have to call at_bitmap_free when at_bitmap_type * 
    data are no longer needed. */
 at_bitmap_type * at_bitmap_read (at_bitmap_reader * reader,
-				 at_string filename,
+				 gchar* filename,
 				 at_input_opts_type * opts,
-				 at_msg_func msg_func, at_address msg_data);
+				 at_msg_func msg_func, gpointer msg_data);
 at_bitmap_type * at_bitmap_new(unsigned short width,
 			       unsigned short height,
 			       unsigned int planes);
@@ -357,7 +357,7 @@ void at_bitmap_free (at_bitmap_type * bitmap);
    the client is not interested in the notifications. */
 at_splines_type * at_splines_new (at_bitmap_type * bitmap,
 				  at_fitting_opts_type * opts,
-				  at_msg_func msg_func, at_address msg_data);
+				  at_msg_func msg_func, gpointer msg_data);
 
 /* at_splines_new_full
 
@@ -385,18 +385,18 @@ at_splines_type * at_splines_new (at_bitmap_type * bitmap,
 at_splines_type * at_splines_new_full (at_bitmap_type * bitmap,
 				       at_fitting_opts_type * opts,
 				       at_msg_func msg_func, 
-				       at_address msg_data,
+				       gpointer msg_data,
 				       at_progress_func notify_progress,
-				       at_address progress_data,
+				       gpointer progress_data,
 				       at_testcancel_func test_cancel,
-				       at_address testcancel_data);
+				       gpointer testcancel_data);
 
 void at_splines_write(at_spline_writer * writer,
 		      FILE * writeto,
-		      at_string file_name,
+		      gchar* file_name,
 		      at_output_opts_type * opts,
 		      at_splines_type * splines,
-		      at_msg_func msg_func, at_address msg_data);
+		      at_msg_func msg_func, gpointer msg_data);
 
 void at_splines_free (at_splines_type * splines);
 
@@ -407,14 +407,14 @@ at_color_type * at_color_new   (unsigned char r,
 				unsigned char g,
 			        unsigned char b);
 at_color_type * at_color_copy  (at_color_type * original);
-at_bool         at_color_equal (at_color_type * c1, at_color_type * c2);
+gboolean         at_color_equal (at_color_type * c1, at_color_type * c2);
 void            at_color_free  (at_color_type * color);
 
 /* --------------------------------------------------------------------- *
  * Input related 
  * --------------------------------------------------------------------- */
-at_bitmap_reader * at_input_get_handler (at_string filename);
-at_bitmap_reader * at_input_get_handler_by_suffix (at_string suffix);
+at_bitmap_reader * at_input_get_handler (gchar* filename);
+at_bitmap_reader * at_input_get_handler_by_suffix (gchar* suffix);
 
 const char ** at_input_list_new (void);
 void at_input_list_free(const char ** list);
@@ -426,8 +426,8 @@ char * at_input_shortlist (void);
 /* --------------------------------------------------------------------- *
  * Output related
  * --------------------------------------------------------------------- */
-at_spline_writer * at_output_get_handler (at_string filename);
-at_spline_writer * at_output_get_handler_by_suffix (at_string suffix);
+at_spline_writer * at_output_get_handler (gchar* filename);
+at_spline_writer * at_output_get_handler_by_suffix (gchar* suffix);
 const char ** at_output_list_new (void);
 void at_output_list_free(const char ** list);
 
@@ -446,7 +446,7 @@ char * at_output_shortlist (void);
    LONG_FORMAT == false: "x.y" 
 
    return value: Don't free. It is allocated statically */
-const char * at_version (at_bool long_format);
+const char * at_version (gboolean long_format);
 
 /* at_home_site
 

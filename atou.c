@@ -8,7 +8,7 @@
 #include "atou.h"
 
 unsigned
-atou (at_string s)
+atou (gchar* s)
 {
   int i = atoi (s);
 

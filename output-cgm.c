@@ -39,7 +39,7 @@ typedef unsigned char      UI8;
 
 /* endianess independent IO functions */
 
-static at_bool write16(FILE *fdes, UI16 data)
+static gboolean write16(FILE *fdes, UI16 data)
 {
   size_t count = 0;
   UI8 outch;
@@ -50,20 +50,20 @@ static at_bool write16(FILE *fdes, UI16 data)
   outch = (UI8) (data & 0x0FF);
   count += fwrite(&outch, 1, 1, fdes);
 
-  return (count == sizeof(UI16)) ? true : false;
+  return (count == sizeof(UI16)) ? TRUE : FALSE;
 }
 
-static at_bool write8(FILE *fdes, UI8 data)
+static gboolean write8(FILE *fdes, UI8 data)
 {
   size_t count = 0;
 
   count = fwrite(&data, 1, 1, fdes);
   
-  return (count == sizeof(UI8)) ? true : false;
+  return (count == sizeof(UI8)) ? TRUE : FALSE;
 }
 
 
-static at_bool output_beginmetafilename(FILE *fdes, const char *string)
+static gboolean output_beginmetafilename(FILE *fdes, const char *string)
 {
   size_t len = strlen (string);
  
@@ -87,10 +87,10 @@ static at_bool output_beginmetafilename(FILE *fdes, const char *string)
 	  write8(fdes, 0);
 
 
-  return true;
+  return TRUE;
 }
 
-static at_bool output_beginpicture(FILE *fdes, const char *string)
+static gboolean output_beginpicture(FILE *fdes, const char *string)
 {
   int len = strlen (string);
  
@@ -114,10 +114,10 @@ static at_bool output_beginpicture(FILE *fdes, const char *string)
 	  write8(fdes, 0);
 
 
-  return true;
+  return TRUE;
 }
 
-static at_bool output_metafiledescription(FILE *fdes, const char *string)
+static gboolean output_metafiledescription(FILE *fdes, const char *string)
 {
   int len = strlen (string);
  
@@ -141,20 +141,20 @@ static at_bool output_metafiledescription(FILE *fdes, const char *string)
 	  write8(fdes, 0);
 
 
-  return true;
+  return TRUE;
 }
 
-int output_cgm_writer(FILE* cgm_file, at_string name,
+int output_cgm_writer(FILE* cgm_file, gchar* name,
 		      int llx, int lly, int urx, int ury, 
 		      at_output_opts_type * opts,
 		      spline_list_array_type shape,
 		      at_msg_func msg_func, 
-		      at_address msg_data,
-		      at_address user_data)
+		      gpointer msg_data,
+		      gpointer user_data)
 {
   unsigned this_list;
   char *des;
-  const char * version_string = at_version(true);
+  const char * version_string = at_version(TRUE);
 
   output_beginmetafilename (cgm_file, name);
 

@@ -101,6 +101,7 @@ libautotrace_la_SOURCES =\
 		image-proc.c			\
 		image-proc.h			\
 		module.c			\
+		private.h			\
 		intl.h
 
 autotraceinclude_HEADERS=\

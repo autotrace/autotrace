@@ -50,6 +50,6 @@
  */
 
 extern void
-despeckle (bitmap_type *bitmap, int level, at_real tightness, at_real noise_removal, at_exception_type * exp);
+despeckle (bitmap_type *bitmap, int level, gfloat tightness, gfloat noise_removal, at_exception_type * exp);
 
 #endif /* not DESPECKLE_H */

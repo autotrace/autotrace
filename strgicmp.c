@@ -5,10 +5,10 @@
 #include "strgicmp.h"
 #include <ctype.h>
 
-at_bool strgicmp (const char *s1, const char *s2)
+gboolean strgicmp (const char *s1, const char *s2)
 {
   if (s1 == NULL || s2 == NULL)
-    return (false);
+    return (FALSE);
 
   while (*s1 != '\0' && *s2 != '\0')
     {
@@ -18,17 +18,17 @@ at_bool strgicmp (const char *s1, const char *s2)
       s2++;
     }
   if (*s1 == '\0' && *s2 == '\0')
-	return (true);
+	return (TRUE);
   else
-    return (false);
+    return (FALSE);
 }
 
-at_bool strgnicmp (const char *s1, const char *s2, size_t len)
+gboolean strgnicmp (const char *s1, const char *s2, size_t len)
 {
   size_t i = 0;
 
   if (s1 == NULL || s2 == NULL)
-    return (false);
+    return (FALSE);
 
   while (*s1 != '\0' && *s2 != '\0')
     {
@@ -39,15 +39,15 @@ at_bool strgnicmp (const char *s1, const char *s2, size_t len)
 	  i++;
     }
   if ((*s1 == '\0' && *s2 == '\0') || len == i)
-	return (true);
+	return (TRUE);
   else
-    return (false);
+    return (FALSE);
 }
 
 #if 0
 #include <stdio.h>
 void
-result (at_bool val)
+result (gboolean val)
 {
   if (val)
     printf("successful\n");

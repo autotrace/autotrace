@@ -22,9 +22,9 @@
 
 #include "output.h"
 
-int output_dr2d_writer(FILE * file, at_string name, int llx, int lly, int urx, int ury, 
+int output_dr2d_writer(FILE * file, gchar* name, int llx, int lly, int urx, int ury, 
 		       at_output_opts_type * opts,
-		       at_spline_list_array_type shape, at_msg_func msg_func, at_address msg_data,
-		       at_address user_data);
+		       at_spline_list_array_type shape, at_msg_func msg_func, gpointer msg_data,
+		       gpointer user_data);
 
 #endif /* not OUTPUT_DR2D_H */
