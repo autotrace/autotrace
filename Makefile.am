@@ -15,7 +15,7 @@ AUTOMAKE_OPTIONS = foreign no-dependencies
 
 autotraceincludedir=$(includedir)/autotrace
 lib_LTLIBRARIES=libautotrace.la
-bin_PROGRAMS=autotrace
+bin_PROGRAMS=autotrace all
 
 if HAVE_MAGICK
 input_magick_src=input-magick.h input-magick.c
@@ -59,7 +59,7 @@ output-pdf.c output-pdf.h \
 output-mif.c output-mif.h \
 output-cgm.c output-cgm.h \
 output-dr2d.c output-dr2d.h \
-+output-pov.c output-pov.h \
+output-pov.c output-pov.h \
 $(output_swf_src) \
 $(output_pstoedit_src)
 
@@ -150,6 +150,7 @@ pkgconfig_DATA= autotrace.pc
 
 bin_SCRIPTS=autotrace-config
 BUILT_SOURCES=autotrace-config
+all_SOURCES = 
 autotrace-config: autotrace-config.in
 
 autotrace-config.in: autotrace-config.af
