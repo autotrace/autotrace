@@ -1,5 +1,11 @@
 2002-03-08  Martin Weber <martweb@gmx.net>
 
+	* output-pdf.c: pdf files now contain a xref table.
+
+	Message-ID: <3C87C8F3.6130373F@gmx.net>.
+
+2002-03-08  Martin Weber <martweb@gmx.net>
+
 	* fit.c (filter): Put the definition 
 	of prev_new_point out of the loop.
 

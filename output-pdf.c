@@ -66,25 +66,25 @@
 
 /* This should be used for outputting a string S on a line by itself.  */
 #define SOUT_LINE(s)                                 \
-  sprintf (temp, "%s\n", s), length += strlen(temp)
+  sprintf (temp, "%s\n", s), *length += strlen(temp)
 
 /* These output their arguments, preceded by the indentation.  */
 #define SOUT1(s, e)                                  \
-  sprintf (temp, s, e), length += strlen(temp)
+  sprintf (temp, s, e), *length += strlen(temp)
 
 #define SOUT2(s, e1, e2)                             \
-  sprintf (temp, s, e1, e2), length += strlen(temp)
+  sprintf (temp, s, e1, e2), *length += strlen(temp)
 
 #define SOUT3(s, e1, e2, e3)                         \
-  sprintf (temp, s, e1, e2, e3), length += strlen(temp)
+  sprintf (temp, s, e1, e2, e3), *length += strlen(temp)
 
 #define SOUT4(s, e1, e2, e3, e4)                     \
-  sprintf (temp, s, e1, e2, e3, e4), length += strlen(temp)
+  sprintf (temp, s, e1, e2, e3, e4), *length += strlen(temp)
 
 /* These macros just output their arguments.  */
-#define SOUT_STRING(s)	sprintf (temp, "%s", s), length += strlen(temp)
+#define SOUT_STRING(s)	sprintf (temp, "%s", s), *length += strlen(temp)
 #define SOUT_REAL(r)	sprintf (temp, r == (ROUND (r = ROUND((at_real)6.0*r)/(at_real)6.0))				\
-                                  ? "%.0f " : "%.3f ", r), length += strlen(temp)
+                                  ? "%.0f " : "%.3f ", r), *length += strlen(temp)
 
 /* For a PostScript command with two real arguments, e.g., lineto.  OP
    should be a constant string.  */
@@ -155,11 +155,23 @@ static int output_pdf_header(FILE* pdf_file, at_string name,
 /* This should be called after the others in this file. It writes some
    last informations. */
 
-static int output_pdf_tailor(FILE* pdf_file)
+static int output_pdf_tailor(FILE* pdf_file, int length)
 {
+  char temp[40];
+
   OUT_LINE ("6 0 obj");
   OUT_LINE ("[/PDF]");
   OUT_LINE ("endobj");
+  OUT_LINE ("xref");
+  OUT_LINE ("0 7");
+  OUT_LINE ("0000000000 65535 f");
+  OUT_LINE ("0000000009 00000 n");
+  OUT_LINE ("0000000074 00000 n");
+  OUT_LINE ("0000000120 00000 n");
+  OUT_LINE ("0000000179 00000 n");
+  OUT_LINE ("0000000300 00000 n");
+  sprintf(temp, "%d", length);
+  OUT1     ("%010d 00000 n\n", 347 + length + strlen(temp));
   OUT_LINE ("trailer");
   OUT_LINE ("<< /Size 7");
   OUT_LINE ("/Root 1 0 R");
@@ -174,10 +186,9 @@ static int output_pdf_tailor(FILE* pdf_file)
    SHAPE. */
 
 static void
-out_splines (FILE *pdf_file, spline_list_array_type shape)
+out_splines (FILE *pdf_file, spline_list_array_type shape, int *length)
 {
   char temp[40];
-  int length = 0;
   unsigned this_list;
 
   color_type last_color = {0,0,0};
@@ -219,7 +230,7 @@ out_splines (FILE *pdf_file, spline_list_array_type shape)
     }
 
   OUT_LINE ("5 0 obj");
-  OUT1 ("<< /Length %d >>\n", length);
+  OUT1 ("<< /Length %d >>\n", *length);
   OUT_LINE ("stream");
 
   last_color.r = 0;
@@ -275,14 +286,15 @@ int output_pdf_writer(FILE* pdf_file, at_string name,
 		      at_address msg_data)
 {
     int result;
+    int length = 0;
 
     result = output_pdf_header(pdf_file, name, llx, lly, urx, ury);
     if (result != 0)
 	return result;
 
-    out_splines(pdf_file, shape);
+    out_splines(pdf_file, shape, &length);
 
-	output_pdf_tailor(pdf_file);
+	output_pdf_tailor(pdf_file, length);
 
     return 0;
 }
