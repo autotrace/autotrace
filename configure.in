@@ -133,7 +133,11 @@ fi
 dnl Stage two: Check internal of libMagick.la
 if test -n "${libMagick_la_path}"; then
    AC_MSG_CHECKING([Sanity of libMagick.la])
+   dnl libdir is defined in libMagick.al.
+   dnl Don't use the value.
+   libdir_backup=${libdir}
     . ${libMagick_la_path}
+   libdir=${libdir_backup}
     for elt in ${dependency_libs}; do
 	case ${elt} in
 	    *.la )

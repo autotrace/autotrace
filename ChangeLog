@@ -1,5 +1,8 @@
 2002-07-01  Masatake YAMATO  <yamato@redhat.com>
 
+	* configure.in: Don't use libdir value defined
+	in libMagick.al.
+
 	* output-pstoedit.h: Include pstoedit/pstoedit.h.
 
 	* Makefile.am: improved pstoedit supports.
