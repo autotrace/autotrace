@@ -109,10 +109,10 @@ out_splines (FILE * ps_file, spline_list_array_type shape)
       if (this_list == 0 || !COLOR_EQUAL(list.color, last_color))
         {
           if (this_list > 0)
-              OUT_LINE("*U");
+              OUT_LINE("h");
           /* symbol k is used for CorelDraw 3/4 compatibility */
-          OUT4 ("%f %f %f %s\n", (double) list.color.r,
-            (double) list.color.g, (double) list.color.b,
+          OUT4 ("%f %f %f %s\n", (double) list.color.r / 255.0,
+            (double) list.color.g / 255.0, (double) list.color.b / 255.0,
             (shape.centerline || list.open) ? "RG" : "rg");
           last_color = list.color;
         }    
@@ -131,7 +131,7 @@ out_splines (FILE * ps_file, spline_list_array_type shape)
                           END_POINT (s).x, END_POINT (s).y,
                           "c");
         }
-      OUT_LINE ((shape.centerline || list.open) ? "f" : "B");
+      OUT_LINE ((shape.centerline || list.open) ? "f" : "S");
 
     }
 }
@@ -165,4 +165,3 @@ now (void)
 
   return time_string;
 }
-

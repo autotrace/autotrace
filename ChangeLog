@@ -1,3 +1,11 @@
+2001-11-24  Martin Weber <martweb@gmx.net>
+
+	* output-epd.c (out_splines): Fix a 
+	bugs in output formats.
+	"*U"->"h", "B"->"S".
+	Divied each color components by 255.
+	(Message-ID: <3BFD3CA5.EA11A99C@gmx.net>).
+	
 2001-11-24  Masatake YAMATO  <yamato@redhat.com>
 
 	* Makefile.am (output_src): Added output-epd.[ch].
