@@ -12,7 +12,7 @@ Uses the Ming SWF library from http://www.opaque.net/ming/
 #include <ming.h>
 
 int output_swf_writer(FILE* file, string name,
-		      int llx, int lly, int urx, int ury,
+		      int llx, int lly, int urx, int ury, int dpi,
 		      spline_list_array_type shape);
 
 #endif /* Not def: OUTPUTSWF_H */

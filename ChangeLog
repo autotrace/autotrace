@@ -1,3 +1,24 @@
+2001-12-18  Masatake YAMATO  <yamato@redhat.com>
+	
+	* Makefile.am (output_src): Addd mif.[ch].
+
+2001-12-18  Per Grahn <pergra@foi.se>
+
+	* autotrace.dsp (SOURCE): Added mif.
+	
+	* output-mif.[ch]: New files.
+
+	* autotrace.h (at_output_write_func, at_output_write):
+	Added dpi as a parameter.
+
+	* main.c: Added new option dpi.
+
+	* output-*.[ch]: Added dpi as a parameter.
+
+	* output.c (output_formats):  Added mif.
+
+	(Message-ID: <3C1A734D.A11F290A@gmx.net>).
+	
 2001-12-18  Martin Weber <martweb@gmx.net>
 
 	* autotrace.dsp: Added swf.

@@ -283,6 +283,15 @@ SOURCE=".\output-fig.c"
 
 SOURCE=".\output-fig.h"
 # End Source File
+# Begin Source File
+
+SOURCE=".\output-mif.c"
+# End Source File
+# Begin Source File
+
+SOURCE=".\output-mif.h"
+# End Source File
+# Begin Source File
 
 SOURCE=".\output-p2e.c"
 # End Source File

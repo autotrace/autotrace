@@ -180,6 +180,7 @@ typedef
 int            (*at_output_write_func) (FILE*, at_string name,
 					int llx, int lly, 
 					int urx, int ury,
+					int dpi,
 					at_splines_type shape);
 
 /*
@@ -258,7 +259,7 @@ void
 at_output_write(at_output_write_func output_writer,
 		FILE * writeto,
 		char * name,
-		int llx, int lly, int urx, int ury,
+		int llx, int lly, int urx, int ury, int dpi,
 		at_splines_type * splines);
 char ** at_output_list_new (void);
 void at_output_list_free(char ** list);

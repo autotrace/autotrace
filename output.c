@@ -15,6 +15,7 @@
 #include "output-swf.h"
 #endif /* HAVE_LIBSWF */
 #include "output-emf.h"
+#include "output-mif.h"
 #include "output-dxf.h"
 #include "output-epd.h"
 #include "output-pdf.h"
@@ -37,6 +38,7 @@ static struct output_format_entry output_formats[] = {
     {"swf",	"Shockwave Flash 3",		output_swf_writer},
 #endif /* HAVE_LIBSWF */
     {"emf",     "Enhanced Metafile format",     output_emf_writer},
+    {"mif",     "FrameMaker MIF format",       output_mif_writer},
     {"er",      "Elastic Reality Shape file",   output_er_writer},
     {"dxf12",   "DXF format (without splines)", output_dxf12_writer},
     {"epd",     "EPD format",   output_epd_writer},

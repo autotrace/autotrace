@@ -10,7 +10,7 @@
 #include "color.h"
 
 int output_fig_writer(FILE* file, string name,
-			int llx, int lly, int urx, int ury,
+		      int llx, int lly, int urx, int ury, int dpi,
 			spline_list_array_type shape);
 
 /* use FIG_X and FIG_Y to convert from local units (pixels) to FIG ones */

@@ -12,7 +12,7 @@
 #include "spline.h"
 
 int output_emf_writer(FILE* file, string name,
-		      int llx, int lly, int urx, int ury,
+		      int llx, int lly, int urx, int ury, int dpi,
 		      spline_list_array_type shape);
 
 

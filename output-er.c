@@ -126,7 +126,7 @@ out_splines(FILE* er_file, spline_list_array_type shape,
 }
 
 int
-output_er_writer(FILE* file, string name, int llx, int lly, int urx, int ury,
+output_er_writer(FILE* file, string name, int llx, int lly, int urx, int ury, int dpi,
     spline_list_array_type shape)
 {
     int result;

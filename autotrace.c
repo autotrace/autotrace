@@ -195,12 +195,12 @@ void
 at_output_write(at_output_write_func output_writer,
 		FILE * writeto,
 		char * name,
-		int llx, int lly, int urx, int ury,
+		int llx, int lly, int urx, int ury, int dpi,
 		at_splines_type * splines)
 {
   if (!name)
     name = "";
-  (*output_writer) (writeto, name, llx, lly, urx, ury, *splines);
+  (*output_writer) (writeto, name, llx, lly, urx, ury, dpi, *splines);
 }
 
 char **

@@ -49,8 +49,8 @@ out_splines (FILE * file, spline_list_array_type shape, int height)
 
 
 int output_svg_writer(FILE* file, string name,
-		     int llx, int lly, int urx, int ury,
-		     spline_list_array_type shape)
+		      int llx, int lly, int urx, int ury, int dpi,
+		      spline_list_array_type shape)
 {
     int width = urx - llx;
     int height = ury - lly;

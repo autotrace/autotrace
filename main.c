@@ -45,6 +45,9 @@ static bool remove_adj_corners;
 /* Thin all the lines in the image prior to fitting. */
 static bool thin = false;
 
+/* image dpi used in mif backend. */
+static int dpi = 72;
+
 /* Report tracing status in real time (--report-progress) */
 static bool report_progress = false;
 static void dot_printer(real percentage, address client_data);
@@ -136,6 +139,7 @@ main (int argc, char * argv[])
 		   0, 0, 
 		   at_bitmap_get_width(bitmap), 
 		   at_bitmap_get_height(bitmap),
+		   dpi,
 		   splines);
   
   if (output_file != stdout)
@@ -171,7 +175,9 @@ corner-threshold <angle-in-degrees>: if a pixel, its predecessor(s),\n\
   and its successor(s) meet at an angle smaller than this, it's a\n\
   corner; default is 100.\n\
 despeckle-level <unsigned>: 0..20; default is no despeckling.\n\
-despeckle-tightness <real>: 0.0..8.0; default is 2.0.\n"
+despeckle-tightness <real>: 0.0..8.0; default is 2.0.\n\
+dpi <unsigned>: The dots per inch value in the input image, affects scaling\n\
+  of output image\n"
 #define USAGE2 "error-threshold <real>: subdivide fitted curves that are off by\n\
   more pixels than this; default is 2.0.\n\
 filter-iterations <unsigned>: smooth the curve this many times\n\
@@ -216,6 +222,7 @@ read_command_line (int argc, char * argv[],
         { "corner-threshold",           1, 0, 0 },
         { "despeckle-level",            1, 0, 0 },
         { "despeckle-tightness",        1, 0, 0 },
+        { "dpi",			1, 0, 0 },
         { "error-threshold",            1, 0, 0 },
         { "filter-iterations",          1, 0, 0 },
         { "help",                       0, 0, 0 },
@@ -273,6 +280,9 @@ read_command_line (int argc, char * argv[],
 
       else if (ARGUMENT_IS ("despeckle-tightness"))
         fitting_opts->despeckle_tightness = (real) atof (optarg);
+
+      else if (ARGUMENT_IS ("dpi"))
+	dpi = atou (optarg);
 
       else if (ARGUMENT_IS ("error-threshold"))
         fitting_opts->error_threshold = (real) atof (optarg);

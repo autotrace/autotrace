@@ -9,7 +9,7 @@
 #include "spline.h"
 
 int output_dxf12_writer (FILE* file, string name,
-		      int llx, int lly, int urx, int ury,
-		      spline_list_array_type shape);
+			 int llx, int lly, int urx, int ury, int dpi,
+			 spline_list_array_type shape);
 
 #endif /* not OUTPUT_DXF_H */

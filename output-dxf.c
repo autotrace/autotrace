@@ -827,8 +827,8 @@ void output_layer(FILE *dxf_file,
 * DXF output function.
 */
 int output_dxf12_writer(FILE* dxf_file, string name,
-         		      int llx, int lly, int urx, int ury,
-		              spline_list_array_type shape)
+			int llx, int lly, int urx, int ury, int dpi,
+			spline_list_array_type shape)
 {
   OUT_LINE ("  0");
   OUT_LINE ("SECTION");
