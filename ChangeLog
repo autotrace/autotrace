@@ -1,5 +1,14 @@
 2000-11-14  Masatake YAMATO  <yamato@redhat.com>
 
+	* main.c(input_reader): Renamed from load_image.
+	Use type input_read.
+	(input_extension): Removed unused variable
+	(set_input_format): 
+	(set_input_format_by_suffix): Removed.
+	Use input_get_handler* instead.
+	(main): Check `input_reader' is set or not before
+	set. 
+
 	* THANKS: New file.
 
 	* input-magick.c: Replaced with new one from Martin.

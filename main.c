@@ -27,15 +27,12 @@
 image_header_type image_header;
 
 /* Pointers to functions based on input format.  (-input-format)  */
-bitmap_type (*load_image) (char *) = NULL;
+static input_read input_reader = NULL;
 
 /* Return NAME with any leading path stripped off.  This returns a
    pointer into NAME.  For example, `basename ("/foo/bar.baz")'
    returns "bar.baz".  */
 static char * at_basename (char * name);
-
-/* The suffix for the image file.  
-static string input_extension; */
 
 /* The name of the file we're going to write.  (-output-file) */
 static char * output_name = (char *)"";
@@ -54,9 +51,6 @@ static bool thin = false;
 
 /* Options how to fit */
 static fitting_opts_type fitting_opts;
-
-static void set_input_format (char *);
-static int set_input_format_by_suffix (char *);
 
 static char * read_command_line (int, char * []);
 
@@ -100,11 +94,12 @@ main (int argc, char * argv[])
   if (logging)
 	free (logfile_name);
 
-  set_input_format (input_name);
+  if (input_reader == NULL)
+    input_reader = input_get_handler (input_name);
 
   /* Open the main input file.  */
-  if (load_image != NULL)
-    bitmap = (*load_image) (input_name);
+  if (input_reader != NULL)
+    bitmap = (*input_reader) (input_name);
   else
 	FATAL ("Unsupported inputformat\n"); 
 
@@ -336,7 +331,8 @@ read_command_line (int argc, char * argv[])
 
       else if (ARGUMENT_IS ("input-format"))
         {
-	  if (!set_input_format_by_suffix (optarg))
+	  input_reader = input_get_handler_by_suffix (optarg);
+	  if (!input_reader)
 	      FATAL1 ("Output format %s not supported\n", optarg);
         }
 
@@ -396,20 +392,6 @@ read_command_line (int argc, char * argv[])
     }
 
   FINISH_COMMAND_LINE ();
-}
-
-
-static void
-set_input_format (char * filename)
-{
-  load_image = input_get_handler (filename);
-}
-
-static int
-set_input_format_by_suffix (char * suffix)
-{
-  load_image = input_get_handler_by_suffix (suffix);
-  return load_image?1:0;
 }
 
 /* Return NAME with any leading path stripped off.  This returns a
