@@ -15,7 +15,7 @@ struct at_exception_type
 };
 
 at_exception at_exception_new(at_msg_func client_func,
-			      at_address * client_data);
+			      at_address client_data);
 at_bool at_exception_got_fatal(at_exception * exception);
 void at_exception_fatal(at_exception * exception,
 			at_string message);

@@ -39,18 +39,6 @@ typedef struct _PNMInfo
 		      at_exception * excep);
 } PNMInfo;
 
-/* Contains the information needed to write out PNM rows */
-typedef struct _PNMRowInfo
-{
-  FILE   *fd;		/* File descriptor */
-  char  *rowbuf;	/* Buffer for writing out rows */
-  int    xres;		/* X resolution */
-  int    np;		/* Number of planes */
-  unsigned char *red;		/* Colormap red */
-  unsigned char *grn;		/* Colormap green */
-  unsigned char *blu;		/* Colormap blue */
-};
-
 #define BUFLEN 512		/* The input buffer size for data returned
 				 * from the scanner.  Note that lines
 				 * aren't allowed to be over 256 characters
