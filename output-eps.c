@@ -5,6 +5,7 @@
 #include "color.h"
 #include "output-eps.h"
 #include "xstd.h"
+#include "autotrace.h"
 #include <time.h>
 #include <string.h>
 
@@ -123,7 +124,7 @@ static int output_eps_header(FILE* ps_file, string name,
 static void
 out_splines (FILE * ps_file, spline_list_array_type shape)
 {
-  extern bool centerline;  /* from main.c */
+  extern bool at_centerline; 
   unsigned this_list;
 
   for (this_list = 0; this_list < SPLINE_LIST_ARRAY_LENGTH (shape);
@@ -170,7 +171,7 @@ out_splines (FILE * ps_file, spline_list_array_type shape)
                           END_POINT (s).x, END_POINT (s).y,
                           "c");
         }
-      OUT_LINE ((centerline || list.open) ? "S" : "f");
+      OUT_LINE ((at_centerline || list.open) ? "S" : "f");
       last_color = list.color;
     }
   if (SPLINE_LIST_ARRAY_LENGTH(shape) > 0)

@@ -28,6 +28,7 @@ $(input_magick_src)
 
 
 output_src=output-eps.c output-eps.h \
+output-er.c output-er.h \
 output-fig.c  output-fig.h \
 output-sk.c output-sk.h \
 output-svg.c output-svg.h \

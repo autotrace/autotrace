@@ -10,6 +10,13 @@ extern "C" {
 #endif /* __cplusplus */
 
 /*
+ * Global variables
+ */
+/* Whether to trace a character's centerline or its outline 
+ - This should be in filtering_opts and output_opts */
+extern bool at_centerline;
+
+/*
  * Typedefs
  */
 typedef struct _at_fitting_opts_type at_fitting_opts_type;

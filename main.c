@@ -32,7 +32,7 @@ static at_output_write_func output_writer = NULL;
 static bool printed_version;
 
 /* Whether to trace a character's centerline or its outline */
-bool centerline = false;
+static bool centerline = false;
 
 /* Whether to write a log file */
 static bool logging = false;
@@ -73,6 +73,7 @@ main (int argc, char * argv[])
 
   input_name = read_command_line (argc, argv, fitting_opts);
 
+  at_centerline = centerline;	/* Dirty  */
   fitting_opts->remove_adj_corners = remove_adj_corners;
   fitting_opts->thin = thin;
 

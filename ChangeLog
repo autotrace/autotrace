@@ -1,3 +1,14 @@
+2001-02-23  Masatake YAMATO  <yamato@redhat.com>
+
+	* configure.in: Set version to 0.27pre.
+
+	* output-eps.c (out_splines): Use at_centerline.
+
+	* main.c (main): Use at_centerline.
+	(centerline): static scope.
+	
+	* autotrace.[hc] (at_centerline): New varaible.
+	
 2001-02-22  Masatake YAMATO  <yamato@redhat.com>
 
 	* output.h (OUTPUT_SUFFIX_LIST): Added "er".

@@ -11,6 +11,8 @@
 #include "quantize.h"
 #include "thin-image.h"
 
+bool at_centerline = false;
+
 at_fitting_opts_type *
 at_fitting_opts_new(void)
 {
@@ -101,12 +103,11 @@ at_splines_new (at_bitmap_type * bitmap,
   at_splines_type * splines;
   pixel_outline_list_type pixels;
   QuantizeObj *myQuant = NULL; /* curently not used */
-  extern bool centerline; /* from main.c */
-  
+
   image_header.width = at_bitmap_get_width(bitmap);
   image_header.height = at_bitmap_get_height(bitmap);
 
-  if (centerline)
+  if (at_centerline)
     opts->thin = true;
 
   if (opts->color_count > 0)
@@ -115,7 +116,7 @@ at_splines_new (at_bitmap_type * bitmap,
   if (opts->thin) 
     thin_image (bitmap, opts->bgColor); 
   
-  if (centerline)
+  if (at_centerline)
   {
     color_type bg_color = { 0xff, 0xff, 0xff };
     if (opts->bgColor) bg_color = *opts->bgColor;
