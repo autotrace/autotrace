@@ -1,3 +1,15 @@
+2001-12-14  Masatake YAMATO  <yamato@redhat.com>
+
+	* output-swf.c (output_swf_writer): roll back to
+	1.4. I did wrong commit.
+
+	2001-12-01  Martin Weber <martweb@gmx.net>
+
+	Now using file instead of 
+	name so that it works also to stdout.
+
+	(Message-ID: <3C02BF23.9D19CCC0@gmx.net>).
+
 2001-12-12  Masatake YAMATO  <yamato@redhat.com>
 
 	* strgicmp.h (strgnicmp, strgicmp): added type
