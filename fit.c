@@ -1070,7 +1070,7 @@ fit_with_least_squares (curve_type curve, fitting_opts_type *fitting_opts)
   spline = best_spline;
   error = best_error;
 
-  if (error < fitting_opts->error_threshold)
+  if (error < fitting_opts->error_threshold && !CURVE_CYCLIC(curve))
     {
       /* The points were fitted with a
          spline.  We end up here whenever a fit is accepted.  We have

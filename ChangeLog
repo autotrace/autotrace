@@ -1,5 +1,10 @@
 2001-11-17  Martin Weber  <martweb@gmx.net>
 	
+	* fit.c (fit_with_least_squares):
+	Force closed splines to be split.
+
+2001-11-17  Martin Weber  <martweb@gmx.net>
+	
 	* fit.c (find_half_tangent): fixed a problem in calculation of
 	halftangent with cyclic curves.
 
