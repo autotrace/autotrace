@@ -83,19 +83,17 @@ libautotrace_a_SOURCES =\
 
 autotraceinclude_HEADERS=\
 		types.h 			\
-		autotrace.h
+		autotrace.h                     \
+		input.h
 
 #
 # noinst_HEADERS: headers shared between lib and bin.
 # File not installed and not shared should be in
 # libautotrace_a_SOURCES.
-# TODO: input and output should be in libautotrace_a_SOURCES.
-#      -- Masatake
 noinst_HEADERS = filename.h                     \
 		xstd.h                          \
 		logreport.h			\
 		message.h                       \
-		input.h 			\
 		output.h 			
 
 autotrace_SOURCES=\

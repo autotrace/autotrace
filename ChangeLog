@@ -1,5 +1,8 @@
 2001-12-28  Masatake YAMATO  <yamato@redhat.com>
 
+	* Makefile.am (autotraceinclude_HEADERS): Added input.h.
+	(noinst_HEADERS): Removed input.h.
+
 	* input*.[ch]: bitmap_type -> at_bitmap_type.
 	Use at_bitmap_init.
 	
