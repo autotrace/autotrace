@@ -14,27 +14,51 @@ dnl
 dnl ImageMagick
 dnl 
 HAVE_MAGICK=no
-AC_CHECK_PROG(MAGICK_CONFIG, Magick-config, Magick-config, "")
-if test "x$MAGICK_CONFIG" = "xMagick-config" ; then
-	CPPFLAGS_BACKUP="$CPPFLAGS"
-	CPPFLAGS=`Magick-config --cppflags`
-	AC_CHECK_HEADER(magick/api.h,
-			magick_header_found=yes,
-			magick_header_found=no)
-	MAGICK_CFLAGS=${CPPFLAGS}
-	CPPFLAGS=${CPPFLAGS_BACKUP}
+AC_ARG_WITH(magick, 
+[  --with-magick  compile with maigck(default)
+  --without-magick  compile without maigck],,with_magick=yes)
 
-	if test "x${magick_header_found}" = xyes ; then
-		MAGICK_LDFLAGS="`Magick-config --ldflags` `Magick-config --libs`"
-		AC_SUBST(MAGICK_CFLAGS)
-		AC_SUBST(MAGICK_LDFLAGS)
-		HAVE_MAGICK=yes
-		AC_DEFINE(HAVE_MAGICK)
-	else
-		MAGICK_CFLAGS=
-		AC_MSG_WARN([*** Magick-config is found but magick/api.h is not found in $MAGICK_CFLAGS ***])
- 		AC_MSG_WARN([*** Check Magick-config. ***])
-	fi
+if test $with_magick = yes ; then
+	AC_CHECK_PROG(MAGICK_CONFIG, Magick-config, Magick-config, "")
+	if test "x$MAGICK_CONFIG" = "xMagick-config" ; then
+		CPPFLAGS_BACKUP="$CPPFLAGS"
+		CPPFLAGS=`Magick-config --cppflags`
+		AC_CHECK_HEADER(magick/api.h,
+				magick_header_found=yes,
+				magick_header_found=no)
+		MAGICK_CFLAGS=${CPPFLAGS}
+		CPPFLAGS=${CPPFLAGS_BACKUP}
+		if test "x${magick_header_found}" = xyes ; then
+			MAGICK_LDFLAGS="`Magick-config --ldflags` `Magick-config --libs`"
+			dnl
+			dnl Checking version
+			dnl
+			AC_MSG_CHECKING([ImageMagick - version != 5.1.x])
+			MAGICK_VERSION=`Magick-config --version`
+			changequote(,)dnl
+			MAGICK_MAJOR_VERSION=`echo $MAGICK_VERSION | sed -e "s/^\([0-9]*\).[0-9]*.[0-9]*$/\1/"`
+			MAGICK_MINOR_VERSION=`echo $MAGICK_VERSION | sed -e 's/^[0-9]*.\([0-9]*\).[0-9]*$/\1/'`
+			MAGICK_MICRO_VERSION=`echo $MAGICK_VERSION | sed -e 's/^[0-9]*.[0-9]*.\([0-9]*\)$/\1/'`
+			changequote([,])dnl
+			MAGICK_MAJOR_VERSION_IS_5=`expr $MAGICK_MAJOR_VERSION = 5`
+			MAGICK_MINOR_VERSION_IS_1=`expr $MAGICK_MINOR_VERSION = 1`
+			if test "$MAGICK_MAJOR_VERSION_IS_5" = 1 &&\
+		   		test "$MAGICK_MINOR_VERSION_IS_1" = 1 ; then
+		   		AC_MSG_RESULT(no($MAGICK_VERSION))
+		   		AC_MSG_ERROR([*** You should not build with ImaegMagick-5.1.x. Use --without-magick option.***])
+			else
+ 		   		AC_MSG_RESULT(yes($MAGICK_VERSION))
+			fi
+			AC_SUBST(MAGICK_CFLAGS)
+			AC_SUBST(MAGICK_LDFLAGS)
+			HAVE_MAGICK=yes
+			AC_DEFINE(HAVE_MAGICK)
+		else
+			MAGICK_CFLAGS=
+			AC_MSG_WARN([*** Magick-config is found but magick/api.h is not found in $MAGICK_CFLAGS ***])
+ 			AC_MSG_WARN([*** Check Magick-config. ***])
+		fi
+fi
 fi
 AM_CONDITIONAL(HAVE_MAGICK, test x$HAVE_MAGICK = xyes)
 
