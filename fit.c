@@ -1251,7 +1251,7 @@ fit_one_spline (curve_type curve)
       C[0][1] += Vdot (Ai[0], Ai[1]);
       /* C[1][0] = C[0][1] (this is assigned outside the loop)  */
       C[1][1] += Vdot (Ai[1], Ai[1]);
-      fprintf(stderr, "[%f %f]\n", Ai[0], Ai[1]);
+
 
       /* Now the right-hand side of the equation in the paper.  */
       temp0 = Vmult_scalar (start_vector, B0 (CURVE_T (curve, i)));
