@@ -188,6 +188,10 @@ N_("despeckle-level <unsigned>: 0..20; default is no despeckling. ")
 N_("despeckle-tightness <real>: 0.0..8.0; default is 2.0. ")
   at_real despeckle_tightness;
 
+#define at_doc__noise_removal				\
+N_("noise-removal <real>: 1.0..0.0; default is 0.99. ")
+  at_real noise_removal;
+
 #define  at_doc__centerline						\
 N_("centerline: trace a character's centerline, rather than its outline. ")
   at_bool centerline;

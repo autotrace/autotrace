@@ -1,0 +1,55 @@
+Here I explain how the algorithm works with regard to the level parameter.
+
+First of all, I will explain what happens when adaptive tightness is
+turned off (i.e. zero).  Suppose for example your initial image is of the
+worst case and it is composed of random pixels in which no pixel is of
+the same color of its neighbor.  In other words, for every group of
+adjacent pixels having the same color, the number of pixels in the group
+is always one.  That's the worse input image possible.
+
+The despeckle_iteration function is called with an iteration level of
+zero initially.  Note that each time the despeckle_iteration is called,
+the minimum feature size doubles.  That is, of all the groups of adjacent
+pixels having the same color, the minimum number of pixels in any one
+group doubles after each iteration.
+
+Here's how the algorithm works.  The initial minimum feature size of the
+image is one (that's a given assumption).  The despeckle_iteration
+function is called with level=0.  It computes the current minimum feature
+size like this: current_size = 2^level.  2^level = 2^0 = 1.  The iteration
+algorithm finds all groups of size one (or less).  If adaptive tightness
+is zero, then there will never be groups of size less than 2^level
+pixels.  The iteration algorithm then recolors all groups that are less
+than or equal to the current_size.  Each group is recolored with the color
+of its surrounding neighbors that most closely matches the group to
+recolor.  For example, if the function decides to recolor a blob of orange
+that is adjacent to red and green blobs, the function will recolor the
+orange blob with red since it is closer in color than the green.
+Each group of pixels has exactly current_size number of pixels, assuming
+the iteration function has not yet recolored the red or green blobs.
+Recoloring the orange to red creates a red blob twice the size of the
+original red blob.  It will contain current_size * 2.0 number of pixels.
+Basically pixel groups merge with their neighbors, doubling the minimum
+feature size once the function completes.
+
+This doubling process repeats each time the iteration function is called.
+Thus that's why current_size=2^level, the process increases feature size
+exponentially, not polynomially.
+
+Now, the whole recoloring process can seem fishy if you have an input
+image with a few white pixels completely surrounded by many black pixels.
+Since all of the white group's neighbors are black, if the iteration
+function decides the white group is too small it will recolor the group as
+black.  That will cause a very noticeable change in the output image, as
+the difference between white and black is quite visible.  So, the adaptive
+tightness parameter comes to the rescue.  If the color difference is too
+great then the group won't be recolored.  The tightness parameter and the
+level parameter is used to compute the threshold, i.e.
+tightness = (int) (255 * noise_removal / (1.0 + adaptive_tightness * level));
+The greater the level, the smaller the threshold is, the more similar the
+colors must be for a recoloring to take place. Sometimes parts of the image
+disapear for example if you have a black and white image.  Normally the
+noise removal is set to 100 % (1.0), but if you loose importand small
+detaills the lower this value.
+
+- David and Martin

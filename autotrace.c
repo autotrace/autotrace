@@ -272,6 +272,7 @@ at_splines_new_full (at_bitmap_type * bitmap,
       despeckle (bitmap, 
 		 opts->despeckle_level, 
 		 opts->despeckle_tightness,
+		 opts->noise_removal,
 		 &exp);
       FATAL_THEN_RETURN();
     }

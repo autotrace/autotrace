@@ -1,6 +1,6 @@
 /* despeckle.c: Bitmap despeckler
 
-   Copyright (C) 2001 David A. Bartold
+   Copyright (C) 2001 David A. Bartold / Martin Weber
 
    This library is free software; you can redistribute it and/or
    modify it under the terms of the GNU Lesser General Public License
@@ -629,8 +629,8 @@ recolor_8 (/* in */   double adaptive_tightness,
  *
  * Input Parameters:
  *   Current blob size, maximum blob size
- *   for all iterations (used to selectively recolor blobs), and adaptive
- *   tightness
+ *   for all iterations (used to selectively recolor blobs), adaptive
+ *   tightness and noise removal
  *
  * Modified Parameters:
  *   The 24 bit pixbuf is despeckled
@@ -639,6 +639,7 @@ recolor_8 (/* in */   double adaptive_tightness,
 static void
 despeckle_iteration (/* in */     int    level,
                      /* in */     double adaptive_tightness,
+                     /* in */     double noise_max,
                      /* in */     int    width,
                      /* in */     int    height,
                      /* in/out */ unsigned char *bitmap)
@@ -650,7 +651,7 @@ despeckle_iteration (/* in */     int    level,
 
   /* Size doubles each iteration level, so current_size = 2^level */
   current_size = 1 << level;
-  tightness = (int) (256 / (1.0 + adaptive_tightness * level));
+  tightness = (int) (noise_max / (1.0 + adaptive_tightness * level));
 
   mask = (unsigned char *) calloc (width * height, sizeof(unsigned char));
   for (y = 0; y < height; y++)
@@ -687,8 +688,8 @@ despeckle_iteration (/* in */     int    level,
  *
  * Input Parameters:
  *   Current blob size, maximum blob size
- *   for all iterations (used to selectively recolor blobs), and adaptive
- *   tightness
+ *   for all iterations (used to selectively recolor blobs), adaptive
+ *   tightness and noise removal
  *
  * Modified Parameters:
  *   The 8 bit pixbuf is despeckled
@@ -696,10 +697,11 @@ despeckle_iteration (/* in */     int    level,
 
 static void
 despeckle_iteration_8 (/* in */   int    level,
-                     /* in */     double adaptive_tightness,
-                     /* in */     int    width,
-                     /* in */     int    height,
-                     /* in/out */ unsigned char *bitmap)
+                       /* in */     double adaptive_tightness,
+                       /* in */     double noise_max,
+                       /* in */     int    width,
+                       /* in */     int    height,
+                       /* in/out */ unsigned char *bitmap)
 {
   unsigned char *mask;
   int    x, y;
@@ -708,7 +710,7 @@ despeckle_iteration_8 (/* in */   int    level,
 
   /* Size doubles each iteration level, so current_size = 2^level */
   current_size = 1 << level;
-  tightness = (int) (256 / (1.0 + adaptive_tightness * level));
+  tightness = (int) (noise_max / (1.0 + adaptive_tightness * level));
 
   mask = (unsigned char *) calloc (width * height, sizeof(unsigned char));
   for (y = 0; y < height; y++)
@@ -741,48 +743,63 @@ despeckle_iteration_8 (/* in */   int    level,
 }
 
 
-/* Despeckle - Despeckle an 8/24 bit image
+/* Despeckle - Despeckle a 8 or 24 bit image
  *
  * Input Parameters:
- *   Color palette, current blob size, and the despeckling level
+ *   Adaptive feature coalescing value, the despeckling level and noise removal
  *
- *   Despeckling level: Integer from 0 to ~20
+ *   Despeckling level (level): Integer from 0 to ~20
  *     0 = perform no despeckling
- *     An increase of the despeckling level by one doubles the size of features
+ *     An increase of the despeckling level by one doubles the size of features.
+ *     The Maximum value must be smaller then the logarithm base two of the number
+ *     of pixels.
  *
- *   Adaptive tightness:
+ *   Feature coalescing (tightness): Real from 0.0 to ~8.0
  *     0 = Turn it off (whites may turn black and vice versa, etc)
  *     3 = Good middle value
  *     8 = Really tight
  *
+ *   Noise removal (noise_removal): Real from 1.0 to 0.0
+ *     1 = Maximum noise removal
+ *     You should always use the highest value, only if certain parts of the image
+ *     disappear you should lower it.
+ *
  * Modified Parameters:
- *   The 24 bit pixbuf is despeckled
+ *   The bitmap is despeckled.
  */
 
 void
-despeckle (/* in/out */ bitmap_type *bitmap,
-           /* in */     int          level,
-           /* in */     at_real      tightness,
-	   at_exception_type * excep)
+despeckle (/* in/out */            bitmap_type *bitmap,
+           /* in */                int          level,
+           /* in */                at_real      tightness,
+           /* in */                at_real      noise_removal,
+	     /* exception handling */ at_exception_type * excep)
 {
-  int i;
-  int planes;
+  int i, planes, max_level;
+  short width, height;
+  unsigned char *bits;
+  double noise_max, adaptive_tightness;
 
   planes = BITMAP_PLANES (*bitmap);
+  noise_max = noise_removal * 255.0;
+  width = BITMAP_WIDTH (*bitmap);
+  height = BITMAP_HEIGHT (*bitmap);
+  bits = BITMAP_BITS(*bitmap);
+  max_level = (int) (log (width * height) / log (2.0) - 0.5);
+  if (level > max_level)
+    level = max_level;
+  adaptive_tightness = (noise_removal * (1.0 + tightness * level) - 1.0) / level;
 
-  assert (tightness >= 0.0 && tightness <= 8.0);
-  assert (level >= 0 && level <= 20);
-
-  if (planes == 3) {
-  for (i = 0; i < level; i++)
-    despeckle_iteration (i, tightness, BITMAP_WIDTH (*bitmap),
-    BITMAP_HEIGHT (*bitmap), BITMAP_BITS(*bitmap));
-  }
-  else if (planes == 1) {
-  for (i = 0; i < level; i++)
-    despeckle_iteration_8 (i, tightness, BITMAP_WIDTH (*bitmap),
-    BITMAP_HEIGHT (*bitmap), BITMAP_BITS(*bitmap));
-  }
+  if (planes == 3)
+    {
+      for (i = 0; i < level; i++)
+        despeckle_iteration (i, adaptive_tightness, noise_max, width, height, bits);
+    }
+  else if (planes == 1)
+    {
+      for (i = 0; i < level; i++)
+        despeckle_iteration_8 (i, adaptive_tightness, noise_max, width, height, bits);
+    }
   else
     {
       LOG1 ("despeckle: %u-plane images are not supported", planes);
@@ -791,4 +808,3 @@ despeckle (/* in/out */ bitmap_type *bitmap,
     }
 
 }
-

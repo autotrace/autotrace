@@ -122,6 +122,7 @@ new_fitting_opts (void)
   fitting_opts.tangent_surround = 3;
   fitting_opts.despeckle_level = 0;
   fitting_opts.despeckle_tightness = 2.0;
+  fitting_opts.noise_removal = (at_real) 0.99;
   fitting_opts.centerline = false;
   fitting_opts.preserve_width = false;
   fitting_opts.width_weight_factor   = 6.0;

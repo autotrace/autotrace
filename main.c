@@ -234,6 +234,7 @@ line-threshold <real>: if the spline is not more than this far away\n\
 list-output-formats: print a list of support output formats to stderr.\n\
 list-input-formats:  print a list of support input formats to stderr.\n\
 log: write detailed progress reports to <input_name>.log.\n\
+noise-removal <real>:: 1.0..0.0; default is 0.99.\n\
 output-file <filename>: write to <filename>\n\
 output-format <format>: use format <format> for the output file\n\
   %s can be used.\n\
@@ -259,9 +260,9 @@ read_command_line (int argc, char * argv[],
   int option_index;
   struct option long_options[]
     = { { "align-threshold",		1, 0, 0 },
-	{ "background-color",		1, 0, 0 },
-	{ "debug-arch",                 0, 0, 0 },
-	{ "debug-bitmap",               0, (int *)&dumping_bitmap, 1 },
+        { "background-color",		1, 0, 0 },
+        { "debug-arch",                 0, 0, 0 },
+        { "debug-bitmap",               0, (int *)&dumping_bitmap, 1 },
         { "centerline",			0, 0, 0 },
         { "color-count",                1, 0, 0 },
         { "corner-always-threshold",    1, 0, 0 },
@@ -279,15 +280,16 @@ read_command_line (int argc, char * argv[],
         { "list-output-formats",        0, 0, 0 },
         { "list-input-formats",         0, 0, 0 },
         { "log",                        0, (int *) &logging, 1 },
+        { "noise-removal",              1, 0, 0 },
         { "output-file",		1, 0, 0 },
         { "output-format",		1, 0, 0 },
         { "preserve-width",             0, 0, 0 },
         { "range",                      1, 0, 0 },
         { "remove-adjacent-corners",    0, 0, 0 },
         { "tangent-surround",           1, 0, 0 },
-	{ "report-progress",            0, (int *) &report_progress, 1},
+        { "report-progress",            0, (int *) &report_progress, 1},
         { "version",                    0, (int *) &printed_version, 1 },
-	{ "width-weight-factor",               1, 0, 0 },
+        { "width-weight-factor",               1, 0, 0 },
         { 0, 0, 0, 0 } };
 
   while (true)
@@ -347,8 +349,11 @@ read_command_line (int argc, char * argv[],
       else if (ARGUMENT_IS ("despeckle-tightness"))
         fitting_opts->despeckle_tightness = (at_real) atof (optarg);
 
-      else if (ARGUMENT_IS ("dpi"))
-	output_opts->dpi = atou (optarg);
+      else if (ARGUMENT_IS ("noise-removal"))
+        fitting_opts->noise_removal = (at_real) atof (optarg);
+
+	  else if (ARGUMENT_IS ("dpi"))
+        output_opts->dpi = atou (optarg);
 
       else if (ARGUMENT_IS ("error-threshold"))
         fitting_opts->error_threshold = (at_real) atof (optarg);
@@ -363,9 +368,9 @@ read_command_line (int argc, char * argv[],
           fprintf (stderr, USAGE1);
           fprintf (stderr, USAGE2, ishortlist = at_input_shortlist(),
 		   oshortlist = at_output_shortlist());
-	  free (ishortlist);
-	  free (oshortlist);
-	  fprintf (stderr, 
+          free (ishortlist);
+          free (oshortlist);
+          fprintf (stderr, 
 		   _("\nYou can get the source code of autotrace from \n%s\n"),
 		   at_home_site());
           exit (0);

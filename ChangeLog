@@ -1,3 +1,15 @@
+2003-01-24  Martin Weber <martweb@gmx.net>
+
+	*** libautotrace API is a bit changed ***
+
+	* despeckle.[c,h], main.c, fit.c, autotrace.[c,h]: Added a new
+	  parameter to the despeckle filter.
+
+	* despeckle.txt: Added an explanation about the despeckle filter.
+  	
+	* patchestoming02a.txt: Patches for Ming 0.2a from Wolfgang Glunz to
+	  improve the swf export.
+
 2003-01-24  Masatake YAMATO  <yamato@redhat.com>
 
 	* configure.in (AUTOTRACE_VERSION): AC_SUBST for
