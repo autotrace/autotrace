@@ -67,21 +67,21 @@ do								\
     assert(new_mem);						\
   } while (0) 
  
-#define XREALLOC(old_ptr, size)							\
-do										\
-  {										\
-    at_address new_mem;								\
-										\
-    if (old_ptr == NULL)							\
-      XMALLOC (new_mem, (size));						\
-    else									\
-      {										\
-        (at_address&) new_mem = (at_address) realloc ((old_ptr), (size));	\
-        assert(new_mem);							\
-      }										\
-										\
-    (at_address&)old_ptr = new_mem;						\
-  } while (0) 									\
+#define XREALLOC(old_ptr, size)						  \
+do									  \
+  {									  \
+    at_address new_mem;							  \
+									  \
+    if (old_ptr == NULL)						  \
+      XMALLOC (new_mem, (size));					  \
+    else								  \
+      {									  \
+        (at_address&) new_mem = (at_address) realloc ((old_ptr), (size)); \
+        assert(new_mem);						  \
+      }									  \
+									  \
+    (at_address&)old_ptr = new_mem;					  \
+  } while (0)
 #endif
 
 /*
