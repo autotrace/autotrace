@@ -349,11 +349,12 @@ dnl
 dnl Copied from soidpodi's configure.in
 AC_PATH_PROG(PKG_CONFIG, pkg-config, no)
 if test "x$PKG_CONFIG" = "xno"; then
-	AC_MSG_ERROR(You have to install pkg-config to compile sodipodi.)
+	AC_MSG_ERROR(You have to install pkg-config to compile autotrace.)
 fi
 GLIB2_CFLAGS=
 GLIB2_LIBS=
-PKG_CHECK_MODULES(GLIB2, glib-2.0 >= 2.0  gmodule-2.0 >= 2.0 gthread-2.0 >= 2.0, glib_ok=yes, glib_ok=no)
+PKG_CHECK_MODULES(GLIB2, glib-2.0 >= 2.0  gmodule-2.0 >= 2.0 gthread-2.0 >= 2.0 gobject-2.0 >= 2.0, 
+	          glib_ok=yes, glib_ok=no)
 if test "x${glib_ok}" != "xyes"; then
    AC_MSG_ERROR([cannot find glib-2.0])
 else

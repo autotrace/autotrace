@@ -1,5 +1,12 @@
+2003-07-05  Masatake YAMATO  <yamato@redhat.com>
+
+	* configure.in (AC_MSG_ERROR): Fix a typo.
+
 2003-07-04  Masatake YAMATO  <yamato@redhat.com>
 
+	* output-eps.c (output_eps_header): Fix a
+	typo: TRUE -> true, FALSE -> false.
+	
 	* types.h (_at_coord): Use gushort.
 	use AT_TYPES_H instead of TYPES_H.
 
