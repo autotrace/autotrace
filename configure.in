@@ -9,7 +9,7 @@ AC_INIT(fit.c)
 # 
 AUTOTRACE_MAJOR_VERSION=0
 AUTOTRACE_MINOR_VERSION=30
-AUTOTRACE_MICRO_VERSION=6
+AUTOTRACE_MICRO_VERSION=7
 AUTOTRACE_VERSION=${AUTOTRACE_MAJOR_VERSION}.${AUTOTRACE_MINOR_VERSION}.${AUTOTRACE_MICRO_VERSION}
 AC_DEFINE_UNQUOTED(AUTOTRACE_VERSION,"$AUTOTRACE_VERSION")
 AC_SUBST(AUTOTRACE_VERSION)
@@ -259,7 +259,7 @@ LIBPSTOEDIT_EXTRA_LIBS=
 AC_ARG_WITH(pstoedit,
 [  --with-pstoedit link with pstoedit library(default)
   --without-pstoedit link without pstoedit library],,with_pstoedit=yes)
-if test "x${with_pstoedit}" == xyes; then
+if test "x${with_pstoedit}" = xyes; then
 dnl
 dnl 
 dnl
@@ -291,20 +291,20 @@ if test ${HAVE_LIBPSTOEDIT_321} != yes; then
    AM_PATH_PSTOEDIT(3.32.0,HAVE_LIBPSTOEDIT_320=yes)
    LIBS=${LIBS_BAKCUP}
 
-   if test ${HAVE_LIBPSTOEDIT_320} == yes; then
+   if test ${HAVE_LIBPSTOEDIT_320} = yes; then
         HAVE_LIBPSTOEDIT=yes
 	AC_DEFINE(HAVE_LIBPSTOEDIT)
 	LIBPSTOEDIT_LIBS="${PSTOEDIT_LIBS} ${LIBPSTOEDIT_EXTRA_LIBS}"
-	LIBPSTOEDIT_CFLAGS="${PSTOEDIT_CFlAGS}"
+	LIBPSTOEDIT_CFLAGS="${PSTOEDIT_CFLAGS}"
    fi
 else
 	HAVE_LIBPSTOEDIT=yes
 	AC_DEFINE(HAVE_LIBPSTOEDIT)
 	LIBPSTOEDIT_LIBS="${PSTOEDIT_LIBS} ${LIBPSTOEDIT_EXTRA_LIBS}"	
-	LIBPSTOEDIT_CFLAGS="${PSTOEDIT_CFlAGS}"
+	LIBPSTOEDIT_CFLAGS="${PSTOEDIT_CFLAGS}"
 fi
 
-if test ${HAVE_LIBPSTOEDIT} == yes; then
+if test ${HAVE_LIBPSTOEDIT} = yes; then
 	AC_CHECK_FUNCS([mkstemp])
 	AC_MSG_NOTICE([pstoedit output functions are enabled.])
 	AC_MSG_NOTICE([However, this is experimental functions in autotrace.])
