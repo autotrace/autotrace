@@ -139,6 +139,7 @@ static void
 out_splines (FILE * ps_file, spline_list_array_type shape)
 {
   unsigned this_list;
+  spline_list_type list;
 
   color_type last_color = {0,0,0};
 
@@ -147,14 +148,18 @@ out_splines (FILE * ps_file, spline_list_array_type shape)
     {
       unsigned this_spline;
       int c, m, y, k;
+	  spline_type first;
 
-      spline_list_type list = SPLINE_LIST_ARRAY_ELT (shape, this_list);
-      spline_type first = SPLINE_LIST_ELT (list, 0);
+      list = SPLINE_LIST_ARRAY_ELT (shape, this_list);
+      first = SPLINE_LIST_ELT (list, 0);
 
       if (this_list == 0 || !COLOR_EQUAL(list.color, last_color))
         {
-	  if (this_list > 0)
-	    OUT_LINE("*U");
+          if (this_list > 0)
+            {
+              OUT_LINE ((shape.centerline || list.open) ? "S" : "f");
+              OUT_LINE("*U");
+            }
           c = k = 255 - list.color.r;
           m = 255 - list.color.g;
           if (m < k)
@@ -167,11 +172,11 @@ out_splines (FILE * ps_file, spline_list_array_type shape)
           y -= k;
           /* symbol k is used for CorelDraw 3/4 compatibility */
           OUT5 ("%.3f %.3f %.3f %.3f %s\n", (double) c/255.0,
-		(double) m/255.0,(double) y/255.0, (double) k/255.0,
-		(shape.centerline || list.open) ? "K" : "k");
-	  OUT_LINE("*u");    
-	  last_color = list.color;
-	}    
+            (double) m/255.0,(double) y/255.0, (double) k/255.0,
+            (shape.centerline || list.open) ? "K" : "k");
+	      OUT_LINE("*u");    
+	      last_color = list.color;
+        }    
       OUT_COMMAND2 (START_POINT (first).x, START_POINT (first).y, "m");
 
       for (this_spline = 0; this_spline < SPLINE_LIST_LENGTH (list);
@@ -187,11 +192,12 @@ out_splines (FILE * ps_file, spline_list_array_type shape)
                           END_POINT (s).x, END_POINT (s).y,
                           "c");
         }
-      OUT_LINE ((shape.centerline || list.open) ? "S" : "f");
-
     }
   if (SPLINE_LIST_ARRAY_LENGTH(shape) > 0)
-    OUT_LINE("*U");
+    {
+        OUT_LINE ((shape.centerline || list.open) ? "S" : "f");
+        OUT_LINE("*U");
+    }
 }
 
 

@@ -198,14 +198,15 @@ at_splines_new_full (at_bitmap_type * bitmap,
   /* Hereafter, pixels is allocated. pixels must be freed if 
      the execution is canceled; use CANCEL_THEN_CLEANUP. */
   if (opts->centerline)
-  {
-    color_type bg_color = { 0xff, 0xff, 0xff };
-    if (opts->background_color) bg_color = *opts->background_color;
+    {
+      color_type background_color = { 0xff, 0xff, 0xff };
+      if (opts->background_color) 
+	background_color = *opts->background_color;
 
-    pixels = find_centerline_pixels(*bitmap, bg_color, 
-				    notify_progress, progress_data,
-				    test_cancel, testcancel_data, &exp);
-  }
+      pixels = find_centerline_pixels(*bitmap, background_color, 
+				      notify_progress, progress_data,
+				      test_cancel, testcancel_data, &exp);
+    }
   else
     pixels = find_outline_pixels(*bitmap, opts->background_color, 
 				 notify_progress, progress_data,
@@ -269,7 +270,9 @@ at_splines_write(at_splines_type * splines,
 void 
 at_splines_free (at_splines_type * splines)
 {
-  free_spline_list_array (splines); 
+  free_spline_list_array (splines);
+  if (splines->background_color)
+    at_color_free(splines->background_color);
   free(splines);
 }
 

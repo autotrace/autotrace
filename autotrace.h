@@ -96,11 +96,13 @@ struct _at_spline_list_array_type
   at_bool centerline;
   /* splines bbox */
   unsigned short height, width;
+  /* background color */
+  at_color_type * background_color;
 };
 
 /* Fitting option.
    With using at_fitting_opts_doc macro, the description of 
-   each option could be get. e.g. at_fitting_opts_doc(bgColor) */
+   each option could be get. e.g. at_fitting_opts_doc(background_color) */
 struct _at_fitting_opts_type
 {
 #define at_doc__background_color					\

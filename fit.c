@@ -160,7 +160,10 @@ fitted_splines (pixel_outline_list_type pixel_outline_list,
 							exception);
 
   char_splines.centerline = fitting_opts->centerline;
-
+  if (fitting_opts->background_color)
+    char_splines.background_color = at_color_copy(fitting_opts->background_color);
+  else
+    char_splines.background_color = NULL;   
   /* Set dummy values. Real value is set in upper context. */
   char_splines.width = width;
   char_splines.height = height;
@@ -182,7 +185,11 @@ fitted_splines (pixel_outline_list_type pixel_outline_list,
       curve_list_splines = fit_curve_list (curves, fitting_opts,
 					   exception);
       if (at_exception_got_fatal(exception))
-	goto cleanup;
+	{
+	  if (char_splines.background_color)
+	    at_color_free(char_splines.background_color);
+	  goto cleanup;
+	}
       curve_list_splines.clockwise = curves.clockwise;
 
       memcpy (&(curve_list_splines.color),

@@ -141,10 +141,10 @@ static at_bool output_metafiledescription(FILE *fdes, const char *string)
 }
 
 int output_cgm_writer(FILE* cgm_file, at_string name,
-		     int llx, int lly, int urx, int ury, int dpi,
-		      spline_list_array_type shape,
-		      at_msg_func msg_func, 
-		      at_address msg_data)
+		       int llx, int lly, int urx, int ury, int dpi,
+		       spline_list_array_type shape,
+		       at_msg_func msg_func, 
+		       at_address msg_data)
 {
   unsigned this_list;
   char *des;
@@ -201,9 +201,18 @@ int output_cgm_writer(FILE* cgm_file, at_string name,
 	    write16 (cgm_file, 0x52E3);/* fill */;
 
 	  /* color output */
-      write8 (cgm_file, list.color.r);
-      write8 (cgm_file, list.color.g);
-      write8 (cgm_file, list.color.b);
+	  if (list.clockwise && shape.background_color != NULL)
+	    {
+          write8 (cgm_file, shape.background_color->r);
+          write8 (cgm_file, shape.background_color->g);
+          write8 (cgm_file, shape.background_color->b);
+	    }
+	  else
+	    {
+          write8 (cgm_file, list.color.r);
+          write8 (cgm_file, list.color.g);
+          write8 (cgm_file, list.color.b);
+	    }
       write8 (cgm_file, 0);
 
       if (shape.centerline)

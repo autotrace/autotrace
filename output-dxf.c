@@ -636,15 +636,16 @@ static void out_splines (FILE * dxf_file, spline_list_array_type shape)
 
       spline_list_type list = SPLINE_LIST_ARRAY_ELT (shape, this_list);
       spline_type first = SPLINE_LIST_ELT (list, 0);
+      color_type curr_color = curr_color = (list.clockwise && shape.background_color != NULL)? *(shape.background_color) : list.color;
 
-      if (this_list == 0 || !COLOR_EQUAL(list.color, last_color))
+      if (this_list == 0 || !COLOR_EQUAL(curr_color, last_color))
         {
-          if (!(list.color.r==0 && list.color.g==0 && list.color.b==0) || !color_check)
+          if (!(curr_color.r==0 && curr_color.g==0 && curr_color.b==0) || !color_check)
             {
-             idx = GetIndexByRGBValue(list.color.r, list.color.g, list.color.b);
+             idx = GetIndexByRGBValue(curr_color.r, curr_color.g, curr_color.b);
              sprintf(layerstr, "C%d", idx);
              new_layer = 1;
-             last_color = list.color;
+             last_color = curr_color;
             }
     	}
       startx = START_POINT (first).x;
@@ -756,7 +757,7 @@ static void out_splines (FILE * dxf_file, spline_list_array_type shape)
              }
          }
        first_seg = 0;
-       last_color = list.color;
+       last_color = curr_color;
     }
     
     fprintf(dxf_file, "  0\nSEQEND\n  8\n0\n");
@@ -778,17 +779,18 @@ void output_layer(FILE *dxf_file,
   for (this_list = 0; this_list < SPLINE_LIST_ARRAY_LENGTH (shape);
        this_list++)
     {
-      color_type last_color = {0,0,0};
+      color_type last_color;
 
       spline_list_type list = SPLINE_LIST_ARRAY_ELT (shape, this_list);
+      color_type curr_color = (list.clockwise && shape.background_color != NULL) ? *(shape.background_color) : list.color;
 
-      if (this_list == 0 || !COLOR_EQUAL(list.color, last_color))
+      if (this_list == 0 || !COLOR_EQUAL(curr_color, last_color))
         {
-          if (!(list.color.r==0 && list.color.g==0 && list.color.b==0) || !color_check)
+          if (!(curr_color.r==0 && curr_color.g==0 && curr_color.b==0) || !color_check)
             {
-             idx = GetIndexByRGBValue(list.color.r, list.color.g, list.color.b);
+             idx = GetIndexByRGBValue(curr_color.r, curr_color.g, curr_color.b);
              layerlist[idx-1] = 1;
-             last_color = list.color;
+             last_color = curr_color;
             }
     	}
      }
@@ -847,7 +849,7 @@ int output_dxf12_writer(FILE* dxf_file, at_string name,
 			int llx, int lly, int urx, int ury, int dpi,
 			spline_list_array_type shape,
 			at_msg_func msg_func, 
-			 at_address msg_data)
+			at_address msg_data)
 {
   OUT_LINE ("  0");
   OUT_LINE ("SECTION");

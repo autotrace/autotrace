@@ -145,7 +145,8 @@ static void out_fig_splines(FILE * file, spline_list_array_type shape,
 	 this_list++)
     {
 	spline_list_type list = SPLINE_LIST_ARRAY_ELT (shape, this_list);
-	spline_colours[this_list] = get_fig_colour(list.color, exp);
+	color_type curr_color = (list.clockwise && shape.background_color != NULL) ? *(shape.background_color) : list.color;
+	spline_colours[this_list] = get_fig_colour(curr_color, exp);
     }
     /* Output colours */
     if (LAST_FIG_COLOUR > 32) {

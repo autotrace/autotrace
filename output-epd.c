@@ -110,22 +110,26 @@ static void
 out_splines (FILE * epd_file, spline_list_array_type shape)
 {
   unsigned this_list;
-
+  spline_list_type list;
   color_type last_color = {0,0,0};
 
   for (this_list = 0; this_list < SPLINE_LIST_ARRAY_LENGTH (shape);
        this_list++)
     {
       unsigned this_spline;
+	  spline_type first;
 
-      spline_list_type list = SPLINE_LIST_ARRAY_ELT (shape, this_list);
-      spline_type first = SPLINE_LIST_ELT (list, 0);
+      list = SPLINE_LIST_ARRAY_ELT (shape, this_list);
+      first = SPLINE_LIST_ELT (list, 0);
 
       if (this_list == 0 || !COLOR_EQUAL(list.color, last_color))
         {
           if (this_list > 0)
-              OUT_LINE("h");
-	  OUT4 ("%.3f %.3f %.3f %s\n", (double) list.color.r / 255.0,
+              {
+                OUT_LINE ((shape.centerline || list.open) ? "S" : "f");
+                OUT_LINE("h");
+              }
+          OUT4 ("%.3f %.3f %.3f %s\n", (double) list.color.r / 255.0,
             (double) list.color.g / 255.0, (double) list.color.b / 255.0,
             (shape.centerline || list.open) ? "RG" : "rg");
           last_color = list.color;
@@ -145,9 +149,9 @@ out_splines (FILE * epd_file, spline_list_array_type shape)
                           END_POINT (s).x, END_POINT (s).y,
                           "c");
         }
-      OUT_LINE ((shape.centerline || list.open) ? "S" : "f");
-
     }
+  if (SPLINE_LIST_ARRAY_LENGTH(shape) > 0)
+    OUT_LINE ((shape.centerline || list.open) ? "S" : "f");
 }
 
 

@@ -1,3 +1,20 @@
+2002-04-30  Masatake YAMATO  <yamato@redhat.com>
+
+	* autotrace.h (_at_spline_list_array_type): Added
+	new field background_color.
+
+	* fit.c (fitted_splines): Copy background_color
+	into splines.
+	* autotrace.c (at_splines_free):
+	free background_color.
+
+2002-04-30  Martin Weber <martweb@gmx.net>
+
+	* output-*.*: fixed output generation when option 
+	background-color is active.
+
+	Message-ID: <3CC4602F.75EF9AF7@gmx.net>.
+	
 2002-04-28  Masatake YAMATO  <yamato@redhat.com>
 
 	* main.c, fit.c, autotrace.[ch]: Renamed

@@ -105,6 +105,8 @@ int output_mif_writer(FILE* ps_file, at_string name,
   int i;
   ColorT col_tbl[256];
   int n_ctbl = 0;
+  color_type curr_color = {0,0,0};
+
 
   cbox.llx = llx;
   cbox.lly = lly;
@@ -116,13 +118,14 @@ int output_mif_writer(FILE* ps_file, at_string name,
 
   for( this_list=0; this_list < SPLINE_LIST_ARRAY_LENGTH(shape); this_list++ ){
     spline_list_type list = SPLINE_LIST_ARRAY_ELT (shape, this_list);
+    curr_color = (list.clockwise && shape.background_color != NULL)? *(shape.background_color) : list.color;
     
     for( i=0; i<n_ctbl; i++ )
-      if( COLOR_EQUAL(list.color, col_tbl[i].c) ) break;
+      if( COLOR_EQUAL(curr_color, col_tbl[i].c) ) break;
 
     if( i >= n_ctbl ){
-      col_tbl[n_ctbl].tag = strdup(colorstring(list.color.r, list.color.g, list.color.b));
-      col_tbl[n_ctbl].c = list.color;
+      col_tbl[n_ctbl].tag = strdup(colorstring(curr_color.r, curr_color.g, curr_color.b));
+      col_tbl[n_ctbl].c = curr_color;
       n_ctbl++;
     }
   }
@@ -160,7 +163,7 @@ int output_mif_writer(FILE* ps_file, at_string name,
     spline_type first = SPLINE_LIST_ELT (list, 0);
 
     for( i=0; i<n_ctbl; i++ )
-      if( COLOR_EQUAL(list.color, col_tbl[i].c) ) break;
+      if( COLOR_EQUAL(curr_color, col_tbl[i].c) ) break;
 
     fprintf(ps_file, " %s\n",
       (shape.centerline || list.open) ? 
