@@ -45,9 +45,8 @@ extern char *version_string;
 #define MAKE_COLREF(r,g,b) (((r) & 0x0FF) | (((g) & 0x0FF) << 8) | (((b) & 0x0FF) << 16))
 #define MK_PEN(n) ((n) * 2 + 1)
 #define MK_BRUSH(n) ((n) * 2 + 2)
-#define SCALE 100.0
-#define FLOAT_TO_UI32(num) ((UI32)(num * SCALE))
-#define FLOAT_TO_UI16(num) ((UI16)(num * SCALE))
+#define FLOAT_TO_UI32(num) ((UI32)(num * scale))
+#define FLOAT_TO_UI16(num) ((UI16)(num * scale))
 
 /* maybe these definitions be put into types.h 
    with some ifdefs ... */
@@ -78,6 +77,7 @@ typedef struct
 EMFColorList *color_list = NULL;  /* Color list */
 UI32 *color_table = NULL;         /* Color table */
 char *editor;                     /* Editor description string */
+float scale;
 
 /* color list & table functions */
 
@@ -375,8 +375,8 @@ int WriteSetWorldTransform(FILE *fdes, UI32 height)
   
   if(fdes != NULL)
   {
-	float s1 = (float) (1.0/SCALE);
-	float s2 = (float) (-1.0/SCALE);
+	float s1 = (float) (1.0/scale);
+	float s2 = (float) (-1.0/scale);
 	UI32 t1;
 	UI32 t2;
     /* conversion to float */
@@ -643,6 +643,8 @@ void OutputEmf(FILE* fdes, EMFStats *stats, string name, int width, int height, 
   /* output EMF header */
   WriteHeader(fdes, name, width, height, stats->filesize, stats->nrecords, (stats->ncolors * 2) +1);
   
+  scale = (float) (height > width ? 32768 / height : 32768 / width);
+
   /* output world tranform */
   WriteSetWorldTransform(fdes, height);
 

@@ -1,3 +1,9 @@
+2001-03-17  Martin Weber <martweb@gmx.net>
+
+	Message-ID: <3AB25B23.27EDD0C1@gmx.net>.
+	* output-emf.c:  Images with width or height > 
+	655 were distorted.
+
 2001-03-17  Peter Cucka <pcucka@anim.dreamworks.com>
 
 	* pxl-outline.c: Adding some explicit casts of boolean 
