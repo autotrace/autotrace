@@ -74,21 +74,27 @@ new_spline_list (void)
   spline_list_type *answer;
 
   XMALLOC (answer, sizeof (spline_list_type));
-  SPLINE_LIST_DATA (*answer) = NULL;
-  SPLINE_LIST_LENGTH (*answer) = 0;
-
+  *answer = empty_spline_list();
   return answer;
 }
 
+spline_list_type 
+empty_spline_list (void)
+{
+  spline_list_type answer;
+  SPLINE_LIST_DATA (answer) = NULL;
+  SPLINE_LIST_LENGTH (answer) = 0;
+  return answer;
+}
 
 /* Return a new spline list with SPLINE as the first element.  */
 
 spline_list_type *
-init_spline_list (spline_type spline)
+new_spline_list_with_spline (spline_type spline)
 {
   spline_list_type *answer;
 
-  XMALLOC (answer, sizeof (spline_list_type));
+  answer = new_spline_list();
   XMALLOC (SPLINE_LIST_DATA (*answer), sizeof (spline_type));
   SPLINE_LIST_ELT (*answer, 0) = spline;
   SPLINE_LIST_LENGTH (*answer) = 1;

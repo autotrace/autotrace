@@ -1,3 +1,18 @@
+2002-10-04  Masatake YAMATO  <yamato@redhat.com>
+
+	* quantize.h: Added a declaration for 
+	quantize_object_free.
+
+	* spline.[ch] (new_spline_list_with_spline): Renamed
+	from init_spline_list.
+
+	* fit.c (fit_curve_list): deleted temp.
+
+	* median.c (quantize_object_free): New function.
+	(quantize): Use quantize_object_free.
+
+	* autotrace.c (at_bitmap_read): Set new_opts.
+
 2002-10-03  Masatake YAMATO  <yamato@redhat.com>
 
 	* README: Updated.

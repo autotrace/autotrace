@@ -61,8 +61,9 @@ typedef at_spline_list_type spline_list_type;
 
 #ifndef _IMPORTING
 /* Construct and destroy new `spline_list_type' objects.  */
-extern spline_list_type *new_spline_list (void);
-extern spline_list_type *init_spline_list (spline_type);
+extern spline_list_type *new_spline_list (void); /* Allocate new memory */
+extern spline_list_type empty_spline_list (void); /* No allocation */
+extern spline_list_type *new_spline_list_with_spline (spline_type);
 extern void free_spline_list (spline_list_type);
 
 /* Append the spline S to the list S_LIST.  */

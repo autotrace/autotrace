@@ -227,12 +227,9 @@ fit_curve_list (curve_list_type curve_list,
   curve_type curve;
   unsigned this_curve, this_spline;
   unsigned curve_list_length = CURVE_LIST_LENGTH (curve_list);
-  spline_list_type *temp = new_spline_list ();
-  spline_list_type curve_list_splines = *temp;
+  spline_list_type curve_list_splines = empty_spline_list();
 
   curve_list_splines.open = curve_list.open;
-
-  free (temp);
 
   /* Remove the extraneous ``knee'' points before filtering.  Since the
      corners have already been found, we don't need to worry about
@@ -883,7 +880,7 @@ remove_knee_points (curve_type curve, at_bool clockwise)
 
   free_curve (curve);
   *curve = *trimmed_curve;
-  free (trimmed_curve);
+  free (trimmed_curve);		/* free_curve? --- Masatake */
 }
 
 /* Smooth the curve by adding in neighboring points.  Do this
@@ -1020,7 +1017,7 @@ fit_with_line (curve_type curve)
       print_spline (log_file, line);
     }
 
-  return init_spline_list (line);
+  return new_spline_list_with_spline (line);
 }
 
 /* The least squares method is well described in Schneider's thesis.
@@ -1089,7 +1086,7 @@ fit_with_least_squares (curve_type curve, fitting_opts_type *fitting_opts,
 
   if (SPLINE_DEGREE(spline) == LINEARTYPE)
     {
-      spline_list = init_spline_list (spline);
+      spline_list = new_spline_list_with_spline (spline);
       LOG1 ("Accepted error of %.3f.\n", error);
           return (spline_list);
     }
@@ -1109,7 +1106,7 @@ fit_with_least_squares (curve_type curve, fitting_opts_type *fitting_opts,
           SPLINE_DEGREE (spline) = LINEARTYPE;
           LOG ("Changed to line.\n");
         }
-      spline_list = init_spline_list (spline);
+      spline_list = new_spline_list_with_spline (spline);
       LOG1 ("Accepted error of %.3f.\n", error);
     }
   else

@@ -131,7 +131,10 @@ at_bitmap_read (at_input_read_func input_reader,
   at_bitmap_type * bitmap;
   XMALLOC(bitmap, sizeof(at_bitmap_type)); 
   if (opts == NULL)
-    opts = at_input_opts_new();
+    {
+      opts     = at_input_opts_new();
+      new_opts = true;
+    }
   *bitmap = (*input_reader) (filename, opts, msg_func, msg_data);
   if (new_opts)
     at_input_opts_free(opts);
@@ -226,7 +229,7 @@ at_splines_new (at_bitmap_type * bitmap,
 }
 
 /* at_splines_new_full modify its argument: BITMAP 
-   when despeckle, quantize and thin_image are invoked. */
+   when despeckle, quantize and/or thin_image are invoked. */
 at_splines_type * 
 at_splines_new_full (at_bitmap_type * bitmap,
 		     at_fitting_opts_type * opts,
@@ -270,6 +273,8 @@ at_splines_new_full (at_bitmap_type * bitmap,
   if (opts->color_count > 0)
     {
       quantize (bitmap, opts->color_count, opts->background_color, &myQuant, &exp);
+      if (myQuant)
+	quantize_object_free(myQuant); /* curently not used */
       FATAL_THEN_RETURN();
     }
 

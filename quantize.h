@@ -49,5 +49,6 @@ typedef struct {
 void quantize(bitmap_type*, long ncolors, const color_type *bgColor,
     QuantizeObj**, at_exception_type * exp); 
 
+void quantize_object_free(QuantizeObj * obj);
 #endif /* NOT QUANTIZE_H */
 
