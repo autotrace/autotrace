@@ -1,3 +1,7 @@
+2002-01-30  Masatake YAMATO  <yamato@redhat.com>
+
+	* configure.in (AC_CHECK_LIB(png)): Added -lm.
+
 2002-01-27  Masatake YAMATO  <yamato@redhat.com>
 
 	* autotrace.c (at_splines_new_full): Set progress 1.0

@@ -92,9 +92,9 @@ AC_CHECK_LIB(png, png_get_image_width,
 HAVE_LIBPNG=no
 if test "x$HAVE_LIBPNG_STAGE1" = "xyes" ; then
 	AC_CHECK_LIB(png, png_read_png,
-		HAVE_LIBPNG=yes ,,-lz)
+		HAVE_LIBPNG=yes ,,-lz -lm)
 	if test "x$HAVE_LIBPNG" = "xyes" ; then
-		LIBPNG_LDFLAGS="-lpng -lz"
+		LIBPNG_LDFLAGS="-lpng -lz -lm"
 		AC_SUBST(LIBPNG_LDFLAGS)
 		AC_DEFINE(HAVE_LIBPNG)
 	else
