@@ -1,5 +1,11 @@
 2002-03-20  Martin Weber <martweb@gmx.net>
 
+	* README updated.
+	
+	* TODO: New file.
+
+2002-03-20  Martin Weber <martweb@gmx.net>
+
 	* output-emf.c: Don't include output.h.
 
 	Message-ID: <24692.1016622657@www46.gmx.net>.

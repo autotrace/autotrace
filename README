@@ -63,7 +63,8 @@ list-input-formats:  print a list of support input formats to stderr.
 log: write detailed progress reports to <input_name>.log.
 output-file <filename>: write to <filename>
 output-format <format>: use format <format> for the output file
-  eps, ai, p2e, sk, svg, fig, swf, emf, er, dxf, dxf12, epd, pdf or cgm can be used.
+Here a fix for the Readme: eps, ai, p2e, sk, svg, fig, swf, emf, er, dxf, 
+ mif, epd, pdf or cgm can be used.
 remove-adjacent-corners: remove corners that are adjacent.
 tangent-surround <unsigned>: number of points on either side of a
   point to consider when computing the tangent at that point; default is 3.
