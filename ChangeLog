@@ -1,5 +1,8 @@
 2001-03-12  Masatake YAMATO  <yamato@redhat.com>
 
+	* Makefile.am (INCLUDES): Renamed from libautotrace_a_INCLUDES.
+	Suggested by Martin.
+
 	* HACKING: Write about releasing scheme.
 
 	Updated by Martin.

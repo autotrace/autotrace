@@ -98,7 +98,7 @@ autotrace_SOURCES=\
 		getopt.h 			\
 		getopt1.c
 
-libautotrace_a_INCLUDES = $(MAGICK_CFLAGS)
+INCLUDES = $(MAGICK_CFLAGS)
 autotrace_LDADD =                 \
 		libautotrace.a    \
 		$(MAGICK_LDFLAGS) \
