@@ -1,5 +1,16 @@
 2002-10-06  Masatake YAMATO  <yamato@redhat.com>
 
+	* pxl-outline.c (free_pixel_outline): New function.
+	(CHECK_FATAL_DO): new macro.
+	(find_outline_pixels): free outline_list if an exception
+	is raised.
+	(find_one_outline): free outline if an exception is
+	raised.
+	(find_centerline_pixels): free outline if  an exception
+	is raised. use free_pixel_outline.
+
+2002-10-06  Masatake YAMATO  <yamato@redhat.com>
+
 	* pxl-outline.c (find_centerline_pixels): free
 	unused outline and partial_outline after using.
 

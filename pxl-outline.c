@@ -63,6 +63,7 @@ static pixel_outline_type find_one_centerline (bitmap_type, edge_type,
 static void append_pixel_outline (pixel_outline_list_type *,
   pixel_outline_type);
 static pixel_outline_type new_pixel_outline (void);
+static void free_pixel_outline (pixel_outline_type *);
 static void concat_pixel_outline (pixel_outline_type *,
   const pixel_outline_type*);
 static void append_outline_pixel (pixel_outline_type *, at_coord);
@@ -87,6 +88,7 @@ static at_bool is_open_junction(unsigned short, unsigned short,
 static at_coord NextPoint(bitmap_type, edge_type *, unsigned short *, unsigned short *, 
   color_type, at_bool, bitmap_type, at_exception_type * );
 
+#define CHECK_FATAL_DO(action) do {if (at_exception_got_fatal(exp)) {action;goto cleanup; }} while(0)
 #define CHECK_FATAL() if (at_exception_got_fatal(exp)) goto cleanup;
 
 /* We go through a bitmap TOP to BOTTOM, LEFT to RIGHT, looking for each pixel with an unmarked edge
@@ -136,12 +138,12 @@ find_outline_pixels (bitmap_type bitmap, color_type *bg_color,
 	    {
 	      pixel_outline_type outline;
 
-	      CHECK_FATAL ();
+	      CHECK_FATAL ();	/* FREE(DONE) outline_list */
 
 	      LOG1 ("#%u: (counterclockwise)", O_LIST_LENGTH (outline_list));
 
 	      outline = find_one_outline (bitmap, edge, row, col, &marked, false, false, exp);
-	      CHECK_FATAL();
+	      CHECK_FATAL();	/* FREE(DONE) outline_list */
 
 	      O_CLOCKWISE (outline) = false;
 	      append_pixel_outline (&outline_list, outline);
@@ -149,7 +151,7 @@ find_outline_pixels (bitmap_type bitmap, color_type *bg_color,
 	      LOG1 (" [%u].\n", O_LENGTH (outline));
 	    }
 	  else
-	    CHECK_FATAL ();
+	    CHECK_FATAL ();	/* FREE(DONE) outline_list */
 	  
 	  /* A valid edge can be BOTTOM for an inside outline.
 	     Inside outlines are traced clockwise */
@@ -162,7 +164,7 @@ find_outline_pixels (bitmap_type bitmap, color_type *bg_color,
               {
                 pixel_outline_type outline;
 
-		CHECK_FATAL();
+		CHECK_FATAL();	/* FREE(DONE) outline_list */
 
                 /* This lines are for debugging only:*/
                 if (is_background)
@@ -171,7 +173,7 @@ find_outline_pixels (bitmap_type bitmap, color_type *bg_color,
 
                     outline = find_one_outline (bitmap, edge, row-1, col,
 						&marked, true, false, exp);
-		    CHECK_FATAL();
+		    CHECK_FATAL(); /* FREE(DONE) outline_list */
 
 		    O_CLOCKWISE (outline) = true;
                     append_pixel_outline (&outline_list, outline);
@@ -182,15 +184,16 @@ find_outline_pixels (bitmap_type bitmap, color_type *bg_color,
 		  {
 		    outline = find_one_outline (bitmap, edge, row-1, col,
 						&marked, true, true, exp);
-		    CHECK_FATAL();
+		    CHECK_FATAL(); /* FREE(DONE) outline_list */
 		  }
-		CHECK_FATAL();
               }
+	    else
+	      CHECK_FATAL();	/* FREE(DONE) outline_list */
+	    
           }
 	  if (test_cancel && test_cancel(testcancel_data))
 	    {
-	      if (O_LIST_LENGTH (outline_list) != 0)
-		free_pixel_outline_list(&outline_list);
+	      free_pixel_outline_list(&outline_list);
 	      goto cleanup;
 	    }
 	}
@@ -198,7 +201,8 @@ find_outline_pixels (bitmap_type bitmap, color_type *bg_color,
  cleanup:
   free_bitmap (&marked);
   flush_log_output ();
-
+  if (at_exception_got_fatal(exp))
+    free_pixel_outline_list(&outline_list);
   return outline_list;
 }
 
@@ -241,6 +245,8 @@ find_one_outline (bitmap_type bitmap, edge_type original_edge,
   while (edge != NO_EDGE);
 
  cleanup:
+  if (at_exception_got_fatal(exp))
+    free_pixel_outline(&outline);
   return outline;
 }
 
@@ -280,7 +286,7 @@ find_centerline_pixels(bitmap_type bitmap, color_type bg_color,
 	    if (COLOR_EQUAL(GET_COLOR(bitmap, row, col), bg_color)) continue;
 
 	    edge = next_unmarked_outline_edge(row, col, TOP, bitmap, marked, exp);
-	    CHECK_FATAL ();
+	    CHECK_FATAL ();	/* FREE(DONE) outline_list  */
 
 	    if (edge != NO_EDGE)
 	    {
@@ -301,7 +307,8 @@ find_centerline_pixels(bitmap_type bitmap, color_type bg_color,
 		    edge_type opp_edge = opposite_edge(edge);
 		    edge = next_unmarked_outline_edge(row, col, opp_edge,
 						      bitmap, marked, exp);
-		    CHECK_FATAL ();
+		    CHECK_FATAL_DO(if (0 < O_LENGTH(outline)) free_pixel_outline(&outline));
+		    /* FREE(DONE) outline, outline_list */
 
 		    if (edge == opp_edge)
 		    {
@@ -324,17 +331,22 @@ find_centerline_pixels(bitmap_type bitmap, color_type bg_color,
 		LOG1("%s)", (outline.open ? "open" : "closed"));
 		LOG1(" [%u].\n", O_LENGTH(outline));
 		if (O_LENGTH(outline) == 1)
-		    free(outline.data);	/* TODO: dirty */
+		  free_pixel_outline(&outline);
 	    }
 	}
 	if (test_cancel && test_cancel(testcancel_data))
 	  {
+	    if (O_LIST_LENGTH (outline_list) != 0)
+	      free_pixel_outline_list (&outline_list);
 	    goto cleanup;
 	  }
     }
  cleanup:
     free_bitmap(&marked);
     flush_log_output();
+    if (at_exception_got_fatal(exp)
+	&& (O_LIST_LENGTH (outline_list) != 0))
+      free_pixel_outline_list(&outline_list);
     return outline_list;
 }
 
@@ -423,8 +435,7 @@ free_pixel_outline_list (pixel_outline_list_type *outline_list)
   for (this_outline = 0; this_outline < outline_list->length; this_outline++)
   {
     pixel_outline_type o = outline_list->data[this_outline];
-    if (o.data != NULL)
-      free (o.data);
+    free_pixel_outline (&o);
   }
   outline_list->length = 0;
 
@@ -453,6 +464,16 @@ new_pixel_outline (void)
   return pixel_outline;
 }
 
+static void
+free_pixel_outline (pixel_outline_type * outline)
+{
+  if (outline->data)
+    {
+      free (outline->data) ;
+      outline->data   = NULL;
+      outline->length = 0;
+    }
+}
 
 /* Concatenate two pixel lists.  The two lists are assumed to have the
    same starting pixel and to proceed in opposite directions therefrom. */
