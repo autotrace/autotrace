@@ -296,7 +296,7 @@ static coordinate_type NextPoint(bitmap_type bitmap, edge_type *edge, unsigned i
         /**edge = TOP;*/
                 (*col)--;
 		pos.x = *col;
-		pos.y = *row-1;
+		pos.y = BITMAP_HEIGHT (bitmap) - (*row-1);
 	    break;
       }
 	/* NORTHWEST */
@@ -310,7 +310,7 @@ static coordinate_type NextPoint(bitmap_type bitmap, edge_type *edge, unsigned i
       (*col)--;
 	  (*row)--;
 	  pos.x = *col+1;
-	  pos.y = *row-1;
+	  pos.y = BITMAP_HEIGHT (bitmap) - (*row-1);
 	  break;
     } 
     if ((!is_marked_edge(LEFT,*row,*col, marked)
@@ -318,7 +318,7 @@ static coordinate_type NextPoint(bitmap_type bitmap, edge_type *edge, unsigned i
     {
 	  *edge = LEFT;
 	  pos.x = *col;
-	  pos.y = *row;
+	  pos.y = BITMAP_HEIGHT (bitmap) - (*row);
 	  break;
     }
 	*edge = NO_EDGE;
@@ -332,7 +332,7 @@ static coordinate_type NextPoint(bitmap_type bitmap, edge_type *edge, unsigned i
       /**edge = RIGHT;*/
 	  (*row)--;
 	  pos.x = *col+1;
-	  pos.y = *row-1;
+	  pos.y = BITMAP_HEIGHT (bitmap) - (*row-1);
 	  break;
     }
 	/* NORTHEAST */
@@ -346,7 +346,7 @@ static coordinate_type NextPoint(bitmap_type bitmap, edge_type *edge, unsigned i
       (*col)++;
 	  (*row)--;
 	  pos.x = *col+1;
-	  pos.y = *row;
+	  pos.y = BITMAP_HEIGHT (bitmap) - (*row);
 	  break;
     } 
     if ((!is_marked_edge(TOP,*row,*col, marked)
@@ -354,7 +354,7 @@ static coordinate_type NextPoint(bitmap_type bitmap, edge_type *edge, unsigned i
     {
 	  *edge = TOP;
 	  pos.x = *col;
-	  pos.y = *row-1;
+	  pos.y = BITMAP_HEIGHT (bitmap) - (*row-1);
 	  break;
     }
 	*edge = NO_EDGE;
@@ -368,7 +368,7 @@ static coordinate_type NextPoint(bitmap_type bitmap, edge_type *edge, unsigned i
       /**edge = BOTTOM;*/
       (*col)++;
 	  pos.x = *col+1;
-	  pos.y = *row;
+	  pos.y = BITMAP_HEIGHT (bitmap) - (*row);
 	  break;
     }
 	/* SOUTHEAST */
@@ -382,7 +382,7 @@ static coordinate_type NextPoint(bitmap_type bitmap, edge_type *edge, unsigned i
       (*col)++;
 	  (*row)++;
 	  pos.x = *col;
-	  pos.y = *row;
+	  pos.y = BITMAP_HEIGHT (bitmap) - (*row);
 	  break;
     } 
     if ((!is_marked_edge(RIGHT,*row,*col, marked)
@@ -390,7 +390,7 @@ static coordinate_type NextPoint(bitmap_type bitmap, edge_type *edge, unsigned i
     {
 	  *edge = RIGHT;
 	  pos.x = *col+1;
-	  pos.y = *row-1;
+	  pos.y = BITMAP_HEIGHT (bitmap) - (*row-1);
 	  break;
     }
 	*edge = NO_EDGE;
@@ -404,7 +404,7 @@ static coordinate_type NextPoint(bitmap_type bitmap, edge_type *edge, unsigned i
       /**edge = LEFT;*/
 	  (*row)++;
 	  pos.x = *col;
-	  pos.y = *row;
+	  pos.y = BITMAP_HEIGHT (bitmap) - (*row);
 	  break;
     }
 	/* SOUTHWEST */
@@ -418,7 +418,7 @@ static coordinate_type NextPoint(bitmap_type bitmap, edge_type *edge, unsigned i
       (*col)--;
 	  (*row)++;
 	  pos.x = *col;
-	  pos.y = *row-1;
+	  pos.y = BITMAP_HEIGHT (bitmap) - (*row-1);
 	  break;
     } 
     if ((!is_marked_edge(BOTTOM,*row,*col, marked)
@@ -426,10 +426,11 @@ static coordinate_type NextPoint(bitmap_type bitmap, edge_type *edge, unsigned i
     {
 	  *edge = BOTTOM;
 	  pos.x = *col+1;
-	  pos.y = *row;
+	  pos.y = BITMAP_HEIGHT (bitmap) - (*row);
 	  break;
     }
   case NO_EDGE:
+  default:
 	*edge = NO_EDGE;
     break;
   }
@@ -442,7 +443,7 @@ else
     {
 	  *edge = LEFT;
 	  pos.x=*col;
-	  pos.y=*row;
+	  pos.y=BITMAP_HEIGHT (bitmap) - (*row);
 	  break;
     }
 	/* WEST */
@@ -453,7 +454,7 @@ else
       /**edge = TOP;*/
       (*col)--;
 	  pos.x = *col;
-	  pos.y = *row-1;
+	  pos.y = BITMAP_HEIGHT (bitmap) - (*row-1);
 	  break;
     }
 	/* NORTHWEST */
@@ -465,7 +466,7 @@ else
       (*col)--;
 	  (*row)--;
 	  pos.x = *col+1;
-	  pos.y = *row-1;
+	  pos.y = BITMAP_HEIGHT (bitmap) - (*row-1);
 	  break;
     } 
 	*edge = NO_EDGE;
@@ -476,7 +477,7 @@ else
     {
 	  *edge = TOP;
 	  pos.x = *col;
-	  pos.y = *row-1;
+	  pos.y = BITMAP_HEIGHT (bitmap) - (*row-1);
 	  break;
     }
 	/* NORTH */
@@ -487,7 +488,7 @@ else
       /**edge = RIGHT;*/
 	  (*row)--;
 	  pos.x = *col+1;
-	  pos.y = *row-1;
+	  pos.y = BITMAP_HEIGHT (bitmap) - (*row-1);
 	  break;
     }
 	/* NORTHEAST */
@@ -499,7 +500,7 @@ else
       (*col)++;
 	  (*row)--;
 	  pos.x = *col+1;
-	  pos.y = *row;
+	  pos.y = BITMAP_HEIGHT (bitmap) - (*row);
 	  break;
     } 
 	*edge = NO_EDGE;
@@ -510,7 +511,7 @@ else
     {
 	  *edge = RIGHT;
 	  pos.x = *col+1;
-	  pos.y = *row-1;
+	  pos.y = BITMAP_HEIGHT (bitmap) - (*row-1);
 	  break;
     }
 	/* EAST */
@@ -521,7 +522,7 @@ else
       /**edge = BOTTOM;*/
       (*col)++;
 	  pos.x = *col+1;
-	  pos.y = *row;
+	  pos.y = BITMAP_HEIGHT (bitmap) - (*row);
 	  break;
     }
 	/* SOUTHEAST */
@@ -533,7 +534,7 @@ else
       (*col)++;
 	  (*row)++;
 	  pos.x = *col;
-	  pos.y = *row;
+	  pos.y = BITMAP_HEIGHT (bitmap) - (*row);
 	  break;
     } 
     *edge = NO_EDGE;
@@ -544,7 +545,7 @@ else
     {
 	  *edge = BOTTOM;
 	  pos.x = *col+1;
-	  pos.y = *row;
+	  pos.y = BITMAP_HEIGHT (bitmap) - (*row);
 	  break;
     }
 	/* SOUTH */
@@ -555,7 +556,7 @@ else
     /**edge = LEFT;*/
 	  (*row)++;
 	  pos.x = *col;
-	  pos.y = *row;
+	  pos.y = BITMAP_HEIGHT (bitmap) - (*row);
 	  break;
     }
 	/* SOUTHWEST */
@@ -567,13 +568,13 @@ else
       (*col)--;
 	  (*row)++;
 	  pos.x = *col;
-	  pos.y = *row-1;
+	  pos.y = BITMAP_HEIGHT (bitmap) - (*row-1);
 	  break;
     }
-  case NO_EDGE: 
+  case NO_EDGE:
+  default: 
     *edge = NO_EDGE;
     break;
   }
-  pos.y = BITMAP_HEIGHT (bitmap) - pos.y;
   return(pos);
 }

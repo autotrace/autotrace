@@ -8,7 +8,7 @@ See https://sourceforge.net/cvs/?group_id=11789
 The module name is autotrace.  After checking out the codes, invoke
 autogen.sh in the distribution. That generates configure.in,
 Makefile.in and so on. autogen.sh invokes automake, autoconf, aclocal
-and autogen.
+and autofig.
 
 
 * Autofig
@@ -45,3 +45,11 @@ int main()
 		  splines);
   return 0;
 }
+
+
+* Tag naming scheme
+
+CVS tag for version X.Y: RELEASE_X_Y. 
+Branch for version X.Y: TOWARD_version X.Y.
+
+
