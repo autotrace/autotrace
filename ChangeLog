@@ -1,3 +1,11 @@
+2002-10-29  Masatake YAMATO  <yamato@redhat.com>
+
+	* input-magick.c (input_magick_reader): Do DestroyImage
+	before DestroyImageInfo.
+
+	* main.c (main): Put a space in a message(inputformat).
+	(read_command_line): Fix a typo.
+
 2002-10-26  Ralf Stubner <ralf.stubner@physik.uni-erlangen.de>
 
 	* autotrace.c: #include "output-pstoedit.h"

@@ -90,8 +90,9 @@ at_bitmap_type input_magick_reader(at_string filename,
         AT_BITMAP_BITS(bitmap)[point++]=pixel->blue;
       }
     }
+
+  DestroyImage(image);
  cleanup:
   DestroyImageInfo(image_info);  
-  DestroyImage(image);
   return(bitmap);
 }

@@ -136,7 +136,7 @@ main (int argc, char * argv[])
       at_input_opts_free(input_opts);
     }
   else
-    FATAL ("Unsupported inputformat");
+    FATAL ("Unsupported input format");
 
   if (report_progress)
     {
@@ -361,7 +361,7 @@ read_command_line (int argc, char * argv[],
         {
 	  input_reader = at_input_get_handler_by_suffix (optarg);
 	  if (!input_reader)
-	      FATAL1 ("Output format %s not supported\n", optarg);
+	    FATAL1 ("Input format %s not supported\n", optarg);
         }
 
       else if (ARGUMENT_IS ("line-threshold"))
@@ -390,9 +390,7 @@ read_command_line (int argc, char * argv[],
         {
 	    output_writer = at_output_get_handler_by_suffix (optarg);
 	    if (output_writer == NULL)
-	      {
-		    FATAL1 ("Output format %s not supported", optarg);
-	      }
+	      FATAL1 ("Output format %s not supported", optarg);
         }
       else if (ARGUMENT_IS ("preserve_width"))
 	fitting_opts->preserve_width = true;
