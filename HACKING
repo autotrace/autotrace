@@ -109,11 +109,16 @@ This variable is passed to aclocal that is invoked by autogen.sh.
 
 See http://sourceforge.net/cvs/?group_id=11789 
 
-The module name is autotrace.  After checking out the codes, invoke
+The module name is autotrace.  After checking out the code, invoke
 autogen.sh in the distribution. That generates configure.in,
 Makefile.in and so on. autogen.sh invokes automake, autoconf, aclocal
 and autofig.
 
+When you check out the code, you will find autotrace-0.27pre directory
+under autotrace source code top directory. You should ignore 
+autotrace-0.27pre directory. The directory was checked in by
+my mistake(Masatake YAMATO). It is difficult to remove a 
+directory from a CVS repository.
 
 * Autofig
 

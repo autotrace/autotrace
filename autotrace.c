@@ -86,6 +86,7 @@ at_input_opts_new(void)
   at_input_opts_type * opts;
   XMALLOC(opts, sizeof(at_input_opts_type));
   opts->background_color = NULL;
+  opts->charcode = 0;
   return opts;
 }
 
@@ -94,6 +95,7 @@ at_input_opts_copy(at_input_opts_type * original)
 {
   at_input_opts_type * opts;
   opts = at_input_opts_new();
+  *opts = *original;
   if (original->background_color)
     opts->background_color = at_color_copy(original->background_color);
   return opts;

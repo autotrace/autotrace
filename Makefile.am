@@ -32,6 +32,7 @@ endif
 input_src=input-pnm.c input-pnm.h \
 input-bmp.c input-bmp.h \
 input-tga.c input-tga.h \
+input-gf.c input-gf.h \
 $(input_png_src) \
 $(input_magick_src)
 
@@ -51,6 +52,7 @@ output-er.c output-er.h \
 output-fig.c  output-fig.h \
 output-sk.c output-sk.h \
 output-svg.c output-svg.h \
+output-ugs.c output-ugs.h \
 output-p2e.c output-p2e.h \
 output-emf.c output-emf.h \
 output-dxf.c output-dxf.h \

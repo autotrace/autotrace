@@ -57,6 +57,7 @@ static void dot_printer(at_real percentage, at_address client_data);
 
 static char * read_command_line (int, char * [], 
 				 at_fitting_opts_type *,
+				 at_input_opts_type *,
 				 at_output_opts_type *);
 
 static unsigned int hctoi (char c);
@@ -94,9 +95,11 @@ main (int argc, char * argv[])
   textdomain(PACKAGE);
 #endif /* Def: ENABLE_NLS */
 
-  fitting_opts 		    = at_fitting_opts_new ();
-  output_opts  		    = at_output_opts_new ();
-  input_name = read_command_line (argc, argv, fitting_opts, output_opts);
+  fitting_opts = at_fitting_opts_new ();
+  input_opts   = at_input_opts_new ();
+  output_opts  = at_output_opts_new ();
+  
+  input_name = read_command_line (argc, argv, fitting_opts, input_opts, output_opts);
 
   if (strgicmp (output_name, input_name))
     FATAL(_("Input and output file may not be the same\n"));
@@ -141,10 +144,6 @@ main (int argc, char * argv[])
   /* Open the main input file.  */
   if (input_reader != NULL)
     {
-      input_opts = at_input_opts_new ();
-      if (fitting_opts->background_color)
-	input_opts->background_color = at_color_copy(fitting_opts->background_color);
-      
       bitmap = at_bitmap_read(input_reader, input_name, input_opts, 
 			      exception_handler, NULL);
       
@@ -214,6 +213,7 @@ main (int argc, char * argv[])
   should be ignored, for example FFFFFF;\n\
   default is no background color.\n\
 centerline: trace a character's centerline, rather than its outline.\n\
+charcode <unsigned>: code of character to load from GF font file.\n\
 color-count <unsigned>: number of colors a color bitmap is reduced to,\n\
   it does not work on grayscale, allowed are 1..256;\n\
   default is 0, that means not color reduction is done.\n\
@@ -265,6 +265,7 @@ width-weight-factor <real>: weight factor for fitting the linewidth.\n\
 static char *
 read_command_line (int argc, char * argv[], 
 		   at_fitting_opts_type * fitting_opts,
+		   at_input_opts_type * input_opts,
 		   at_output_opts_type * output_opts)
 {
   int g;   /* `getopt' return code.  */
@@ -275,6 +276,7 @@ read_command_line (int argc, char * argv[],
         { "debug-arch",                 0, 0, 0 },
         { "debug-bitmap",               0, (int *)&dumping_bitmap, 1 },
         { "centerline",			0, 0, 0 },
+	{ "charcode",			1, 0, 0 },
         { "color-count",                1, 0, 0 },
         { "corner-always-threshold",    1, 0, 0 },
         { "corner-surround",            1, 0, 0 },
@@ -323,10 +325,17 @@ read_command_line (int argc, char * argv[],
 	   fitting_opts->background_color = at_color_new((unsigned char)(hctoi (optarg[0]) * 16 + hctoi (optarg[1])),
 							 (unsigned char)(hctoi (optarg[2]) * 16 + hctoi (optarg[3])),
 							 (unsigned char)(hctoi (optarg[4]) * 16 + hctoi (optarg[5])));
+	   input_opts->background_color = at_color_copy(fitting_opts->background_color);
 	}
       else if (ARGUMENT_IS ("centerline"))
 	fitting_opts->centerline = true;
 
+      else if (ARGUMENT_IS ("charcode"))
+	{
+	  fitting_opts->charcode = strtoul (optarg, 0, 0);
+	  input_opts->charcode = fitting_opts->charcode;
+	}
+		   
       else if (ARGUMENT_IS ("color-count"))
         fitting_opts->color_count = atou (optarg);
 

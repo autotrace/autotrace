@@ -110,6 +110,7 @@ new_fitting_opts (void)
   fitting_opts_type fitting_opts;
 
   fitting_opts.background_color = NULL;
+  fitting_opts.charcode = 0;
   fitting_opts.color_count = 0;
   fitting_opts.corner_always_threshold = (at_real) 60.0;
   fitting_opts.corner_surround = 4;
@@ -1280,14 +1281,15 @@ fit_one_spline (curve_type curve,
   C0_C1_det = C[0][0] * C[1][1] - C[1][0] * C[0][1];
   if (C0_C1_det == 0.0)
     {
-      LOG ("zero determinant of C0*C1");
-      at_exception_fatal(exception, "zero determinant of C0*C1");
-      goto cleanup;
+      /* Zero determinant */
+      alpha1 = 0;
+      alpha2 = 0;
     }
-
+  else
+    {
   alpha1 = X_C1_det / C0_C1_det;
   alpha2 = C0_X_det / C0_C1_det;
-
+    }
   CONTROL1 (spline) = Vadd_point (START_POINT (spline),
                                   Vmult_scalar (t1_hat, alpha1));
   CONTROL2 (spline) = Vadd_point (END_POINT (spline),
@@ -1321,7 +1323,8 @@ set_initial_parameter_values (curve_type curve)
       CURVE_T (curve, p) = CURVE_T (curve, p - 1) + d;
     }
 
-  assert (LAST_CURVE_T (curve) != 0.0);
+  if (LAST_CURVE_T (curve) == 0.0)
+    LAST_CURVE_T (curve) = 1.0;
 
   for (p = 1; p < CURVE_LENGTH (curve); p++)
     CURVE_T (curve, p) = CURVE_T (curve, p) / LAST_CURVE_T (curve);

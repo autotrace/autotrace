@@ -32,6 +32,7 @@
 #include "output-p2e.h"
 #include "output-sk.h"
 #include "output-svg.h"
+#include "output-ugs.h"
 #include "output-fig.h"
 #ifdef HAVE_LIBSWF
 #include "output-swf.h"
@@ -61,6 +62,7 @@ static struct output_format_entry output_formats[] = {
     {"p2e",	"pstoedit frontend format",	output_p2e_writer},
     {"sk",	"Sketch",			output_sk_writer},
     {"svg",	"Scalable Vector Graphics",	output_svg_writer},
+    {"ugs",	"Unicode glyph source",		output_ugs_writer},
     {"fig",     "XFIG 3.2",                     output_fig_writer},
 #ifdef HAVE_LIBSWF
     {"swf",	"Shockwave Flash 3",		output_swf_writer},

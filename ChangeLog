@@ -1,3 +1,32 @@
+2003-06-15  Masatake YAMATO  <yamato@redhat.com>
+
+	* main.c (read_command_line): added new parameter, input_opts.
+	(main): passed input_opts to read_command_line.
+	Don't set input_opts->background_color here.
+	(read_command_line): Set input_opts->background_color here.
+	(read_command_line): Set input_opts->charcode here.
+
+2003-06-12  Serge Vakulenko <vak@cronyx.ru>
+
+	(Logged by Masatake.)
+
+	* autotrace.h (_at_fitting_opts_type): added charcode.
+
+	* autotrace.h (struct _at_input_opts_type): added charcode.
+
+	* fit.c (new_fitting_opts): Initialize charcode.
+	(fit_one_spline): Fixed two bugs, which caused unexpected aborts with
+	diagnostics "zero determinant of C0*C1"
+	and "assertion error in line 1276 of fit.c".
+
+	* main.c (read_command_line::long_options): Added 
+	charcode as an option.
+
+	* module.c: Added gf input.
+
+	* output.c: included output-ugs.h.
+	(output_formats): Added ugs output.
+
 2003-06-11  Masatake YAMATO  <yamato@redhat.com>
 
 	* tools-version.sh (TOOLS): Added glib-gettextize.

@@ -123,6 +123,11 @@ N_("background-color <hexadezimal>: the color of the background that "	\
 "default is no background color.")
   at_color_type *background_color;
 
+#define at_doc__charcode							\
+N_("charcode <unsigned>: code of character to load from GF file, "	\
+"allowed are 0..255; default is the first character in font.")
+  unsigned charcode;
+
 #define at_doc__color_count							\
 N_("color-count <unsigned>: number of colors a color bitmap is reduced to, "	\
 "it does not work on grayscale, allowed are 1..256; "				\
@@ -209,6 +214,7 @@ N_("width-weight-factor <real>: weight factor for fitting the linewidth.")
 struct _at_input_opts_type
 {
   at_color_type *background_color;
+  unsigned charcode;		/* Character code used only in GF input.*/
 };
 
 struct _at_output_opts_type

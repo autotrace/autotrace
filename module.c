@@ -30,6 +30,8 @@
 #include "input-pnm.h"
 #include "input-bmp.h"
 #include "input-tga.h"
+#include "input-gf.h"
+
 #ifdef HAVE_LIBPNG
 #include "input-png.h"
 #endif /* HAVE_LIBPNG */
@@ -56,7 +58,7 @@ at_module_init (void)
   at_input_add_handler_full ("PGM", "Portable graymap format", input_pnm_reader, 0, "PGM", NULL);
   at_input_add_handler_full ("PPM", "Portable pixmap format",  input_pnm_reader, 0, "PPM", NULL);
 
-
+  at_input_add_handler      ("GF",  "TeX raster font",         input_gf_reader);
 #if HAVE_MAGICK  
 
 #if (MagickLibVersion < 0x0534)
