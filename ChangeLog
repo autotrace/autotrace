@@ -1,3 +1,9 @@
+2002-03-13  Masatake YAMATO  <yamato@redhat.com>
+
+	* output-pdf.c (output_pdf_writer): 
+	removed a garbage that I had put.
+	Suggested by Martin.
+
 2002-03-011  Martin Weber <martweb@gmx.net>
 
 	* output-pdf.c: Fix a bug in xref table generator.

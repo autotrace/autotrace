@@ -308,7 +308,7 @@ int output_pdf_writer(FILE* pdf_file, at_string name,
 
     out_splines(pdf_file, shape, &length);
 
-pp	output_pdf_tailor(pdf_file, length, llx, lly, urx, ury);
+	output_pdf_tailor(pdf_file, length, llx, lly, urx, ury);
 
     return 0;
 }
