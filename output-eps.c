@@ -149,7 +149,7 @@ out_splines (FILE * ps_file, spline_list_array_type shape)
           m -= k;
           y -= k;
           /* symbol k is used for CorelDraw 3/4 compatibility */
-          OUT5 ("%f %f %f %f %s\n", (double) c/255.0,
+          OUT5 ("%.3f %.3f %.3f %.3f %s\n", (double) c/255.0,
 		(double) m/255.0,(double) y/255.0, (double) k/255.0,
 		(shape.centerline || list.open) ? "K" : "k");
 	  OUT_LINE("*u");    

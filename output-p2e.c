@@ -160,9 +160,9 @@ out_splines (FILE * ps_file, spline_list_array_type shape)
 
 #ifdef withrgbcolor
 		  // in the long term this can be removed.
-          OUT3 ("%f %f %f setrgbcolor\n",	(real)list.color.r/255.0,
-										    (real)list.color.g/255.0,
-											(real)list.color.b/255.0);
+	OUT3 ("%.3f %.3f %.3f setrgbcolor\n",	(real)list.color.r/255.0,
+	      (real)list.color.g/255.0,
+	      (real)list.color.b/255.0);
 #else
   		  int c, m, y, k;
           c = k = 255 - list.color.r;
@@ -175,7 +175,7 @@ out_splines (FILE * ps_file, spline_list_array_type shape)
           c -= k;
           m -= k;
           y -= k;
-          OUT5("%f %f %f %f %s\n", (double) c/255.0, (double) m/255.0,(double) y/255.0, (double) k/255.0, "setcmykcolor");
+	  OUT5("%.3f %.3f %.3f %.3f %s\n", (double) c/255.0, (double) m/255.0,(double) y/255.0, (double) k/255.0, "setcmykcolor");
 #endif
           last_color = list.color;
 	  }

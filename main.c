@@ -148,7 +148,7 @@ main (int argc, char * argv[])
   if (dumping_bitmap)
     {
       dumpfile_name = extend_filename (input_rootname, "bitmap");
-      dump_file   = xfopen (dumpfile_name, "w");
+      dump_file   = xfopen (dumpfile_name, "wb");
       dump(bitmap, dump_file);
       fclose(dump_file);
     }

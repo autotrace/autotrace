@@ -108,7 +108,7 @@ out_splines (FILE * epd_file, spline_list_array_type shape)
         {
           if (this_list > 0)
               OUT_LINE("h");
-          OUT4 ("%f %f %f %s\n", (double) list.color.r / 255.0,
+	  OUT4 ("%.3f %.3f %.3f %s\n", (double) list.color.r / 255.0,
             (double) list.color.g / 255.0, (double) list.color.b / 255.0,
             (shape.centerline || list.open) ? "RG" : "rg");
           last_color = list.color;

@@ -1,3 +1,22 @@
+2002-03-30  Martin Weber <martweb@gmx.net>
+
+	* output-pdf.c (out_splines): Reduced color precision to get 
+	smaller files.
+
+	* output-p2e.c (out_splines): Likewise.
+
+	* output-eps.c (out_splines): Likewise.
+
+	* output-epd.c (out_splines): Likewise.
+
+	* main.c (main): using binary mode for dumping bitmaps.
+
+	* pxl-outline.c (*): The y values of the outline were always to 
+	high by one.
+
+	Message-ID: <3CA3853C.629CCFD6@gmx.net> and
+	Message-ID: <3CA57C3F.C35F60F7@gmx.net>.
+
 2002-03-30  Masatake YAMATO  <yamato@redhat.com>
 
 	* pxl-outline.c (find_outline_pixels): moved

@@ -211,7 +211,7 @@ find_one_outline (bitmap_type bitmap, edge_type original_edge,
   at_coord pos;
 
   pos.x = col + ((edge == RIGHT) || (edge == BOTTOM) ? 1 : 0);
-  pos.y = BITMAP_HEIGHT (bitmap) - row + ((edge == TOP) || (edge == RIGHT) ? 1 : 0);
+  pos.y = BITMAP_HEIGHT (bitmap) - row - 1 + ((edge == TOP) || (edge == RIGHT) ? 1 : 0);
 
   if (!ignore)
     outline = new_pixel_outline ();
@@ -343,7 +343,7 @@ find_one_centerline(bitmap_type bitmap, edge_type original_edge,
        to Cartesian coordinates and specifying the left edge so that
        the coordinates won't be adjusted.
        TODO: On output, should add 0.5 to both coordinates. */
-    pos.x = col; pos.y = BITMAP_HEIGHT(bitmap) - row;
+    pos.x = col; pos.y = BITMAP_HEIGHT(bitmap) - row - 1;
     append_outline_pixel(&outline, pos);
 
     for ( ; ; )
@@ -373,7 +373,7 @@ find_one_centerline(bitmap_type bitmap, edge_type original_edge,
 	    mark_pixel(prev_row, prev_col, marked);
 
 	/* Add the new pixel to the output list. */
-	pos.x = col; pos.y = BITMAP_HEIGHT(bitmap) - row;
+	pos.x = col; pos.y = BITMAP_HEIGHT(bitmap) - row - 1;
 	append_outline_pixel(&outline, pos);
     }
     if (!outline.open)
@@ -732,7 +732,7 @@ static at_coord NextPoint(bitmap_type bitmap, edge_type *edge, unsigned short *r
         /**edge = TOP;*/
 	    (*col)--;
 	    pos.x = *col;
-	    pos.y = BITMAP_HEIGHT (bitmap) - (*row-1);
+	    pos.y = BITMAP_HEIGHT (bitmap) - *row;
 	    break;
 	  }
       CHECK_FATAL();
@@ -747,7 +747,7 @@ static at_coord NextPoint(bitmap_type bitmap, edge_type *edge, unsigned short *r
           (*col)--;
 	  (*row)--;
 	  pos.x = *col+1;
-	  pos.y = BITMAP_HEIGHT (bitmap) - (*row-1);
+	  pos.y = BITMAP_HEIGHT (bitmap) - *row;
 	  break;
     } 
     CHECK_FATAL();
@@ -756,7 +756,7 @@ static at_coord NextPoint(bitmap_type bitmap, edge_type *edge, unsigned short *r
     {
 	  *edge = LEFT;
 	  pos.x = *col;
-	  pos.y = BITMAP_HEIGHT (bitmap) - (*row);
+	  pos.y = BITMAP_HEIGHT (bitmap) - *row - 1;
 	  break;
     }
     CHECK_FATAL();
@@ -771,7 +771,7 @@ static at_coord NextPoint(bitmap_type bitmap, edge_type *edge, unsigned short *r
       /**edge = RIGHT;*/
 	  (*row)--;
 	  pos.x = *col+1;
-	  pos.y = BITMAP_HEIGHT (bitmap) - (*row-1);
+	  pos.y = BITMAP_HEIGHT (bitmap) - *row;
 	  break;
     }
     CHECK_FATAL();
@@ -786,7 +786,7 @@ static at_coord NextPoint(bitmap_type bitmap, edge_type *edge, unsigned short *r
 	  (*col)++;
 	  (*row)--;
 	  pos.x = *col+1;
-	  pos.y = BITMAP_HEIGHT (bitmap) - (*row);
+	  pos.y = BITMAP_HEIGHT (bitmap) - *row - 1;
 	  break;
     } 
     CHECK_FATAL();
@@ -795,7 +795,7 @@ static at_coord NextPoint(bitmap_type bitmap, edge_type *edge, unsigned short *r
     {
 	  *edge = TOP;
 	  pos.x = *col;
-	  pos.y = BITMAP_HEIGHT (bitmap) - (*row-1);
+	  pos.y = BITMAP_HEIGHT (bitmap) - *row;
 	  break;
     }
     CHECK_FATAL();
@@ -810,7 +810,7 @@ static at_coord NextPoint(bitmap_type bitmap, edge_type *edge, unsigned short *r
       /**edge = BOTTOM;*/
       (*col)++;
 	  pos.x = *col+1;
-	  pos.y = BITMAP_HEIGHT (bitmap) - (*row);
+	  pos.y = BITMAP_HEIGHT (bitmap) - *row - 1;
 	  break;
     }
     CHECK_FATAL();
@@ -825,7 +825,7 @@ static at_coord NextPoint(bitmap_type bitmap, edge_type *edge, unsigned short *r
 	  (*col)++;
 	  (*row)++;
 	  pos.x = *col;
-	  pos.y = BITMAP_HEIGHT (bitmap) - (*row);
+	  pos.y = BITMAP_HEIGHT (bitmap) - *row - 1;
 	  break;
     }
     CHECK_FATAL();
@@ -834,7 +834,7 @@ static at_coord NextPoint(bitmap_type bitmap, edge_type *edge, unsigned short *r
     {
 	  *edge = RIGHT;
 	  pos.x = *col+1;
-	  pos.y = BITMAP_HEIGHT (bitmap) - (*row-1);
+	  pos.y = BITMAP_HEIGHT (bitmap) - *row;
 	  break;
     }
     CHECK_FATAL();
@@ -849,7 +849,7 @@ static at_coord NextPoint(bitmap_type bitmap, edge_type *edge, unsigned short *r
       /**edge = LEFT;*/
 	  (*row)++;
 	  pos.x = *col;
-	  pos.y = BITMAP_HEIGHT (bitmap) - (*row);
+	  pos.y = BITMAP_HEIGHT (bitmap) - *row - 1;
 	  break;
     }
     CHECK_FATAL();
@@ -864,7 +864,7 @@ static at_coord NextPoint(bitmap_type bitmap, edge_type *edge, unsigned short *r
       (*col)--;
 	  (*row)++;
 	  pos.x = *col;
-	  pos.y = BITMAP_HEIGHT (bitmap) - (*row-1);
+	  pos.y = BITMAP_HEIGHT (bitmap) - *row;
 	  break;
     } 
     CHECK_FATAL();
@@ -873,7 +873,7 @@ static at_coord NextPoint(bitmap_type bitmap, edge_type *edge, unsigned short *r
     {
 	  *edge = BOTTOM;
 	  pos.x = *col+1;
-	  pos.y = BITMAP_HEIGHT (bitmap) - (*row);
+	  pos.y = BITMAP_HEIGHT (bitmap) - *row - 1;
 	  break;
     }
     CHECK_FATAL();
@@ -891,7 +891,7 @@ else
     {
 	  *edge = LEFT;
 	  pos.x=*col;
-	  pos.y=BITMAP_HEIGHT (bitmap) - (*row);
+	  pos.y=BITMAP_HEIGHT (bitmap) - *row - 1;
 	  break;
     }
     CHECK_FATAL();
@@ -903,7 +903,7 @@ else
       /**edge = TOP;*/
       (*col)--;
 	  pos.x = *col;
-	  pos.y = BITMAP_HEIGHT (bitmap) - (*row-1);
+	  pos.y = BITMAP_HEIGHT (bitmap) - *row;
 	  break;
 	}
     CHECK_FATAL();
@@ -916,7 +916,7 @@ else
       (*col)--;
 	  (*row)--;
 	  pos.x = *col+1;
-	  pos.y = BITMAP_HEIGHT (bitmap) - (*row-1);
+	  pos.y = BITMAP_HEIGHT (bitmap) - *row;
 	  break;
     } 
     CHECK_FATAL();
@@ -928,7 +928,7 @@ else
     {
 	  *edge = TOP;
 	  pos.x = *col;
-	  pos.y = BITMAP_HEIGHT (bitmap) - (*row-1);
+	  pos.y = BITMAP_HEIGHT (bitmap) - *row;
 	  break;
     }
     CHECK_FATAL();
@@ -940,7 +940,7 @@ else
       /**edge = RIGHT;*/
 	  (*row)--;
 	  pos.x = *col+1;
-	  pos.y = BITMAP_HEIGHT (bitmap) - (*row-1);
+	  pos.y = BITMAP_HEIGHT (bitmap) - *row;
 	  break;
     }
     CHECK_FATAL();
@@ -953,7 +953,7 @@ else
       (*col)++;
 	  (*row)--;
 	  pos.x = *col+1;
-	  pos.y = BITMAP_HEIGHT (bitmap) - (*row);
+	  pos.y = BITMAP_HEIGHT (bitmap) - *row - 1;
 	  break;
     }
     CHECK_FATAL();
@@ -965,7 +965,7 @@ else
     {
 	  *edge = RIGHT;
 	  pos.x = *col+1;
-	  pos.y = BITMAP_HEIGHT (bitmap) - (*row-1);
+	  pos.y = BITMAP_HEIGHT (bitmap) - *row;
 	  break;
     }
     CHECK_FATAL();
@@ -977,7 +977,7 @@ else
       /**edge = BOTTOM;*/
       (*col)++;
 	  pos.x = *col+1;
-	  pos.y = BITMAP_HEIGHT (bitmap) - (*row);
+	  pos.y = BITMAP_HEIGHT (bitmap) - *row - 1;
 	  break;
     }
     CHECK_FATAL();
@@ -990,7 +990,7 @@ else
       (*col)++;
 	  (*row)++;
 	  pos.x = *col;
-	  pos.y = BITMAP_HEIGHT (bitmap) - (*row);
+	  pos.y = BITMAP_HEIGHT (bitmap) - *row - 1;
 	  break;
     }
     CHECK_FATAL();
@@ -1002,7 +1002,7 @@ else
     {
 	  *edge = BOTTOM;
 	  pos.x = *col+1;
-	  pos.y = BITMAP_HEIGHT (bitmap) - (*row);
+	  pos.y = BITMAP_HEIGHT (bitmap) - *row - 1;
 	  break;
     }
     CHECK_FATAL();
@@ -1014,7 +1014,7 @@ else
     /**edge = LEFT;*/
 	  (*row)++;
 	  pos.x = *col;
-	  pos.y = BITMAP_HEIGHT (bitmap) - (*row);
+	  pos.y = BITMAP_HEIGHT (bitmap) - *row - 1;
 	  break;
     }
     CHECK_FATAL();
@@ -1027,7 +1027,7 @@ else
 	  (*col)--;
 	  (*row)++;
 	  pos.x = *col;
-	  pos.y = BITMAP_HEIGHT (bitmap) - (*row-1);
+	  pos.y = BITMAP_HEIGHT (bitmap) - *row;
 	  break;
     }
     CHECK_FATAL();
