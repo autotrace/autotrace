@@ -103,8 +103,7 @@ autotrace_LDADD =                 \
 		libautotrace.a    \
 		$(MAGICK_LDFLAGS) \
 		$(LIBPNG_LDFLAGS) \
-		$(LIBSWF_LDFLAGS) \
-		-lm
+		$(LIBSWF_LDFLAGS)
 
 m4datadir = $(datadir)/aclocal
 m4data_DATA = autotrace.m4

@@ -73,7 +73,7 @@ if test "${swf_header_found}" = yes ; then
 	AC_CHECK_LIB(ming, Ming_init, 
 		     HAVE_LIBSWF=yes,,-lm)
 	if test "$HAVE_LIBSWF" = "yes" ; then
-		LIBSWF_LDFLAGS="-lming"
+		LIBSWF_LDFLAGS="-lming -lm"
 		AC_SUBST(LIBSWF_LDFLAGS)
 		AC_DEFINE(HAVE_LIBSWF)
 	else

@@ -1,3 +1,11 @@
+2001-03-09  Masatake YAMATO  <yamato@redhat.com>
+
+	* configure.in: Added -lm to LIBSWF_LDFLAGS.
+
+	* autotrace-config.af(AF_DEF_LIBS): Added @LIBSWF_LDFLAGS@.
+
+	* Makefile.am (autotrace_LDADD): Remove -lm.
+
 2001-03-08  Masatake YAMATO  <yamato@redhat.com>
 
 	Applied a patch from Martin.
