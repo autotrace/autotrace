@@ -40,9 +40,9 @@ are directly integrated in AutoTrace, but if you need swf export you
 need to install Ming (http://www.opaque.net/ming/). Also you can
 export to the p2e format. This format can be converted by pstoedit
 (www.pstoedit.net) to a large number of other formats. If you have
-installed the lastes pstoedit(3.32 or newer), autotrace uses pstoedit
+installed the latest pstoedit(3.32 or newer), autotrace uses pstoedit
 directly. However, pstoedit directly supports is not stable enough. 
-See INSATALL file for more detail.
+See INSTALL file for more detail.
 
 Installation
 ============
