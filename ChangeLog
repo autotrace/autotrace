@@ -1,3 +1,12 @@
+2002-10-23  Martin Weber <martweb@gmx.net>
+
+	* pxl-outline.c (is_valid_dir): 
+	removed comment.
+
+	* NEWS: updated.
+	
+	Message-ID: <21731.1035350777@www20.gmx.net>.
+	
 2002-10-23  Masatake YAMATO  <yamato@redhat.com>
 
 	* output-pstoedit.c (get_symbolicname) 

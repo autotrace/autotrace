@@ -243,14 +243,7 @@ at_bool is_valid_dir (unsigned short row, unsigned short col, direction_type dir
   return (!is_marked_dir(row, col, dir, marked)
           && BITMAP_VALID_PIXEL(bitmap, COMPUTE_DELTA(ROW, dir)+row, COMPUTE_DELTA(COL, dir)+col)
           && COLOR_EQUAL(GET_COLOR(bitmap, COMPUTE_DELTA(ROW, dir)+row, COMPUTE_DELTA(COL, dir)+col),
-                         GET_COLOR(bitmap, row, col))
-          /*&&!
-            (
-            is_other_dir_marked(row, col, dir, marked)
-            &&is_other_dir_marked(COMPUTE_DELTA(ROW, dir)+row, COMPUTE_DELTA(COL, dir)+col, dir, marked)
-            )*/
-          );
-
+			 GET_COLOR(bitmap, row, col)));
 }
 
 pixel_outline_list_type
