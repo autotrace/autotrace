@@ -158,5 +158,5 @@ dnl	    ;;
 dnl  esac
 dnl fi
 
-AC_OUTPUT([Makefile autotrace-config autotrace.pc], 
+AC_OUTPUT([Makefile autotrace-config autotrace.pc autotrace.spec], 
 [chmod a+x autotrace-config])
