@@ -266,7 +266,7 @@ at_output_shortlist (void)
 	}
       dd_tmp++;
     }
-  free(driver_description);
+  clearPstoeditDriverInfo_plainC(driver_description);
 #endif /* HAVE_LIBPSTOEDIT */
   strcat (list, " or ");
   strcat (list, (char *) entry[i].name);
