@@ -1,3 +1,20 @@
+2004-10-14  S. P. Hirshman
+
+	* output-emf.c:
+
+	Added #define ENMT_DELETEOBJECT 40 
+	to define DeleteObject in Metafile dc
+
+	Added routine WriteDeleteObject to delete pens/brushes after they
+	are deselected out of the metafile dc (prevents resource depletion).
+
+	Rewrote GetEmfStats, OutputEmf routines to call WriteDeleteObject whenever
+	a pen/brush is deselected out of the dc. Also, modified the outer loop over
+	splines so that each new spline starts a new path bracket. Previously, if
+	the next color was the same as the previous spline's color, a new path was
+	NOT started. I needed this for my applique application, but it also follows the
+	philosophy of eps files which stroke/fill each new spline.
+
 2004-05-01  Henning Makholm <henning@makholm.net>
 
 	* configure.in: Updated for ImageMagick 6.0.0.
