@@ -1,4 +1,10 @@
+2004-05-01  Henning Makholm <henning@makholm.net>
+
+	* configure.in: Updated for ImageMagick 6.0.0.
+
 2004-05-01  Masatake YAMATO  <yamato@redhat.com>
+
+	* configure.in: Comment out popt check.
 
 	* autotrace.pc.in (Libs): Added @GLIB2_LIBS@.
 

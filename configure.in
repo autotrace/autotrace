@@ -80,30 +80,23 @@ if test $with_magick = yes ; then
 			AC_MSG_CHECKING([ImageMagick - version >= 5.2.1])
 			dnl Get version and split it into MAJOR, MINOR and MICRO
 			MAGICK_VERSION=`Magick-config --version`
-			changequote(,)dnl
-			MAGICK_MAJOR_VERSION=`echo $MAGICK_VERSION \
-			| sed -e 's/^\([0-9]*\).[0-9]*.[0-9]*$/\1/'`
-			MAGICK_MINOR_VERSION=`echo $MAGICK_VERSION \
-			| sed -e 's/^[0-9]*.\([0-9]*\).[0-9]*$/\1/'`
-			MAGICK_MICRO_VERSION=`echo $MAGICK_VERSION \
-			| sed -e 's/^[0-9]*.[0-9]*.\([0-9]*\)$/\1/'`
-			changequote([,])dnl
-			MAGICK_MAJOR_VERSION_CHECK=`expr $MAGICK_MAJOR_VERSION \>= 5`
-			MAGICK_MINOR_VERSION_CHECK=`expr $MAGICK_MINOR_VERSION \>= 2`
-			dnl I don't consider ImageMagick 6.x.
-			if test "$MAGICK_VERSION" = "5.2.0" \
-			   || test "$MAGICK_MAJOR_VERSION_CHECK" = 0 \
-			   || test "$MAGICK_MINOR_VERSION_CHECK" = 0 ; then
-			   AC_MSG_RESULT(no($MAGICK_VERSION))
-		   	   AC_MSG_WARN([*** Version 5.2.1 or higher is required.             ***])
-			   AC_MSG_WARN([*** ImageMagick input handler is disabled.           ***])
-			else
- 		   		AC_MSG_RESULT(yes($MAGICK_VERSION))
+                        dnl The following test works because there was never
+                        dnl any imagemagick 5.x.y with x >= 10.
+                        case $MAGICK_VERSION in
+                          [[01234]] | [[01234]].* | 5.[[01]]* | 5.2.0* )
+
+			   	AC_MSG_RESULT(no($MAGICK_VERSION))
+				AC_MSG_WARN([*** Version 5.2.1 or higher is required.             ***])
+				AC_MSG_WARN([*** ImageMagick input handler is disabled.           ***])
+				;;
+			   *)
+				AC_MSG_RESULT(yes($MAGICK_VERSION))
 				AC_SUBST(MAGICK_CFLAGS)
 				AC_SUBST(MAGICK_LDFLAGS)
 				HAVE_MAGICK=yes
 				AC_DEFINE(HAVE_MAGICK,1,[ImageMagick library is available or not])
-			fi
+			        ;;
+			esac
 		else
 			AC_MSG_WARN([*** Magick-config is found but magick/api.h is not found in $MAGICK_CFLAGS ***])
  			AC_MSG_WARN([*** Check Magick-config.                                                   ***])
@@ -366,53 +359,53 @@ AC_SUBST(GLIB2_LIBS)
 dnl
 dnl Popt sanity check
 dnl
-POPT_LIBS=
-popt_ok=
-AC_CHECK_HEADER(popt.h, popt_ok=yes, popt_ok=no)
-if test "x$popt_ok" != "xyes"; then
-   AC_MSG_WARN([cannot find popt.h])
-fi
+dnl POPT_LIBS=
+dnl popt_ok=
+dnl AC_CHECK_HEADER(popt.h, popt_ok=yes, popt_ok=no)
+dnl if test "x$popt_ok" != "xyes"; then
+dnl    AC_MSG_WARN([cannot find popt.h])
+dnl fi
 
-popt_ok=
-AC_CHECK_LIB(popt, poptGetNextOpt, popt_ok=yes, popt_ok=no)
-if test "x$popt_ok" != "xyes"; then
-   AC_MSG_WARN([cannot find libpopt])
-fi
+dnl popt_ok=
+dnl AC_CHECK_LIB(popt, poptGetNextOpt, popt_ok=yes, popt_ok=no)
+dnl if test "x$popt_ok" != "xyes"; then
+dnl    AC_MSG_WARN([cannot find libpopt])
+dnl fi
 
-popt_ok=
-BEFORE_POPT_LIBS=${LIBS}
-LIBS="${LIBS} -lpopt"
-AC_MSG_CHECKING([for popt float support])
-AC_TRY_RUN([#include <popt.h>
-#ifndef POPT_TABLEEND
-#define POPT_TABLEEND { NULL, '\0', 0, 0, 0, NULL, NULL }
-#endif /* Not def: POPT_TABLEEND */
-int
-main(int argc, char ** argv)
-{
-  float value = 1.0;
-  const int x_argc = 2;
-  const char * x_argv [] = {"floattest", "--real=0.000"};
-  struct poptOption popt_table [] = {
-    { "real", 'r', POPT_ARG_FLOAT, &value, 0, "Test float value", "value"},
-    POPT_TABLEEND
-  };
-  poptContext popt_ctx = poptGetContext("floattest", x_argc, x_argv, popt_table, 0);
-  while (poptGetNextOpt(popt_ctx) != -1) ;
-  poptFreeContext (popt_ctx);
-  exit ((int)value);
-}], popt_ok=yes, popt_ok=no)
-LIBS=${BEFORE_POPT_LIBS}
+dnl popt_ok=
+dnl BEFORE_POPT_LIBS=${LIBS}
+dnl LIBS="${LIBS} -lpopt"
+dnl AC_MSG_CHECKING([for popt float support])
+dnl AC_TRY_RUN([#include <popt.h>
+dnl #ifndef POPT_TABLEEND
+dnl #define POPT_TABLEEND { NULL, '\0', 0, 0, 0, NULL, NULL }
+dnl #endif /* Not def: POPT_TABLEEND */
+dnl int
+dnl main(int argc, char ** argv)
+dnl {
+dnl   float value = 1.0;
+dnl   const int x_argc = 2;
+dnl   const char * x_argv [] = {"floattest", "--real=0.000"};
+dnl   struct poptOption popt_table [] = {
+dnl     { "real", 'r', POPT_ARG_FLOAT, &value, 0, "Test float value", "value"},
+dnl     POPT_TABLEEND
+dnl   };
+dnl   poptContext popt_ctx = poptGetContext("floattest", x_argc, x_argv, popt_table, 0);
+dnl   while (poptGetNextOpt(popt_ctx) != -1) ;
+dnl   poptFreeContext (popt_ctx);
+dnl   exit ((int)value);
+dnl }], popt_ok=yes, popt_ok=no)
+dnl LIBS=${BEFORE_POPT_LIBS}
 
-if test "x$popt_ok" != "xyes"; then
-      	AC_MSG_RESULT([no])
-	AC_MSG_WARN([popts' float arg support is broken.])
-else
-	LIBS=${BEFORE_POPT_LIBS}
-	AC_MSG_RESULT([yes])
-	POPT_LIBS=-lpopt
-fi
-AC_SUBST(POPT_LIBS)
+dnl if test "x$popt_ok" != "xyes"; then
+dnl       	AC_MSG_RESULT([no])
+dnl 	AC_MSG_WARN([popts' float arg support is broken.])
+dnl else
+dnl 	LIBS=${BEFORE_POPT_LIBS}
+dnl 	AC_MSG_RESULT([yes])
+dnl 	POPT_LIBS=-lpopt
+dnl fi
+dnl AC_SUBST(POPT_LIBS)
 
 dnl
 dnl Vender's cc(not gcc)
