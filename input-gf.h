@@ -23,7 +23,7 @@
 #include "input.h"
 
 
-at_bitmap_type input_gf_reader (gchar* filename,
+at_bitmap input_gf_reader (gchar* filename,
 				at_input_opts_type * opts,
 				at_msg_func msg_func,
 				gpointer msg_data,

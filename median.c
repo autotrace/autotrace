@@ -69,18 +69,17 @@ static void zero_histogram_rgb(Histogram histogram)
 		histogram[r * MR + g * MG + b] = 0;
 }
 
-static void generate_histogram_rgb(Histogram histogram, bitmap_type *image,
+static void generate_histogram_rgb(Histogram histogram, at_bitmap *image,
     const at_color *ignoreColor) 
 {
     unsigned char *src = image->bitmap;
     int num_elems;
     ColorFreq *col;
 
-    num_elems = BITMAP_WIDTH(*image)
-	* BITMAP_HEIGHT(*image);
+    num_elems = AT_BITMAP_WIDTH(image) * AT_BITMAP_HEIGHT(image);
     zero_histogram_rgb(histogram);
 
-    switch (BITMAP_PLANES(*image))
+    switch (AT_BITMAP_PLANES(image))
     {
 	case 3:
 	    while (num_elems--)  
@@ -738,7 +737,7 @@ static void fill_inverse_cmap_rgb(QuantizeObj *quantobj, Histogram histogram,
 }
 
 /*  This is pass 1  */
-static void median_cut_pass1_rgb(QuantizeObj *quantobj, bitmap_type *image,
+static void median_cut_pass1_rgb(QuantizeObj *quantobj, at_bitmap *image,
   const at_color *ignoreColor) 
 {
     generate_histogram_rgb(quantobj->histogram, image, ignoreColor); 
@@ -747,7 +746,7 @@ static void median_cut_pass1_rgb(QuantizeObj *quantobj, bitmap_type *image,
 
 
 /* Map some rows of pixels to the output colormapped representation. */
-static void median_cut_pass2_rgb(QuantizeObj *quantobj, bitmap_type *image,
+static void median_cut_pass2_rgb(QuantizeObj *quantobj, at_bitmap *image,
   const at_color *bgColor) 
  /* This version performs no dithering */
 {
@@ -756,9 +755,9 @@ static void median_cut_pass2_rgb(QuantizeObj *quantobj, bitmap_type *image,
     int             R, G, B;
     int             origR, origG, origB; 
     int             row, col;
-    int             spp = BITMAP_PLANES(*image);
-    int             width = BITMAP_WIDTH(*image);
-    int             height = BITMAP_HEIGHT(*image);
+    int             spp = AT_BITMAP_PLANES(image);
+    int             width = AT_BITMAP_WIDTH(image);
+    int             height = AT_BITMAP_HEIGHT(image);
     unsigned char   *src, *dest;
     at_color      bg_color = { 0xff, 0xff, 0xff };
 
@@ -861,11 +860,11 @@ static QuantizeObj *initialize_median_cut(int num_colors)
 }
 
 
-void quantize(bitmap_type *image, long ncolors, const at_color *bgColor,
+void quantize(at_bitmap *image, long ncolors, const at_color *bgColor,
 	      QuantizeObj **iQuant, at_exception_type * exp)
 {
     QuantizeObj *quantobj;
-    unsigned int spp = BITMAP_PLANES(*image);
+    unsigned int spp = AT_BITMAP_PLANES(image);
  
     if (spp != 3 && spp != 1)
     {

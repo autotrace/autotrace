@@ -32,7 +32,6 @@
 #include <png.h>
 #include "input-png.h"
 
-static volatile char rcsid[]="$Id: input-png.c,v 1.18 2003/07/04 05:07:33 masata-y Exp $";
 static png_bytep * read_png(png_structp png_ptr, png_infop info_ptr, at_input_opts_type * opts);
 
 /* for pre-1.0.6 versions of libpng */
@@ -91,7 +90,7 @@ static int init_structs(png_structp *png, png_infop *info,
 	    goto cleanup;					\
 	  } } while (0)
 
-static int load_image(at_bitmap_type *image, FILE *stream, at_input_opts_type * opts, at_exception_type * exp) 
+static int load_image(at_bitmap *image, FILE *stream, at_input_opts_type * opts, at_exception_type * exp) 
 {
 	png_structp png;
 	png_infop info, end_info;
@@ -118,7 +117,7 @@ static int load_image(at_bitmap_type *image, FILE *stream, at_input_opts_type * 
 
 	*image = at_bitmap_init(NULL, width, height, pixel_size);
 	for ( row = 0 ; row < height ; row++, rows++ ) {
-		memcpy(AT_BITMAP_PIXEL(*image, row, 0), *rows,
+		memcpy(AT_BITMAP_PIXEL(image, row, 0), *rows,
 		       width * pixel_size * sizeof(unsigned char));
 	}
  cleanup:
@@ -126,11 +125,11 @@ static int load_image(at_bitmap_type *image, FILE *stream, at_input_opts_type * 
 	return result;
 }
 
-at_bitmap_type input_png_reader(gchar* filename, at_input_opts_type * opts,
+at_bitmap input_png_reader(gchar* filename, at_input_opts_type * opts,
 				at_msg_func msg_func, gpointer msg_data,
 				gpointer user_data) {
 	FILE *stream;
-	at_bitmap_type image = at_bitmap_init(0, 0, 0, 1);
+	at_bitmap image = at_bitmap_init(0, 0, 0, 1);
 	at_exception_type exp = at_exception_new(msg_func, msg_data);
 
 	stream = fopen(filename, "rb");

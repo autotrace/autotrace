@@ -39,8 +39,8 @@
 typedef unsigned char Pixel[3];  /* RGB pixel data type */ 
 
  
-void thin3(bitmap_type *image, Pixel colour); 
-void thin1(bitmap_type *image, unsigned char colour); 
+void thin3(at_bitmap *image, Pixel colour); 
+void thin1(at_bitmap *image, unsigned char colour); 
  
  
 /* -------------------------------- ThinImage - Thin binary image. --------------------------- * 
@@ -106,7 +106,7 @@ static        unsigned char   todelete[512] = {
 static at_color background = { 0xff, 0xff, 0xff };
 
 
-void thin_image(bitmap_type *image, const at_color *bg, at_exception_type * exp)
+void thin_image(at_bitmap *image, const at_color *bg, at_exception_type * exp)
 { 
     /* This is nasty as we need to call thin once for each  
      * colour in the image the way I do this is to keep a second  
@@ -114,11 +114,11 @@ void thin_image(bitmap_type *image, const at_color *bg, at_exception_type * exp)
      * track of which colours have not yet been processed, 
      * trades time for pathological case memory.....*/ 
     long m, n, num_pixels;
-    bitmap_type bm; 
+    at_bitmap bm; 
     unsigned int
-	spp = BITMAP_PLANES(*image),
-	width = BITMAP_WIDTH(*image),
-	height = BITMAP_HEIGHT(*image);
+      spp = AT_BITMAP_PLANES(image),
+      width = AT_BITMAP_WIDTH(image),
+      height = AT_BITMAP_HEIGHT(image);
 
     if (bg) background = *bg;
 
@@ -134,7 +134,7 @@ void thin_image(bitmap_type *image, const at_color *bg, at_exception_type * exp)
     {
 	case 3:
 	{
-	    Pixel *ptr = (Pixel*)BITMAP_BITS(bm);
+	    Pixel *ptr = (Pixel*)AT_BITMAP_BITS(&bm);
 	    Pixel bg_color;
 	    bg_color[0] = background.r;
 	    bg_color[1] = background.g;
@@ -162,7 +162,7 @@ void thin_image(bitmap_type *image, const at_color *bg, at_exception_type * exp)
 
 	case 1:
 	{
-	    unsigned char *ptr = BITMAP_BITS(bm);
+	  unsigned char *ptr = AT_BITMAP_BITS(&bm);
 	    unsigned char bg_color;
 
 	    if (background.r == background.g && background.g == background.b)
@@ -195,7 +195,7 @@ void thin_image(bitmap_type *image, const at_color *bg, at_exception_type * exp)
 } 
 
  
-void thin3(bitmap_type *image, Pixel colour) 
+void thin3(at_bitmap *image, Pixel colour) 
 { 
       Pixel *ptr, *y_ptr, *y1_ptr;
       Pixel bg_color;
@@ -215,11 +215,11 @@ void thin3(bitmap_type *image, Pixel colour)
       bg_color[2] = background.b;
 
       LOG (" Thinning image.....\n "); 
-      xsize = BITMAP_WIDTH(*image); 
-      ysize = BITMAP_HEIGHT(*image); 
+      xsize = AT_BITMAP_WIDTH(image); 
+      ysize = AT_BITMAP_HEIGHT(image); 
       XMALLOC (qb, xsize*sizeof(unsigned char)); 
       qb[xsize-1] = 0;                /* Used for lower-right pixel   */ 
-      ptr = (Pixel*)BITMAP_BITS(*image);
+      ptr = (Pixel*)AT_BITMAP_BITS(image);
  
       while ( count ) {               /* Scan image while deletions   */ 
           pc++; 
@@ -284,7 +284,7 @@ void thin3(bitmap_type *image, Pixel colour)
 } 
 
  
-void thin1(bitmap_type *image, unsigned char colour) 
+void thin1(at_bitmap *image, unsigned char colour) 
 { 
       unsigned char *ptr, *y_ptr, *y1_ptr;
       unsigned char bg_color;
@@ -304,11 +304,11 @@ void thin1(bitmap_type *image, unsigned char colour)
       else bg_color = at_color_luminance(&background);
 
       LOG (" Thinning image.....\n "); 
-      xsize = BITMAP_WIDTH(*image); 
-      ysize = BITMAP_HEIGHT(*image); 
+      xsize = AT_BITMAP_WIDTH(image); 
+      ysize = AT_BITMAP_HEIGHT(image); 
       XMALLOC (qb, xsize*sizeof(unsigned char)); 
       qb[xsize-1] = 0;                /* Used for lower-right pixel   */ 
-      ptr = BITMAP_BITS(*image);
+      ptr = AT_BITMAP_BITS(image);
  
       while ( count ) {               /* Scan image while deletions   */ 
           pc++; 

@@ -31,15 +31,15 @@ static void check(int v1, int v2, int v3, struct etyp *t);
    every non-target point to the nearest target point. */
 
 at_distance_map
-new_distance_map(bitmap_type bitmap, unsigned char target_value, gboolean padded, at_exception_type * exp)
+new_distance_map(at_bitmap * bitmap, unsigned char target_value, gboolean padded, at_exception_type * exp)
 {
     signed x, y;
     float d, min;
     at_distance_map dist;
-    unsigned char *b = BITMAP_BITS(bitmap);
-    unsigned w = BITMAP_WIDTH(bitmap);
-    unsigned h = BITMAP_HEIGHT(bitmap);
-    unsigned spp = BITMAP_PLANES(bitmap);
+    unsigned char *b = AT_BITMAP_BITS(bitmap);
+    unsigned w = AT_BITMAP_WIDTH(bitmap);
+    unsigned h = AT_BITMAP_HEIGHT(bitmap);
+    unsigned spp = AT_BITMAP_PLANES(bitmap);
 
     dist.height = h; dist.width = w;
     XMALLOC(dist.d, h * sizeof(float*));
@@ -180,7 +180,7 @@ free_distance_map(at_distance_map *dist)
 
     if (!dist) return;
 
-    h = BITMAP_HEIGHT(*dist);
+    h = dist->height;
 
     if (dist->d != NULL)
     {
@@ -210,17 +210,17 @@ medial_axis(bitmap_type *bitmap, at_distance_map *dist,
 
     assert(bitmap != NULL);
 
-    assert(BITMAP_PLANES(*bitmap) == 1);
+    assert(AT_BITMAP_PLANES(*bitmap) == 1);
 
-    b = BITMAP_BITS(*bitmap);
+    b = AT_BITMAP_BITS(*bitmap);
     assert(b != NULL);
     assert(dist != NULL);
     d = dist->d;
     assert(d != NULL);
 
-    h = BITMAP_HEIGHT(*dist);
-    w = BITMAP_WIDTH(*dist);
-    assert(BITMAP_WIDTH(*bitmap) == w && BITMAP_HEIGHT(*bitmap) == h);
+    h = AT_BITMAP_HEIGHT(*dist);
+    w = AT_BITMAP_WIDTH(*dist);
+    assert(AT_BITMAP_WIDTH(*bitmap) == w && AT_BITMAP_HEIGHT(*bitmap) == h);
 
     if (bg_color) bg = *bg_color;
     else bg.r = bg.g = bg.b = 255;
@@ -289,17 +289,17 @@ medial_axis(bitmap_type *bitmap, at_distance_map *dist,
 /* Binarize a grayscale or color image. */
 
 void
-binarize(bitmap_type *bitmap)
+binarize(at_bitmap *bitmap)
 {
     unsigned i, npixels, spp;
     unsigned char *b;
 
     assert(bitmap != NULL);
-    assert(BITMAP_BITS(*bitmap) != NULL);
+    assert(AT_BITMAP_BITS(bitmap) != NULL);
 
-    b = BITMAP_BITS(*bitmap);
-    spp = BITMAP_PLANES(*bitmap);
-    npixels = BITMAP_WIDTH(*bitmap) * BITMAP_HEIGHT(*bitmap);
+    b = AT_BITMAP_BITS(bitmap);
+    spp = AT_BITMAP_PLANES(bitmap);
+    npixels = AT_BITMAP_WIDTH(bitmap) * AT_BITMAP_HEIGHT(bitmap);
 
     if (spp == 1)
     {
@@ -314,8 +314,8 @@ binarize(bitmap_type *bitmap)
 	        b[i] = (LUMINANCE(rgb[0], rgb[1], rgb[2]) > GRAY_THRESHOLD
 		        ? WHITE : BLACK);
 		}
-	    XREALLOC(BITMAP_BITS(*bitmap), npixels);
-	    BITMAP_PLANES(*bitmap) = 1;
+	    XREALLOC(AT_BITMAP_BITS(bitmap), npixels);
+	    AT_BITMAP_PLANES(bitmap) = 1;
     }
     else
     {
@@ -327,21 +327,21 @@ binarize(bitmap_type *bitmap)
 #if 0
 /* Thin a binary image, replacing the original image with the thinned one. */
 
-bitmap_type
+at_bitmap
 ip_thin(bitmap_type input_b)
 {
     unsigned y, x, i;
     gboolean k, again;
     struct etyp t;
-    unsigned w = BITMAP_WIDTH(input_b);
-    unsigned h = BITMAP_HEIGHT(input_b);
+    unsigned w = AT_BITMAP_WIDTH(input_b);
+    unsigned h = AT_BITMAP_HEIGHT(input_b);
     size_t num_bytes = w * h;
     bitmap_type b = input_b;
 
-    if (BITMAP_PLANES(input_b) != 1)
+    if (AT_BITMAP_PLANES(input_b) != 1)
     {
 	    FATAL1("thin: single-plane image required; "
-	        "%u-plane images cannot be thinned", BITMAP_PLANES(input_b));
+	        "%u-plane images cannot be thinned", AT_BITMAP_PLANES(input_b));
 	    return b;
     }
 
@@ -364,45 +364,45 @@ ip_thin(bitmap_type input_b)
 	    {
 		    /* During processing, pixels are used to store edge
 		       type codes, so we can't just test for WHITE or BLACK. */
-		    if (*BITMAP_PIXEL(b, y, x) == 0) continue;
+		    if (*AT_BITMAP_PIXEL(b, y, x) == 0) continue;
 
 		    k = (!get_edge(b, y, x, &t)
-		        || (get_edge(b, y, x+1, &t) && *BITMAP_PIXEL(b, y-1, x)
-			    && *BITMAP_PIXEL(b, y+1, x))
-		        || (get_edge(b, y+1, x, &t) && *BITMAP_PIXEL(b, y, x-1)
-			    && *BITMAP_PIXEL(b, y, x+1))
+		        || (get_edge(b, y, x+1, &t) && *AT_BITMAP_PIXEL(b, y-1, x)
+			    && *AT_BITMAP_PIXEL(b, y+1, x))
+		        || (get_edge(b, y+1, x, &t) && *AT_BITMAP_PIXEL(b, y, x-1)
+			    && *AT_BITMAP_PIXEL(b, y, x+1))
 		        || (get_edge(b, y, x+1, &t) && get_edge(b, y+1, x+1, &t)
 			    && get_edge(b, y+1, x, &t)));
 		    if (k) continue;
 
 		    get_edge(b, y, x, &t);
-		    if (t.t01) *BITMAP_PIXEL(b, y, x) |= 4;
-		    *BITMAP_PIXEL(b, y, x) |= 2;
+		    if (t.t01) *AT_BITMAP_PIXEL(b, y, x) |= 4;
+		    *AT_BITMAP_PIXEL(b, y, x) |= 2;
 		    again = TRUE;
 	    }
 	}
 
 	for (y = 0; y < h; y++)
 	    for (x = 0; x < w; x++)
-		    if (*BITMAP_PIXEL(b, y, x) & 02) *BITMAP_PIXEL(b, y, x) = 0;
+		    if (*AT_BITMAP_PIXEL(b, y, x) & 02) *AT_BITMAP_PIXEL(b, y, x) = 0;
 
 	for (y = 1; y < h - 1; y++)
 	{
 	    for (x = 1; x < w - 1; x++)
 	    {
-		    if (*BITMAP_PIXEL(b, y, x) == 0) continue;
+		    if (*AT_BITMAP_PIXEL(b, y, x) == 0) continue;
 
 		    k = (!get_edge(b, y, x, &t)
-		        || ((*BITMAP_PIXEL(b, y, x) & 04) == 0)
-		        || (get_edge(b, y+1, x, &t) && (*BITMAP_PIXEL(b, y, x-1))
-			    && *BITMAP_PIXEL(b, y, x+1))
-		        || (get_edge(b, y, x+1, &t) && *BITMAP_PIXEL(b, y-1, x)
-			    && *BITMAP_PIXEL(b, y+1, x))
+		        || ((*AT_BITMAP_PIXEL(b, y, x) & 04) == 0)
+		        || (get_edge(b, y+1, x, &t) && (*AT_BITMAP_PIXEL(b, y, x-1))
+			    && *AT_BITMAP_PIXEL(b, y, x+1))
+		        || (get_edge(b, y, x+1, &t) && *AT_BITMAP_PIXEL(b, y-1, x)
+			    && *AT_BITMAP_PIXEL(b, y+1, x))
 		        || (get_edge(b, y+1, x, &t) && get_edge(b, y, x+1, &t)
 			    && get_edge(b, y+1, x+1, &t)));
 		    if (k) continue;
 
-		    *BITMAP_PIXEL(b, y, x) |= 02;
+		    *AT_BITMAP_PIXEL(b, y, x) |= 02;
 		    again = TRUE;
 	    }
 	}
@@ -411,8 +411,8 @@ ip_thin(bitmap_type input_b)
 	{
 	    for (x = 0; x < w; x++)
 	    {
-		    if (*BITMAP_PIXEL(b, y, x) & 02) *BITMAP_PIXEL(b, y, x) = 0;
-		    else if (*BITMAP_PIXEL(b, y, x) > 0) *BITMAP_PIXEL(b, y, x) = 1;
+		    if (*AT_BITMAP_PIXEL(b, y, x) & 02) *AT_BITMAP_PIXEL(b, y, x) = 0;
+		    else if (*AT_BITMAP_PIXEL(b, y, x) > 0) *AT_BITMAP_PIXEL(b, y, x) = 1;
 	    }
 	}
     }
@@ -422,26 +422,26 @@ ip_thin(bitmap_type input_b)
     {
 	    for (x = 1; x < w - 1; x++)
 		{
-	        if (*BITMAP_PIXEL(b, y, x) == 0) continue;
+	        if (*AT_BITMAP_PIXEL(b, y, x) == 0) continue;
 
-	        k = !(*BITMAP_PIXEL(b, y-1, x)
-		        && ((*BITMAP_PIXEL(b, y, x+1) && !*BITMAP_PIXEL(b, y-1, x+1)
-		        && !*BITMAP_PIXEL(b, y+1, x-1)
-		        && (!*BITMAP_PIXEL(b, y, x-1) || !*BITMAP_PIXEL(b, y+1, x)))
-		        || (*BITMAP_PIXEL(b, y, x-1) && !*BITMAP_PIXEL(b, y-1, x-1)
-		        && !*BITMAP_PIXEL(b, y+1, x+1) &&
-		        (!*BITMAP_PIXEL(b, y, x+1) || !*BITMAP_PIXEL(b, y+1, x)))));
+	        k = !(*AT_BITMAP_PIXEL(b, y-1, x)
+		        && ((*AT_BITMAP_PIXEL(b, y, x+1) && !*AT_BITMAP_PIXEL(b, y-1, x+1)
+		        && !*AT_BITMAP_PIXEL(b, y+1, x-1)
+		        && (!*AT_BITMAP_PIXEL(b, y, x-1) || !*AT_BITMAP_PIXEL(b, y+1, x)))
+		        || (*AT_BITMAP_PIXEL(b, y, x-1) && !*AT_BITMAP_PIXEL(b, y-1, x-1)
+		        && !*AT_BITMAP_PIXEL(b, y+1, x+1) &&
+		        (!*AT_BITMAP_PIXEL(b, y, x+1) || !*AT_BITMAP_PIXEL(b, y+1, x)))));
 	        if (k) continue;
 
-	        *BITMAP_PIXEL(b, y, x) |= 02;
+	        *AT_BITMAP_PIXEL(b, y, x) |= 02;
 		}
     }
     for (y = 0; y < h; y++)
     {
 	    for (x = 0; x < w; x++)
 		{
-	        if (*BITMAP_PIXEL(b, y, x) & 02) *BITMAP_PIXEL(b, y, x) = 0;
-	        else if (*BITMAP_PIXEL(b, y, x) > 0) *BITMAP_PIXEL(b, y, x) = 1;
+	        if (*AT_BITMAP_PIXEL(b, y, x) & 02) *AT_BITMAP_PIXEL(b, y, x) = 0;
+	        else if (*AT_BITMAP_PIXEL(b, y, x) > 0) *AT_BITMAP_PIXEL(b, y, x) = 1;
 		}
     }
 
@@ -450,25 +450,25 @@ ip_thin(bitmap_type input_b)
     {
 	    for (x = 1; x < w - 1; x++)
 		{
-	        if (*BITMAP_PIXEL(b, y, x) == 0) continue;
+	        if (*AT_BITMAP_PIXEL(b, y, x) == 0) continue;
 
-	        k = !(*BITMAP_PIXEL(b, y+1, x)
-		    && ((*BITMAP_PIXEL(b, y, x+1) && !*BITMAP_PIXEL(b, y+1, x+1)
-		    && !*BITMAP_PIXEL(b, y-1, x-1) && (!*BITMAP_PIXEL(b, y, x-1)
-		    || !*BITMAP_PIXEL(b, y-1, x))) || (*BITMAP_PIXEL(b, y, x-1)
-		    && !*BITMAP_PIXEL(b, y+1, x-1) && !*BITMAP_PIXEL(b, y-1, x+1)
-		    && (!*BITMAP_PIXEL(b, y, x+1) || !*BITMAP_PIXEL(b, y-1, x)) )));
+	        k = !(*AT_BITMAP_PIXEL(b, y+1, x)
+		    && ((*AT_BITMAP_PIXEL(b, y, x+1) && !*AT_BITMAP_PIXEL(b, y+1, x+1)
+		    && !*AT_BITMAP_PIXEL(b, y-1, x-1) && (!*AT_BITMAP_PIXEL(b, y, x-1)
+		    || !*AT_BITMAP_PIXEL(b, y-1, x))) || (*AT_BITMAP_PIXEL(b, y, x-1)
+		    && !*AT_BITMAP_PIXEL(b, y+1, x-1) && !*AT_BITMAP_PIXEL(b, y-1, x+1)
+		    && (!*AT_BITMAP_PIXEL(b, y, x+1) || !*AT_BITMAP_PIXEL(b, y-1, x)) )));
 	        if (k) continue;
 
-	        *BITMAP_PIXEL(b, y, x) |= 02;
+	        *AT_BITMAP_PIXEL(b, y, x) |= 02;
 		}
     }
     for (y = 0; y < h; y++)
     {
 	    for (x = 0; x < w; x++)
 		{
-	        if (*BITMAP_PIXEL(b, y, x) & 02) *BITMAP_PIXEL(b, y, x) = 0;
-	        else if (*BITMAP_PIXEL(b, y, x) > 0) *BITMAP_PIXEL(b, y, x) = 1;
+	        if (*AT_BITMAP_PIXEL(b, y, x) & 02) *AT_BITMAP_PIXEL(b, y, x) = 0;
+	        else if (*AT_BITMAP_PIXEL(b, y, x) > 0) *AT_BITMAP_PIXEL(b, y, x) = 1;
 		}
     }
 
@@ -482,15 +482,15 @@ ip_thin(bitmap_type input_b)
 gboolean get_edge(bitmap_type b, int y, int x, struct etyp *t)
 {
     t->t00 = 0; t->t01 = 0; t->t01s = 0; t->t11 = 0;
-    check(*BITMAP_PIXEL(b, y - 1, x - 1), *BITMAP_PIXEL(b, y - 1, x),
-	*BITMAP_PIXEL(b, y - 1, x + 1), t);
-    check(*BITMAP_PIXEL(b, y - 1, x + 1), *BITMAP_PIXEL(b, y, x + 1),
-	*BITMAP_PIXEL(b, y + 1, x + 1), t);
-    check(*BITMAP_PIXEL(b, y + 1, x + 1), *BITMAP_PIXEL(b, y + 1, x),
-	*BITMAP_PIXEL(b, y + 1, x - 1), t);
-    check(*BITMAP_PIXEL(b, y + 1, x - 1), *BITMAP_PIXEL(b, y, x - 1),
-	*BITMAP_PIXEL(b, y - 1, x - 1), t);
-    return *BITMAP_PIXEL(b, y, x) && t->t00 && t->t11 && !t->t01s;
+    check(*AT_BITMAP_PIXEL(b, y - 1, x - 1), *AT_BITMAP_PIXEL(b, y - 1, x),
+	*AT_BITMAP_PIXEL(b, y - 1, x + 1), t);
+    check(*AT_BITMAP_PIXEL(b, y - 1, x + 1), *AT_BITMAP_PIXEL(b, y, x + 1),
+	*AT_BITMAP_PIXEL(b, y + 1, x + 1), t);
+    check(*AT_BITMAP_PIXEL(b, y + 1, x + 1), *AT_BITMAP_PIXEL(b, y + 1, x),
+	*AT_BITMAP_PIXEL(b, y + 1, x - 1), t);
+    check(*AT_BITMAP_PIXEL(b, y + 1, x - 1), *AT_BITMAP_PIXEL(b, y, x - 1),
+	*AT_BITMAP_PIXEL(b, y - 1, x - 1), t);
+    return *AT_BITMAP_PIXEL(b, y, x) && t->t00 && t->t11 && !t->t01s;
 }
 
 

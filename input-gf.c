@@ -669,11 +669,11 @@ gf_get_char (gf_font_t *font, gf_char_t *sym, unsigned char charcode)
 	return 1;
 }
 
-at_bitmap_type input_gf_reader (gchar* filename, at_input_opts_type *opts,
+at_bitmap input_gf_reader (gchar* filename, at_input_opts_type *opts,
 				at_msg_func msg_func, gpointer msg_data, gpointer user_data)
 {
 	at_exception_type exp = at_exception_new (msg_func, msg_data);
-	at_bitmap_type bitmap = at_bitmap_init (NULL, 0, 0, 0);
+	at_bitmap bitmap = at_bitmap_init (NULL, 0, 0, 0);
 	gf_font_t fontdata, *font = &fontdata;
 	gf_char_t chardata, *sym = &chardata;
 	unsigned int i, j, ptr;
@@ -710,7 +710,7 @@ at_bitmap_type input_gf_reader (gchar* filename, at_input_opts_type *opts,
 	bitmap = at_bitmap_init (NULL, sym->width, sym->height, 1);
 	for (j=0, ptr=0; j<sym->height; j++) {
 		for (i=0; i<sym->width; i++) {
-			AT_BITMAP_BITS (bitmap) [ptr++] = PIXEL (sym, j, i);
+		  AT_BITMAP_BITS (&bitmap) [ptr++] = PIXEL (sym, j, i);
 		}
 	}
 	if (sym->bitmap)

@@ -17,6 +17,8 @@
    Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111-1307
    USA. */
 
+/* TODO: bitmap functions */
+
 #ifdef HAVE_CONFIG_H
 #include "config.h"
 #endif /* Def: HAVE_CONFIG_H */
@@ -102,10 +104,10 @@ static struct
 } tga_footer;
 
 
-static at_bitmap_type ReadImage (FILE *fp,
+static at_bitmap ReadImage (FILE *fp,
 				 struct tga_header *hdr,
 				 at_exception_type * exp);
-at_bitmap_type
+at_bitmap
 input_tga_reader (gchar* filename,
 		  at_input_opts_type * opts,
 		  at_msg_func msg_func, 
@@ -115,7 +117,7 @@ input_tga_reader (gchar* filename,
   FILE *fp;
   struct tga_header hdr;
 
-  at_bitmap_type image = at_bitmap_init(0, 0, 0, 1);
+  at_bitmap image = at_bitmap_init(0, 0, 0, 1);
   at_exception_type exp = at_exception_new(msg_func, msg_data);
 
   fp = fopen (filename, "rb");
@@ -268,12 +270,12 @@ rle_fread (unsigned char *buf,
 return nelems;
 }
 
-static at_bitmap_type
+static at_bitmap
 ReadImage (FILE              *fp, 
            struct tga_header *hdr,
 	   at_exception_type * exp)
 {
-  at_bitmap_type image = at_bitmap_init(0, 0, 0, 1);
+  at_bitmap image = at_bitmap_init(0, 0, 0, 1);
   unsigned char *buffer;
   unsigned char *alphas;
 

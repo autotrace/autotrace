@@ -122,7 +122,7 @@ static struct struct_pnm_types
   {  0 , 0, 0,   0, NULL}
 };
 
-at_bitmap_type input_pnm_reader (gchar* filename,
+at_bitmap input_pnm_reader (gchar* filename,
 				 at_input_opts_type * opts,
 				 at_msg_func msg_func, 
 				 gpointer msg_data,
@@ -133,7 +133,7 @@ at_bitmap_type input_pnm_reader (gchar* filename,
   PNMScanner * volatile scan;
   int ctr;
   FILE* fd;
-  at_bitmap_type bitmap = at_bitmap_init(NULL, 0, 0, 0);
+  at_bitmap bitmap = at_bitmap_init(NULL, 0, 0, 0);
   at_exception_type excep = at_exception_new(msg_func, msg_data);
 
   /* open the file */
@@ -241,7 +241,7 @@ at_bitmap_type input_pnm_reader (gchar* filename,
 			  (unsigned short) pnminfo->xres,
 			  (unsigned short) pnminfo->yres,
 			  (pnminfo->np)?(pnminfo->np):1);
-  pnminfo->loader (scan, pnminfo, AT_BITMAP_BITS (bitmap), &excep);
+  pnminfo->loader (scan, pnminfo, AT_BITMAP_BITS (&bitmap), &excep);
 
  cleanup:
   /* Destroy the scanner */

@@ -41,7 +41,7 @@ extern "C" {
 typedef struct _at_fitting_opts_type at_fitting_opts_type;
 typedef struct _at_input_opts_type   at_input_opts_type;
 typedef struct _at_output_opts_type  at_output_opts_type;
-typedef struct _at_bitmap_type       at_bitmap_type;
+typedef struct _at_bitmap            at_bitmap;
 typedef enum   _at_polynomial_degree at_polynomial_degree;
 typedef struct _at_spline_type       at_spline_type;
 typedef struct _at_spline_list_type  at_spline_list_type;
@@ -214,7 +214,7 @@ struct _at_output_opts_type
   int dpi;			/* DPI is used only in MIF output.*/
 };
 
-struct _at_bitmap_type
+struct _at_bitmap
 {
   unsigned short height;
   unsigned short width;
@@ -303,7 +303,7 @@ void at_output_opts_free(at_output_opts_type * opts);
  * TODO: internal data access
  * --------------------------------------------------------------------- */
 
-/* There is two way to build at_bitmap_type.
+/* There is two way to build at_bitmap.
    1. Using input reader
       Use at_bitmap_read. 
       at_input_get_handler_by_suffix or
@@ -311,30 +311,30 @@ void at_output_opts_free(at_output_opts_type * opts);
    2. Allocating a bitmap and rendering an image on it by yourself
       Use at_bitmap_new.
 
-   In both case, you have to call at_bitmap_free when at_bitmap_type * 
+   In both case, you have to call at_bitmap_free when at_bitmap * 
    data are no longer needed. */
-at_bitmap_type * at_bitmap_read (at_bitmap_reader * reader,
+at_bitmap * at_bitmap_read (at_bitmap_reader * reader,
 				 gchar* filename,
 				 at_input_opts_type * opts,
 				 at_msg_func msg_func, gpointer msg_data);
-at_bitmap_type * at_bitmap_new(unsigned short width,
+at_bitmap * at_bitmap_new(unsigned short width,
 			       unsigned short height,
 			       unsigned int planes);
-at_bitmap_type * at_bitmap_copy(const at_bitmap_type * src);
+at_bitmap * at_bitmap_copy(const at_bitmap * src);
 
 /* We have to export functions that supports internal datum 
    access. Such functions might be useful for 
    at_bitmap_new user. */
-unsigned short at_bitmap_get_width  (const at_bitmap_type * bitmap);
-unsigned short at_bitmap_get_height (const at_bitmap_type * bitmap);
-unsigned short at_bitmap_get_planes (const at_bitmap_type * bitmap);
-void at_bitmap_get_color (const at_bitmap_type * bitmap,
+unsigned short at_bitmap_get_width  (const at_bitmap * bitmap);
+unsigned short at_bitmap_get_height (const at_bitmap * bitmap);
+unsigned short at_bitmap_get_planes (const at_bitmap * bitmap);
+void at_bitmap_get_color (const at_bitmap * bitmap,
 			  unsigned int row, unsigned int col,
 			  at_color * color);
-gboolean at_bitmap_equal_color(const at_bitmap_type * bitmap,
+gboolean at_bitmap_equal_color(const at_bitmap * bitmap,
 			       unsigned int row, unsigned int col,
 			       at_color * color);
-void at_bitmap_free (at_bitmap_type * bitmap);
+void at_bitmap_free (at_bitmap * bitmap);
 
 
 /* --------------------------------------------------------------------- *
@@ -353,7 +353,7 @@ void at_bitmap_free (at_bitmap_type * bitmap);
    MSG_FUNC and MSG_DATA are used to notify a client errors and
    warning from autotrace. NULL is valid value for MSG_FUNC if
    the client is not interested in the notifications. */
-at_splines_type * at_splines_new (at_bitmap_type * bitmap,
+at_splines_type * at_splines_new (at_bitmap * bitmap,
 				  at_fitting_opts_type * opts,
 				  at_msg_func msg_func, gpointer msg_data);
 
@@ -380,7 +380,7 @@ at_splines_type * at_splines_new (at_bitmap_type * bitmap,
    NULL is valid value for notify_progress and/or test_cancel if 
    you don't need to know the progress of the execution and/or 
    cancel the execution */ 
-at_splines_type * at_splines_new_full (at_bitmap_type * bitmap,
+at_splines_type * at_splines_new_full (at_bitmap * bitmap,
 				       at_fitting_opts_type * opts,
 				       at_msg_func msg_func, 
 				       gpointer msg_data,

@@ -61,7 +61,7 @@ static char * read_command_line (int, char * [],
 				 at_input_opts_type *,
 				 at_output_opts_type *);
 
-static void dump (at_bitmap_type * bitmap, FILE * fp);
+static void dump (at_bitmap * bitmap, FILE * fp);
 
 static void input_list_formats(FILE * file);
 static void output_list_formats(FILE* file);
@@ -79,7 +79,7 @@ main (int argc, char * argv[])
   char * input_name, * input_rootname;
   char * logfile_name = NULL, * dumpfile_name = NULL;
   at_splines_type * splines;
-  at_bitmap_type * bitmap;
+  at_bitmap * bitmap;
   FILE *output_file;
   FILE *dump_file;
 
@@ -517,7 +517,7 @@ dot_printer(gfloat percentage, gpointer client_data)
 }
 
 static void
-dump (at_bitmap_type * bitmap, FILE * fp)
+dump (at_bitmap * bitmap, FILE * fp)
 {
   unsigned short width, height;
   unsigned int np;
@@ -526,7 +526,7 @@ dump (at_bitmap_type * bitmap, FILE * fp)
   height = at_bitmap_get_height (bitmap);
   np 	 = at_bitmap_get_planes (bitmap);
 
-  fwrite(AT_BITMAP_BITS(*bitmap), 
+  fwrite(AT_BITMAP_BITS(bitmap), 
 	 sizeof(unsigned char),
 	 width * height * np,
 	 fp);

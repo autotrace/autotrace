@@ -81,7 +81,7 @@ static unsigned char        *ReadImage     (FILE *,
 				   int,
 				   int);
 
-at_bitmap_type
+at_bitmap
 input_bmp_reader (gchar* filename,
 		  at_input_opts_type * opts,
 		  at_msg_func msg_func, 
@@ -92,7 +92,7 @@ input_bmp_reader (gchar* filename,
   unsigned char buffer[64];
   int ColormapSize, rowbytes, Maps, Grey;
   unsigned char ColorMap[256][3];
-  at_bitmap_type image = at_bitmap_init(0, 0, 0, 1);
+  at_bitmap image = at_bitmap_init(0, 0, 0, 1);
   unsigned char * image_storage;
   at_exception_type exp = at_exception_new(msg_func, msg_data);
   

@@ -1,3 +1,13 @@
+2003-08-17  Masatake YAMATO  <yamato@redhat.com>
+
+	* autotrace.c (at_time_string): check the value of
+	`debug'.
+
+	* *(*): bitmap_type and related macros are removed.
+	Use at_bitmap. at_bitmap_type is renamed to at_bitmap.
+
+	* input-png.c(rcsid): removed.
+
 2003-08-06  Masatake YAMATO  <yamato@redhat.com>
 
 	* *.[ch]: distance_map_type -> at_distance_map_type.

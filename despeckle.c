@@ -769,22 +769,22 @@ despeckle_iteration_8 (/* in */   int    level,
  */
 
 void
-despeckle (/* in/out */            bitmap_type *bitmap,
+despeckle (/* in/out */            at_bitmap *bitmap,
            /* in */                int          level,
            /* in */                gfloat      tightness,
            /* in */                gfloat      noise_removal,
-	     /* exception handling */ at_exception_type * excep)
+	   /* exception handling */ at_exception_type * excep)
 {
   int i, planes, max_level;
   short width, height;
   unsigned char *bits;
   double noise_max, adaptive_tightness;
 
-  planes = BITMAP_PLANES (*bitmap);
+  planes = AT_BITMAP_PLANES (bitmap);
   noise_max = noise_removal * 255.0;
-  width = BITMAP_WIDTH (*bitmap);
-  height = BITMAP_HEIGHT (*bitmap);
-  bits = BITMAP_BITS(*bitmap);
+  width = AT_BITMAP_WIDTH (bitmap);
+  height = AT_BITMAP_HEIGHT (bitmap);
+  bits = AT_BITMAP_BITS(bitmap);
   max_level = (int) (log (width * height) / log (2.0) - 0.5);
   if (level > max_level)
     level = max_level;

@@ -33,7 +33,7 @@ extern "C" {
    following functions and macros. */
 
 typedef 
-at_bitmap_type (*at_input_func)   (gchar* name,
+at_bitmap (*at_input_func)   (gchar* name,
 				   at_input_opts_type * opts,
 				   at_msg_func msg_func, 
 				   gpointer msg_data,
@@ -57,7 +57,7 @@ extern int at_input_add_handler_full (const gchar* suffix,
 				      GDestroyNotify user_data_destroy_func);
 
 /* at_bitmap_init
-   Return initialized at_bitmap_type value.
+   Return initialized at_bitmap value.
 
    args:
    AREA is used as a storage of returned value.
@@ -71,12 +71,12 @@ extern int at_input_add_handler_full (const gchar* suffix,
    The return value is not newly allocated.
    Only the storage is allocated if AREA is NULL.
    On the other hand, at_bitmap_new allocates
-   mem for at_bitmap_type; and returns a pointer
+   mem for at_bitmap; and returns a pointer
    for the mem. 
    at_bitmap_new is for autotrace library user.
    at_bitmap_init is for input-handler developer.
    Don't use at_bitmap_new in your input-handler. */
-extern at_bitmap_type at_bitmap_init(unsigned char * area,
+extern at_bitmap at_bitmap_init(unsigned char * area,
 				     unsigned short width,
 				     unsigned short height,
 				     unsigned int planes);
@@ -84,20 +84,24 @@ extern at_bitmap_type at_bitmap_init(unsigned char * area,
 /* TODO: free storage */
 
 /* The number of color planes of each pixel */
-#define AT_BITMAP_PLANES(b)  ((b).np)
+#define AT_BITMAP_PLANES(b)  ((b)->np)
 
 /* The pixels, represented as an array of bytes (in contiguous storage).
    Each pixel is represented by np bytes.  */
-#define AT_BITMAP_BITS(b)  ((b).bitmap)
+#define AT_BITMAP_BITS(b)  ((b)->bitmap)
 
 /* These are convenient abbreviations for geting inside the members.  */
-#define AT_BITMAP_WIDTH(b)  ((b).width)
-#define AT_BITMAP_HEIGHT(b)  ((b).height)
+#define AT_BITMAP_WIDTH(b)  ((b)->width)
+#define AT_BITMAP_HEIGHT(b)  ((b)->height)
 
 /* This is the pixel at [ROW,COL].  */
 #define AT_BITMAP_PIXEL(b, row, col)					\
   ((AT_BITMAP_BITS (b) + (row) * AT_BITMAP_PLANES (b) * AT_BITMAP_WIDTH (b)	\
         + (col) * AT_BITMAP_PLANES(b)))
+
+/* at_ prefix removed version */
+#define AT_BITMAP_VALID_PIXEL(b, row, col)					\
+  ((row) < AT_BITMAP_HEIGHT (b) && (col) < AT_BITMAP_WIDTH (b))
 
 #ifdef __cplusplus
 }
