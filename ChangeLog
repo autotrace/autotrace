@@ -1,3 +1,10 @@
+2002-09-27  Martin Weber <martweb@gmx.net>
+
+	* pxl-outline.c (find_centerline_pixels): During speed up 
+	the code I introduced a bug. Here the fix. 
+
+	Message-ID: <3D94C2E7.55A7C0C3@gmx.net>.
+
 2002-09-26  Masatake YAMATO  <yamato@redhat.com>
 
 	* autotrace.m4 ($LIBS): changed the order of appending
@@ -7,7 +14,7 @@
 
 	* configure.in (HAVE_LIBPSTOEDIT): Fix typo.
 	
-2002-09-20  Martin Weber <martweb@gmx.net>
+2002-09-26  Martin Weber <martweb@gmx.net>
 
 	* vector.c: Now also works with C compilers that do not define true and false in the
 	standard way,

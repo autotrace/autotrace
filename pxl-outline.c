@@ -283,13 +283,13 @@ find_centerline_pixels(bitmap_type bitmap, color_type bg_color,
 
     for (row = 0; row < h; row++)
     {
-	for (col = 0; col < BITMAP_WIDTH(bitmap); col++)
+	for (col = 0; col < w; col++, bptr += spp)
 	{
 	    edge_type edge;
 	    color_type color;
 
 	    if (notify_progress)
-	      notify_progress((at_real)(row * BITMAP_WIDTH(bitmap) + col) / ((at_real) max_progress * (at_real)3.0),
+	      notify_progress((at_real)(row * w + col) / ((at_real) max_progress * (at_real)3.0),
 			      progress_data);
 
           GET_PIXEL(bptr, spp, color);
