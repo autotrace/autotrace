@@ -1,5 +1,8 @@
 2002-04-21  Masatake YAMATO  <yamato@redhat.com>
 
+	* input-magick.c (magick_load_image): Don't use
+	MagickError. Instead use msg_func.
+	
 	* autotrace.h (struct _at_fitting_opts_type): Rename
 	`filter_iteration_count' to `filter_iterations' in
 	order to make the field and its associated option name 

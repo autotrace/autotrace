@@ -50,12 +50,19 @@ at_bitmap_type magick_load_image(at_string filename,
   (void) strcpy(image_info->filename,filename);
 
   image=ReadImage(image_info,&exception);
-  if (image == (Image *) NULL)
+  if (image == (Image *) NULL) {
 #if (MagickLibVersion <= 0x0525)
-    MagickError(exception.severity,exception.message,exception.qualifier);
+    /* MagickError(exception.severity,exception.message,exception.qualifier); */
+    if (msg_data)
+      msg_func (exception.qualifier, AT_MSG_FATAL, msg_data);
+    goto cleanup;
 #else
-    MagickError(exception.severity,exception.reason,exception.description);
+    /* MagickError(exception.severity,exception.reason,exception.description); */
+    if (msg_data)
+      msg_func (exception.description, AT_MSG_FATAL, msg_data);
+    goto cleanup;
 #endif
+  }
 #if (MagickLibVersion < 0x0540)
   image_type=GetImageType(image);
 #else
@@ -78,5 +85,7 @@ at_bitmap_type magick_load_image(at_string filename,
         bitmap.bitmap[point++]=pixel->blue;
       }
     }
+  /* TODO Resource should be freed. */
+ cleanup:  
   return(bitmap);
 }
