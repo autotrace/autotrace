@@ -1,5 +1,9 @@
 2002-11-09  Masatake YAMATO  <yamato@redhat.com>
 
+	* autotrace.h (at_doc__width_weight_factor): Updated.
+
+2002-11-09  Masatake YAMATO  <yamato@redhat.com>
+
 	* configure.in: version 0.31.1.
 	echo building configuration at the
 	end of configure.
