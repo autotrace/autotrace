@@ -83,7 +83,8 @@ libautotrace_a_SOURCES =\
 		pxl-outline.h                   \
                 despeckle.c                     \
                 despeckle.h			\
-	        exception.c
+	        exception.c                     \
+		strgicmp.c
 
 autotraceinclude_HEADERS=\
 		types.h 			\
@@ -109,7 +110,6 @@ autotrace_SOURCES=\
 		getopt.c 			\
 		getopt.h 			\
 		getopt1.c			\
-		strgicmp.c			\
 		strgicmp.h
 
 INCLUDES = $(MAGICK_CFLAGS)

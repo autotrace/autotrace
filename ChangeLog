@@ -1,3 +1,9 @@
+2002-03-21  Masatake YAMATO  <yamato@redhat.com>
+
+	* Makefile.am (libautotrace_a_SOURCES): Added
+	strgicmp.c. This function must be in libautotrace.a
+	because input.c uses.
+
 2002-03-20  Martin Weber <martweb@gmx.net>
 
 	* README updated.
