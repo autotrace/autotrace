@@ -1,5 +1,12 @@
 2002-11-09 Martin Weber <martweb@gmx.net>
 
+	* output-dxf.c (output_layer): move the
+	declaration of last_color to the out of loop.
+
+	Message-ID: <3DCBC646.8B714DA2@gmx.net>.
+
+2002-11-09 Martin Weber <martweb@gmx.net>
+
 	* pxl-outline.c (find_one_centerline): search_dir,
 	an argument, is now actual value, not a pointer.
 	(*): passed a value to find_one_centerline at

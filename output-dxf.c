@@ -778,13 +778,12 @@ void output_layer(FILE *dxf_file,
   int i, idx;
   char layerlist[256];
   unsigned this_list;
-
+  color_type last_color = {0,0,0};
+  
   memset(layerlist, 0, sizeof(layerlist));  
   for (this_list = 0; this_list < SPLINE_LIST_ARRAY_LENGTH (shape);
        this_list++)
     {
-      color_type last_color;
-
       spline_list_type list = SPLINE_LIST_ARRAY_ELT (shape, this_list);
       color_type curr_color = (list.clockwise && shape.background_color != NULL) ? *(shape.background_color) : list.color;
 
