@@ -1,3 +1,12 @@
+2000-10-11  Enrico Persiani <e.persiani@bo.nettuno.it>
+
+	* output-emf.c: 
+
+	1. Improved output efficiency by grouping shapes of the same color
+	2. Corrected an ERROR on filling shapes with holes 
+	3. If the user tries to output EMF on stdout, an error message is
+	sent to stderr
+	
 2000-10-11  MenTaLguY <mental@rydia.net>
 
 	(This log entry is written by Masatake YAMATO).

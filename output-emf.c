@@ -29,6 +29,9 @@ extern char *version_string;
 #define ENMT_CREATEBRUSHINDIRECT  39
 #define ENMT_SELECTOBJECT         37
 #define ENMT_SETWORLDTRANSFORM    35
+#define ENMT_SETPOLYFILLMODE       19
+
+#define FM_ALTERNATE 1
 
 #define WDEVPIXEL 1280
 #define HDEVPIXEL 1024
@@ -223,6 +226,19 @@ int WritePolyBezierTo(FILE *fdes, spline_type *spl, int ncurves)
       write32(fdes, (UI32) FLOAT_TO_UI32(END_POINT(spl[i]).x));
       write32(fdes, (UI32) FLOAT_TO_UI32(END_POINT(spl[i]).y));
     }
+  }
+  return recsize;
+}
+
+int WriteSetPolyFillMode(FILE *fdes)
+{
+  int recsize = sizeof(UI32) * 3;
+  
+  if(fdes != NULL)
+  {
+    write32(fdes, ENMT_SETPOLYFILLMODE);
+    write32(fdes, (UI32) recsize);
+    write32(fdes, (UI32) FM_ALTERNATE);
   }
   return recsize;
 }
@@ -454,10 +470,6 @@ void GetEmfStats(EMFStats *stats, string name, spline_list_array_type shape)
     nrecords++;
     filesize += WriteMoveTo(NULL,NULL);
     
-    /* emf stats :: BeginPath */
-    nrecords++;
-    filesize += WriteBeginPath(NULL);
-
     /* visit each spline */
     last_degree = -1;
     j = 0;
@@ -493,13 +505,6 @@ void GetEmfStats(EMFStats *stats, string name, spline_list_array_type shape)
           break;
       }
     }
-    /* emf stats :: EndPath */
-    nrecords++;
-    filesize += WriteEndPath(NULL);
-
-    /* emf stats :: StrokeAndFillPath */
-    nrecords++;
-    filesize += WriteStrokeAndFillPath(NULL);
   }
 
   /* emf stats :: CreateSolidPen & CreateSolidBrush*/
@@ -510,10 +515,18 @@ void GetEmfStats(EMFStats *stats, string name, spline_list_array_type shape)
   nrecords += ncolorchng * 2;
   filesize += WriteSelectObject(NULL, 0) * ncolorchng * 2;
 
+  /* emf stats :: BeginPath + EndPath + StrokeAndFillPath */
+  nrecords += ncolorchng * 3;
+  filesize += (WriteBeginPath(NULL) + WriteEndPath(NULL) + WriteStrokeAndFillPath(NULL)) * ncolorchng;
+
   /* emf stats :: header + footer */
   nrecords++;
   filesize += WriteSetWorldTransform(NULL, 0) + WriteEndOfMetafile(NULL) + WriteHeader(NULL, name, 0, 0, 0, 0, 0);
-  
+
+  /* emf stats :: SetPolyFillMode */
+  nrecords++;
+  filesize += WriteSetPolyFillMode(NULL);
+
   stats->ncolors  = ncolors;
   stats->nrecords = nrecords;
   stats->filesize = filesize;
@@ -525,14 +538,14 @@ void GetEmfStats(EMFStats *stats, string name, spline_list_array_type shape)
 
 /* EMF output */
 
-OutputEmf(FILE* fdes, EMFStats *stats, string name, int width, int height, spline_list_array_type shape)
+void OutputEmf(FILE* fdes, EMFStats *stats, string name, int width, int height, spline_list_array_type shape)
 {
   unsigned int i, j;
   int color_index;
   UI32 last_color = 0xFFFFFFFF, curr_color;
   spline_list_type curr_list;
   spline_type curr_spline;
-  int last_degree;
+  int last_degree, open_path = 0;
   int nlines;
   
   /* output EMF header */
@@ -548,6 +561,9 @@ OutputEmf(FILE* fdes, EMFStats *stats, string name, int width, int height, splin
     WriteCreateSolidBrush(fdes, MK_BRUSH(i), color_table[i]);
   }
 
+  /* output fill mode */
+  WriteSetPolyFillMode(fdes);
+
   /* visit each spline-list */
   for(i=0; i<SPLINE_LIST_ARRAY_LENGTH(shape); i++)
   {
@@ -557,14 +573,26 @@ OutputEmf(FILE* fdes, EMFStats *stats, string name, int width, int height, splin
     curr_color = MAKE_COLREF(curr_list.color.r,curr_list.color.g,curr_list.color.b);
     if(curr_color != last_color)
     {
+	  /* close an open path */
+      if(open_path)
+	  {
+		/* output EndPath */
+		WriteEndPath(fdes);
+
+        /* output StrokeAndFillPath */
+        WriteStrokeAndFillPath(fdes);
+	  }
+	  
+	  /* output a BeginPath for current shape */
+	  WriteBeginPath(fdes);
+
+	  open_path = 1;
+
       color_index = ColorLookUp(curr_color, color_table, stats->ncolors);
       WriteSelectObject(fdes, MK_PEN(color_index));
       WriteSelectObject(fdes, MK_BRUSH(color_index));
       last_color = curr_color;
     }
-
-    /* output a BeginPath for current shape */
-    WriteBeginPath(fdes);
 
     /* output MoveTo first point */
     curr_spline = SPLINE_LIST_ELT(curr_list, 0);
@@ -602,8 +630,12 @@ OutputEmf(FILE* fdes, EMFStats *stats, string name, int width, int height, splin
           break;
       }
     }
+  }
+  /* close an open path */
+  if(open_path)
+  {
     /* output EndPath */
-    WriteEndPath(fdes);
+	WriteEndPath(fdes);
 
     /* output StrokeAndFillPath */
     WriteStrokeAndFillPath(fdes);
@@ -628,7 +660,7 @@ int output_emf_writer(FILE* file, string name,
     freopen(name, "wb", file);
   else
   {
-    fprintf(file, "This driver couldn't write to stdout!\n");
+    fprintf(stderr, "This driver couldn't write to stdout!\n");
     return -1;
   }
 
@@ -643,4 +675,3 @@ int output_emf_writer(FILE* file, string name,
   
   return 0;
 }
-
