@@ -1,6 +1,7 @@
 2001-01-10  Masatake YAMATO  <yamato@redhat.com>
 
 	* median.c: Appled a patch from Martin.
+	(median_cut_rgb): Rid ^M.
 
 2000-12-02  Masatake YAMATO  <yamato@redhat.com>
 
