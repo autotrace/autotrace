@@ -72,7 +72,7 @@ if test $with_magick = yes ; then
 			MAGICK_VERSION=`Magick-config --version`
 			changequote(,)dnl
 			MAGICK_MAJOR_VERSION=`echo $MAGICK_VERSION \
-			| sed -e "s/^\([0-9]*\).[0-9]*.[0-9]*$/\1/"`
+			| sed -e 's/^\([0-9]*\).[0-9]*.[0-9]*$/\1/'`
 			MAGICK_MINOR_VERSION=`echo $MAGICK_VERSION \
 			| sed -e 's/^[0-9]*.\([0-9]*\).[0-9]*$/\1/'`
 			MAGICK_MICRO_VERSION=`echo $MAGICK_VERSION \
