@@ -91,6 +91,5 @@ autotrace_SOURCES=$(input_src) ${output_src}	\
 	        thin-image.c                    \
 	        thin-image.h                     
 
-
-INCLUDES = $(MAGICK_CFLAGS) -Wall
+INCLUDES = $(MAGICK_CFLAGS)
 autotrace_LDADD=	$(MAGICK_LDFLAGS) $(LIBPNG_LDFLAGS) -lm
