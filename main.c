@@ -503,8 +503,8 @@ static void
 dot_printer(at_real percentage, at_address client_data)
 {
   int * current = (int *)client_data;
-  float unit 	= 1.0 / (float)(dot_printer_max_column) ;
-  int maximum = percentage / unit;
+  float unit 	= (float)1.0 / (float)(dot_printer_max_column) ;
+  int maximum = (int)(percentage / unit);
  
   while (*current < maximum)
     {
@@ -516,11 +516,12 @@ dot_printer(at_real percentage, at_address client_data)
 static void
 dump (at_bitmap_type * bitmap, FILE * fp)
 {
-  unsigned short width, height, np;
+  unsigned short width, height;
+  unsigned int np;
 
   width  = at_bitmap_get_width (bitmap);
   height = at_bitmap_get_height (bitmap);
-  np 	 = bitmap->np;
+  np 	 = at_bitmap_get_planes (bitmap);
   fprintf(fp, "w=%u, h=%u, np=%u\n", width, height, np);
 
   fwrite(AT_BITMAP_BITS(*bitmap), 

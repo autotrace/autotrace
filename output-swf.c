@@ -65,6 +65,14 @@ int output_swf_writer(FILE* file, at_string name,
     int height = ury - lly;
     SWFMovie m;
 
+#ifdef _WINDOWS 
+    if(file == stdout)
+	  {
+        fprintf(stderr, "This driver couldn't write to stdout!\n");
+        return -1;
+      }
+#endif
+
     Ming_init();
     Ming_setCubicThreshold(20000);
 
