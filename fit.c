@@ -832,8 +832,9 @@ filter (curve_type curve, fitting_opts_type *fitting_opts)
    iteration++)
     {
       curve_type new_curve = copy_most_of_curve (curve);
+      bool collapsed = false;
 
-          /* Keep the first point on the curve.  */
+      /* Keep the first point on the curve.  */
       if (offset)
         append_point (new_curve, CURVE_POINT (curve, 0));
 
@@ -841,59 +842,71 @@ filter (curve_type curve, fitting_opts_type *fitting_opts)
            this_point++)
         {
           vector_type in, out, sum;
-          real_coordinate_type new_point;
+          real_coordinate_type new_point, prev_new_point;
 
-                 /* Calculate the vectors in and out, computed by looking at n points
-                  on either side of this_point. Experimental it was found that 2 is
-                  optimal. */
+          /* Calculate the vectors in and out, computed by looking at n points
+             on either side of this_point. Experimental it was found that 2 is
+             optimal. */
 
-                  signed int prev, prevprev; /* have to be signed */
-                  unsigned int next, nextnext;
-                  real_coordinate_type candidate = CURVE_POINT (curve, this_point);
+          signed int prev, prevprev; /* have to be signed */
+          unsigned int next, nextnext;
+          real_coordinate_type candidate = CURVE_POINT (curve, this_point);
 
-                  prev = CURVE_PREV (curve, this_point);
-                  prevprev = CURVE_PREV (curve, prev);
-                  next = CURVE_NEXT (curve, this_point);
-                  nextnext = CURVE_NEXT (curve, next);
+          prev = CURVE_PREV (curve, this_point);
+          prevprev = CURVE_PREV (curve, prev);
+          next = CURVE_NEXT (curve, this_point);
+          nextnext = CURVE_NEXT (curve, next);
 
-                  /* Add up the differences from p of the `surround' points
-                     before p.  */
-                  in.dx = 0.0;
-                  in.dy = 0.0;
+          /* Add up the differences from p of the `surround' points
+             before p.  */
+          in.dx = 0.0;
+          in.dy = 0.0;
 
-                  in = Vadd (in, Psubtract (CURVE_POINT (curve, prev), candidate));
-                  if (prevprev >= 0)
-                    in = Vadd (in, Psubtract (CURVE_POINT (curve, prevprev), candidate));
+          in = Vadd (in, Psubtract (CURVE_POINT (curve, prev), candidate));
+          if (prevprev >= 0)
+              in = Vadd (in, Psubtract (CURVE_POINT (curve, prevprev), candidate));
 
-                  /* And the points after p.  Don't use more points after p than we
-                     ended up with before it.  */
-                  out.dx = 0.0;
-                  out.dy = 0.0;
+          /* And the points after p.  Don't use more points after p than we
+             ended up with before it.  */
+          out.dx = 0.0;
+          out.dy = 0.0;
 
-                  out = Vadd (out, Psubtract (CURVE_POINT (curve, next), candidate));
-                  if (nextnext < CURVE_LENGTH (curve))
-                    out = Vadd (out, Psubtract (CURVE_POINT (curve, nextnext), candidate));
+          out = Vadd (out, Psubtract (CURVE_POINT (curve, next), candidate));
+          if (nextnext < CURVE_LENGTH (curve))
+              out = Vadd (out, Psubtract (CURVE_POINT (curve, nextnext), candidate));
 
-                  /* Start with the old point.  */
-                  new_point = candidate;
-                  sum = Vadd (in, out);
-                  /* Experimental we have found that division by six is optimal */
-                  new_point.x += sum.dx / 6;
-                  new_point.y += sum.dy / 6;
+          /* Start with the old point.  */
+          new_point = candidate;
+          sum = Vadd (in, out);
+          /* Experimental we have found that division by six is optimal */
+          new_point.x += sum.dx / 6;
+          new_point.y += sum.dy / 6;
+          if (epsilon_equal (prev_new_point.x, new_point.x)
+              && epsilon_equal (prev_new_point.y, new_point.y))
+            {
+              collapsed = true;
+              break;
+            }
+
 
           /* Put the newly computed point into a separate curve, so it
              doesn't affect future computation (on this iteration).  */
-          append_point (new_curve, new_point);
+          append_point (new_curve, prev_new_point = new_point);
         }
 
-      /* Just as with the first point, we have to keep the last point.  */
-      if (offset)
-        append_point (new_curve, LAST_CURVE_POINT (curve));
-
-      /* Set the original curve to the newly filtered one, and go again.  */
-      free_curve (curve);
-      *curve = *new_curve;
-          free (new_curve);
+      if (collapsed)
+	free_curve (new_curve);
+      else
+	{
+          /* Just as with the first point, we have to keep the last point.  */
+          if (offset)
+	    append_point (new_curve, LAST_CURVE_POINT (curve));
+	  
+          /* Set the original curve to the newly filtered one, and go again.  */
+          free_curve (curve);
+          *curve = *new_curve;
+	}
+      free (new_curve);
     }
 
   log_curve (curve, false);

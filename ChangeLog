@@ -1,3 +1,8 @@
+2001-11-19  Martin Weber  <martweb@gmx.net>
+
+	* fit.c (filter): Temporary solution for not 
+	totally collapsing a curve with repeated filtering.
+
 2001-11-17  Martin Weber  <martweb@gmx.net>
 	
 	* fit.c (fit_with_least_squares):
