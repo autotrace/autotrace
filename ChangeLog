@@ -1,3 +1,11 @@
+2001-03-16  Masatake YAMATO  <yamato@redhat.com>
+
+	Applied a patch from Martin.
+	Message-ID: <3AB12888.E31072DC@gmx.net>.
+	* output-emf.c: Now I fixed a bug in output-emf.c and 
+	adopted it so that the generated emf files are compatible 
+	to CorelDraw 9.
+
 2001-03-15  Masatake YAMATO  <yamato@redhat.com>
 
 	* configure.in: Added --with-magick and --without-magick

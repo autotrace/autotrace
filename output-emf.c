@@ -24,13 +24,16 @@ extern char *version_string;
 #define ENMT_POLYBEZIERTO          5
 #define ENMT_BEGINPATH            59
 #define ENMT_ENDPATH              60
-#define ENMT_STROKEANDFILLPATH    63
+#define ENMT_FILLPATH             62
 #define ENMT_CREATEPEN            38
 #define ENMT_CREATEBRUSHINDIRECT  39
 #define ENMT_SELECTOBJECT         37
 #define ENMT_SETWORLDTRANSFORM    35
 #define ENMT_SETPOLYFILLMODE      19
 #define ENMT_STROKEPATH           64
+#define ENMT_LINETO               54
+#define ENMT_POLYBEZIERTO16       88
+
 
 #define FM_ALTERNATE 1
 
@@ -42,7 +45,9 @@ extern char *version_string;
 #define MAKE_COLREF(r,g,b) (((r) & 0x0FF) | (((g) & 0x0FF) << 8) | (((b) & 0x0FF) << 16))
 #define MK_PEN(n) ((n) * 2 + 1)
 #define MK_BRUSH(n) ((n) * 2 + 2)
-#define FLOAT_TO_UI32(num) ((UI32)((num > 0 ? num + 0.005 : num < 0 ? num - 0.005 : 0) * 1000.0))
+#define SCALE 100.0
+#define FLOAT_TO_UI32(num) ((UI32)(num * SCALE))
+#define FLOAT_TO_UI16(num) ((UI16)(num * SCALE))
 
 /* maybe these definitions be put into types.h 
    with some ifdefs ... */
@@ -179,10 +184,26 @@ int WriteMoveTo(FILE* fdes, real_coordinate_type *pt)
   return recsize;
 }
 
+int WriteLineTo(FILE* fdes, spline_type *spl)
+{
+  int recsize = sizeof(UI32) * 4;
+  
+  if(fdes != NULL)
+  {
+    write32(fdes, ENMT_LINETO);
+    write32(fdes, (UI32) recsize);
+    write32(fdes, (UI32) FLOAT_TO_UI32(END_POINT(*spl).x));
+    write32(fdes, (UI32) FLOAT_TO_UI32(END_POINT(*spl).y));
+  }
+  return recsize;
+}
+
+/* CorelDraw 9 can't handle PolyLineTo nor PolyLineTo16, so we
+   do not use this function but divide it to single lines instead
 int WritePolyLineTo(FILE* fdes, spline_type *spl, int nlines)
 {
   int i;
-  int recsize = sizeof(UI32) * (7 + nlines * 2);
+  int recsize = sizeof(UI32) * (7 + nlines * 1);
   
   if(fdes != NULL)
   {
@@ -196,12 +217,30 @@ int WritePolyLineTo(FILE* fdes, spline_type *spl, int nlines)
 
     for(i=0; i<nlines; i++)
     {
-      write32(fdes, (UI32) FLOAT_TO_UI32(END_POINT(spl[i]).x));
-      write32(fdes, (UI32) FLOAT_TO_UI32(END_POINT(spl[i]).y));
+      write16(fdes, (UI16) FLOAT_TO_UI32(END_POINT(spl[i]).x));
+      write16(fdes, (UI16) FLOAT_TO_UI32(END_POINT(spl[i]).y));
+    }
+  }
+  return recsize;
+} */
+
+int MyWritePolyLineTo(FILE* fdes, spline_type *spl, int nlines)
+{
+  int i;
+  int recsize = nlines * WriteLineTo(NULL, NULL);
+  
+  if(fdes != NULL)
+  {
+    for(i=0; i<nlines; i++)
+    {
+      WriteLineTo(fdes, &spl[i]);
     }
   }
   return recsize;
 }
+
+/* CorelDraw 9 can't handle PolyBezierTo so we do not use this
+   function but use PolyBezierTo16 instead
 
 int WritePolyBezierTo(FILE *fdes, spline_type *spl, int ncurves)
 {
@@ -220,16 +259,45 @@ int WritePolyBezierTo(FILE *fdes, spline_type *spl, int ncurves)
 
     for(i=0; i<ncurves; i++)
     {
-      write32(fdes, (UI32) FLOAT_TO_UI32(CONTROL1(spl[i]).x));
-      write32(fdes, (UI32) FLOAT_TO_UI32(CONTROL1(spl[i]).y));
-      write32(fdes, (UI32) FLOAT_TO_UI32(CONTROL2(spl[i]).x));
-      write32(fdes, (UI32) FLOAT_TO_UI32(CONTROL2(spl[i]).y));
-      write32(fdes, (UI32) FLOAT_TO_UI32(END_POINT(spl[i]).x));
-      write32(fdes, (UI32) FLOAT_TO_UI32(END_POINT(spl[i]).y));
+      write16(fdes, (UI32) FLOAT_TO_UI32(CONTROL1(spl[i]).x));
+      write16(fdes, (UI32) FLOAT_TO_UI32(CONTROL1(spl[i]).y));
+      write16(fdes, (UI32) FLOAT_TO_UI32(CONTROL2(spl[i]).x));
+      write16(fdes, (UI32) FLOAT_TO_UI32(CONTROL2(spl[i]).y));
+      write16(fdes, (UI32) FLOAT_TO_UI32(END_POINT(spl[i]).x));
+      write16(fdes, (UI32) FLOAT_TO_UI32(END_POINT(spl[i]).y));
+    }
+  }
+  return recsize;
+} */
+
+int WritePolyBezierTo16(FILE *fdes, spline_type *spl, int ncurves)
+{
+  int i;
+  int recsize = sizeof(UI32) * 7 + sizeof(UI16) * ncurves * 6;
+  
+  if(fdes != NULL)
+  {
+    write32(fdes, ENMT_POLYBEZIERTO16);
+    write32(fdes, (UI32) recsize);
+    write32(fdes, (UI32) 0x0);
+    write32(fdes, (UI32) 0x0);
+    write32(fdes, (UI32) 0xFFFFFFFF);
+    write32(fdes, (UI32) 0xFFFFFFFF);
+    write32(fdes, (UI32) ncurves * 3);
+
+    for(i=0; i<ncurves; i++)
+    {
+      write16(fdes, (UI16) FLOAT_TO_UI16(CONTROL1(spl[i]).x));
+      write16(fdes, (UI16) FLOAT_TO_UI16(CONTROL1(spl[i]).y));
+      write16(fdes, (UI16) FLOAT_TO_UI16(CONTROL2(spl[i]).x));
+      write16(fdes, (UI16) FLOAT_TO_UI16(CONTROL2(spl[i]).y));
+      write16(fdes, (UI16) FLOAT_TO_UI16(END_POINT(spl[i]).x));
+      write16(fdes, (UI16) FLOAT_TO_UI16(END_POINT(spl[i]).y));
     }
   }
   return recsize;
 }
+
 
 int WriteSetPolyFillMode(FILE *fdes)
 {
@@ -268,13 +336,13 @@ int WriteEndPath(FILE *fdes)
   return recsize;
 }
 
-int WriteStrokeAndFillPath(FILE *fdes)
+int WriteFillPath(FILE *fdes)
 {
   int recsize = sizeof(UI32) * 6;
   
   if(fdes != NULL)
   {
-    write32(fdes, ENMT_STROKEANDFILLPATH);
+    write32(fdes, ENMT_FILLPATH);
     write32(fdes, (UI32) recsize);
     write32(fdes, (UI32) 0x0);
     write32(fdes, (UI32) 0x0);
@@ -307,17 +375,23 @@ int WriteSetWorldTransform(FILE *fdes, UI32 height)
   
   if(fdes != NULL)
   {
+	float s1 = (float) (1.0/SCALE);
+	float s2 = (float) (-1.0/SCALE);
+	UI32 t1;
+	UI32 t2;
     /* conversion to float */
     fHeight = (float) height;
     /* binary copy for serialization */
     memcpy((void *) &height, (void *) &fHeight, sizeof(UI32));
+    memcpy((void *) &t1, (void *) &s1, sizeof(UI32));
+    memcpy((void *) &t2, (void *) &s2, sizeof(UI32));
 
     write32(fdes, ENMT_SETWORLDTRANSFORM);
     write32(fdes, (UI32) recsize);
-    write32(fdes, (UI32) 0x3A83126F); /* hex val for float(0.001) */
+    write32(fdes, (UI32) t1);
     write32(fdes, (UI32) 0x0);
     write32(fdes, (UI32) 0x0);
-    write32(fdes, (UI32) 0xBA83126F); /* hex val for float(-0.001) */
+    write32(fdes, (UI32) t2);
     write32(fdes, (UI32) 0x0);
     write32(fdes, height);
   }
@@ -461,7 +535,7 @@ void GetEmfStats(EMFStats *stats, string name, spline_list_array_type shape)
   int ncolorchng = 0;
   int nrecords = 0;
   int filesize = 0;
-  UI32 last_color = 0xFFFFFFFF, curr_color;
+  UI32 last_color, curr_color;
   spline_list_type curr_list;
   spline_type curr_spline;
   int last_degree;
@@ -472,7 +546,7 @@ void GetEmfStats(EMFStats *stats, string name, spline_list_array_type shape)
   {
     curr_list = SPLINE_LIST_ARRAY_ELT(shape, i);
     curr_color = MAKE_COLREF(curr_list.color.r,curr_list.color.g,curr_list.color.b);
-    if(curr_color != last_color)
+    if(i == 0 || curr_color != last_color)
     {
       ncolorchng++;
       if(!SearchColor(color_list, curr_color))
@@ -488,8 +562,8 @@ void GetEmfStats(EMFStats *stats, string name, spline_list_array_type shape)
     filesize += WriteMoveTo(NULL,NULL);
     
     /* visit each spline */
+	j = 0;
     last_degree = -1;
-    j = 0;
     /* the outer loop iterates through spline
        groups of the same degree */
     while(j<SPLINE_LIST_LENGTH(curr_list))
@@ -513,12 +587,12 @@ void GetEmfStats(EMFStats *stats, string name, spline_list_array_type shape)
         case LINEARTYPE:
           /* emf stats :: PolyLineTo */
           nrecords++;
-          filesize += WritePolyLineTo(NULL, NULL, nlines);
+          filesize += MyWritePolyLineTo(NULL, NULL, nlines);
           break;
         default:
           /* emf stats :: PolyBezierTo */
           nrecords++;
-          filesize += WritePolyBezierTo(NULL, NULL, nlines);
+          filesize += WritePolyBezierTo16(NULL, NULL, nlines);
           break;
       }
     }
@@ -534,7 +608,7 @@ void GetEmfStats(EMFStats *stats, string name, spline_list_array_type shape)
 
   /* emf stats :: BeginPath + EndPath + StrokeAndFillPath */
   nrecords += ncolorchng * 3;
-  filesize += (WriteBeginPath(NULL) + WriteEndPath(NULL) + WriteStrokeAndFillPath(NULL)) * ncolorchng;
+  filesize += (WriteBeginPath(NULL) + WriteEndPath(NULL) + WriteFillPath(NULL)) * ncolorchng;
 
   /* emf stats :: header + footer */
   nrecords++;
@@ -559,7 +633,7 @@ void OutputEmf(FILE* fdes, EMFStats *stats, string name, int width, int height, 
 {
   unsigned int i, j;
   int color_index;
-  UI32 last_color = 0xFFFFFFFF, curr_color;
+  UI32 last_color, curr_color;
   spline_list_type curr_list;
   spline_type curr_spline;
   int last_degree, open_path = 0;
@@ -589,7 +663,7 @@ void OutputEmf(FILE* fdes, EMFStats *stats, string name, int width, int height, 
 
     /* output pen & brush selection */
     curr_color = MAKE_COLREF(curr_list.color.r,curr_list.color.g,curr_list.color.b);
-    if(curr_color != last_color)
+    if(i == 0 || curr_color != last_color)
     {
 	  /* close an open path */
       if(open_path)
@@ -602,7 +676,7 @@ void OutputEmf(FILE* fdes, EMFStats *stats, string name, int width, int height, 
 			WriteStrokePath(fdes);
 		else
 			/* output StrokePath */
-			WriteStrokeAndFillPath(fdes);
+			WriteFillPath(fdes);
 	  }
 	  
 	  /* output a BeginPath for current shape */
@@ -624,7 +698,7 @@ void OutputEmf(FILE* fdes, EMFStats *stats, string name, int width, int height, 
     j = 0;
     /* the outer loop iterates through spline
        groups of the same degree */
-    while(j<SPLINE_LIST_LENGTH(curr_list))
+    while (j<SPLINE_LIST_LENGTH(curr_list))
     {
       nlines = 0;
       curr_spline = SPLINE_LIST_ELT(curr_list, j);
@@ -644,11 +718,11 @@ void OutputEmf(FILE* fdes, EMFStats *stats, string name, int width, int height, 
       {
         case LINEARTYPE:
           /* output PolyLineTo */
-          WritePolyLineTo(fdes, &(SPLINE_LIST_ELT(curr_list, j - nlines)), nlines);
+          MyWritePolyLineTo(fdes, &(SPLINE_LIST_ELT(curr_list, j - nlines)), nlines);
           break;
         default:
           /* output PolyBezierTo */
-          WritePolyBezierTo(fdes, &(SPLINE_LIST_ELT(curr_list, j - nlines)), nlines);
+          WritePolyBezierTo16(fdes, &(SPLINE_LIST_ELT(curr_list, j - nlines)), nlines);
           break;
       }
     }
@@ -664,7 +738,7 @@ void OutputEmf(FILE* fdes, EMFStats *stats, string name, int width, int height, 
 		WriteStrokePath(fdes);
 	else
 		/* output StrokePath */
-		WriteStrokeAndFillPath(fdes);
+		WriteFillPath(fdes);
   }
   
   /* output EndOfMetafile */
