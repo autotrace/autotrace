@@ -22,8 +22,6 @@
 	* input-pnm.c: In pnm_load_image(), replaced fopen()/fclose()
 		with xfopen()/xfclose() (see below).
 
-	* input-tga.c: Replaced C++-style comment with C-style comment.
-
 	* main.c: Added a -centerline option.  Commented out a call to
 		free() that was causing memory corruption.  Fixed a bug
 		in the conversion to decimal of the -background-color
