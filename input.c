@@ -92,10 +92,10 @@ at_input_get_handler_by_suffix (at_string suffix)
 #endif /* HAVE_MAGICK */
 }
 
-char **
+const char **
 at_input_list_new (void)
 {
-  char ** list;
+  const char ** list;
   int count, count_int = 0;
   int i;
 #if HAVE_MAGICK
@@ -176,9 +176,9 @@ at_input_list_new (void)
 }
 
 void
-at_input_list_free(char ** list)
+at_input_list_free(const char ** list)
 {
-  free(list);
+  free((char **)list);
 }
 
 char *

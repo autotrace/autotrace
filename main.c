@@ -497,11 +497,11 @@ static unsigned int hctoi (char c)
 static void
 input_list_formats(FILE * file)
 {
-  char ** list = at_input_list_new ();
-  char ** tmp;
+  const char ** list = at_input_list_new ();
+  const char ** tmp;
 
-  char * suffix;
-  char * descr;
+  const char * suffix;
+  const char * descr;
   tmp = list;
   while (*list)
     {

@@ -20,9 +20,12 @@
 			ATLMinimizesCRunTimeLibraryUsage="FALSE">
 			<Tool
 				Name="VCCLCompilerTool"
+				GlobalOptimizations="TRUE"
 				InlineFunctionExpansion="1"
-				AdditionalIncludeDirectories="C:\ImageMagick-5.3.4,C:\ming-0.2a,C:\pstoedit-3.32"
-				PreprocessorDefinitions="_DEBUG;WIN32;_WINDOWS;_VISUALC_;NeedFunctionPrototypes;HAVE_MAGICK;AUTOTRACE_VERSION=\&quot;0.31\&quot;;HAVE_LIBSWF;inline=__inline;_MAGICKDLL_;AUTOTRACE_WEB=\&quot;&quot;http://autotrace.sourceforge.net&quot;\&quot;;HAVE_LIBPSTOEDIT"
+				OptimizeForProcessor="0"
+				OptimizeForWindowsApplication="TRUE"
+				AdditionalIncludeDirectories="C:\ImageMagick-5.5.3,C:\ming-0.2a,C:\pstoeditb"
+				PreprocessorDefinitions="_DEBUG;WIN32;_WINDOWS;_VISUALC_;NeedFunctionPrototypes;HAVE_MAGICK;AUTOTRACE_VERSION=\&quot;0.31\&quot;;HAVE_LIBSWF;HAVE_LIBPSTOEDIT;inline=__inline;_MAGICKDLL_;AUTOTRACE_WEB=\&quot;&quot;http://autotrace.sourceforge.net&quot;\&quot;"
 				StringPooling="TRUE"
 				RuntimeLibrary="4"
 				EnableFunctionLevelLinking="TRUE"
@@ -43,7 +46,7 @@
 				OutputFile=".\autotrace___Win32_Release/autotrace.exe"
 				LinkIncremental="1"
 				SuppressStartupBanner="TRUE"
-				AdditionalLibraryDirectories="C:\ImageMagick-5.3.4\VisualMagick\lib\,C:\ming-0.2a\Release,C:\pstoedit-3.32"
+				AdditionalLibraryDirectories="C:\ImageMagick-5.5.3\VisualMagick\lib,C:\ming-0.2a\Release,C:\pstoeditb"
 				ProgramDatabaseFile=".\autotrace___Win32_Release/autotrace.pdb"
 				SubSystem="1"/>
 			<Tool
@@ -74,16 +77,17 @@
 			<Tool
 				Name="VCCLCompilerTool"
 				Optimization="0"
-				AdditionalIncludeDirectories="C:\ImageMagick-5.3.4,C:\ming-0.2a,C:\pstoedit-3.32"
-				PreprocessorDefinitions="_DEBUG;WIN32;_WINDOWS;_VISUALC_;NeedFunctionPrototypes;HAVE_MAGICK;AUTOTRACE_VERSION=\&quot;0.30\&quot;;HAVE_LIBSWF;inline=__inline;_MAGICKDLL_;AUTOTRACE_WEB=\&quot;&quot;http://autotrace.sourceforge.net&quot;\&quot;;HAVE_LIBPSTOEDIT"
+				AdditionalIncludeDirectories="C:\ImageMagick-5.5.3,C:\ming-0.2a,C:\pstoeditb"
+				PreprocessorDefinitions="_DEBUG;WIN32;_WINDOWS;_VISUALC_;NeedFunctionPrototypes;HAVE_MAGICK;AUTOTRACE_VERSION=\&quot;0.30\&quot;;HAVE_LIBSWF;HAVE_LIBPSTOEDIT;inline=__inline;_MAGICKDLL_;AUTOTRACE_WEB=\&quot;&quot;http://autotrace.sourceforge.net&quot;\&quot;"
 				RuntimeLibrary="5"
-				UsePrecompiledHeader="2"
+				UsePrecompiledHeader="0"
 				PrecompiledHeaderFile=".\autotrace___Win32_Debug\autotrace.exe.pch"
 				AssemblerListingLocation=".\autotrace___Win32_Debug/"
 				ObjectFile=".\autotrace___Win32_Debug/"
 				ProgramDataBaseFileName=".\autotrace___Win32_Debug/"
 				WarningLevel="3"
 				SuppressStartupBanner="TRUE"
+				Detect64BitPortabilityProblems="TRUE"
 				DebugInformationFormat="3"
 				CompileAs="0"/>
 			<Tool
@@ -95,7 +99,7 @@
 				OutputFile=".\autotrace___Win32_Debug/autotrace.exe"
 				LinkIncremental="2"
 				SuppressStartupBanner="TRUE"
-				AdditionalLibraryDirectories="C:\ImageMagick-5.3.4\VisualMagick\lib\,C:\ming-0.2a\Debug,C:\pstoedit-3.32"
+				AdditionalLibraryDirectories="C:\ImageMagick-5.5.3\VisualMagick\lib,C:\ming-0.2a\Debug,C:\pstoeditb"
 				GenerateDebugInformation="TRUE"
 				ProgramDatabaseFile=".\autotrace___Win32_Debug/autotrace.pdb"
 				SubSystem="1"/>
