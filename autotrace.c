@@ -246,12 +246,11 @@ at_color_free(at_color_type * color)
   free(color);
 }
 
-extern at_string version_string;
 const char *
 at_version (at_bool long_format)
 {
   if (long_format)
-    version_string ;
+    return "AutoTrace version " VERSION;
   else
     return VERSION;
 }

@@ -73,7 +73,6 @@ typedef struct
 
 static EMFColorList *color_list = NULL;  /* Color list */
 static UI32 *color_table = NULL;         /* Color table */
-static at_string editor;                     /* Editor description string */
 static float scale;
 
 /* color list & table functions */
@@ -461,6 +460,7 @@ static int WriteEndOfMetafile(FILE *fdes)
 static int WriteHeader(FILE *fdes, at_string name, int width, int height, int fsize, int nrec, int nhand)
 {
   int i, desclen, recsize;
+  const char * editor = at_version(true);
 
   desclen = (strlen(editor) + strlen(name) + 3);
   recsize = sizeof(UI32) * 25 + (desclen * 2) + ((desclen * 2) % 4);
@@ -761,9 +761,6 @@ int output_emf_writer(FILE* file, at_string name,
     fprintf(stderr, "This driver couldn't write to stdout!\n");
     return -1;
   }
-
-  /* Setup editor string */
-  editor = at_version(true);
 
   /* Get EMF stats */
   GetEmfStats(&stats, name, shape);

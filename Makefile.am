@@ -49,7 +49,7 @@ output-mif.c output-mif.h \
 output-cgm.c output-cgm.h \
 $(output_swf_src)
 
-libautotrace_a_SOURCES = version.c               \
+libautotrace_a_SOURCES =\
                 $(input_src) ${output_src}	\
 		fit.c				\
 		bitmap.c 			\

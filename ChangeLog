@@ -1,5 +1,15 @@
 2001-12-23  Masatake YAMATO  <yamato@redhat.com>
 
+	* output-emf.c (WriteHeader): Move a global variable
+	`editor' to here.
+
+	* Makefile.am (libautotrace_a_SOURCES): Removed version.c.
+
+	* version.c: Removed.
+
+	* autotrace.c (at_version): Move all codes in version.c
+	to here.
+
 	* output-cgm.c (output_metafiledescription): Added `const'
 	to UI8.
 	(*): bool->at_bool.
