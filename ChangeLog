@@ -1,5 +1,12 @@
 2002-11-09 Martin Weber <martweb@gmx.net>
 
+	* output-dr2d.c (BuildDRHD::FloatAsIEEEBytes): 
+	Change the position where the datum is written.
+
+	Message-ID: <3DCBECAB.6198C58D@gmx.net>.
+
+2002-11-09 Martin Weber <martweb@gmx.net>
+
 	* output-dxf.c (output_layer): move the
 	declaration of last_color to the out of loop.
 

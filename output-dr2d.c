@@ -275,7 +275,7 @@ static struct Chunk * BuildDRHD(int x1, int y1, int x2, int y2) {
 	FloatAsIEEEBytes(x1 * XFactor, DRHDData);
 	FloatAsIEEEBytes(y1 * YFactor, DRHDData + 4);
 	FloatAsIEEEBytes(x2 * XFactor, DRHDData + 8);
-	FloatAsIEEEBytes(y2 * YFactor, DRHDData + 16);
+	FloatAsIEEEBytes(y2 * YFactor, DRHDData + 12);
 
 	strncpy(DRHDChunk->ID, "DRHD", 4);
 	DRHDChunk->Size = 16;
