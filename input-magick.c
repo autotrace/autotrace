@@ -32,9 +32,14 @@ bitmap_type magick_load_image(string filename)
 #else
   image=ReadImage(image_info,&exception);
   if (image == (Image *) NULL)
+#endif
+#if (MagickLibVersion >= 0x500) && (MagickLibVersion <= 0x525)
     MagickError(exception.severity,exception.message,exception.qualifier);
 #endif
-  
+#if MagickLibVersion >= 0x526
+    MagickError(exception.severity,exception.reason,exception.description);
+#endif
+
   image_type=GetImageType(image);
   if(image_type == BilevelType || image_type == GrayscaleType)
     np=1;
@@ -54,10 +59,10 @@ bitmap_type magick_load_image(string filename)
     for(i=0;i<image->columns;i++) {
 #if MagickLibVersion < 0x500
       if(runcount)
-        runcount--;
+	runcount--;
       else {
-        runcount=pixel->length;
-        pixel++;
+	runcount=pixel->length;
+	pixel++;
       }
 #else
       p=GetOnePixel(image,i,j);
@@ -65,8 +70,8 @@ bitmap_type magick_load_image(string filename)
 
       bitmap.bitmap[point++]=pixel->red; /* if gray: red=green=blue */
       if(np==3) {
-        bitmap.bitmap[point++]=pixel->green;
-        bitmap.bitmap[point++]=pixel->blue;
+	bitmap.bitmap[point++]=pixel->green;
+	bitmap.bitmap[point++]=pixel->blue;
       }
     }
   return(bitmap);
