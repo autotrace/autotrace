@@ -1,5 +1,7 @@
 2002-01-23  Masatake YAMATO  <yamato@redhat.com>
 
+	* xstd.h: Use assert instead of FATAL.
+
 	* input-pnm.c (pnm_load_image): Use
 	fopen instead of xfopen. Use fclose instead
 	of xfclose.
