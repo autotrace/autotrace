@@ -1,3 +1,7 @@
+What's new in AutoTrace 0.30.5?
+- fixed a compile time error that appears when autotrace 
+  is not linked to pstoedit.
+
 What's new in AutoTrace 0.30.4?
 - fixed a bug reported by Gerhard Gaussling <ggrubbish@web.de>
 - improved the interface between pstoedit and autotrace
