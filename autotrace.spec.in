@@ -1,12 +1,13 @@
 Summary: Program for converting bitmaps to vector graphics
 Name: @PACKAGE@
-Version: @VERSION@
+Version: @AUTOTRACE_VERSION@
 Release: 1
 Url: http://autotrace.sourceforge.net
-Source: %{name}-%{version}.tar.gz
+Source: http://ftp1.sourceforge.net/autotrace/%{name}-%{version}.tar.gz
 Copyright: GPL and LGPL
 Group: Applications/Graphics
-BuildRoot: %{_tmppath}/%{name}-root
+BuildRoot: %{_tmppath}/%{name}-%{version}-root
+Prefix: %{_prefix}
 
 %description
 AutoTrace is a program for converting bitmaps to vector graphics. The
@@ -18,36 +19,34 @@ compiled on any UNIX platform using GCC.
 
 
 %prep
-%setup -q
+%setup
 
 %build
 %configure --without-magick --without-pstoedit
 make
 
 %install
-rm -rf $RPM_BUILD_ROOT
-make prefix=$RPM_BUILD_ROOT/usr/ install
+rm -rf %{buildroot}
+%makeinstall
 
 %clean
-rm -rf $RPM_BUILD_ROOT
+rm -rf %{buildroot}
 
 %files
 %defattr(-,root,root)
-%doc AUTHORS COPYING COPYING.LIB ChangeLog NEWS README 
-%doc /usr/man/man1/autotrace.1.*
-
-/usr/include/autotrace/autotrace.h
-/usr/lib/pkgconfig/autotrace.pc
-/usr/include/autotrace/types.h
-/usr/lib/libautotrace.*
-/usr/include/autotrace/exception.h
-/usr/include/autotrace/input.h
-/usr/include/autotrace/output.h
-/usr/share/aclocal/autotrace.m4
-/usr/bin/autotrace-config
-/usr/bin/autotrace
+%doc AUTHORS ChangeLog COPYING* FAQ NEWS README* TODO
+%{_bindir}/autotrace
+%{_libdir}/libautotrace.*
+%{_mandir}/man1/autotrace.1.*
+%{_bindir}/autotrace-config
+%{_includedir}/autotrace/
+%{_datadir}/aclocal/autotrace.m4
+%{_libdir}/pkgconfig/autotrace.pc
 
 %changelog
+* Thu Jan 23 2003  Masatake YAMATO<yamato@redhat.com>
+- Import Dag Wieers <dag@wieers.com>'s Updated to 0.31.1
+
 * Wed Oct 23 2002  Masatake YAMATO<yamato@redhat.com>
 - make disabled magick and pstoedit.
 

@@ -1,3 +1,7 @@
+What's new in AutoTrace 0.31.2?
+- improved spec file(Dag Wieers).
+- gettextized (Masatake(ja), Martin(de)).
+
 What's new in AutoTrace 0.31.1?
 - fixed compile time error appeared when an user 
   specifies --without-pstoedit option(Ralf Stubner).

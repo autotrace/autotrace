@@ -1,4 +1,4 @@
-# ja.po for autotrace
+# de.po for autotrace
 # Copyright (C) 2002 Martin Weber
 # Martin Weber <martweb@gmx.net>, 2002
 msgid ""

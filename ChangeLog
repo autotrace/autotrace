@@ -1,3 +1,14 @@
+2003-01-24  Masatake YAMATO  <yamato@redhat.com>
+
+	* configure.in (AUTOTRACE_VERSION): AC_SUBST for
+	autotrace.spec.in.
+	$VERSION is deleted from AC_DEFINE_UNQUOTED.
+
+2003-01-23  Masatake YAMATO  <yamato@redhat.com>
+
+	* autotrace.spec.in: Import
+	Dag Wieers <dag@wieers.com>'s better spec file.
+
 2003-01-23  Masatake YAMATO  <yamato@redhat.com>
 
 	Copied from sodipodi.
