@@ -8,6 +8,7 @@
 #include "getopt.h"
 #include "input-pnm.h"
 #include "input-bmp.h"
+#include "input-tga.h"
 #if HAVE_MAGICK
 #include "input-magick.h"
 #endif /* HAVE_MAGICK */
@@ -60,6 +61,8 @@ static void set_pnm_input_format (void);
 static void set_pgm_input_format (void);
 static void set_ppm_input_format (void);
 static void set_bmp_input_format (void);
+static void set_tga_input_format (void);
+
 #if HAVE_MAGICK
 static void set_magick_input_format (void);
 #endif /* HAVE_MAGICK */
@@ -156,7 +159,7 @@ extern string version_string;
 #define MAGICK_SUFFIX ""
 #endif /* HAVE_MAGICK */
 
-#define SUFFIX_LIST MAGICK_SUFFIX "pbm, pnm, pgm, ppm or bmp"
+#define SUFFIX_LIST MAGICK_SUFFIX "tga, pbm, pnm, pgm, ppm or bmp"
 
 #define USAGE1 "Options:\
 <input_name> should be a filename, " SUFFIX_LIST ".\n"\
@@ -324,6 +327,8 @@ read_command_line (int argc, string argv[])
 	    set_ppm_input_format ();
 	  else if (STREQ ("bmp", optarg))
 	    set_bmp_input_format ();
+	  else if (STREQ ("tga", optarg))
+	    set_tga_input_format ();
 #if HAVE_MAGICK
 	  else if (STREQ ("magick", optarg))
 	    set_magick_input_format ();
@@ -408,6 +413,9 @@ set_input_format (string filename)
 
   else if (STREQ (input_extension, "bmp"))
     set_bmp_input_format ();
+  
+  else if (STREQ (input_extension, "tga"))
+    set_tga_input_format ();
 #if HAVE_MAGICK
   else
     set_magick_input_format ();
@@ -469,6 +477,15 @@ set_bmp_input_format (void)
 {
   load_image = ReadBMP;
   input_extension = "bmp";
+}
+
+/* Set up for reading an TGA file. */
+
+static void
+set_tga_input_format (void)
+{
+  load_image = ReadTGA;
+  input_extension = "tga";
 }
 
 #if HAVE_MAGICK

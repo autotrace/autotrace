@@ -21,8 +21,10 @@
 
 struct Bitmap_File_Head_Struct
 {
+  char            zzMagic[2];  /* 00 "BM" */
   unsigned long   bfSize;      /* 02 */
-  unsigned long   reserverd;   /* 06 */
+  unsigned short  zzHotX;      /* 06 */
+  unsigned short  zzHotY;      /* 08 */
   unsigned long   bfOffs;      /* 0A */
   unsigned long   biSize;      /* 0E */
 } Bitmap_File_Head;
@@ -42,21 +44,9 @@ struct Bitmap_Head_Struct
                         /* 36 */
 } Bitmap_Head;
 
-struct Bitmap_OS2_Head_Struct
-{
-  unsigned short  bcWidth;     /* 12 */
-  unsigned short  bcHeight;    /* 14 */
-  unsigned short  bcPlanes;    /* 16 */
-  unsigned short  bcBitCnt;    /* 18 */
-} Bitmap_OS2_Head;
-
-static long         ToL           (unsigned char *);
-static void         FromL         (long,
-				   unsigned char *);
-static short        ToS           (unsigned char *);
-static void         FromS         (short,
-				   unsigned char *);
-static int          ReadColorMap  (FILE *,
+static long        ToL           (unsigned char *);
+static short       ToS           (unsigned char *);
+static int         ReadColorMap  (FILE *,
 				   unsigned char[256][3],
 				   int,
 				   int,
@@ -65,7 +55,6 @@ static unsigned char        *ReadImage     (FILE *,
 				   int,
 				   int,
 				   unsigned char[256][3],
-				   int,
 				   int,
 				   int,
 				   int,
@@ -84,18 +73,14 @@ static void         WriteImage    (FILE *,
 				   int,
 				   int,
 				   int);
-static int read_os2_head1         (FILE *,
-				   int headsz,
-				   struct Bitmap_Head_Struct *p);
 
 bitmap_type
 ReadBMP (string filename)
 {
   FILE *fd;
-  unsigned char buf[5];
-  int ColormapSize, LineBuffer, Maps, Grey;
+  unsigned char buffer[64];
+  int ColormapSize, rowbytes, Maps, Grey;
   unsigned char ColorMap[256][3];
-  unsigned char puffer[50];
   bitmap_type image;
 
   fd = fopen (filename, "rb");
@@ -103,99 +88,106 @@ ReadBMP (string filename)
   if (!fd)
       FATAL1 ("Can't open \"%s\"\n", filename);
 
-  /* It is a File. Now is it a Bitmap? */
+  /* It is a File. Now is it a Bitmap? Read the shortest possible header.*/
 
-  if (!ReadOK(fd,buf,2) || (strncmp(buf,"BM",2)))
-      FATAL1 ("Not a valid BMP file %s\n", buf);
-
-  /* How long is the Header? */
-
-  if (!ReadOK (fd, puffer, 0x10))
-      FATAL ("Error reading BMP file header\n");
+  if (!ReadOK(fd, buffer, 18) || (strncmp((const char *)buffer,"BM",2)))
+      FATAL ("Not a valid BMP file %s\n");
 
   /* bring them to the right byteorder. Not too nice, but it should work */
 
-  Bitmap_File_Head.bfSize    = ToL (&puffer[0]);
-  Bitmap_File_Head.reserverd = ToL (&puffer[4]);
-  Bitmap_File_Head.bfOffs    = ToL (&puffer[8]);
-  Bitmap_File_Head.biSize    = ToL (&puffer[12]);
+  Bitmap_File_Head.bfSize    = ToL (&buffer[0x02]);
+  Bitmap_File_Head.zzHotX    = ToS (&buffer[0x06]);
+  Bitmap_File_Head.zzHotY    = ToS (&buffer[0x08]);
+  Bitmap_File_Head.bfOffs    = ToL (&buffer[0x0a]);
+  Bitmap_File_Head.biSize    = ToL (&buffer[0x0e]);
 
-  /* Is it a Windows (R) Bitmap or not */
+  /* What kind of bitmap is it? */
 
-  if (Bitmap_File_Head.biSize == 12) /* old OS/2 */
+  if (Bitmap_File_Head.biSize == 12) /* OS/2 1.x ? */
     {
-      if (!read_os2_head1 (fd, Bitmap_File_Head.biSize - 4, &Bitmap_Head))
-          FATAL ("%s: error reading BMP file header\n");
+      if (!ReadOK (fd, buffer, 8))
+          FATAL ("Error reading BMP file header\n");
+
+      Bitmap_Head.biWidth    = ToS (&buffer[0x00]);   /* 12 */
+      Bitmap_Head.biHeight   = ToS (&buffer[0x02]);   /* 14 */
+      Bitmap_Head.biPlanes   = ToS (&buffer[0x04]);   /* 16 */
+      Bitmap_Head.biBitCnt   = ToS (&buffer[0x06]);   /* 18 */
+	  Bitmap_Head.biCompr = 0;
+	  Bitmap_Head.biSizeIm = 0;
+	  Bitmap_Head.biXPels = Bitmap_Head.biYPels = 0;
+	  Bitmap_Head.biClrUsed = 0;
       Maps = 3;
-      /*if (!ReadOK (fd, puffer, Bitmap_File_Head.biSize))
-          FATAL ("Error reading BMP file header\n");
-
-      Bitmap_OS2_Head.bcWidth  = ToS (&puffer[0]);
-      Bitmap_OS2_Head.bcHeight = ToS (&puffer[2]);
-      Bitmap_OS2_Head.bcPlanes = ToS (&puffer[4]);
-      Bitmap_OS2_Head.bcBitCnt = ToS (&puffer[6]);
-
-      Bitmap_Head.biPlanes    = Bitmap_OS2_Head.bcPlanes;
-      Bitmap_Head.biBitCnt    = Bitmap_OS2_Head.bcBitCnt;
-      Bitmap_File_Head.bfSize = ((Bitmap_File_Head.bfSize * 4) -
-				 (Bitmap_File_Head.bfOffs * 3));
-      Bitmap_Head.biHeight    = Bitmap_OS2_Head.bcHeight;
-      Bitmap_Head.biWidth     = Bitmap_OS2_Head.bcWidth;
-      Bitmap_Head.biClrUsed   = 0;
-      Bitmap_Head.biCompr     = 0;
-      Maps = 3;*/
     }
-  else if (Bitmap_File_Head.biSize != 40) /* new OS/2 or other */
-      FATAL ("Unsupported format\n");
-  else
+   else if (Bitmap_File_Head.biSize == 40) /* Windows 3.x */
     {
-      if (!ReadOK (fd, puffer, 36))
+      if (!ReadOK (fd, buffer, Bitmap_File_Head.biSize - 4))
           FATAL ("Error reading BMP file header\n");
-      Bitmap_Head.biWidth   =ToL (&puffer[0x00]);	/* 12 */
-      Bitmap_Head.biHeight  =ToL (&puffer[0x04]);	/* 16 */
-      Bitmap_Head.biPlanes  =ToS (&puffer[0x08]);       /* 1A */
-      Bitmap_Head.biBitCnt  =ToS (&puffer[0x0A]);	/* 1C */
-      Bitmap_Head.biCompr   =ToL (&puffer[0x0C]);	/* 1E */
-      Bitmap_Head.biSizeIm  =ToL (&puffer[0x10]);	/* 22 */
-      Bitmap_Head.biXPels   =ToL (&puffer[0x14]);	/* 26 */
-      Bitmap_Head.biYPels   =ToL (&puffer[0x18]);	/* 2A */
-      Bitmap_Head.biClrUsed =ToL (&puffer[0x1C]);	/* 2E */
-      Bitmap_Head.biClrImp  =ToL (&puffer[0x20]);	/* 32 */
-    					                /* 36 */
+
+      Bitmap_Head.biWidth   =ToL (&buffer[0x00]);       /* 12 */
+      Bitmap_Head.biHeight  =ToL (&buffer[0x04]);       /* 16 */
+      Bitmap_Head.biPlanes  =ToS (&buffer[0x08]);       /* 1A */
+      Bitmap_Head.biBitCnt  =ToS (&buffer[0x0A]);       /* 1C */
+      Bitmap_Head.biCompr   =ToL (&buffer[0x0C]);       /* 1E */
+      Bitmap_Head.biSizeIm  =ToL (&buffer[0x10]);       /* 22 */
+      Bitmap_Head.biXPels   =ToL (&buffer[0x14]);       /* 26 */
+      Bitmap_Head.biYPels   =ToL (&buffer[0x18]);       /* 2A */
+      Bitmap_Head.biClrUsed =ToL (&buffer[0x1C]);       /* 2E */
+      Bitmap_Head.biClrImp  =ToL (&buffer[0x20]);       /* 32 */
+                                                        /* 36 */
       Maps = 4;
     }
+  else if (Bitmap_File_Head.biSize <= 64) /* Probably OS/2 2.x */
+    {
+      if (!ReadOK (fd, buffer, Bitmap_File_Head.biSize - 4))
+          FATAL ("Error reading BMP file header\n");
+        
+      Bitmap_Head.biWidth   =ToL (&buffer[0x00]);       /* 12 */
+      Bitmap_Head.biHeight  =ToL (&buffer[0x04]);       /* 16 */
+      Bitmap_Head.biPlanes  =ToS (&buffer[0x08]);       /* 1A */
+      Bitmap_Head.biBitCnt  =ToS (&buffer[0x0A]);       /* 1C */
+      Bitmap_Head.biCompr   =ToL (&buffer[0x0C]);       /* 1E */
+      Bitmap_Head.biSizeIm  =ToL (&buffer[0x10]);       /* 22 */
+      Bitmap_Head.biXPels   =ToL (&buffer[0x14]);       /* 26 */
+      Bitmap_Head.biYPels   =ToL (&buffer[0x18]);       /* 2A */
+      Bitmap_Head.biClrUsed =ToL (&buffer[0x1C]);       /* 2E */
+      Bitmap_Head.biClrImp  =ToL (&buffer[0x20]);       /* 32 */
+                                                        /* 36 */
+      Maps = 3;
+    }
+  else
+      FATAL ("Error reading BMP file header\n");
 
-  if (Bitmap_Head.biBitCnt == 24 && Bitmap_Head.biPlanes != 3)
-      /* Bitcount does not match to number of planes */
-      Bitmap_Head.biPlanes = 3;
-
-  /* This means wrong file Format. I test this because it could crash the
-   * whole.
-   */
-
-  if (Bitmap_Head.biBitCnt > 24)
-      FATAL1 ("Too many colors: %u\n",
-		 (unsigned int) Bitmap_Head.biBitCnt);
-
+  /* Valid options 1, 4, 8, 16, 24, 32 */
+  /* 16 is awful, we should probably shoot whoever invented it */
+  
   /* There should be some colors used! */
-
+  
   ColormapSize = (Bitmap_File_Head.bfOffs - Bitmap_File_Head.biSize - 14) / Maps;
 
-  if ((Bitmap_Head.biClrUsed == 0) &&
-      (Bitmap_Head.biBitCnt < 24))
+  if ((Bitmap_Head.biClrUsed == 0) && (Bitmap_Head.biBitCnt <= 8))
     Bitmap_Head.biClrUsed = ColormapSize;
 
-  if (Bitmap_Head.biBitCnt == 24)
-    LineBuffer = ((Bitmap_File_Head.bfSize - Bitmap_File_Head.bfOffs) /
-		     Bitmap_Head.biHeight);
-  else
-    LineBuffer = ((Bitmap_File_Head.bfSize - Bitmap_File_Head.bfOffs) /
-		     Bitmap_Head.biHeight) * (8 / Bitmap_Head.biBitCnt);
+  /* Sanity checks */
+
+  if (Bitmap_Head.biHeight == 0 || Bitmap_Head.biWidth == 0)
+      FATAL ("Error reading BMP file header");
+
+  if (Bitmap_Head.biPlanes != 1)
+      FATAL ("Error reading BMP file header");
+
+  if (ColormapSize > 256 || Bitmap_Head.biClrUsed > 256)
+      FATAL ("Error reading BMP file header");
+
+  /* Windows and OS/2 declare filler so that rows are a multiple of
+   * word length (32 bits == 4 bytes)
+   */
+
+  rowbytes= ( (Bitmap_Head.biWidth * Bitmap_Head.biBitCnt - 1) / 32) * 4 + 4;  
 
 #ifdef DEBUG
   printf("\nSize: %u, Colors: %u, Bits: %u, Width: %u, Height: %u, Comp: %u, Zeile: %u\n",
           Bitmap_File_Head.bfSize,Bitmap_Head.biClrUsed,Bitmap_Head.biBitCnt,Bitmap_Head.biWidth,
-          Bitmap_Head.biHeight, Bitmap_Head.biCompr, LineBuffer);
+          Bitmap_Head.biHeight, Bitmap_Head.biCompr, rowbytes);
 #endif
 
   /* Get the Colormap */
@@ -212,10 +204,9 @@ ReadBMP (string filename)
 			Bitmap_Head.biWidth,
 			Bitmap_Head.biHeight,
 			ColorMap,
-			Bitmap_Head.biClrUsed,
 			Bitmap_Head.biBitCnt,
 			Bitmap_Head.biCompr,
-			LineBuffer,
+			rowbytes,
 			Grey);
   BITMAP_WIDTH (image) = Bitmap_Head.biWidth;
   BITMAP_HEIGHT (image) = Bitmap_Head.biHeight;
@@ -242,19 +233,9 @@ ReadColorMap (FILE   *fd,
 
       /* Bitmap save the colors in another order! But change only once! */
 
-      if (size == 4)
-	{
-	  buffer[i][0] = rgb[2];
-	  buffer[i][1] = rgb[1];
-	  buffer[i][2] = rgb[0];
-	}
-      else
-	{
-	  /* this one is for old os2 Bitmaps, but it dosn't work well */
-	  buffer[i][0] = rgb[1];
-	  buffer[i][1] = rgb[0];
-	  buffer[i][2] = rgb[2];
-	}
+      buffer[i][0] = rgb[2];
+      buffer[i][1] = rgb[1];
+      buffer[i][2] = rgb[0];
       *grey = ((*grey) && (rgb[0]==rgb[1]) && (rgb[1]==rgb[2]));
     }
   return 0;
@@ -265,69 +246,96 @@ ReadImage (FILE   *fd,
 	   int    width,
 	   int    height,
 	   unsigned char  cmap[256][3],
-	   int    ncols,
 	   int    bpp,
 	   int    compression,
-	   int    line,
+	   int    rowbytes,
 	   int    grey)
 {
   unsigned char v,howmuch;
-  unsigned char buf[16];
   int xpos = 0, ypos = 0;
   unsigned char *image;
-  unsigned char *temp;
+  unsigned char *temp, *buffer;
   long rowstride, channels;
+  unsigned short rgb;
   int i, j, notused;
 
-  if (grey)
+  if (bpp >= 16) /* color image */
     {
-      XMALLOC (image, width * height * sizeof (unsigned char));
-      channels = 1;
+      XMALLOC (image, width * height * 3 * sizeof (unsigned char));
+      channels = 3;
     }
-  else
+  else if (grey) /* grey image */
     {
-      if (bpp<24)
-	{
-    XMALLOC (image, width * height * 1 * sizeof (unsigned char));
+      XMALLOC (image, width * height * 1 * sizeof (unsigned char));
 	  channels = 1;
 	}
-      else
+  else /* indexed image */
 	{
-    XMALLOC (image, width * height * 3 * sizeof (unsigned char));
-	  channels = 3;
+      XMALLOC (image, width * height * 1 * sizeof (unsigned char));
+	  channels = 1;
 	}
-    }
 
+  XMALLOC (buffer, rowbytes); 
   rowstride = width * channels;
 
   ypos = height - 1;  /* Bitmaps begin in the lower left corner */
 
-  if (bpp == 24)
+  switch (bpp) {
+
+  case 32:
     {
-      while (ReadOK (fd, buf, 3))
+      while (ReadOK (fd, buffer, rowbytes))
         {
-          temp = image + (ypos * rowstride) + (xpos * channels);
-          *temp=buf[2];
-          temp++;
-          *temp=buf[1];
-          temp++;
-          *temp=buf[0];
-          xpos++;
-          if (xpos == width)
+          temp = image + (ypos * rowstride);
+          for (xpos= 0; xpos < width; ++xpos)
             {
-              notused=ReadOK (fd, buf, line - (width * 3));
-              ypos--;
-              xpos = 0;
-	    }
-	  if (ypos < 0)
-	    break;
+               *(temp++)= buffer[xpos * 4 + 2];
+               *(temp++)= buffer[xpos * 4 + 1];
+               *(temp++)= buffer[xpos * 4];
+            }
+          --ypos; /* next line */
         }
     }
-  else
+	break;
+
+  case 24:
     {
-      switch(compression)
-	{
-	case 0:  			/* uncompressed */
+      while (ReadOK (fd, buffer, rowbytes))
+        {
+          temp = image + (ypos * rowstride);
+          for (xpos= 0; xpos < width; ++xpos)
+            {
+               *(temp++)= buffer[xpos * 3 + 2];
+               *(temp++)= buffer[xpos * 3 + 1];
+               *(temp++)= buffer[xpos * 3];
+            }
+          --ypos; /* next line */
+        }
+	}
+    break;
+
+  case 16:
+    {
+      while (ReadOK (fd, buffer, rowbytes))
+        {
+          temp = image + (ypos * rowstride);
+          for (xpos= 0; xpos < width; ++xpos)
+            {
+               rgb= ToS(&buffer[xpos * 2]);
+               *(temp++)= (unsigned char)(((rgb >> 10) & 0x1f) * 8);
+               *(temp++)= (unsigned char)(((rgb >> 5)  & 0x1f) * 8);
+               *(temp++)= (unsigned char)(((rgb)       & 0x1f) * 8);
+            }
+          --ypos; /* next line */
+        }
+    }
+	break;
+
+  case 8:
+  case 4:
+  case 1:
+    {
+      if (compression == 0)
 	  {
 	    while (ReadOK (fd, &v, 1))
 	      {
@@ -340,42 +348,47 @@ ReadImage (FILE   *fd,
 		  }
 		if (xpos == width)
 		  {
-		    notused = ReadOK (fd, buf, (line - width) / (8 / bpp));
+		    notused = ReadOK (fd, buffer, rowbytes - 1 -
+                                                (width * bpp - 1) / 8);
 		    ypos--;
 		    xpos = 0;
+
 		  }
 		if (ypos < 0)
 		  break;
 	      }
 	    break;
 	  }
-	default:			/* Compressed images */
+	else
 	  {
-	    while (TRUE)
+	    while (ypos >= 0 && xpos <= width)
 	      {
-		notused = ReadOK (fd, buf, 2);
-		if ((unsigned char) buf[0] != 0)
+		notused = ReadOK (fd, buffer, 2);
+		if ((unsigned char) buffer[0] != 0) 
 		  /* Count + Color - record */
 		  {
-		    for (j = 0; ((unsigned char) j < (unsigned char) buf[0]) && (xpos < width);)
+		    for (j = 0; ((unsigned char) j < (unsigned char) buffer[0]) && (xpos < width);)
 		      {
+#ifdef DEBUG2
+			printf("%u %u | ",xpos,width);
+#endif
 			for (i = 1;
 			     ((i <= (8 / bpp)) &&
 			      (xpos < width) &&
-			      ((unsigned char) j < (unsigned char) buf[0]));
+			      ((unsigned char) j < (unsigned char) buffer[0]));
 			     i++, xpos++, j++)
 			  {
 			    temp = image + (ypos * rowstride) + (xpos * channels);
-			    *temp = (buf[1] & (((1<<bpp)-1) << (8 - (i * bpp)))) >> (8 - (i * bpp));
+			    *temp = (buffer[1] & (((1<<bpp)-1) << (8 - (i * bpp)))) >> (8 - (i * bpp));
 			    if (grey)
 			      *temp = cmap[*temp][0];
 			  }
 		      }
 		  }
-		if (((unsigned char) buf[0] == 0) && ((unsigned char) buf[1] > 2))
+		if (((unsigned char) buffer[0] == 0) && ((unsigned char) buffer[1] > 2))
 		  /* uncompressed record */
 		  {
-		    howmuch = buf[1];
+		    howmuch = buffer[1];
 		    for (j = 0; j < howmuch; j += (8 / bpp))
 		      {
 			notused = ReadOK (fd, &v, 1);
@@ -398,31 +411,36 @@ ReadImage (FILE   *fd,
 		      notused = ReadOK (fd, &v, 1);
 		    /*if odd(x div (8 div bpp )) then blockread(f,z^,1);*/
 		  }
-		if (((unsigned char) buf[0] == 0) && ((unsigned char) buf[1]==0))
-		  /* Zeilenende */
+		if (((unsigned char) buffer[0] == 0) && ((unsigned char) buffer[1]==0))
+		  /* Line end */
 		  {
 		    ypos--;
 		    xpos = 0;
 		  }
-		if (((unsigned char) buf[0]==0) && ((unsigned char) buf[1]==1))
-		  /* Bitmapende */
+		if (((unsigned char) buffer[0]==0) && ((unsigned char) buffer[1]==1))
+		  /* Bitmap end */
 		  {
 		    break;
 		  }
-		if (((unsigned char) buf[0]==0) && ((unsigned char) buf[1]==2))
+		if (((unsigned char) buffer[0]==0) && ((unsigned char) buffer[1]==2))
 		  /* Deltarecord */
 		  {
-		    xpos += (unsigned char) buf[2];
-		    ypos += (unsigned char) buf[3];
+		    notused = ReadOK (fd, buffer, 2);
+		    xpos += (unsigned char) buffer[0];
+		    ypos -= (unsigned char) buffer[1];
 		  }
 	      }
 	    break;
 	  }
-	}
     }
+    break;
+  default:
+    /* This is very bad, we should not be here */
+	;
+  }
 
   fclose (fd);
-  if (bpp < 24)
+  if (bpp <= 8)
     {
       unsigned char *temp2, *temp3;
       unsigned char index;
@@ -435,13 +453,17 @@ ReadImage (FILE   *fd,
              {
                index = *temp2++;
                *temp3++ = cmap[index][0];
-               *temp3++ = cmap[index][1];
-               *temp3++ = cmap[index][2];
+			   if (!grey)
+			     {
+                   *temp3++ = cmap[index][1];
+                   *temp3++ = cmap[index][2];
+			     }
            }
         }
       free (temp);
   }
 
+  free (buffer);
   return image;
 }
 
@@ -449,10 +471,6 @@ FILE  *errorfile;
 char *prog_name = "bmp";
 char *filename;
 int   interactive_bmp;
-
-struct Bitmap_File_Head_Struct Bitmap_File_Head;
-struct Bitmap_Head_Struct Bitmap_Head;
-struct Bitmap_OS2_Head_Struct Bitmap_OS2_Head;
 
 static long
 ToL (unsigned char *puffer)
@@ -463,63 +481,7 @@ ToL (unsigned char *puffer)
 static short
 ToS (unsigned char *puffer)
 {
-  return (puffer[0] | puffer[1]<<8);
+  return ((short)(puffer[0] | puffer[1]<<8));
 }
 
-static void
-FromL (long  wert,
-       unsigned char *bopuffer)
-{
-  bopuffer[0] = (wert & 0x000000ff)>>0x00;
-  bopuffer[1] = (wert & 0x0000ff00)>>0x08;
-  bopuffer[2] = (wert & 0x00ff0000)>>0x10;
-  bopuffer[3] = (wert & 0xff000000)>>0x18;
-}
-
-static void
-FromS (short  wert,
-       unsigned char *bopuffer)
-{
-  bopuffer[0] = (wert & 0x00ff)>>0x00;
-  bopuffer[1] = (wert & 0xff00)>>0x08;
-}
-
-static void dump_file_head (struct Bitmap_File_Head_Struct *p)
-{
-  printf("bfSize=%ld\n",p->bfSize);
-  printf("bfoffs=%ld\n",p->bfOffs);
-  printf("biSize=%ld\n",p->biSize);	
-}
-
-static void dump_os2_head (struct Bitmap_OS2_Head_Struct *p)
-{
-  printf("bcWidth =%4d ",p->bcWidth);
-  printf("bcHeigth=%4d\n",p->bcHeight);
-  printf("bcPlanes=%4d ",p->bcPlanes);
-  printf("bcBitCnt=%4d\n",p->bcBitCnt);
-}
-
-static int read_os2_head1 (FILE *fd, int headsz, struct Bitmap_Head_Struct *p)
-{
-  unsigned char puffer[150];
-
-  if (!ReadOK (fd, puffer, headsz))
-    {
-      return 0;
-    }
-  
-  Bitmap_OS2_Head.bcWidth  = ToS (&puffer[0]);
-  Bitmap_OS2_Head.bcHeight = ToS (&puffer[2]);
-  Bitmap_OS2_Head.bcPlanes = ToS (&puffer[4]);
-  Bitmap_OS2_Head.bcBitCnt = ToS (&puffer[6]);
-#if 0
-  dump_os2_head (&Bitmap_OS2_Head);
-#endif
-  p->biHeight    = Bitmap_OS2_Head.bcHeight;
-  p->biWidth     = Bitmap_OS2_Head.bcWidth;
-  p->biPlanes    = Bitmap_OS2_Head.bcPlanes;
-  p->biBitCnt    = Bitmap_OS2_Head.bcBitCnt;
-  return 1;
-}
-
-/* version 0.24 */
+/* version 0.26 */

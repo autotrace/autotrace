@@ -1,3 +1,18 @@
+2000-09-28  Masatake YAMATO  <yamato@redhat.com>
+
+	* main.c: Added tag file format support.
+
+	* Makefile.am (autotrace_SOURCES): Split the file set
+	into autotrace_SOURCES, input_magick_src and output_src.
+	(input_src): Added input-tga.[hc].
+
+	* input-bmp.[hc]: Replace old files with new files sent
+	from Martin.
+
+	* input-tga.[hc]: New file from Martin.
+ 	(ReadImage): Initialize pels with 0 instead of NULL.
+	Initialize image.bitmap after local variable declarations.
+
 2000-09-26  Masatake YAMATO  <yamato@redhat.com>
 
 	* output-eps.c: Applied a revised patch from
