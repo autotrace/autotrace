@@ -33,32 +33,39 @@ if test $with_magick = yes ; then
 			dnl
 			dnl Checking version
 			dnl
-			AC_MSG_CHECKING([ImageMagick - version != 5.1.x])
+			AC_MSG_CHECKING([ImageMagick - version >= 5.2.1])
+			dnl Get version and split it into MAJOR, MINOR and MICRO
 			MAGICK_VERSION=`Magick-config --version`
 			changequote(,)dnl
-			MAGICK_MAJOR_VERSION=`echo $MAGICK_VERSION | sed -e "s/^\([0-9]*\).[0-9]*.[0-9]*$/\1/"`
-			MAGICK_MINOR_VERSION=`echo $MAGICK_VERSION | sed -e 's/^[0-9]*.\([0-9]*\).[0-9]*$/\1/'`
-			MAGICK_MICRO_VERSION=`echo $MAGICK_VERSION | sed -e 's/^[0-9]*.[0-9]*.\([0-9]*\)$/\1/'`
+			MAGICK_MAJOR_VERSION=`echo $MAGICK_VERSION \
+			| sed -e "s/^\([0-9]*\).[0-9]*.[0-9]*$/\1/"`
+			MAGICK_MINOR_VERSION=`echo $MAGICK_VERSION \
+			| sed -e 's/^[0-9]*.\([0-9]*\).[0-9]*$/\1/'`
+			MAGICK_MICRO_VERSION=`echo $MAGICK_VERSION \
+			| sed -e 's/^[0-9]*.[0-9]*.\([0-9]*\)$/\1/'`
 			changequote([,])dnl
-			MAGICK_MAJOR_VERSION_IS_5=`expr $MAGICK_MAJOR_VERSION = 5`
-			MAGICK_MINOR_VERSION_IS_1=`expr $MAGICK_MINOR_VERSION = 1`
-			if test "$MAGICK_MAJOR_VERSION_IS_5" = 1 &&\
-		   		test "$MAGICK_MINOR_VERSION_IS_1" = 1 ; then
-		   		AC_MSG_RESULT(no($MAGICK_VERSION))
-		   		AC_MSG_ERROR([*** You should not build with ImaegMagick-5.1.x. Use --without-magick option.***])
+			MAGICK_MAJOR_VERSION_CHECK=`expr $MAGICK_MAJOR_VERSION \>= 5`
+			MAGICK_MINOR_VERSION_CHECK=`expr $MAGICK_MINOR_VERSION \>= 2`
+			dnl I don't consider ImageMagick 6.x.
+			if test "$MAGICK_VERSION" = "5.2.0" \
+			   || test "$MAGICK_MAJOR_VERSION_CHECK" = 0 \
+               || test "$MAGICK_MINOR_VERSION_CHECK" = 0 ; then
+			   AC_MSG_RESULT(no($MAGICK_VERSION))
+		   	   AC_MSG_WARN([*** Version 5.2.1 or higher is required.             ***])
+               AC_MSG_WARN([*** ImageMagick input handler is disabled.           ***])
 			else
  		   		AC_MSG_RESULT(yes($MAGICK_VERSION))
+				AC_SUBST(MAGICK_CFLAGS)
+				AC_SUBST(MAGICK_LDFLAGS)
+				HAVE_MAGICK=yes
+				AC_DEFINE(HAVE_MAGICK)
 			fi
-			AC_SUBST(MAGICK_CFLAGS)
-			AC_SUBST(MAGICK_LDFLAGS)
-			HAVE_MAGICK=yes
-			AC_DEFINE(HAVE_MAGICK)
 		else
-			MAGICK_CFLAGS=
 			AC_MSG_WARN([*** Magick-config is found but magick/api.h is not found in $MAGICK_CFLAGS ***])
  			AC_MSG_WARN([*** Check Magick-config. ***])
+            AC_MSG_WARN([*** ImageMagick input handler is disabled.           ***])
 		fi
-fi
+	fi
 fi
 AM_CONDITIONAL(HAVE_MAGICK, test x$HAVE_MAGICK = xyes)
 

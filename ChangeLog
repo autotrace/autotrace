@@ -1,3 +1,16 @@
+2001-03-20  Masatake YAMATO  <yamato@redhat.com>
+
+	* configure.in: Check ImageMagick version is higher 
+	than 5.2.1. Use AC_MSG_WARN instead of AC_MSG_ERROR
+	if ImageMagick is not found. The user can build 
+	autotrace without ImageMagick.
+
+2001-03-15  Martin Weber <martweb@gmx.net>
+
+	Message-ID: <3AB26698.DFC2341D@gmx.net>.
+	* input-magick.c (magick_load_image): 
+	dropped the support of versions older than 5.2.1.
+
 2001-03-17  Martin Weber <martweb@gmx.net>
 
 	Message-ID: <3AB25B23.27EDD0C1@gmx.net>.
