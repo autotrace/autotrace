@@ -79,12 +79,14 @@ libautotrace_a_SOURCES =\
 		color.h 			\
 		pxl-outline.h                   \
                 despeckle.c                     \
-                despeckle.h			
+                despeckle.h			\
+	        exception.c
 
 autotraceinclude_HEADERS=\
 		types.h 			\
 		autotrace.h                     \
-		input.h
+		input.h				\
+		exception.h
 
 #
 # noinst_HEADERS: headers shared between lib and bin.

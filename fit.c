@@ -44,31 +44,39 @@ typedef struct index_list
 static void append_index (index_list_type *, unsigned);
 static void free_index_list (index_list_type *);
 static index_list_type new_index_list (void);
-static void remove_adjacent_corners (index_list_type *, unsigned, at_bool);
+static void remove_adjacent_corners (index_list_type *, unsigned, at_bool,
+				     at_exception * exception);
 static void change_bad_lines (spline_list_type *,
   fitting_opts_type *);
 static void filter (curve_type, fitting_opts_type *);
 static void find_vectors
   (unsigned, pixel_outline_type, vector_type *, vector_type *, unsigned);
 static index_list_type find_corners (pixel_outline_type,
-  fitting_opts_type *);
-static at_real find_error (curve_type, spline_type, unsigned *);
+				     fitting_opts_type *,
+				     at_exception * exception);
+static at_real find_error (curve_type, spline_type, unsigned *,
+			   at_exception * exception);
 static vector_type find_half_tangent (curve_type, at_bool start, unsigned *, unsigned);
 static void find_tangent (curve_type, at_bool, at_bool, unsigned);
-static spline_type fit_one_spline (curve_type);
+static spline_type fit_one_spline (curve_type,
+				   at_exception * exception);
 static spline_list_type *fit_curve (curve_type,
-  fitting_opts_type *);
+  fitting_opts_type *,
+  at_exception * exception);
 static spline_list_type fit_curve_list (curve_list_type,
-  fitting_opts_type *);
+ fitting_opts_type *,
+ at_exception * exception);
 static spline_list_type *fit_with_least_squares (curve_type,
-  fitting_opts_type *);
+ fitting_opts_type *,
+ at_exception * exception);						 
 static spline_list_type *fit_with_line (curve_type);
 static void remove_knee_points (curve_type, at_bool);
 static void set_initial_parameter_values (curve_type);
 static at_bool spline_linear_enough (spline_type *, curve_type,
   fitting_opts_type *);
-static curve_list_array_type split_at_corners (
-  pixel_outline_list_type, fitting_opts_type *);
+static curve_list_array_type split_at_corners (pixel_outline_list_type, 
+					       fitting_opts_type *,
+					       at_exception * exception);
 static at_coord real_to_int_coord (at_real_coord);
 static at_real distance (at_real_coord, at_real_coord);
 
@@ -109,6 +117,7 @@ __declspec(dllexport) spline_list_array_type
 __stdcall fitted_splines (pixel_outline_list_type pixel_outline_list,
   fitting_opts_type *fitting_opts,
   unsigned short width, unsigned short height,
+  at_exception * exception,
   progress_func notify_progress, 
   address progress_data,
   testcancel_func test_cancel,
@@ -118,6 +127,7 @@ spline_list_array_type
 fitted_splines (pixel_outline_list_type pixel_outline_list,
   fitting_opts_type *fitting_opts,
   unsigned short width, unsigned short height,
+  at_exception * exception,
   at_progress_func notify_progress, 
   at_address progress_data,
   at_testcancel_func test_cancel,
@@ -125,9 +135,12 @@ fitted_splines (pixel_outline_list_type pixel_outline_list,
 #endif
 {
   unsigned this_list;
-  unsigned total = 0;
+  unsigned total    = 0;
+
   spline_list_array_type char_splines = new_spline_list_array ();
-  curve_list_array_type curve_array = split_at_corners (pixel_outline_list, fitting_opts);
+  curve_list_array_type curve_array = split_at_corners (pixel_outline_list, 
+							fitting_opts,
+							exception);
 
   char_splines.centerline = fitting_opts->centerline;
 
@@ -149,7 +162,10 @@ fitted_splines (pixel_outline_list_type pixel_outline_list,
 
       LOG1 ("\nFitting curve list #%u:\n", this_list);
 
-      curve_list_splines = fit_curve_list (curves, fitting_opts);
+      curve_list_splines = fit_curve_list (curves, fitting_opts,
+					   exception);
+      if (at_exception_got_fatal(exception))
+	goto cleanup;
       curve_list_splines.clockwise = curves.clockwise;
 
       memcpy (&(curve_list_splines.color),
@@ -176,7 +192,8 @@ fitted_splines (pixel_outline_list_type pixel_outline_list,
 
 static spline_list_type
 fit_curve_list (curve_list_type curve_list,
-  fitting_opts_type *fitting_opts)
+		fitting_opts_type *fitting_opts,
+		at_exception * exception)
 {
   curve_type curve;
   unsigned this_curve, this_spline;
@@ -233,9 +250,14 @@ fit_curve_list (curve_list_type curve_list,
 
       LOG1 ("\nFitting curve #%u:\n", this_curve);
 
-      curve_splines = fit_curve (current_curve, fitting_opts);
-      if (curve_splines == NULL)
-        WARNING1 ("Could not fit curve #%u", this_curve);
+      curve_splines = fit_curve (current_curve, fitting_opts, exception);
+      if (at_exception_got_fatal(exception))
+	goto cleanup;
+      else if (curve_splines == NULL)
+	{
+	  LOG1 ("Could not fit curve #%u", this_curve);
+	  at_exception_warning(exception, "Could not fit curve");
+	}
       else
         {
           LOG1 ("Fitted splines for curve #%u:\n", this_curve);
@@ -271,7 +293,7 @@ fit_curve_list (curve_list_type curve_list,
                                                    this_spline));
         }
     }
-
+ cleanup:
   return curve_list_splines;
 }
 
@@ -280,20 +302,23 @@ fit_curve_list (curve_list_type curve_list,
    We return NULL if we cannot fit the points at all.  */
 
 static spline_list_type *
-fit_curve (curve_type curve, fitting_opts_type *fitting_opts)
+fit_curve (curve_type curve, fitting_opts_type *fitting_opts,
+	   at_exception *exception)
 {
   spline_list_type *fitted_splines;
 
   if (CURVE_LENGTH (curve) < 2)
     {
-      WARNING ("Tried to fit curve with less than two points");
+      LOG ("Tried to fit curve with less than two points");
+      at_exception_warning(exception, 
+			   "Tried to fit curve with less than two points");
       return NULL;
     }
 
   /* Do we have enough points to fit with a spline?  */
   fitted_splines = CURVE_LENGTH (curve) < 4
                    ? fit_with_line (curve)
-                   : fit_with_least_squares (curve, fitting_opts);
+                   : fit_with_least_squares (curve, fitting_opts, exception);
 
   return fitted_splines;
 }
@@ -324,7 +349,8 @@ fit_curve (curve_type curve, fitting_opts_type *fitting_opts)
    pair of corners) for each element in PIXEL_LIST.  */
 
 static curve_list_array_type
-split_at_corners (pixel_outline_list_type pixel_list, fitting_opts_type *fitting_opts)
+split_at_corners (pixel_outline_list_type pixel_list, fitting_opts_type *fitting_opts,
+		  at_exception * exception)
 {
   unsigned this_pixel_o;
   curve_list_array_type curve_array = new_curve_list_array ();
@@ -351,14 +377,17 @@ split_at_corners (pixel_outline_list_type pixel_list, fitting_opts_type *fitting
          either side of a point before it is conceivable that we might
          want another corner.  */
       if (O_LENGTH (pixel_o) > fitting_opts->corner_surround * 2 + 2)
-        corner_list = find_corners (pixel_o, fitting_opts);
+	  corner_list = find_corners (pixel_o, fitting_opts,
+				      exception);
+
       else {
         int surround;
         if ((surround = (int)(O_LENGTH (pixel_o) - 3) / 2) >= 4)
           {
             unsigned save_corner_surround = fitting_opts->corner_surround;
             fitting_opts->corner_surround = surround;
-            corner_list = find_corners (pixel_o, fitting_opts);
+            corner_list = find_corners (pixel_o, fitting_opts,
+					exception);
             fitting_opts->corner_surround = save_corner_surround;
            }
          else
@@ -447,20 +476,21 @@ split_at_corners (pixel_outline_list_type pixel_list, fitting_opts_type *fitting
    character argument C is simply so that the different cases can be
    distinguished in the log file.  */
 
-#define APPEND_CORNER(index, angle, c)                                                                  \
-  do                                                                                                                                    \
-    {                                                                                                                                   \
-      append_index (&corner_list, index);                                                               \
-      LOG4 (" (%d,%d)%c%.3f",                                                                                   \
-            O_COORDINATE (pixel_outline, index).x,                                              \
-            O_COORDINATE (pixel_outline, index).y,                                              \
-            c, angle);                                                                                                  \
-    }                                                                                                                                   \
+#define APPEND_CORNER(index, angle, c)			\
+  do							\
+    {							\
+      append_index (&corner_list, index);		\
+      LOG4 (" (%d,%d)%c%.3f",				\
+            O_COORDINATE (pixel_outline, index).x,	\
+            O_COORDINATE (pixel_outline, index).y,	\
+            c, angle);					\
+    }							\
   while (0)
 
 static index_list_type
 find_corners (pixel_outline_type pixel_outline,
-  fitting_opts_type *fitting_opts)
+	      fitting_opts_type *fitting_opts,
+	      at_exception * exception)
 {
   unsigned p, start_p, end_p;
   index_list_type corner_list = new_index_list ();
@@ -579,8 +609,9 @@ find_corners (pixel_outline_type pixel_outline,
        only way to fit such a ``curve'' would be with a straight
        line, which usually interrupts the continuity dreadfully.  */
     remove_adjacent_corners (&corner_list,
-      O_LENGTH (pixel_outline) - (pixel_outline.open ? 2 : 1),
-      fitting_opts->remove_adj_corners);
+			     O_LENGTH (pixel_outline) - (pixel_outline.open ? 2 : 1),
+			     fitting_opts->remove_adj_corners,
+     			     exception);
   return corner_list;
 }
 
@@ -631,7 +662,9 @@ find_vectors (unsigned test_index, pixel_outline_type outline,
 
 static void
 remove_adjacent_corners (index_list_type *list, unsigned last_index,
-  at_bool remove_adj_corners)
+			 at_bool remove_adj_corners,
+			 at_exception * exception)
+			 
 {
   unsigned j;
   unsigned last;
@@ -653,7 +686,10 @@ remove_adjacent_corners (index_list_type *list, unsigned last_index,
           temp = GET_INDEX (*list, j);
           GET_INDEX (*list, j) = GET_INDEX (*list, max_index);
           GET_INDEX (*list, max_index) = temp;
-          WARNING ("needed exchange"); /* xx -- really have to sort?  */
+	  
+	  /* xx -- really have to sort?  */
+	  LOG ("needed exchange");
+	  at_exception_warning(exception, "needed exchange");
         }
     }
 
@@ -908,11 +944,13 @@ fit_with_line (curve_type curve)
    fails, we subdivide the curve.  */
 
 static spline_list_type *
-fit_with_least_squares (curve_type curve, fitting_opts_type *fitting_opts)
+fit_with_least_squares (curve_type curve, fitting_opts_type *fitting_opts,
+			at_exception * exception)
+			
 {
   at_real error, best_error = FLT_MAX;
   spline_type spline, best_spline;
-  spline_list_type *spline_list;
+  spline_list_type *spline_list = NULL;
   unsigned worst_point;
   at_real previous_error = FLT_MAX;
 
@@ -938,7 +976,9 @@ fit_with_least_squares (curve_type curve, fitting_opts_type *fitting_opts)
      been fit.  */
   while (true)
     {
-      spline = fit_one_spline (curve);
+      spline = fit_one_spline (curve, exception);
+      if (at_exception_got_fatal(exception))
+	goto cleanup;
 
           if (SPLINE_DEGREE(spline) == LINEARTYPE)
         LOG ("  fitted to line:\n");
@@ -954,7 +994,7 @@ fit_with_least_squares (curve_type curve, fitting_opts_type *fitting_opts)
           if (SPLINE_DEGREE(spline) == LINEARTYPE)
                 break;
 
-      error = find_error (curve, spline, &worst_point);
+	  error = find_error (curve, spline, &worst_point, exception);
           if (error <= previous_error)
         {
           best_error = error;
@@ -1036,8 +1076,19 @@ fit_with_least_squares (curve_type curve, fitting_opts_type *fitting_opts)
       CURVE_START_TANGENT (right_curve) = CURVE_END_TANGENT (left_curve);
 
       /* Now that we've set up the curves, we can fit them.  */
-      left_spline_list = fit_curve (left_curve, fitting_opts);
-      right_spline_list = fit_curve (right_curve, fitting_opts);
+      left_spline_list = fit_curve (left_curve, fitting_opts, 
+				    exception);
+      if (at_exception_got_fatal(exception))
+	/* TODO: Memory allocated for left_curve and right_curve
+	   will leak.*/
+	goto cleanup;
+
+      right_spline_list = fit_curve (right_curve, fitting_opts,
+				     exception);
+      /* TODO: Memory allocated for left_curve and right_curve
+	   will leak.*/
+      if (at_exception_got_fatal(exception))
+	goto cleanup;
 
       /* Neither of the subdivided curves could be fit, so fail.  */
       if (left_spline_list == NULL && right_spline_list == NULL)
@@ -1048,9 +1099,9 @@ fit_with_least_squares (curve_type curve, fitting_opts_type *fitting_opts)
 
       if (left_spline_list == NULL)
         {
-          WARNING ("could not fit left spline list");
           LOG1 ("Could not fit spline to left curve (%lx).\n",
                 (unsigned long) left_curve);
+	  at_exception_warning(exception, "Could not fit left spline list");
         }
       else
         {
@@ -1061,9 +1112,9 @@ fit_with_least_squares (curve_type curve, fitting_opts_type *fitting_opts)
 
       if (right_spline_list == NULL)
         {
-          WARNING ("could not fit right spline list");
           LOG1 ("Could not fit spline to right curve (%lx).\n",
                 (unsigned long) right_curve);
+	  at_exception_warning(exception, "Could not fit right spline list");
         }
       else
         {
@@ -1076,7 +1127,7 @@ fit_with_least_squares (curve_type curve, fitting_opts_type *fitting_opts)
         free (left_curve);
         free (right_curve);
   }
-
+ cleanup:
   return spline_list;
 }
 
@@ -1101,7 +1152,8 @@ fit_with_least_squares (curve_type curve, fitting_opts_type *fitting_opts)
 #define B3(t) CUBE (t)
 
 static spline_type
-fit_one_spline (curve_type curve)
+fit_one_spline (curve_type curve, 
+		at_exception * exception)
 {
   /* Since our arrays are zero-based, the `C0' and `C1' here correspond
      to `C1' and `C2' in the paper.  */
@@ -1161,7 +1213,11 @@ fit_one_spline (curve_type curve)
   C0_X_det = C[0][0] * X[1] - C[0][1] * X[0];
   C0_C1_det = C[0][0] * C[1][1] - C[1][0] * C[0][1];
   if (C0_C1_det == 0.0)
-    FATAL ("zero determinant of C0*C1");
+    {
+      LOG ("zero determinant of C0*C1");
+      at_exception_fatal(exception, "zero determinant of C0*C1");
+      goto cleanup;
+    }
 
   alpha1 = X_C1_det / C0_C1_det;
   alpha2 = C0_X_det / C0_C1_det;
@@ -1172,6 +1228,7 @@ fit_one_spline (curve_type curve)
                                   Vmult_scalar (t2_hat, alpha2));
   SPLINE_DEGREE (spline) = CUBICTYPE;
 
+ cleanup:
   return spline;
 }
 
@@ -1302,7 +1359,8 @@ find_half_tangent (curve_type c, at_bool to_start_point, unsigned *n_points,
    from the original curve CURVE to the fitted spline SPLINE.  */
 
 static at_real
-find_error (curve_type curve, spline_type spline, unsigned *worst_point)
+find_error (curve_type curve, spline_type spline, unsigned *worst_point,
+	    at_exception * exception)
 {
   unsigned this_point;
   at_real total_error = 0.0;
@@ -1329,7 +1387,10 @@ find_error (curve_type curve, spline_type spline, unsigned *worst_point)
       if (epsilon_equal (total_error, 0.0))
         LOG ("  Every point fit perfectly.\n");
       else
-        WARNING ("No worst point found; something is wrong");
+	{
+	  LOG("No worst point found; something is wrong");
+	  at_exception_warning(exception, "No worst point found; something is wrong");
+	}
     }
   else
     {

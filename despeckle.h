@@ -22,6 +22,7 @@
 
 #include "types.h"
 #include "bitmap.h"
+#include "exception.h"
 
 /* Despeckle - Despeckle a 8 or 24 bit image
  *
@@ -42,6 +43,6 @@
  */
 
 extern void
-despeckle (bitmap_type *bitmap, int level, at_real tightness);
+despeckle (bitmap_type *bitmap, int level, at_real tightness, at_exception * exp);
 
 #endif /* not DESPECKLE_H */

@@ -1,4 +1,30 @@
+2002-01-04  Masatake YAMATO  <yamato@redhat.com>
+
+	* main.c (exception_handler): New func. Passed to at_splines_new.
+	(output_list_formats, input_list_formats): Made static.
+
+	* despeckle.c (despeckle): Use exception instead of fatal.
+
+	* autotrace.c: Included exception.h.
+	(at_splines_new, at_splines_new_full): Added new args for msg.
+	(at_splines_new_full): New local var, exp.
+	Pass exp to despeckle. Pass exp to fitted_splines.
+
+	* Makefile.am (autotraceinclude_HEADERS): Added exception.h.
+	(libautotrace_a_SOURCES): Added exception.c.
+
+	* main.c (dump): Remove unused local vars.
+
+	* fit.h: Added at_ prefix to progress_func,
+	testcancel_func and address.
+
+	* input-pnm.c (pnm_load_image): Initialized
+	bitmap if fd == NULL.
+
 2002-01-02  Masatake YAMATO  <yamato@redhat.com>
+
+	* autotrace.h (enum _at_msg_type, at_msg_func): 
+	New type.
 
 	* main.c: Added code to dump loaded bitmap.
 	"--debug-bitmap: dump loaded bitmap to <input_name>.bitmap.\n\"

@@ -57,11 +57,12 @@ static unsigned int hctoi (char c);
 
 static void dump (at_bitmap_type * bitmap, FILE * fp);
 
-void input_list_formats(FILE * file);
-void output_list_formats(FILE* file);
+static void input_list_formats(FILE * file);
+static void output_list_formats(FILE* file);
+
+static void exception_handler(at_string msg, at_msg_type type, at_address data);
 
 #define DEFAULT_FORMAT "eps"
-
 
 int
 main (int argc, char * argv[])
@@ -143,6 +144,7 @@ main (int argc, char * argv[])
     }
   
   splines = at_splines_new_full(bitmap, fitting_opts,
+				exception_handler, NULL,
 				progress_reporter, &progress_stat,
 				NULL, NULL);
 
@@ -449,7 +451,7 @@ static unsigned int hctoi (char c)
     FATAL ("No hex values");
 }
 
-void
+static void
 input_list_formats(FILE * file)
 {
   char ** list = at_input_list_new ();
@@ -469,7 +471,8 @@ input_list_formats(FILE * file)
 }
 
 
-void output_list_formats(FILE* file)
+static void
+output_list_formats(FILE* file)
 {
   char ** list = at_output_list_new ();
   char ** tmp;
@@ -519,9 +522,6 @@ static void
 dump (at_bitmap_type * bitmap, FILE * fp)
 {
   unsigned short width, height, np;
-  int i, j;
-  int c;
-  unsigned char * p;
 
   width  = at_bitmap_get_width (bitmap);
   height = at_bitmap_get_height (bitmap);
@@ -532,4 +532,18 @@ dump (at_bitmap_type * bitmap, FILE * fp)
 	 sizeof(unsigned char),
 	 width * height * np,
 	 fp);
+}
+
+static void
+exception_handler(at_string msg, at_msg_type type, at_address data)
+{
+  if (type == AT_MSG_FATAL)
+    {
+      fprintf (stderr, "%s", msg);
+      exit (1);
+    }
+  else if (type == AT_MSG_WARNING)
+    fprintf (stderr, "%s", msg);
+  else
+    exception_handler("Wrong type of msg", AT_MSG_FATAL, NULL);
 }

@@ -40,6 +40,7 @@ typedef struct _at_spline_type at_spline_type;
 typedef struct _at_spline_list_type at_spline_list_type;
 typedef struct _at_spline_list_array_type at_spline_list_array_type;
 #define at_splines_type at_spline_list_array_type 
+typedef enum _at_msg_type at_msg_type;
 
 /* Color in RGB */
 struct _at_color_type
@@ -186,6 +187,15 @@ struct _at_bitmap_type
   unsigned int np;
 };
 
+enum _at_msg_type
+{
+  AT_MSG_FATAL,
+  AT_MSG_WARNING
+};
+
+typedef
+void (* at_msg_func) (at_string msg, at_msg_type msg_type, at_address client_data);
+
 /*
  * IO Handler typedefs
  */
@@ -262,7 +272,8 @@ void at_bitmap_free (at_bitmap_type * bitmap);
  * TODO: internal data access
  * --------------------------------------------------------------------- */
 at_splines_type * at_splines_new (at_bitmap_type * bitmap,
-				  at_fitting_opts_type * opts);
+				  at_fitting_opts_type * opts,
+				  at_msg_func msg_func, at_address msg_data);
 /* at_splines_new_full
 
    args:
@@ -287,6 +298,8 @@ at_splines_type * at_splines_new (at_bitmap_type * bitmap,
    cancel the execution */ 
 at_splines_type * at_splines_new_full (at_bitmap_type * bitmap,
 				       at_fitting_opts_type * opts,
+				       at_msg_func msg_func, 
+				       at_address msg_data,
 				       at_progress_func notify_progress,
 				       at_address progress_data,
 				       at_testcancel_func test_cancel,

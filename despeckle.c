@@ -24,7 +24,7 @@
 #include "xstd.h"
 #include "types.h"
 #include "bitmap.h"
-
+#include "despeckle.h"
 
 /* Calculate Error - compute the error between two colors
  *
@@ -436,7 +436,8 @@ despeckle_iteration (/* in */     int    level,
 void
 despeckle (/* in/out */ bitmap_type *bitmap,
            /* in */     int          level,
-           /* in */     at_real      tightness)
+           /* in */     at_real      tightness,
+	   at_exception * exp)
 {
   int i;
   int planes;
@@ -448,7 +449,8 @@ despeckle (/* in/out */ bitmap_type *bitmap,
 
   if (planes != 3)
     {
-      FATAL1 ("despeckle: %u-plane images are not supported", planes);
+      LOG1 ("despeckle: %u-plane images are not supported", planes);
+      at_exception_fatal(exp, "despeckle: wrong plane images are passed");
       return;
     }
 

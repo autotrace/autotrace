@@ -132,7 +132,7 @@ at_bitmap_type pnm_load_image (at_string filename)
   if (fd == NULL)
     {
       FATAL("pnm filter: can't open file\n");
-      at_bitmap_init(NULL, 0, 0, 0);
+      bitmap = at_bitmap_init(NULL, 0, 0, 0);
       return (bitmap);
     }
 

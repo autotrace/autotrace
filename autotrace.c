@@ -1,6 +1,7 @@
 /* autotrace.c: Library interface. */
 
 #include "autotrace.h"
+#include "exception.h"
 
 #include "fit.h"
 #include "bitmap.h"
@@ -111,30 +112,43 @@ at_bitmap_get_height (at_bitmap_type * bitmap)
 
 at_splines_type * 
 at_splines_new (at_bitmap_type * bitmap,
-		at_fitting_opts_type * opts)
+		at_fitting_opts_type * opts,
+		at_msg_func msg_func, at_address msg_data)
 {
-  return at_splines_new_full(bitmap, opts, NULL, NULL, NULL, NULL);
+  return at_splines_new_full(bitmap, opts, 
+			     msg_func, msg_data,
+			     NULL, NULL, NULL, NULL);
 }
   
 at_splines_type * 
 at_splines_new_full (at_bitmap_type * bitmap,
 		     at_fitting_opts_type * opts,
+		     at_msg_func msg_func, 
+		     at_address msg_data,
 		     at_progress_func notify_progress,
 		     at_address progress_data,
 		     at_testcancel_func test_cancel,
 		     at_address testcancel_data)
-
 {
   image_header_type image_header;
   at_splines_type * splines = NULL;
   pixel_outline_list_type pixels;
   QuantizeObj *myQuant = NULL; /* curently not used */
+  at_exception exp     = at_exception_new(msg_func, msg_data);
+
 #define CANCELP (test_cancel && test_cancel(testcancel_data))
 #define CANCEL_THEN_RETURN() if (CANCELP) return splines;
 #define CANCEL_THEN_CLEANUP() if (CANCELP) goto cleanup;
 
   if (opts->despeckle_level > 0)
-    despeckle (bitmap, opts->despeckle_level, opts->despeckle_tightness);
+    {
+      despeckle (bitmap, 
+		 opts->despeckle_level, 
+		 opts->despeckle_tightness,
+		 &exp);
+      if (at_exception_got_fatal(&exp))
+	return splines;
+    }
   CANCEL_THEN_RETURN();
   
   image_header.width = at_bitmap_get_width(bitmap);
@@ -170,8 +184,11 @@ at_splines_new_full (at_bitmap_type * bitmap,
   *splines = fitted_splines (pixels, opts,
 			     image_header.width,
 			     image_header.height,
+			     &exp,
 			     notify_progress, progress_data,
 			     test_cancel, testcancel_data);
+  if (at_exception_got_fatal(&exp))
+    goto cleanup;
 
   if (CANCELP)
     {
