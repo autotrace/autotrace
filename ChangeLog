@@ -1,3 +1,14 @@
+2001-11-28  Ian MacPhedran <Ian_MacPhedran@engr.USask.CA>
+
+	* output-fig.c (out_fig_splines): introduce new local variable,
+	fig_subt. That fix a bug reported by Dan Mills
+	<dmills@spamblock.demon.co.uk>.
+
+	"Testing 0.28 pre 1,
+	 when exporting as .fig files, all lines are saved as closed curves,
+	 thus the letter S turns into 8 due to the curve closing.
+	 Does anyone have a copy of the spec. for .fig files so I can fix this?"
+
 2001-11-27  Martin Weber <martweb@gmx.net>
 
 	* main.c (read_command_line): output format list now freed.

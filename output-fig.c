@@ -90,7 +90,7 @@ static void out_fig_splines(FILE * file, spline_list_array_type shape,
 {
     unsigned this_list;
 /*    int fig_colour, fig_depth, i; */
-    int fig_colour, fig_fill, fig_width, i;
+    int fig_colour, fig_fill, fig_width, fig_subt, i;
     int *spline_colours;
 
 /*
@@ -218,6 +218,7 @@ static void out_fig_splines(FILE * file, spline_list_array_type shape,
 	    if (j != 0) {fprintf(file,"\n");}
 	} else {
 	    /* Polygons can be handled better as polygons */
+	    fig_subt = 3;
 	    if (pointcount == 2) {
 		if ((pointx[0] == pointx[1]) && (pointy[0] == pointy[1])) {
 		    /* Point */
@@ -245,14 +246,18 @@ static void out_fig_splines(FILE * file, spline_list_array_type shape,
 		} else {
 		if ((pointx[0] != pointx[pointcount-1]) ||
 		 (pointy[0] != pointy[pointcount-1])) {
+		  if (shape.centerline) {
+			fig_subt = 1;
+		  } else {
 		/* Need to have last point same as first for polygon */
 		    pointx[pointcount] = pointx[0];
 		    pointy[pointcount] = pointy[0];
 		    pointcount++;
+		  }
 		}
 		fig_new_depth();
-		fprintf(file,"2 3 0 %d %d %d %d 0 %d 0.00 0 0 0 0 0 %d\n",
-		fig_width, fig_colour, fig_colour, fig_depth, fig_fill, pointcount);
+		fprintf(file,"2 %d 0 %d %d %d %d 0 %d 0.00 0 0 0 0 0 %d\n",
+		fig_subt, fig_width, fig_colour, fig_colour, fig_depth, fig_fill, pointcount);
 		/* Print out points */
 		j = 0;
 		for (i=0; i<pointcount; i++) {
