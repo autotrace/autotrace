@@ -8,12 +8,12 @@ What's new in AutoTrace 0.31.0?
 - changing the license of sources files input and output 
   to GNU Lesser Public License(LGPL)
 - checking libautotrace version number in autotrace.m4
-- output in dr2d format(Andrew Elia)
+- output in dz2d format(Andrew Elia)
 - introduced config.h
 - corrected thin-image
 - made more portable
 - corrected a bug in fitting
-- now recognizes linewidth
+- now recognizes line width
 
 What's new in AutoTrace 0.30.8?
 - added variable line width in centerline tracing(--width-factor, --preserve-width)
@@ -22,7 +22,7 @@ What's new in AutoTrace 0.30.8?
 - many bugs fixes
 
 What's new in AutoTrace 0.30.6?
-- added workarround for a compile time error that appears when 
+- added workaround for a compile time error that appears when 
   autotrace is linked to pstoedit-3.32.0.
 - made code that creates temporary file more portable.
 
@@ -57,14 +57,14 @@ What's new in AutoTrace 0.30?
 - man page (R. P. C. Rodgers)
 
 What's new in AutoTrace 0.29?
-- Small bugfix for binary output
+- Small bug fix for binary output
 - code rearrangements
 - CGM and MIF export
 - fixes the lowercase/uppercase problems
 - fix for swf export
 
 What's new in AutoTrace 0.28?
-- Several bugfixes
+- Several bug fixes
 - Progress bar
 - Cancel point
 - Efforts to make libautotrace.a thread-safe

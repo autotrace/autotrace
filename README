@@ -22,7 +22,7 @@ The program was tested using GNU/Linux, HP UX, Solaris, Windows98,
 Windows NT, Windows 2000, MAC and OS/2 4.0. It compiles with GCC,
 Borland C++ Builder, Visual C++ and many other compilers.
 
-If you use Visual C++ 6.0 for compilation be shure to have at
+If you use Visual C++ 6.0 for compilation be sure to have at
 least SP 5 otherwise you could get Memory access violations due to
 a bug in earlier versions.
 
@@ -41,7 +41,7 @@ need to install Ming (http://www.opaque.net/ming/). Also you can
 export to the p2e format. This format can be converted by pstoedit
 (www.pstoedit.net) to a large number of other formats. If you have
 installed the latest pstoedit(3.32 or newer), autotrace uses pstoedit
-directly. However, pstoedit supports directly is not stable enough. 
+directly. However, direct pstoedit support is not stable enough. 
 See INSTALL file for more detail.
 
 Installation
@@ -58,12 +58,12 @@ Here the options you can use in the command:
       You can use `--' or `-' to start an option.
       You can use any unambiguous abbreviation for an option name.
       You can separate option names and values with `=' or ` '.
-    background-color <hexadezimal>: the color of the background that
+    background-color <hexadecimal>: the color of the background that
       should be ignored, for example FFFFFF;
       default is no background color.
     centerline: trace a character's centerline, rather than its outline.
     color-count <unsigned>: number of colors a color bitmap is reduced to,
-      it does not work on grayscale, allowed are 1..256;
+      it does not work on gray scale, allowed are 1..256;
       default is 0, that means not color reduction is done.
     corner-always-threshold <angle-in-degrees>: if the angle at a pixel is
       less than this, it is considered a corner, even if it is within
@@ -106,11 +106,11 @@ Here the options you can use in the command:
     debug-arch: print the type of cpu.
     debug-bitmap: dump loaded bitmap to <input_name>.bitmap.
     version: print the version number of this program.
-    width-factor: weight factor for fitting the linewidth.
+    width-factor: weight factor for fitting the line width.
 
 The library is named libautotrace. About the usage of the library
 see autotrace.h.
-Here is a sample progaram that uses libautotrace.
+Here is a sample program that uses libautotrace.
 To compile, invoke following commands (on posix):
 gcc sample.c `./autotrace-config --libs` `./autotrace-config --cflags`
 
