@@ -91,6 +91,7 @@ autotraceinclude_HEADERS=\
 		types.h 			\
 		autotrace.h                     \
 		input.h				\
+		output.h 			\
 		exception.h
 
 #
@@ -100,8 +101,7 @@ autotraceinclude_HEADERS=\
 noinst_HEADERS = filename.h                     \
 		xstd.h                          \
 		logreport.h			\
-		message.h                       \
-		output.h 			
+		message.h                       
 
 autotrace_SOURCES=\
 		atou.c 				\

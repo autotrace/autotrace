@@ -41,12 +41,16 @@ rm -rf $RPM_BUILD_ROOT
 /usr/lib/libautotrace.a
 /usr/include/autotrace/exception.h
 /usr/include/autotrace/input.h
+/usr/include/autotrace/output.h
 /usr/share/aclocal/autotrace.m4
 /usr/bin/autotrace-config
 /usr/bin/autotrace
 
 %changelog
-* Tue Apr 16 13:28:35 2002 Masatake<yamato@redhat.com>
+* Sun May 12 2002  Masatake YAMATO<yamato@redhat.com>
+- Install output.h.
+
+* Tue Apr 16 2002 Masatake YAMATO<yamato@redhat.com>
 - Added LGPL to Copyright
 
 * Wed Apr  3 2002 Masatake YAMATO<yamato@redhat.com>

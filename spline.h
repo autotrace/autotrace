@@ -1,10 +1,12 @@
-/* spline.h: manipulate the spline representation. */
+/* spline.h: manipulate the spline representation. 
+   Some of macrs are only renamed macros in output.h. */
 
 #ifndef SPLINE_H
 #define SPLINE_H
 
 #include <stdio.h>
 #include "autotrace.h"
+#include "output.h"
 
 typedef at_polynomial_degree polynomial_degree;
 typedef at_spline_type spline_type;
@@ -16,11 +18,11 @@ typedef at_spline_type spline_type;
 #define ELLIPSETYPE         AT_ELLIPSETYPE
 #define CIRCLETYPE          AT_CIRCLETYPE
 
-#define START_POINT(spl)	((spl).v[0])
-#define CONTROL1(spl)		((spl).v[1])
-#define CONTROL2(spl)		((spl).v[2])
-#define END_POINT(spl)		((spl).v[3])
-#define SPLINE_DEGREE(spl)	((spl).degree)
+#define START_POINT	    AT_SPLINE_START_POINT_VALUE
+#define CONTROL1            AT_SPLINE_CONTROL1_VALUE
+#define CONTROL2            AT_SPLINE_CONTROL2_VALUE
+#define END_POINT           AT_SPLINE_END_POINT_VALUE
+#define SPLINE_DEGREE	    AT_SPLINE_DEGREE_VALUE
 #define SPLINE_LINEARITY(spl)	((spl).linearity)
 
 #ifndef _IMPORTING
@@ -37,13 +39,13 @@ typedef at_spline_list_type spline_list_type;
 
 
 /* An empty list will have length zero (and null data).  */
-#define SPLINE_LIST_LENGTH(s_l) ((s_l).length)
+#define SPLINE_LIST_LENGTH  AT_SPLINE_LIST_LENGTH_VALUE
 
 /* The address of the beginning of the array of data.  */
-#define SPLINE_LIST_DATA(s_l) ((s_l).data)
+#define SPLINE_LIST_DATA    AT_SPLINE_LIST_DATA_VALUE
 
 /* The element INDEX in S_L.  */
-#define SPLINE_LIST_ELT(s_l, index) (SPLINE_LIST_DATA (s_l)[index])
+#define SPLINE_LIST_ELT     AT_SPLINE_LIST_ELT_VALUE
 
 /* The last element in S_L.  */
 #define LAST_SPLINE_LIST_ELT(s_l) \
@@ -74,9 +76,9 @@ typedef at_spline_list_array_type spline_list_array_type;
 
 /* Turns out we can use the same definitions for lists of lists as for
    just lists.  But we define the usual names, just in case.  */
-#define SPLINE_LIST_ARRAY_LENGTH SPLINE_LIST_LENGTH
-#define SPLINE_LIST_ARRAY_DATA SPLINE_LIST_DATA
-#define SPLINE_LIST_ARRAY_ELT SPLINE_LIST_ELT
+#define SPLINE_LIST_ARRAY_LENGTH   AT_SPLINE_LIST_ARRAY_LENGTH_VALUE
+#define SPLINE_LIST_ARRAY_DATA     SPLINE_LIST_DATA
+#define SPLINE_LIST_ARRAY_ELT      AT_SPLINE_LIST_ARRAY_ELT_VALUE
 #define LAST_SPLINE_LIST_ARRAY_ELT LAST_SPLINE_LIST_ELT
 
 #ifndef _IMPORTING

@@ -7,11 +7,11 @@
   (0) Update NEWS file
   (1) Version number in configure.in
   (2) CVS tagging
-  (3) sourceforge(https://sourceforge.net/docman/display_doc.php?docid=781&group_id=1)
+  (3) sourceforge(http://sourceforge.net/docman/display_doc.php?docid=781&group_id=1)
 
 * CVS
 
-See https://sourceforge.net/cvs/?group_id=11789 
+See http://sourceforge.net/cvs/?group_id=11789 
 
 The module name is autotrace.  After checking out the codes, invoke
 autogen.sh in the distribution. That generates configure.in,

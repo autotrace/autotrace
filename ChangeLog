@@ -1,3 +1,19 @@
+2002-05-12  Masatake YAMATO  <yamato@redhat.com>
+
+	* Makefile.am: Made output.h installed.
+	
+	* spline.h: Use macros newly defined in output.h.
+
+	* output.[ch]: Added macros and functions that supports
+	accessing splines data. Don't include output.h.
+
+	* output-*.h: Use at_spline_list_array_type as a 
+	formal argument instead of spline_list_array_type.
+
+	* output-fig.c: Include spline.h.
+
+	* autotrace.[ch] (at_color_equal): New function.
+	
 2002-05-06  Martin Weber <martweb@gmx.net>
 
 	* filename.c (make_suffix): length_through_dot

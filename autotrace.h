@@ -344,11 +344,12 @@ void at_splines_free (at_splines_type * splines);
 /* --------------------------------------------------------------------- *
  * Color related 
  * --------------------------------------------------------------------- */
-at_color_type * at_color_new (unsigned char r, 
-			      unsigned char g,
-			      unsigned char b);
-at_color_type * at_color_copy (at_color_type * original);
-void at_color_free(at_color_type * color);
+at_color_type * at_color_new   (unsigned char r, 
+				unsigned char g,
+			        unsigned char b);
+at_color_type * at_color_copy  (at_color_type * original);
+at_bool         at_color_equal (at_color_type * c1, at_color_type * c2);
+void            at_color_free  (at_color_type * color);
 
 /* --------------------------------------------------------------------- *
  * Input related 

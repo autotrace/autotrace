@@ -160,3 +160,29 @@ at_output_add_handler (at_string suffix,
 {
   return 0;
 }
+
+void
+at_spline_list_foreach (at_spline_list_type * list,
+			AtSplineListForeachFunc func,
+			at_address user_data)
+{
+  int i;
+  for (i = 0; i < AT_SPLINE_LIST_LENGTH(list); i++)
+    {
+      func (list, AT_SPLINE_LIST_ELT(list, i), i, user_data);
+    }
+}
+
+
+void
+at_spline_list_array_foreach (at_spline_list_array_type *list_array,
+			      AtSplineListArrayForeachFunc func,
+			      at_address user_data)
+{
+  int i;
+  for (i = 0; i < AT_SPLINE_LIST_ARRAY_LENGTH(list_array); i++)
+    {
+      func (list_array, AT_SPLINE_LIST_ARRAY_ELT(list_array, i), i, user_data);
+    }
+}
+ 

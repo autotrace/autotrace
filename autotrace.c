@@ -320,6 +320,16 @@ at_color_copy (at_color_type * original)
 		      original->g, 
 		      original->b);
 }
+
+at_bool
+at_color_equal (at_color_type * c1, at_color_type * c2)
+{
+  if (c1 == c2)
+    return true;
+  else 
+    return (COLOR_EQUAL(*c1, *c2));
+}
+
 void 
 at_color_free(at_color_type * color)
 {
