@@ -15,9 +15,9 @@ ${srcdir}/tools-version.sh
 autofig autotrace-config.af
 
 if (aclocal-1.5 --version)  < /dev/null > /dev/null 2>&1; then
-    aclocal-1.5 -I m4 $ACLOCAL_FLAGS
+    aclocal-1.5 $ACLOCAL_FLAGS
 else
-    aclocal -I m4 $ACLOCAL_FLAGS
+    aclocal $ACLOCAL_FLAGS
 fi
 
 autoheader
@@ -27,6 +27,8 @@ if (automake-1.5 --version) < /dev/null > /dev/null 2>&1; then
 else
     automake -a
 fi
+
+libtoolize --copy --force
 
 if (autoconf-2.53 --version) < /dev/null > /dev/null 2>&1; then
     autoconf-2.53

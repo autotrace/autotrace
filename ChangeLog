@@ -1,3 +1,10 @@
+2003-07-02  Masatake YAMATO  <yamato@redhat.com>
+
+	* Makefile.am(SUBDIRS): m4 is removed.
+	(ACLOCAL_AMFLAGS): removed.
+
+	* configure.in: Don't use AC_PROG_RANLIB.
+
 2003-06-12  Serge Vakulenko <vak@cronyx.ru>
 
 	* input-gf.[ch]: New files.

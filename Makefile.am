@@ -1,4 +1,4 @@
-SUBDIRS = m4  po
+SUBDIRS = po
 man_MANS = autotrace.1
 EXTRA_DIST=$(man_MANS)						\
 output-swf.c output-swf.h					\
@@ -164,4 +164,4 @@ dist-hook: autotrace.spec
 rpm: dist autotrace.spec
 	rpm -bb autotrace.spec
 
-ACLOCAL_AMFLAGS = -I m4
+# ACLOCAL_AMFLAGS = -I m4
