@@ -18,6 +18,8 @@ autotrace-config.in
 autotrace.pc
 autotrace.spec
 config.cache
+config.h
+config.h.in
 config.log
 config.status
 configure
