@@ -243,6 +243,8 @@ find_one_outline (bitmap_type bitmap, edge_type original_edge,
 at_bool is_valid_dir (unsigned short row, unsigned short col, direction_type dir, bitmap_type bitmap, bitmap_type marked)
 {
   return (!is_marked_dir(row, col, dir, marked)
+          && COMPUTE_DELTA(ROW, dir)+row > 0
+	  && COMPUTE_DELTA(COL, dir)+col > 0
           && BITMAP_VALID_PIXEL(bitmap, COMPUTE_DELTA(ROW, dir)+row, COMPUTE_DELTA(COL, dir)+col)
           && COLOR_EQUAL(GET_COLOR(bitmap, COMPUTE_DELTA(ROW, dir)+row, COMPUTE_DELTA(COL, dir)+col),
 			 GET_COLOR(bitmap, row, col)));

@@ -1,3 +1,10 @@
+2002-10-29  Martin Weber <martweb@gmx.net>
+
+	* pxl-outline.c (is_valid_dir): used
+	COMPUTE_DELTA twice to avoid a bug.
+
+	Message-ID: <3DBEDC7E.9F1FD467@gmx.net>.
+
 2002-10-30  Masatake YAMATO  <yamato@redhat.com>
 
 	* configure.in: Display more messages
