@@ -1,3 +1,10 @@
+2002-11-10  Martin Weber <martweb@gmx.net>
+
+	* strgicmp.c (strgnicmp): Use size_t instead of
+	  long to avoid warnings from compilers.
+
+	Message-ID: <3DCCD9C3.9737E7C4@gmx.net>.
+
 2002-11-09  Masatake YAMATO  <yamato@redhat.com>
 
 	* autotrace.h (at_doc__width_weight_factor): Updated.
