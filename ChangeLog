@@ -1,3 +1,10 @@
+2002-10-09  Masatake YAMATO  <yamato@redhat.com>
+
+	* FAQ: Fix a typo. Suggested by Martin.
+
+	* configure.in: version 0.30.8.
+	Updated cocuments.
+
 2002-10-08  Martin Weber <martweb@gmx.net>
 
 	* input-magick.c (input_magick_reader): Use AT_ macros.

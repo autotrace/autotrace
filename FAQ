@@ -31,7 +31,7 @@ A2. We have to detect one of the three states:
        -- pstoedit-config in 3.32 has some bugs. workaround macros
 	  must be enabled.
     3. We have pstoedit 3.33. or higher
-       -- The workaround macros must be diasbled. I sent patches 
+       -- The workaround macros must be disabled. I sent patches 
 	  that fixes the bugs to the author of pstoedit. So the 
 	  pstoedit-config in 3.33 will not have the bugs.
 
