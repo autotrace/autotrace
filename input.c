@@ -9,7 +9,8 @@
 #include "input-png.h"
 #endif /* HAVE_LIBPNG */
 #if HAVE_MAGICK
-#include <magick/magick.h>
+#include <sys/types.h> /* Needed for correct interpretation of magick/api.h */
+#include <magick/api.h>
 #include "input-magick.h"
 #endif /* HAVE_MAGICK */
 

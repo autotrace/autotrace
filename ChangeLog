@@ -1,3 +1,12 @@
+2001-12-03  Martin Weber <martweb@gmx.net>
+
+	* input.c: We should use api.h instead of
+	magick.h, now also works using C++.
+
+	* input-magick.c: Likewise.
+
+	(Message-ID: <3C0A6916.D7C47C1F@gmx.net>).
+	
 2001-12-02  Martin Weber <martweb@gmx.net>
 
 	* types.h: adopted to C++.

@@ -4,8 +4,9 @@
 
 #include <stdio.h>
 #include <stdlib.h>
-#include <sys/types.h>
-#include <magick/magick.h>
+#include <string.h>
+#include <sys/types.h> /* Needed for correct interpretation of magick/api.h */
+#include <magick/api.h>
 #include "input-magick.h"
 #include "bitmap.h"
 
