@@ -101,6 +101,7 @@ pstoedit_suffix_table_init (void)
 	  dd_tmp++;
 	}
       pstoedit_suffix_table[2 * (dd_tmp - dd_start)] = NULL;
+      free(dd_start);
     }
   else
     {
@@ -270,6 +271,7 @@ output_pstoedit_writer (const at_string suffix,
   remove_temporary_file(tmpfile_name_pstoedit);
  remove_tmp_p2e:
   remove_temporary_file(tmpfile_name_p2e);
+  free(symbolicname);
   return result;
 }
 
@@ -298,25 +300,34 @@ output_pstoedit_is_unusable_writer(const at_string name)
 static const at_string
 get_symbolicname(const at_string suffix)
 {
-  struct DriverDescription_S* dd_tmp;
+  at_string symbolicname = NULL;
+  struct DriverDescription_S* dd_start, * dd_tmp;
   
   if (!suffix)
     return NULL;
   
-  dd_tmp = getPstoeditDriverInfo_plainC();
-  if (dd_tmp)
+  dd_start = getPstoeditDriverInfo_plainC();
+  if (dd_start)
     {
+      dd_tmp = dd_start;
       while (dd_tmp->symbolicname)
 	 {
 	   if (0 == strcmp(dd_tmp->suffix, suffix))
-	     return dd_tmp->symbolicname;
+	     {
+	       symbolicname = strdup(dd_tmp->symbolicname);
+	       break;
+	     }
 	   else if (0 == strcmp(dd_tmp->symbolicname, suffix))
-	     return suffix;
+	     {
+	       symbolicname = strdup(suffix);
+	       break;
+	     }
 	   else
 	     dd_tmp++;
 	 }
+      free (dd_start);
     }
-  return NULL;
+  return symbolicname;
 }
 
 /* make_temporary_file --- Make a temporary file */

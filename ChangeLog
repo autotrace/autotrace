@@ -1,5 +1,11 @@
 2002-10-23  Masatake YAMATO  <yamato@redhat.com>
 
+	* output-pstoedit.c (get_symbolicname) 
+	(pstoedit_suffix_table_init): free return
+	value of getPstoeditDriverInfo_plainC.
+	(get_symbolicname): returned value is strdup'ed.
+	(output_pstoedit_writer): free symbolicname.
+
 	* output-pstoedit.[ch]: rewrote code that 
 	handles suffix.
 
