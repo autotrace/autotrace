@@ -84,7 +84,7 @@ pstoedit_suffix_table_init (void)
       dd_tmp   = dd_start;
       while (dd_tmp->symbolicname)
 	dd_tmp++;
-      XMALLOC(pstoedit_suffix_table, sizeof(char *) * 2 * (dd_tmp - dd_start) + 1);
+      XMALLOC(pstoedit_suffix_table, sizeof(char *) * 2 * (dd_tmp - dd_start) + 4);
 
 #if defined (OUTPUT_PSTOEDIT_DEBUG) && defined(__GNUC__)
   fprintf(stderr, "OUTPUT PSTOEDIT BACKEND DEBUG(%s)\n", __FUNCTION__);
