@@ -71,10 +71,8 @@ calc_error_8 (unsigned char *color1,
             unsigned char *color2)
 {
   int the_error;
-  int temp;
 
-  temp = color1[0] - color2[0];
-  the_error = temp * temp;
+  the_error = abs (color1[0] - color2[0]);
 
   return the_error;
 }
@@ -194,7 +192,7 @@ find_size_8 (/* in */   unsigned char *index,
 }
 
 
-/* Find Most Similar Neighbor - Given a position in an 8bit bitmap and a color
+/* Find Most Similar Neighbor - Given a position in an 24 bit bitmap and a color
  * index, traverse over a blob of adjacent pixels having the same value.
  * Return the color index of the neighbor pixel that has the most similar
  * color.
@@ -289,7 +287,7 @@ find_most_similar_neighbor (/* in */     unsigned char *index,
 }
 
 
-/* Find Most Similar Neighbor - Given a position in an 8bit bitmap and a color
+/* Find Most Similar Neighbor - Given a position in an 8 bit bitmap and a color
  * index, traverse over a blob of adjacent pixels having the same value.
  * Return the color index of the neighbor pixel that has the most similar
  * color.
@@ -534,11 +532,12 @@ recolor (/* in */     double adaptive_tightness,
          /* in/out */ unsigned char *mask)
 {
   unsigned char *index, *to_index;
-  int error_amt;
+  int error_amt, max_error;
 
   index = &bitmap[3 * (y * width + x)    ];
   to_index = NULL;
   error_amt = 0;
+  max_error = (int) (3.0 * adaptive_tightness * adaptive_tightness);
 
   find_most_similar_neighbor (index, &to_index, &error_amt,
                               x, y, width, height, bitmap, mask);
@@ -546,20 +545,13 @@ recolor (/* in */     double adaptive_tightness,
   /* This condition only fails if the bitmap is all the same color */
   if (to_index != NULL)
     {
-      double temp_error;
-
-      /* Adaptive */
-      temp_error = calc_error (index, to_index);
-
-      temp_error = sqrt (temp_error / 3.0);
-
       /*
        * If the difference between the two colors is too great,
        * don't coalesce the feature with its neighbor(s).  This prevents a
        * color from turning into its complement.
        */
 
-      if (temp_error > adaptive_tightness)
+      if (calc_error (index, to_index) > max_error)
         fill (index, x, y, width, height, bitmap, mask);
       else
         {
@@ -613,20 +605,13 @@ recolor_8 (/* in */   double adaptive_tightness,
   /* This condition only fails if the bitmap is all the same color */
   if (to_index != NULL)
     {
-      double temp_error;
-
-      /* Adaptive */
-      temp_error = calc_error_8 (index, to_index);
-
-      temp_error = sqrt (temp_error / 3.0);
-
       /*
        * If the difference between the two colors is too great,
        * don't coalesce the feature with its neighbor(s).  This prevents a
        * color from turning into its complement.
        */
 
-      if (temp_error > adaptive_tightness)
+      if (calc_error_8 (index, to_index) > adaptive_tightness)
         fill_8 (index, x, y, width, height, bitmap, mask);
       else
         {
@@ -806,3 +791,4 @@ despeckle (/* in/out */ bitmap_type *bitmap,
     }
 
 }
+

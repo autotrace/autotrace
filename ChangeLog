@@ -1,5 +1,9 @@
 2003-01-20  Martin Weber <martweb@gmx.net>
 
+	* despeckle.c: speedup and fix of bug in gray bitmap despeckle.
+
+2003-01-20  Martin Weber <martweb@gmx.net>
+
 	* autotrace.[dsp,vcproj]: support of input-png added.
 
 2003-01-19  Martin Weber <martweb@gmx.net>
