@@ -1,0 +1,245 @@
+.TH AUTOTRACE 1 "24 December 2001"
+.SH NAME
+autotrace \- convert bit map image data to vector graphics
+.SH SYNOPSIS
+.B autotrace
+.RB [ \-background
+.IR " hexvalue" ]
+.RB [ \-centerline ]
+.RB [ \-color-count
+.IR " int" ]
+.RB [ \-corner-always-threshold
+.IR " angle" ]
+.RB [ \-corner-surround
+.IR " int" ]
+.RB [ \-corner-threshold
+.IR " angle" ]
+.RB [ \-despeckle-level
+.IR " int" ]
+.RB [ \-despeckle-tightness
+.IR " real" ]
+.RB [ \-error-threshold
+.IR " real" ]
+.RB [ \-filter-iterations
+.IR " int" ]
+.RB [ \-help ]
+.RB [ \-input-format
+.IR " format" ]
+.RB [ \-line-reversion-threshold
+.IR " real" ]
+.RB [ \-line-threshold
+.IR " real" ]
+.RB [ \-list-input-formats ]
+.RB [ \-list-output-formats ]
+.RB [ \-log ]
+.RB [ \-output-file
+.IR " file" ]
+.RB [ \-output-format
+.IR " format" ]
+.RB [ \-remove-adjacent-corners ]
+.RB [ \-report-progress ]
+.RB [ \-tangent-surround
+.IR " int" ]
+.RB [ \-version ]
+.I inputfile
+.SH DESCRIPTION
+The
+.I autotrace
+program accepts bitmap graphics from the file
+.I inputfile
+specified on the command line,
+and as output produces a collection of splines approximating the original image,
+the converting the image from bitmap to vector format.
+It behaves in a manner similar to the commercial software known as
+StreamLine (from Adobe Systems, Inc.).
+The result is sent to standard output unless the
+.B \-output-file
+option is active.
+.SH OPTIONS
+Options can begin with either
+.B \-\-
+or
+.BR \- .
+Any unambiguous abbreviation can be used for the option name.
+Option names and values can be separated with either a space or equal sign (=).
+.TP
+.BI \-background-color " hexvalue"
+Employ the color specified by the hexadecimal code
+.I hexcode
+as the background that should be ignored, for example FFFFFF
+(default: no background color).
+.TP
+.B \-centerline
+Trace an object's centerline
+(default: employ its outline).
+.TP
+.BI \-color-count " int"
+Reduce the bitmap to using the number of colors specified by
+the unsigned integer
+.I int
+(range: 1-256).
+The default value of 0 indicates that no color reduction is to be done.
+Does not work with grayscale images.
+.TP
+.BI \-corner-always-threshold " angle"
+Consider any angle at a pixel which falls below the specified
+.I angle
+(in degrees) as a corner,
+even if it is bordered by other corner pixels (default: 60).
+.TP
+.BI \-corner-surround " int"
+Consider the specified number of pixels on either side of a
+point when determining if that point is a corner (default: 4).
+.TP
+.BI \-corner-threshold " angle"
+Consider any pixel which forms an angle with its predecessor(s) and successor(s)
+that is smaller than the specified
+.I angle 
+(in degrees) as a corner (default: 100).
+.TP
+.BI \-despeckle-level " int"
+Employ the specified integer (range: 1-20) as the value for despeckling
+(default: no despeckling).
+.TP
+.BI \-despeckle-tightness " real"
+Employ the specified real number (range: 0.0-8.0) as the value for despeckle
+tightness (default: 2.0).
+.TP
+.BI \-error-threshold " real"
+Subdivide fitted curves that are offset by a number of pixels exceeding the
+specified real number (default: 2.0).
+.TP
+.BI \-filter-iterations " int"
+Smooth the curve the specified number of times prior to fitting (default: 4).
+.TP
+.B \-help
+Print a help message and exit.
+.TP
+.BI \-input-format " format"
+Employ the specified input format,
+where
+.I format
+is one of:
+.RS
+.TP
+.BR BMP " (Windows bitmap format)"
+.TP
+.BR PBM " (Portable BitMap format)"
+.TP
+.BR PGM " (Portable Graymap format)"
+.TP
+.BR PNM " (Portable Anymap format)"
+.TP
+.BR PPM " (Portable Pixmap format)"
+.TP
+.BR TGA " (Targa format)"
+.RE
+.IP
+The supported input formats are determined when the application is built
+and depend upon the availability of other software (the
+.B \-list-input-formats
+command can be used to determine which are supported locally).
+.TP
+.BI \-line-reversion-threshold " real"
+When a spline is closer to a straight line than the specified real number
+weighted by the square of the curve length (default: .01),
+maintain it as a straight line,
+even if it is a list with curves.
+.TP
+.BI \-line-threshold " real"
+If a spline does not deviate from the straight line defined by its endpoints
+by more than the specified number of pixels,
+then treat it as a straight line (default: 1).
+.TP
+.B \-list-input-formats
+Send a list of the supported input formats to stderr.
+.TP
+.B \-list-output-formats
+Send a list of the supported output formats to stderr.
+.TP
+.B \-log
+Send a detailed progress report to the file
+.IR inputfile .log.
+.TP
+.BI \-output-file " file"
+Send the output to the specified file.
+.TP
+.BI \-output-format " format"
+Employ the specified output format,
+where
+.I format
+is one of:
+.RS
+.TP
+.BR ai "(Adobe Illustrator)"
+.TP
+.BR cgm "(Computer Graphics Metafile)"
+.TP
+.BR dxf "(AutoCAD Drawing Exchange format)"
+.TP
+.BR dxf12 "(AutoCAD Release 12 DXF [without splines])"
+.TP
+.BR emf "(Windows Enhanced Metafile format)"
+.TP
+.BR epd "(Encapsulated Vectorial Graphics format)"
+.TP
+.BR eps "(Encapsulated \*(Ps)"
+.TP
+.BR er "(Elastic Reality Shape format)"
+.TP
+.BR fig "(\fIxfig\fP (1) 3.2)"
+.TP
+.BR mif "(FrameMaker MIF format)"
+.TP
+.BR pdf "(Portable Data Format)"
+.TP
+.BR p2e "(\fIpstoedit\fP (1) frontend)"
+.TP
+.BR sk "(Sketch)"
+.TP
+.BR svg "(Scalable Vector Graphics)"
+.TP
+.BR swf "(Shockwave Flash 3)"
+.RE
+.IP
+The supported output formats are determined when the application is built
+and depend upon the availability of other software (the
+.B \-list-output-formats
+command can be used to determine which are supported locally).
+.TP
+.B \-remove-adjacent-corners
+Remove adjacent corners.
+.TP
+.B \-report-progress
+Report tracing status in real time.
+.TP
+.BI \-tangent-surround " int"
+Consider the specified number of points to either side of a point 
+when computing the tangent at that point (default: 3).
+.TP
+.B \-version
+Print the version number of the program and exit.
+.SH FILES
+.TP 2.2i
+/depot/bin/autotrace
+binary
+.SH "SEE ALSO"
+gimp(1),
+ImageMagick(1),
+pbm(1),
+pgm(1),
+pnm(1),
+ps2pdf(1),
+pstoedit(1),
+pstoepd(1),
+sketch(1),
+xfig(1),
+xv(1)
+.SH AUTHORS
+Martin Weber (martweb@gmx.net)
+.LP
+Manual page by R. P. C. Rodgers,
+Lister Hill National Center for Biomedical Communications,
+U.S. National Library of Medicine
+(rodgers@nlm.nih.gov).
+.\" end of man page

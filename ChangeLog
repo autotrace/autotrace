@@ -1,3 +1,9 @@
+2002-01-31  Masatake YAMATO  <yamato@redhat.com>
+
+	* Makefile.am (man_MANS): Added autotrace.1.
+
+	* autotrace.1: Contributed by R. P. C. Rodgers<rodgers@nlm.nih.gov>.
+
 2002-01-30  Masatake YAMATO  <yamato@redhat.com>
 
 	* configure.in (AC_CHECK_LIB(png)): Added -lm.
