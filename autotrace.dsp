@@ -42,7 +42,7 @@ RSC=rc.exe
 # PROP Ignore_Export_Lib 0
 # PROP Target_Dir ""
 # ADD BASE CPP /nologo /W3 /GX /O2 /D "WIN32" /D "NDEBUG" /D "_CONSOLE" /D "_MBCS" /YX /FD /c
-# ADD CPP /MD /W3 /Gm /GX /Zi /O2 /I "C:\ImageMagick" /D "WIN32" /D "_WINDOWS" /D "_VISUALC_" /D "NeedFunctionPrototypes" /D "_MBCS" /D "_DLL" /D "_MAGICKMOD_" /D "HAVE_MAGICK" /D "_AFXDLL" /D VERSION=\"0.27\" /Fp"C:\autotrace-neu\autotrace___Win32_Release/autotraceexe.pch" /YX /Fo"C:\autotrace-neu\autotrace___Win32_Release/" /Fd"C:\autotrace-neu\autotrace___Win32_Release/" /FD /c
+# ADD CPP /MD /W3 /Gm /GX /Zi /O2 /I "C:\ImageMagick" /D "WIN32" /D "_WINDOWS" /D "_VISUALC_" /D "NeedFunctionPrototypes" /D "HAVE_MAGICK" /D VERSION=\"0.27\" /Fp"C:\autotrace-neu\autotrace___Win32_Release/autotraceexe.pch" /YX /Fo"C:\autotrace-neu\autotrace___Win32_Release/" /Fd"C:\autotrace-neu\autotrace___Win32_Release/" /FD /c
 # ADD BASE RSC /l 0x407 /d "NDEBUG"
 # ADD RSC /l 0x407 /d "NDEBUG" /d "_AFXDLL"
 BSC32=bscmake.exe
@@ -50,7 +50,7 @@ BSC32=bscmake.exe
 # ADD BSC32 /nologo
 LINK32=link.exe
 # ADD BASE LINK32 kernel32.lib user32.lib gdi32.lib winspool.lib comdlg32.lib advapi32.lib shell32.lib ole32.lib oleaut32.lib uuid.lib odbc32.lib odbccp32.lib kernel32.lib user32.lib gdi32.lib winspool.lib comdlg32.lib advapi32.lib shell32.lib ole32.lib oleaut32.lib uuid.lib odbc32.lib odbccp32.lib /nologo /subsystem:console /machine:I386
-# ADD LINK32 CORE_RL_magick_.lib winmm.lib dxguid.lib wsock32.lib LIBR_RL_PNG_.lib /nologo /subsystem:console /machine:I386 /libpath:"C:\ImageMagick\VisualMagick\lib\\"
+# ADD LINK32 CORE_RL_magick_.lib /nologo /subsystem:console /machine:I386 /libpath:"C:\ImageMagick\VisualMagick\lib\\"
 # SUBTRACT LINK32 /pdb:none
 
 !ELSEIF  "$(CFG)" == "autotrace - Win32 Debug"
@@ -67,7 +67,7 @@ LINK32=link.exe
 # PROP Ignore_Export_Lib 0
 # PROP Target_Dir ""
 # ADD BASE CPP /nologo /W3 /Gm /GX /ZI /Od /D "WIN32" /D "_DEBUG" /D "_CONSOLE" /D "_MBCS" /YX /FD /GZ /c
-# ADD CPP /nologo /MDd /W3 /Gm /GX /Zi /Od /I "C:\ImageMagick" /D "_DEBUG" /D "WIN32" /D "_WINDOWS" /D "_VISUALC_" /D "NeedFunctionPrototypes" /D "_MBCS" /D "_DLL" /D "_MAGICKMOD_" /D "HAVE_MAGICK" /D "_AFXDLL" /D VERSION=\"0.27\" /Fp"C:\autotrace-neu\autotrace___Win32_Debug\autotrace.exe.pch" /YX /Fo"C:\autotrace-neu/" /Fd"C:\autotrace-neu/" /FD /c
+# ADD CPP /nologo /MDd /W3 /Gm /GX /Zi /Od /I "C:\ImageMagick" /D "_DEBUG" /D "WIN32" /D "_WINDOWS" /D "_VISUALC_" /D "NeedFunctionPrototypes" /D "HAVE_MAGICK" /D VERSION=\"0.27\" /Fp"C:\autotrace-neu\autotrace___Win32_Debug\autotrace.exe.pch" /YX /Fo"C:\autotrace-neu/" /Fd"C:\autotrace-neu/" /FD /c
 # ADD BASE RSC /l 0x407 /d "_DEBUG"
 # ADD RSC /l 0x407 /d "_DEBUG" /d "_AFXDLL"
 BSC32=bscmake.exe
@@ -75,7 +75,7 @@ BSC32=bscmake.exe
 # ADD BSC32 /nologo
 LINK32=link.exe
 # ADD BASE LINK32 kernel32.lib user32.lib gdi32.lib winspool.lib comdlg32.lib advapi32.lib shell32.lib ole32.lib oleaut32.lib uuid.lib odbc32.lib odbccp32.lib kernel32.lib user32.lib gdi32.lib winspool.lib comdlg32.lib advapi32.lib shell32.lib ole32.lib oleaut32.lib uuid.lib odbc32.lib odbccp32.lib /nologo /subsystem:console /debug /machine:I386 /pdbtype:sept
-# ADD LINK32 CORE_DB_magick_.lib dxguid.lib winmm.lib /nologo /subsystem:console /debug /machine:I386 /pdbtype:sept /libpath:"C:\ImageMagick\VisualMagick\lib\\"
+# ADD LINK32 CORE_DB_magick_.lib /nologo /subsystem:console /debug /machine:I386 /pdbtype:sept /libpath:"C:\ImageMagick\VisualMagick\lib\\"
 
 !ENDIF 
 
