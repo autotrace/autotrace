@@ -1,5 +1,13 @@
 2001-04-11  Masatake YAMATO  <yamato@redhat.com>
 
+	* configure.in: Don't check malloc.h.
+
+	* output-er.c: Don't include malloc.h.
+
+	* output-p2e.c: Likewise.
+
+2001-04-11  Masatake YAMATO  <yamato@redhat.com>
+
 	* output-er.c: Include malloc.h if HAVE_MALLOC_H is
 	defined.
 
