@@ -2,6 +2,25 @@
 
 		    Notes for autotrace developers
 
+* Autotools
+
+  Versions I (Masatake) am using:
+
+  autoconf --version
+  autoconf (GNU Autoconf) 2.52
+  
+  automake --version
+  automake (GNU automake) 1.5
+
+  libtool --version
+  ltmain.sh (GNU libtool) 1.4.2 (1.922.2.53 2001/09/11 03:18:52)
+
+  However config.guess of 1.5 that is part of automake is broken,
+  therefore I'm replacing it with
+
+  ./config.guess --version
+  GNU config.guess (2001-04-20)
+
 * How to release
 
   (0) Update NEWS file
