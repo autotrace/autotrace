@@ -1,3 +1,17 @@
+2000-10-03  Masatake YAMATO  <yamato@redhat.com>
+
+	* output.c: Added emf as a new output format.
+
+	* Makefile.am (output_src): Added output-emf.[ch].
+
+	* main.c (INPUT_SUFFIX_LIST): Renamed SUFFIX_LIST.
+	(OUTPUT_SUFFIX_LIST): New constant.
+	(OUTPUT_SUFFIX_LIST): Added emf as a new output format.
+
+	* output-emf.[hc]: New files from 
+	  Enrico Persiani <persiani at students.cs.unibo.it>.
+
+	
 2000-10-01  Masatake YAMATO  <yamato@redhat.com>
 
 	* xmem.h: Replaced with new one which is sent from Martin.

@@ -12,6 +12,7 @@
 #endif /* LIBSWF */
 #include "output-dxf.h"
 #include "output-dxf12.h"
+#include "output-emf.h"
 #include <string.h>
 
 struct output_format_entry {
@@ -33,6 +34,7 @@ static struct output_format_entry output_formats[] = {
 #endif /* LIBSWF */
     {"dxf",     "DXF R14",                      output_dxf_writer},
     {"dxf12",   "DXF R12",                      output_dxf12_writer},
+    {"emf",     "Enhanced Metafile format",     output_emf_writer},
     {NULL,	NULL}
 };
 
