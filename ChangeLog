@@ -1,3 +1,8 @@
+2001-11-19  Martin Weber  <martweb@gmx.net>
+
+	* pxl-outline.c (find_one_outline): Fixed that sometimes the first 
+	point of the outline is wrong 
+
 2001-11-19  Dan Mills <dmills@spamblock.demon.co.uk>
 
 	* fit.c (split_at_corners): 

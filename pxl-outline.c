@@ -197,8 +197,8 @@ find_one_outline (bitmap_type bitmap, edge_type original_edge,
   edge_type edge = original_edge;
   coordinate_type pos;
 
-  pos.x = col;
-  pos.y = BITMAP_HEIGHT (bitmap) - row + 1;
+  pos.x = col + ((edge == RIGHT) || (edge == BOTTOM) ? 1 : 0);
+  pos.y = BITMAP_HEIGHT (bitmap) - row + ((edge == TOP) || (edge == RIGHT) ? 1 : 0);
 
   if (!ignore)
     outline = new_pixel_outline ();
