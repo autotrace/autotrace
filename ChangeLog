@@ -1,3 +1,8 @@
+2003-06-07  Mario Kleiner <mario.kleiner@tuebingen.mpg.de>
+
+	* output-mif.c (output_mif_writer): fixed bug in output 
+	of spline sample points.
+
 2003-03-10  Martin Weber <martweb@gmx.net>
 
 	* output-dxf.c: Now checks memory allocation.

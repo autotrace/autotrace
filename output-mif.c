@@ -187,7 +187,7 @@ int output_mif_writer(FILE* ps_file, at_string name,
         at_real temp;
 	at_real dt = (at_real) (1.0/7.0);
 	/*smooth = true;*/
-	for( temp=dt; fabs(temp-(at_real)1.0)<dt; temp+=dt ){
+	for( temp=dt; fabs(temp-(at_real)1.0)>dt; temp+=dt ){
 	  print_coord(ps_file,
 	    bezpnt(temp,START_POINT(s).x,CONTROL1(s).x,CONTROL2(s).x,END_POINT(s).x),
 	    bezpnt(temp,START_POINT(s).y,CONTROL1(s).y,CONTROL2(s).y,END_POINT(s).y));
