@@ -1,3 +1,20 @@
+2002-09-10  Martin Weber <martweb@gmx.net>
+
+	* output-pstoedit.c: Include io.h if _VISUALC_
+	is defined.
+	(set_last_suffix): returned void.
+	(output_pstoedit_writer): tmpfd is typed
+	as char * if _VISUALC_ is defined.
+	(output_pstoedit_writer): Use _mktemp instead
+	of mkstemp if _VISUALC_ is defined.
+	(output_pstoedit_writer): do fopen if 
+	_VISUALC_ is defined.
+	(output_pstoedit_writer): did fclose instead
+	of close.
+	(remove_tmpfile): Added const to the 1st parameter.
+
+	Message-ID: <3D7D116C.68950963@gmx.net>.
+
 2002-09-09  Masatake YAMATO  <yamato@redhat.com>
 
 	* configure.in: Version 0.30.5.

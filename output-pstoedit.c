@@ -32,7 +32,7 @@
    tmpfile  || no problem | SVID 3, POSIX, BSD 4.3, ISO 9899, SUSv2
    tmpnam   || risky      | SVID 2, POSIX, BSD 4.3, ISO 9899 
    -------------------------------------------------------------------
-   tmpfile returns file poineter, not file name 
+   tmpfile returns file pointer, not file name 
 
    mkstemp is the best in the security aspect, however it is not portable.
    (Read http://groups.yahoo.com/group/autotrace/message/369) */
@@ -45,13 +45,16 @@
 #include <stdlib.h>
 #include <string.h>
 #include <errno.h>
+#ifdef _VISUALC_    
+#include <io.h>
+#endif
 
 #define BO_DEBUG 0
 #define TMPDIR "/tmp/"
 
 static void remove_tmpfile (const at_string tmpfile_name);
 static const at_string get_symbolicname(const at_string suffix);
-static at_bool   set_last_suffix (const at_string suffix);
+static void   set_last_suffix (const at_string suffix);
 static at_string get_last_suffix (void);
 static at_string output_pstoedit_suffix = NULL;	/* Don't use directly. */
 
@@ -86,7 +89,11 @@ output_pstoedit_writer (FILE* file, at_string name,
   char  tmpfile_name_p2e[] = TMPDIR "at-bo-" "XXXXXX";
   char  tmpfile_name_pstoedit[] = TMPDIR "at-fo-" "XXXXXX";
   char * symbolicname;
+#ifdef _VISUALC_    
+  char * tmpfd;
+#else
   int tmpfd;
+#endif
   FILE * tmpfile;
   int result = 0;
   int c;
@@ -120,8 +127,11 @@ output_pstoedit_writer (FILE* file, at_string name,
 		  AT_MSG_WARNING, msg_data);
       return -1;
     }
-    
+#ifdef _VISUALC_    
+  tmpfd = _mktemp(tmpfile_name_p2e);
+#else
   tmpfd = mkstemp(tmpfile_name_p2e);
+#endif
   if (tmpfd < 0)
     {
       if (msg_func)
@@ -133,7 +143,11 @@ output_pstoedit_writer (FILE* file, at_string name,
       return -1;
     }
 
+#ifdef _VISUALC_    
+  tmpfile = fopen(tmpfd, "w");
+#else
   tmpfile = fdopen(tmpfd, "w");
+#endif
   if (NULL == tmpfile)
     {
       if (msg_func)
@@ -142,7 +156,7 @@ output_pstoedit_writer (FILE* file, at_string name,
 		    AT_MSG_WARNING, msg_data);
 	  msg_func (strerror(errno), AT_MSG_FATAL, msg_data);
 	}
-      close(tmpfd);
+      fclose(tmpfile);
       result = -1;
       goto remove_tmp_p2e;
     }
@@ -155,7 +169,11 @@ output_pstoedit_writer (FILE* file, at_string name,
 		    shape, msg_func, msg_data);
   fclose(tmpfile);
 
+#ifdef _VISUALC_    
+  tmpfd = _mktemp(tmpfile_name_pstoedit);
+#else
   tmpfd = mkstemp(tmpfile_name_pstoedit);
+#endif
   if (tmpfd < 0)
     {
       if (msg_func)
@@ -179,7 +197,11 @@ output_pstoedit_writer (FILE* file, at_string name,
   /*
    * specified formatted file(tmpfile_name_pstoedit) -> file  
    */
+#ifdef _VISUALC_    
+  tmpfile = fopen(tmpfd, "r");
+#else
   tmpfile = fdopen(tmpfd, "r");
+#endif
   if (NULL == tmpfile)
     {
       if (msg_func)
@@ -188,7 +210,7 @@ output_pstoedit_writer (FILE* file, at_string name,
 		    AT_MSG_WARNING, msg_data);
 	  msg_func (strerror(errno), AT_MSG_FATAL, msg_data);
 	}
-      close(tmpfd);
+      fclose(tmpfile);
       result = -1;
       goto remove_tmp_pstoedit;
     }
@@ -205,13 +227,13 @@ output_pstoedit_writer (FILE* file, at_string name,
 }
 
 static void
-remove_tmpfile (at_string tmpfile_name)
+remove_tmpfile (const at_string tmpfile_name)
 {
 #if BO_DEBUG == 0
   remove (tmpfile_name);
 #else 
   fprintf(stderr, "tmp file name: %s\n", tmpfile_name);
-#endif /* Not BO_DEBUG == 0 */  
+#endif /* Not BO_DEBUG == 0 */ 
 }
 
 at_bool
@@ -225,7 +247,7 @@ output_pstoedit_is_unusable_writer(const at_string name)
     return false;
 }
 
-static at_bool
+static void
 set_last_suffix (const at_string suffix)
 {
   if (output_pstoedit_suffix)
