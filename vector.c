@@ -48,7 +48,7 @@ vector_to_point (const vector_type v)
 at_real
 magnitude (const vector_type v)
 {
-  return (at_real) hypot (v.dx, v.dy);
+  return (at_real) sqrt (v.dx*v.dx + v.dy*v.dy);
 }
 
 
@@ -110,7 +110,9 @@ Vmult_scalar (const vector_type v, const at_real r)
    degrees, in the range zero to 180.  */
 
 at_real
-Vangle (const vector_type in_vector, const vector_type out_vector, at_exception * exp)
+Vangle (const vector_type in_vector, 
+	const vector_type out_vector,
+	at_exception * exp)
 {
   vector_type v1 = normalize (in_vector);
   vector_type v2 = normalize (out_vector);

@@ -2,7 +2,7 @@ man_MANS = autotrace.1
 EXTRA_DIST=$(man_MANS)						\
 output-swf.c output-swf.h					\
 input-magick.h input-magick.c input-png.c input-png.h		\
-autotrace-config.af vc++6.0.txt autotrace.dsp autotrace.dsw	\
+autotrace-config.af autotrace.dsp autotrace.dsw			\
 autotrace.m4 shape_cubic.c.diff README.MING			\
 libming.dsw libming.dsp						\
 autotrace.sln autotrace.vcproj libming.sln libming.vcproj	\

@@ -1,3 +1,18 @@
+2001-12-24  Martin Weber <martweb@gmx.net>
+
+	* vector.c (magnitude): replaced hypot.
+
+	(Message-ID: <14237.1013082801@www56.gmx.net>).
+	
+2002-02-06  Masatake YAMATO  <yamato@redhat.com>
+
+	* configure.in (AC_CHECK_LIB): Put '[', ']' to nested macro
+	invocations.
+
+2002-02-05  Masatake YAMATO  <yamato@redhat.com>
+
+	* Makefile.am (EXTRA_DIST): Removed vc++6.0.txt.
+
 2002-02-04  Masatake YAMATO  <yamato@redhat.com>
 
 	* Makefile.am (pkgconfig_DATA, pkgconfigdir): 

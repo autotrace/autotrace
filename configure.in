@@ -79,9 +79,9 @@ dnl
 dnl Test for zlib (from gimp-1.1.29)
 HAVE_ZLIB=no
 AC_CHECK_LIB(z, gzsetparams,
-      	     AC_CHECK_HEADER(zlib.h,
+      	     [AC_CHECK_HEADER(zlib.h,
 	                     HAVE_ZLIB=yes,
-	                     AC_MSG_WARN(*** ZLIB header files not found: PNG Input will be disabled. ***)),
+	                     AC_MSG_WARN(*** ZLIB header files not found: PNG Input will be disabled. ***))],
 	     AC_MSG_WARN(*** ZLIB library files not found: PNG Input will be disabled. ***))
 
 dnl Test for libpng
