@@ -285,9 +285,11 @@ read_command_line (int argc, char * argv[],
 
       else if (ARGUMENT_IS ("help"))
         {
+	  unsigned char *shortlist;
           fprintf (stderr, "Usage: %s [options] <input_name>.\n", argv[0]);
-          fprintf (stderr, USAGE, output_shortlist());
-	      fprintf (stderr, 
+          fprintf (stderr, USAGE, shortlist = output_shortlist());
+	  free (shortlist);
+	  fprintf (stderr, 
 		   "\nYou can get the source code of autotrace from \n%s\n",
 		   at_home_site());
           exit (0);

@@ -1,3 +1,9 @@
+2001-11-27  Martin Weber <martweb@gmx.net>
+
+	* main.c (read_command_line): output format list now freed.
+
+	(Message-ID: <3C02B6D3.7FBF5057@gmx.net>).
+	
 2001-11-25  Martin Weber <martweb@gmx.net>
 
 	* output-p2e.c (output_p2e_header, output_p2e_writer): 
