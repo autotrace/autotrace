@@ -103,7 +103,8 @@ autotrace_LDADD =                 \
 		libautotrace.a    \
 		$(MAGICK_LDFLAGS) \
 		$(LIBPNG_LDFLAGS) \
-		$(LIBSWF_LDFLAGS)
+		$(LIBSWF_LDFLAGS) \
+		-lm
 
 m4datadir = $(datadir)/aclocal
 m4data_DATA = autotrace.m4
@@ -112,5 +113,5 @@ bin_SCRIPTS=autotrace-config
 BUILT_SOURCES=autotrace-config
 autotrace-config: autotrace-config.in
 
-%.in: %.af
+autotrace-config.in: autotrace-config.af
 	autofig $<

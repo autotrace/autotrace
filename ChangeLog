@@ -1,3 +1,11 @@
+2001-03-24  Masatake YAMATO  <yamato@redhat.com>
+	
+	* Makefile.am (autotrace_LDADD): Added -lm.
+	Suggested by "Stefan A. Deutscher" <sad@utk.edu>.
+	(autotrace-config.in): Specify the base file at its 
+	generating rule.
+	Reported by "Stefan A. Deutscher" <sad@utk.edu>.
+
 2001-03-21  Masatake YAMATO  <yamato@redhat.com>
 
 	* configure.in: Version 0.27.
