@@ -75,8 +75,10 @@ static struct output_format_entry output_formats[] = {
     END
 };
 
+#if HAVE_LIBPSTOEDIT
 static at_bool output_is_static_member (struct output_format_entry * entries,
 					struct DriverDescription_S* dd);
+#endif /* HAVE_LIBPSTOEDIT */
 
 static at_bool streq (const char * a, const char * b);
 
@@ -301,7 +303,8 @@ at_spline_list_array_foreach (at_spline_list_array_type *list_array,
       func (list_array, AT_SPLINE_LIST_ARRAY_ELT(list_array, i), i, user_data);
     }
 }
- 
+
+#if HAVE_LIBPSTOEDIT 
 static at_bool
 output_is_static_member (struct output_format_entry * entries,
 			 struct DriverDescription_S* dd)
@@ -315,6 +318,7 @@ output_is_static_member (struct output_format_entry * entries,
     }
   return false;
 }
+#endif /* HAVE_LIBPSTOEDIT */
 
 static at_bool
 streq (const char * a, const char * b)

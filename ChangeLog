@@ -1,5 +1,8 @@
 2002-09-08  Masatake YAMATO  <yamato@redhat.com>
 
+	* output.c (output_is_static_member): put #ifdef HAVE_LIBPSTOEDIT
+	- #endif arround the function. The problem is reported by Martin.
+
 	* configure.in: Version 0.30.4.
 	LT_CURRENT = 1, LT_AGE = 1.
 
