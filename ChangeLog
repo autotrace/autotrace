@@ -1,5 +1,9 @@
 2002-04-03  Masatake YAMATO  <yamato@redhat.com>
 
+	* HACKING (Tag naming scheme): Updated.
+
+	* autotrace.spec.in: Updated.
+
 	* configure.in: Version 0.30.
 
 	* exception.c (at_exception_new): Fix wrong 

@@ -33,7 +33,7 @@ rm -rf $RPM_BUILD_ROOT
 
 %files
 %defattr(-,root,root)
-%doc /usr/man/man1/autotrace.1
+%doc /usr/man/man1/autotrace.1.gz
 
 /usr/include/autotrace/autotrace.h
 /usr/lib/pkgconfig/autotrace.pc
@@ -46,9 +46,10 @@ rm -rf $RPM_BUILD_ROOT
 /usr/bin/autotrace
 
 %changelog
+* Wed Apr  3 2002 Masatake YAMATO<yamato@redhat.com>
+- autotrace.1 -> autotrace.1.gz
 
-* Thu Mar  7 11:24:13 2002 Masatake YAMATO<yamato@redhat.com>
-
+* Thu Mar  7 2002 Masatake YAMATO<yamato@redhat.com>
 - Change %description.
 - Update files.
 

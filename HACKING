@@ -62,6 +62,9 @@ CVS tag for version X.Y: RELEASE_X_Y.
 CVS tag for version X.YpreN: PRERELEASE_X_Y_N. 
 Branch for version X.Y: TOWARD_version X.Y.
 
+If you need to put a tag after putting a tag, RELEASE_X_Y, 
+for minor modification, POSTRELEASE_X_Y_N.
+
 * Tools for debugging output
 
    eps: ghostscript, Illustrator, CorelDraw
