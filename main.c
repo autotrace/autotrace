@@ -67,6 +67,7 @@ main (int argc, char * argv[])
   FILE *output_file;
   at_progress_func progress_reporter = NULL;
   at_real progress_stat = 0.0;
+  at_string err_msg;
 
   fitting_opts = at_fitting_opts_new ();
 
@@ -123,6 +124,11 @@ main (int argc, char * argv[])
     bitmap = at_bitmap_read(input_reader, input_name);
   else
     FATAL ("Unsupported inputformat\n");
+  
+  /* Check error */
+  err_msg = at_error_check (bitmap->error);
+  if (err_msg)
+    FATAL (err_msg);
 
   splines = at_splines_new_full(bitmap, fitting_opts,
 				progress_reporter, &progress_stat,
@@ -192,6 +198,7 @@ remove-adjacent-corners: remove corners that are adjacent.\n\
 tangent-surround <unsigned>: number of points on either side of a\n\
   point to consider when computing the tangent at that point; default is 3.\n\
 report-progress: report tracing status in real time.\n\
+debug-arch: print the type of cpu.\n\
 version: print the version number of this program.\n\
 "
 
@@ -206,6 +213,7 @@ read_command_line (int argc, char * argv[],
   struct option long_options[]
     = { { "align-threshold",		1, 0, 0 },
 	{ "background-color",		1, 0, 0 },
+	{ "debug-arch",                 0, 0, 0 },
         { "centerline",			0, (int*)&centerline, 1},
         { "color-count",                1, 0, 0 },
         { "corner-always-threshold",    1, 0, 0 },
@@ -264,6 +272,21 @@ read_command_line (int argc, char * argv[],
 
       else if (ARGUMENT_IS ("corner-threshold"))
         fitting_opts->corner_threshold = (at_real) atof (optarg);
+
+      else if (ARGUMENT_IS ("debug-arch"))
+	{
+	  int endian = 1;
+	  char * str;
+	  if (*(char *)&endian)
+	    str = "little";
+	  else
+	    str = "big";
+	  
+	  printf("%d bit, %s endian\n",
+		 sizeof(void *) * 8,
+		 str);
+	  exit(0);
+	}
 
       else if (ARGUMENT_IS ("despeckle-level"))
         fitting_opts->despeckle_level = atou (optarg);

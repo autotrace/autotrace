@@ -1,3 +1,7 @@
+2001-12-29  Masatake YAMATO  <yamato@redhat.com>
+
+	* main.c (read_command_line): Added debug-arch.
+
 2001-12-28  Masatake YAMATO  <yamato@redhat.com>
 
 	* Makefile.am (autotraceinclude_HEADERS): Added input.h.
