@@ -1,3 +1,8 @@
+What's new in AutoTrace 0.30.6?
+- added workarround for a compile time error that appears when 
+  autotrace is linked to pstoedit-3.32.0.
+- made code that creates temporary file more portable.
+
 What's new in AutoTrace 0.30.5?
 - fixed a compile time error that appears when autotrace 
   is not linked to pstoedit.
