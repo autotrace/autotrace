@@ -1,5 +1,6 @@
-/* autotrace.h
-  Copyright (C) 2000, 2001 Martin Weber
+/* autotrace.h --- Autotrace API
+
+  Copyright (C) 2000, 2001, 2002 Martin Weber
 
   The author can be contacted at <martweb@gmx.net>
 

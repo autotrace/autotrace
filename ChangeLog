@@ -1,4 +1,33 @@
+2002-05-01  Masatake YAMATO  <yamato@redhat.com>
+
+	* autotrace.1: Updated.
+
+	* HACKING: Updated.
+
 2002-04-30  Masatake YAMATO  <yamato@redhat.com>
+
+	* Makefile.am (output_src): Added output-dr2d.c.
+
+	* output-dr2d.c: Moved the declarations in
+	output-dr2d.h to output-dr2d.c. Added static the 
+	declarations.
+
+2002-04-30  Martin Weber <martweb@gmx.net>
+
+	* autotrace.dsp: updated.
+
+	* autotrace.vcproj: ditto.
+
+	* output.c: Added dr2d output writer.
+
+	* output-dr2d.[ch]: New files.
+	Contributed by Andrew Elia.
+
+	Message-ID: <3CCE6457.AFDECB1F@gmx.net>.
+
+2002-04-30  Masatake YAMATO  <yamato@redhat.com>
+
+	* output-svg.c (out_splines): Added `;' after `:none'.
 
 	* autotrace.h (_at_spline_list_array_type): Added
 	new field background_color.

@@ -70,8 +70,8 @@ Here the options you can use in the command:
     log: write detailed progress reports to <input_name>.log.
     output-file <filename>: write to <filename>
     output-format <format>: use format <format> for the output file
-    eps, ai, p2e, sk, svg, fig, swf, emf, er, dxf, mif, epd, pdf or 
-      cgm can be used.
+    output-format <format>: use format <format> for the output file
+      eps, ai, p2e, sk, svg, fig, swf, emf, mif, er, dxf, epd, pdf, cgm or dr2d can be used.
     remove-adjacent-corners: remove corners that are adjacent.
     tangent-surround <unsigned>: number of points on either side of a
       point to consider when computing the tangent at that point; default is 3.

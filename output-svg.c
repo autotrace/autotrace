@@ -45,7 +45,7 @@ out_splines (FILE * file, spline_list_array_type shape, int height)
               if (!(shape.centerline || list.open)) fputs("z", file);
               fputs("\"/>\n", file);
             }
-          fprintf(file, "<path style=\"%s:#%02x%02x%02x; %s:none\" d=\"",
+          fprintf(file, "<path style=\"%s:#%02x%02x%02x; %s:none;\" d=\"",
 		    (shape.centerline || list.open) ? "stroke" : "fill",
 		    list.color.r, list.color.g, list.color.b,
 		    (shape.centerline || list.open) ? "fill" : "stroke");
