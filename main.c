@@ -326,7 +326,7 @@ read_command_line (int argc, char * argv[],
         fitting_opts->error_threshold = (at_real) atof (optarg);
 
       else if (ARGUMENT_IS ("filter-iterations"))
-        fitting_opts->filter_iteration_count = atou (optarg);
+        fitting_opts->filter_iterations = atou (optarg);
 
       else if (ARGUMENT_IS ("help"))
         {

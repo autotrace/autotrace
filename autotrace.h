@@ -138,10 +138,10 @@ struct _at_fitting_opts_type
 "more pixels than this; default is 2.0. "
   at_real error_threshold;
 
-#define  at_doc__filter_iteration_count					\
+#define  at_doc__filter_iterations					\
 "filter-iterations <unsigned>: smooth the curve this many times "	\
 "before fitting; default is 4."
-  unsigned filter_iteration_count;
+  unsigned filter_iterations;
 
 #define at_doc__line_reversion_threshold				 \
 "line-reversion-threshold <real>: if a spline is closer to a straight "	 \

@@ -114,7 +114,7 @@ fitting_opts_type new_fitting_opts (void)
   fitting_opts.corner_surround = 4;
   fitting_opts.corner_threshold = (at_real) 100.0;
   fitting_opts.error_threshold = (at_real) .8;
-  fitting_opts.filter_iteration_count = 4;
+  fitting_opts.filter_iterations = 4;
   fitting_opts.line_reversion_threshold = (at_real) .01;
   fitting_opts.line_threshold = (at_real) 1.0;
   fitting_opts.remove_adj_corners = false;
@@ -822,7 +822,7 @@ remove_knee_points (curve_type curve, at_bool clockwise)
 }
 
 /* Smooth the curve by adding in neighboring points.  Do this
-   `filter_iteration_count' times.  But don't change the corners.  */
+   `filter_iterations' times.  But don't change the corners.  */
 
 static void
 filter (curve_type curve, fitting_opts_type *fitting_opts)
@@ -844,7 +844,7 @@ filter (curve_type curve, fitting_opts_type *fitting_opts)
   prev_new_point.x = FLT_MAX;
   prev_new_point.y = FLT_MAX;
 
-  for (iteration = 0; iteration < fitting_opts->filter_iteration_count;
+  for (iteration = 0; iteration < fitting_opts->filter_iterations;
    iteration++)
     {
       curve_type newcurve = copy_most_of_curve (curve);
