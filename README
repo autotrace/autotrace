@@ -1,30 +1,73 @@
-AutoTrace is a utility that converts bitmap to vector graphics.
-You find more information at:
-http://autotrace.sourceforge.net
+AutoTrace is a utility for converting bitmap into vector graphics.
+
+Features
+========
+- tracing outline and midline
+- color reduction and despeckling
+- supports a lot of input and output format
+
+Licenses
+========
+The program can be used under the GNU General Public License.
+
+The input and output functions (input-*.[ch] and output-*.[ch])
+can also be used under the GNU Lesser General Public License(LGPL).
 
 Some of code was partially derived from limn of GNU fontutils.
 However, almost all code is rewritten.
 
-The program was tested using Linux, HP UX, Solaris, Windows98,
+Platforms
+=========
+The program was tested using GNU/Linux, HP UX, Solaris, Windows98,
 Windows NT, Windows 2000, MAC and OS/2 4.0. It compiles with GCC,
 Borland C++ Builder, Visual C++ and many other compilers.
-The program can be used under the GPL license.
-It can be compiled standalone, then it can import pnm, pbm, pgm,
-ppm, bmp and tga files. If you have installed libpng
-(http://www.libpng.org/pub/png/libpng.html) you can also read
-png files and with ImageMagick a very broad range of input
-formats is available.
-You will need at least libpng 1.0.6 and ImageMagick 5.2.1.
-Most output formats like dxf, emf, eps, ai, er, fig, svg, epd and sk
-are directly integrated in AutoTrace, but if you need swf export you
-need to install Ming (http://www.opaque.net/ming/). Also you can
-export to the p2e format. This format can be converted by pstoedit
-(www.pstoedit.net) to a large number of other formats.
-There are two main methods that can be used outline and midline
-tracing. If you use Visual C++ 6.0 for compilation be shure to have
-at least SP 5 otherwise you could get Memory access violations due
-to a bug in earlier versions.
 
+If you use Visual C++ 6.0 for compilation be shure to have at
+least SP 5 otherwise you could get Memory access violations due to
+a bug in earlier versions.
+
+Requirements
+============
+AutoTrace can be compiled standalone, then it can import pnm, pbm,
+pgm, ppm, bmp and tga files. If you have installed libpng
+(http://www.libpng.org/pub/png/libpng.html) you can also read png
+files and with ImageMagick a very broad range of input formats is
+available.
+
+You will need at least libpng 1.0.6 and ImageMagick 5.2.1.  Most
+output formats like dxf, emf, eps, ai, er, fig, svg, epd and sk are
+directly integrated in AutoTrace, but if you need swf export you need
+to install Ming (http://www.opaque.net/ming/). Also you can export to
+the p2e format. This format can be converted by pstoedit
+(www.pstoedit.net) to a large number of other formats.
+
+Installation
+============
+See the file INSTALL.
+
+If you use Red Hat Linux 7.2 to build autotrace with ImageMagick,
+you will get a trouble something like:
+
+    /bin/sh ./libtool --mode=link gcc  -g -O2  -o autotrace  atou.o main.o ...
+    libtool: link: cannot find the library `/usr/lib/libxml2.la'
+    gmake: *** [autotrace] Error 1
+
+The reasons of thie trouble are 1. libMagick.la is broken;
+and 2. libxml2.so does not exist. There are two ways to avoid
+this trouble.
+
+1. Build autotrace without ImageMagick.
+   Run configure with "--withoud-magick" option(then run make clean; make).
+   However, you lost input functions that use ImageMagick.
+
+2. Hack the broken files.
+   Replace "/usr/lib/libxml2.la" with -lxml2 in ImageMagick.la then
+   Make a symbolic link, /usr/lib/libxml2.so, that referees
+/usr/lib/libxml2.so.2.
+   If you don't understand what I write, you should not do.
+
+Usage
+=====
 Program comes from two parts: command and library.
 
 Here the options you can use in the command:
@@ -71,7 +114,8 @@ Here the options you can use in the command:
     output-file <filename>: write to <filename>
     output-format <format>: use format <format> for the output file
     output-format <format>: use format <format> for the output file
-      eps, ai, p2e, sk, svg, fig, swf, emf, mif, er, dxf, epd, pdf, cgm or dr2d can be used.
+      eps, ai, p2e, sk, svg, fig, swf, emf, mif, er, dxf, epd, pdf, cgm or dr2d
+      can be used.
     remove-adjacent-corners: remove corners that are adjacent.
     tangent-surround <unsigned>: number of points on either side of a
       point to consider when computing the tangent at that point; default is 3.
@@ -80,10 +124,10 @@ Here the options you can use in the command:
     debug-bitmap: dump loaded bitmap to <input_name>.bitmap.
     version: print the version number of this program.
 
-The library is named libautotrace. About usage of the library, 
-see autotrace.h. 
+The library is named libautotrace. About the usage of the library
+see autotrace.h.
 Here is a sample progaram that uses libautotrace.
-To compile, invoke following commands(on posix):
+To compile, invoke following commands (on posix):
 gcc sample.c `./autotrace-config --libs` `./autotrace-config --cflags`
 
     /* sample.c */
@@ -101,15 +145,32 @@ gcc sample.c `./autotrace-config --libs` `./autotrace-config --cflags`
       bitmap = at_bitmap_read(rfunc, fname);
       splines = at_splines_new(bitmap, opts);
       at_splines_write(splines, stdout, "", 
-		       AT_DEFAULT_DPI,
-		       wfunc);
+	               AT_DEFAULT_DPI, 
+	               wfunc);
       return 0;
     }
 
-A Gtk+ based GUI frontend for autotrace is under development.
-Visit http://autotrace.sourceforge.net/frontline
+GUI Frontend
+============
+Frontline, a Gtk+ based GUI frontend, is under development.
+See http://autotrace.sourceforge.net/frontline
 
+Qt based GUI frontend also planed.
+Conntact with Masatake YAMATO (yamato@redhat.com).
+
+More Information
+================
+See http://autotrace.sourceforge.net
+
+There is a mailing list to discussion autotrace.
+See also http://groups.yahoo.com/group/autotrace/
+
+Contribution
+============
 Programmers wanted!!!
 
-Author: Martin Weber (martweb@gmx.net)
+See TODO and HACKING file and contact the author.
 
+Author
+======
+Martin Weber (martweb@gmx.net)

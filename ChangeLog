@@ -1,5 +1,7 @@
 2002-06-11  Masatake YAMATO  <yamato@redhat.com>
 
+	* README: Reorganized.
+
 	* exception.h, input.h, output.h and types.h: Added
 	extern "C" {} for C++ clinets.
 
