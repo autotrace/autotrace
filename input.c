@@ -2,6 +2,7 @@
    Copyright (C) 1999 Bernhard Herzog. */
 
 #include "autotrace.h"
+#include "input.h"
 #include "input-pnm.h"
 #include "input-bmp.h"
 #include "input-tga.h"

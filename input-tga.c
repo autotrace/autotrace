@@ -94,15 +94,15 @@ static struct
 } tga_footer;
 
 
-static bitmap_type ReadImage (FILE *fp,
-                         struct tga_header *hdr);
-bitmap_type
+static at_bitmap_type ReadImage (FILE *fp,
+				 struct tga_header *hdr);
+at_bitmap_type
 tga_load_image (at_string filename)
 {
   FILE *fp;
   struct tga_header hdr;
 
-  bitmap_type image;
+  at_bitmap_type image;
 
   image.bitmap = NULL;
 
@@ -240,11 +240,11 @@ rle_fread (unsigned char *buf,
 return nelems;
 }
 
-static bitmap_type
+static at_bitmap_type
 ReadImage (FILE              *fp, 
            struct tga_header *hdr)
 {
-  bitmap_type image;
+  at_bitmap_type image;
   unsigned char *buffer;
   unsigned char *alphas;
 
@@ -422,11 +422,8 @@ ReadImage (FILE              *fp,
     }
   else
 	  pelbytes = 3;
- 
-  image.bitmap = (unsigned char *) malloc (width * height * 3 * sizeof(unsigned char));
-  BITMAP_WIDTH (image) = (unsigned short) width;
-  BITMAP_HEIGHT (image) = (unsigned short) height;
-  BITMAP_PLANES (image) = (unsigned short) 3;
+
+  image = at_bitmap_init(NULL, width, height, 3);
 
    /* Calculate TGA bytes per pixel. */
   bpp = ROUNDUP_DIVIDE (pbpp + abpp, 8);

@@ -10,13 +10,13 @@
 #include "input-magick.h"
 #include "bitmap.h"
 
-bitmap_type magick_load_image(at_string filename)
+at_bitmap_type magick_load_image(at_string filename)
 {
   Image *image;
   ImageInfo *image_info;
   ImageType image_type;
   unsigned int i,j,point,np,runcount;
-  bitmap_type bitmap;
+  at_bitmap_type bitmap;
   PixelPacket p;
   PixelPacket *pixel=&p;
   ExceptionInfo exception;
@@ -46,11 +46,9 @@ bitmap_type magick_load_image(at_string filename)
   else
     np=3;
 
-  bitmap.np=np;
-  BITMAP_WIDTH (bitmap)=image->columns;
-  BITMAP_HEIGHT (bitmap)=image->rows;
-  BITMAP_BITS (bitmap)=(unsigned char*)malloc(np*image->columns*image->rows);
+  bitmap = at_bitmap_init(NULL, image->columns, image->rows, np);
 
+  /* TODO: Use AT_ macros */
   for(j=0,runcount=0,point=0;j<image->rows;j++)
     for(i=0;i<image->columns;i++) {
       p=GetOnePixel(image,i,j);

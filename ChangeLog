@@ -1,3 +1,28 @@
+2001-12-28  Masatake YAMATO  <yamato@redhat.com>
+
+	* input*.[ch]: bitmap_type -> at_bitmap_type.
+	Use at_bitmap_init.
+	
+	* autotrace.c (at_bitmap_new): Use at_bitmap_init.
+	(at_bitmap_init): New func.
+
+	* bitmap.c (new_bitmap): Used at_bitmap_init.
+
+	* bitmap.h: Almost all macro definitions 
+	used macros defined in input.h.
+	Include input.h.
+
+	* input.c: Include input.h.
+
+	* input.h: Don't include bitmap.h.
+	Instead, some macro defs are moved to input.h.
+	(at_bitmap_init): New function.
+	(at_input_add_handler): Moved from autotrace.h.
+
+2001-12-26  Masatake YAMATO  <yamato@redhat.com>
+
+	* input-magick.c (magick_load_image): Use BITMAP_PLANES.
+
 2001-12-24  Masatake YAMATO  <yamato@redhat.com>
 
 	* configure.in: Version 0.29.

@@ -117,14 +117,14 @@ static struct struct_pnm_types
   {  0 , 0, 0,   0, NULL}
 };
 
-bitmap_type pnm_load_image (at_string filename)
+at_bitmap_type pnm_load_image (at_string filename)
 {
   char buf[BUFLEN];		/* buffer for random things like scanning */
   PNMInfo *pnminfo;
   PNMScanner * volatile scan;
   int ctr;
   FILE* fd;
-  bitmap_type bitmap;
+  at_bitmap_type bitmap;
 
   /* open the file */
   fd = xfopen (filename, "rb");
@@ -132,10 +132,7 @@ bitmap_type pnm_load_image (at_string filename)
   if (fd == NULL)
     {
       FATAL("pnm filter: can't open file\n");
-      BITMAP_BITS (bitmap) = NULL;
-      BITMAP_WIDTH (bitmap) = 0;
-      BITMAP_HEIGHT (bitmap) = 0;
-      BITMAP_PLANES (bitmap) = 0;
+      at_bitmap_init(NULL, 0, 0, 0);
       return (bitmap);
     }
 
@@ -192,13 +189,11 @@ bitmap_type pnm_load_image (at_string filename)
         FATAL ("pnm filter: invalid maxval while loading\n");
     }
 
-  BITMAP_WIDTH (bitmap) = (unsigned short) pnminfo->xres;
-  BITMAP_HEIGHT (bitmap) = (unsigned short) pnminfo->yres;
-
-  BITMAP_PLANES (bitmap) = (pnminfo->np)?(pnminfo->np):1;
-  BITMAP_BITS (bitmap) = (unsigned char *) malloc (pnminfo->yres *
-    pnminfo->xres * BITMAP_PLANES (bitmap));
-  pnminfo->loader (scan, pnminfo, BITMAP_BITS (bitmap));
+  bitmap = at_bitmap_init(NULL,
+			  (unsigned short) pnminfo->xres,
+			  (unsigned short) pnminfo->yres,
+			  (pnminfo->np)?(pnminfo->np):1);
+  pnminfo->loader (scan, pnminfo, AT_BITMAP_BITS (bitmap));
 
   /* Destroy the scanner */
   pnmscanner_destroy (scan);

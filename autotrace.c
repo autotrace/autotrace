@@ -6,6 +6,8 @@
 #include "bitmap.h"
 #include "spline.h"
 
+#include "input.h"
+
 #include "xstd.h"
 #include "image-header.h"
 #include "quantize.h"
@@ -51,6 +53,41 @@ at_bitmap_read (at_input_read_func input_reader,
   XMALLOC(bitmap, sizeof(at_bitmap_type)); 
   *bitmap = (*input_reader) (filename);
   return bitmap;
+}
+
+at_bitmap_type *
+at_bitmap_new(unsigned short width,
+	      unsigned short height,
+	      unsigned int planes)
+{
+  at_bitmap_type * bitmap;
+  XMALLOC(bitmap, sizeof(at_bitmap_type)); 
+  *bitmap = at_bitmap_init(NULL, width, height, planes);
+  return bitmap;
+}
+
+at_bitmap_type
+at_bitmap_init(unsigned char * area,
+	       unsigned short width,
+	       unsigned short height,
+	       unsigned int planes)
+{
+  at_bitmap_type bitmap;
+  
+  if (area)
+    bitmap.bitmap = area;
+  else
+    {
+      if (0 == (width * height))
+	bitmap.bitmap = NULL;
+      else
+	XMALLOC(bitmap.bitmap, width * height * planes * sizeof(unsigned char));
+    }
+
+  bitmap.width 	  = width;
+  bitmap.height   = height;
+  bitmap.np       =  planes;
+  return bitmap;  
 }
 
 void 

@@ -59,14 +59,15 @@ static unsigned char        *ReadImage     (FILE *,
 				   int,
 				   int);
 
-bitmap_type
+at_bitmap_type
 bmp_load_image (at_string filename)
 {
   FILE *fd;
   unsigned char buffer[64];
   int ColormapSize, rowbytes, Maps, Grey;
   unsigned char ColorMap[256][3];
-  bitmap_type image;
+  at_bitmap_type image;
+  unsigned char * image_storage;
 
   fd = fopen (filename, "rb");
 
@@ -185,18 +186,17 @@ bmp_load_image (at_string filename)
 #endif
 
   /* Get the Image and return the ID or -1 on error*/
-  image.bitmap = ReadImage (fd,
-			Bitmap_Head.biWidth,
-			Bitmap_Head.biHeight,
-			ColorMap,
-			Bitmap_Head.biBitCnt,
-			Bitmap_Head.biCompr,
-			rowbytes,
-			Grey);
-  BITMAP_WIDTH (image) = (unsigned short) Bitmap_Head.biWidth;
-  BITMAP_HEIGHT (image) = (unsigned short) Bitmap_Head.biHeight;
-  BITMAP_PLANES (image) = Grey ? 1 : 3;
-
+  image_storage = ReadImage (fd,
+			     Bitmap_Head.biWidth, Bitmap_Head.biHeight,
+			     ColorMap,
+			     Bitmap_Head.biBitCnt,
+			     Bitmap_Head.biCompr,
+			     rowbytes,
+			     Grey);
+  image = at_bitmap_init(image_storage,
+			 (unsigned short) Bitmap_Head.biWidth,
+			 (unsigned short) Bitmap_Head.biHeight,
+			 Grey ? 1 : 3);
   return (image);
 }
 

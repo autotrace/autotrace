@@ -231,8 +231,26 @@ void at_fitting_opts_free(at_fitting_opts_type * opts);
  *
  * TODO: internal data access
  * --------------------------------------------------------------------- */
+
+/* There is two way to build at_bitmap_type.
+   1. Using input reader
+      Use at_bitmap_read. 
+      at_input_get_handler_by_suffix or
+      at_input_get_handler will help you to get at_input_read_func.
+   2. Allocating a bitmap and rendering an image on it by yourself
+      Use at_bitmap_new.
+
+   In both case, you have to call at_bitmap_free when at_bitmap_type * 
+   data are no longer needed. */
 at_bitmap_type * at_bitmap_read (at_input_read_func input_reader,
 				 at_string filename);
+at_bitmap_type * at_bitmap_new(unsigned short width,
+			       unsigned short height,
+			       unsigned int planes);
+
+/* We have to export functions that supports internal datum 
+   access. Such functions might be useful for 
+   at_bitmap_new user. */
 unsigned short at_bitmap_get_width (at_bitmap_type * bitmap);
 unsigned short at_bitmap_get_height (at_bitmap_type * bitmap);
 void at_bitmap_free (at_bitmap_type * bitmap);
@@ -306,9 +324,6 @@ void at_input_list_free(char ** list);
 /* at_input_shortlist
    return value: Do free by yourself */
 char * at_input_shortlist (void); 
-int at_input_add_handler (at_string suffix, 
-			  at_string description,
-			  at_input_read_func func);
 
 /* --------------------------------------------------------------------- *
  * Output related

@@ -28,7 +28,7 @@
 #include <png.h>
 #include "input-png.h"
 
-static volatile char rcsid[]="$Id: input-png.c,v 1.6 2001/12/23 16:18:41 masata-y Exp $";
+static volatile char rcsid[]="$Id: input-png.c,v 1.7 2001/12/27 19:04:58 masata-y Exp $";
 
 /* for pre-1.0.6 versions of libpng */
 #ifndef png_jmpbuf
@@ -70,7 +70,7 @@ static int init_structs(png_structp *png, png_infop *info,
 	return 0;
 }
 
-static int load_image(bitmap_type *image, FILE *stream) {
+static int load_image(at_bitmap_type *image, FILE *stream) {
 	png_structp png;
 	png_infop info, end_info;
 	png_bytep *rows;
@@ -95,13 +95,9 @@ static int load_image(bitmap_type *image, FILE *stream) {
 		pixel_size = 3;
 	}
 
-	XMALLOC(BITMAP_BITS(*image),
-	        width * height * pixel_size * sizeof(unsigned char)); 
-	BITMAP_WIDTH(*image) = width;	
-	BITMAP_HEIGHT(*image) = height;
-	BITMAP_PLANES(*image) = pixel_size;
+	*image = at_bitmap_init(NULL, width, height, pixel_size);
 	for ( row = 0 ; row < height ; row++, rows++ ) {
-		memcpy(BITMAP_PIXEL(*image, row, 0), *rows,
+		memcpy(AT_BITMAP_PIXEL(*image, row, 0), *rows,
 		       width * pixel_size * sizeof(unsigned char));
 	}
 
@@ -110,9 +106,9 @@ static int load_image(bitmap_type *image, FILE *stream) {
 	return 1;
 }
 
-bitmap_type png_load_image(at_string filename) {
+at_bitmap_type png_load_image(at_string filename) {
 	FILE *stream;
-	bitmap_type image;
+	at_bitmap_type image;
 
 	stream = fopen(filename, "rb");
 	if (!stream) FATAL1("Can't open \"%s\"\n", filename);

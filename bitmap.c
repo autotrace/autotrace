@@ -6,17 +6,8 @@
 bitmap_type
 new_bitmap (unsigned short width, unsigned short height)
 {
-  bitmap_type answer;
-  unsigned size = width * height;
-
-  BITMAP_WIDTH (answer) = width;
-  BITMAP_HEIGHT (answer) = height;
-  BITMAP_PLANES (answer) = 1;
-  XCALLOC (BITMAP_BITS (answer), size);
-
-  return answer;
+  return at_bitmap_init(NULL,width,height,1);
 }
-
 
 /* Free the storage that is allocated for a bitmap.  On the other hand,
    the bitmap might not have any storage allocated for it if it is zero
