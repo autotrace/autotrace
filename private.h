@@ -22,7 +22,17 @@
 #ifndef PRIVATE_H
 #define PRIVATE_H 
 
-int at_input_init (void);
+#include "autotrace.h"
+#include "input.h"
+
+struct _at_bitmap_reader
+{
+  at_input_func func;
+  at_address data;
+};
+
+int at_input_init  (void);
+int at_param_init  (void);
 int at_module_init (void);
 
 #endif /* Not def: PRIVATE_H */

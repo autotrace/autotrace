@@ -1,5 +1,8 @@
 2003-06-08  Masatake YAMATO  <yamato@redhat.com>
 
+	* private.h (struct _at_bitmap_reader): Defined.
+	(at_input_init, at_param_init): Declared.	
+
 	* Makefile.am (output_src): Remove typo(+).
 	Suggested by "jakobfrandsen" <jakobfrandsen@yahoo.dk>.
 
