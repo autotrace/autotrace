@@ -1,3 +1,13 @@
+2001-10-28  Masatake YAMATO  <yamato@redhat.com>
+
+	* Makefile.am (output_src): Added output-dxf.[ch].
+
+2001-10-28  Steffen Politzky <support@durst.de>
+
+	Logged by Masatake YAMATO  <yamato@redhat.com>.
+	
+	* output-dxf.[ch]: New files.
+
 2001-10-14  Martin Weber  <martweb@gmx.net>
 
 	* main.c (read_command_line::long_options): Added
