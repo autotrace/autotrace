@@ -2,16 +2,21 @@
 #include <stdio.h>
 #include "thin-image.h"
 #include "logreport.h"
+#include "message.h"
 #include "types.h" 
 #include "bitmap.h" 
 #include <string.h>
  
-#define BACKGROUND 0xffffff 
+#define PIXEL_SET(p, new)  ((void)memcpy((p), (new), sizeof(Pixel)))
+#define PIXEL_EQUAL(p1, p2) \
+    ((p1)[0] == (p2)[0] && (p1)[1] == (p2)[1] && (p1)[2] == (p2)[2])
+
  
+typedef unsigned char Pixel[3];  /* RGB pixel data type */ 
+
  
-void thin (bitmap_type *image, unsigned int colour); 
- 
-typedef unsigned char Pixel;          /* Pixel data type              */ 
+void thin3(bitmap_type *image, Pixel colour); 
+void thin1(bitmap_type *image, unsigned char colour); 
  
  
 /* -------------------------------- ThinImage - Thin binary image. --------------------------- * 
@@ -40,7 +45,7 @@ static        unsigned int     masks[]         = { 0200, 0002, 0040, 0010 };
 /*                            d e f                                   */ 
 /*                            g h i                                   */ 
  
-static        unsigned char   delete_map[512] = { 
+static        unsigned char   delete[512] = { 
               0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 
               0, 0, 0, 1, 0, 0, 1, 1, 0, 1, 1, 1, 0, 0, 1, 1, 
               0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 
@@ -73,74 +78,99 @@ static        unsigned char   delete_map[512] = {
               1, 0, 0, 0, 0, 0, 0, 0, 1, 1, 1, 1, 0, 0, 1, 1, 
               0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 
               1, 0, 1, 1, 1, 0, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1}; 
- 
-unsigned int pixel (unsigned int x,unsigned int y, bitmap_type *image) 
+
+static color_type background = { 0xff, 0xff, 0xff };
+
+
+void thin_image(bitmap_type *image, const color_type *bg)
 { 
-      Pixel *p; 
-      unsigned int v; 
-      p = (BITMAP_PIXEL (*image,y,x)); 
-      v = *p++; 
-      if (BITMAP_PLANES(*image) == 3){ 
-              v=(v*256) + *p++; 
-              v=(v*256) + *p++; 
-      }        
- 
-      /* return int value of pixel */ 
-      return v; 
-} 
- 
-void clr_pixel (unsigned int x, unsigned int y, bitmap_type *image) 
-{ 
-      Pixel *p = BITMAP_PIXEL(*image,y,x); 
-      *p ++ = (char)(BACKGROUND%256); 
-      if (BITMAP_PLANES(*image) == 3){ 
-              *p++ = (char)(BACKGROUND%256); 
-              *p = (char)(BACKGROUND%256); 
-      }        
-} 
- 
-void clr_colour ( unsigned int colour, bitmap_type *bm) 
-{ 
-      unsigned int x; 
-      unsigned int y; 
-      for (y=0; y < BITMAP_HEIGHT(*bm); y++){ 
-              for (x=0; x < BITMAP_WIDTH(*bm); x++) 
-                      if (pixel (x,y,bm) == colour) clr_pixel (x,y,bm); 
-      } 
-} 
- 
-void thin_image (bitmap_type *image) 
-{ 
-      /* This is nasty as we need to call thin once for each  
-       * colour in the image the way I do this is to keep a second  
-       * copy of the bitmap and to use this to keep 
-       * track of which colours have not yet been processed, 
-       * trades time for pathological case memory.....*/ 
-      unsigned int x,y,p; 
-      bitmap_type bm; 
-      memcpy (&bm,image, sizeof (bitmap_type)); 
- 
-      bm.bitmap = (unsigned char *)malloc (3 * BITMAP_HEIGHT(bm) * BITMAP_WIDTH (bm)); 
-      memcpy (bm.bitmap,image->bitmap,3 * BITMAP_HEIGHT(bm) * BITMAP_WIDTH (bm)); 
-      /* that clones the image */ 
-      for (y=0; y < BITMAP_HEIGHT(bm); y++){ 
-              for (x=0; x < BITMAP_WIDTH(bm); x++){ 
-                      p = pixel (x,y,&bm); 
-                      if (p != BACKGROUND) { 
-                              /* we have a new colour in the image */ 
-                              LOG1 ("Thinning colour %x\n",p); 
-                              clr_colour (p,&bm); 
-                              thin (image,p); 
-                      } 
-              } 
-      } 
- 
-      free (bm.bitmap); 
+    /* This is nasty as we need to call thin once for each  
+     * colour in the image the way I do this is to keep a second  
+     * copy of the bitmap and to use this to keep 
+     * track of which colours have not yet been processed, 
+     * trades time for pathological case memory.....*/ 
+    long m, n, num_pixels;
+    bitmap_type bm; 
+    unsigned int
+	spp = BITMAP_PLANES(*image),
+	width = BITMAP_WIDTH(*image),
+	height = BITMAP_HEIGHT(*image);
+
+    if (bg) background = *bg;
+
+    memcpy(&bm, image, sizeof(bitmap_type)); 
+    bm.bitmap = malloc(height * width * spp); 
+    memcpy(bm.bitmap, image->bitmap, height * width * spp); 
+    /* that clones the image */ 
+
+    num_pixels = height * width;
+    switch (spp)
+    {
+	case 3:
+	{
+	    Pixel *ptr = (Pixel*)BITMAP_BITS(bm);
+	    Pixel bg_color;
+	    bg_color[0] = background.r;
+	    bg_color[1] = background.g;
+	    bg_color[2] = background.b;
+
+	    for (n = num_pixels - 1; n >= 0L; --n)
+	    {
+		Pixel p;
+
+		PIXEL_SET(p, ptr[n]);
+		if (!PIXEL_EQUAL(p, bg_color))
+		{ 
+		    /* we have a new colour in the image */ 
+		    LOG3("Thinning colour (%x, %x, %x)\n", p[0], p[1], p[2]);
+		    for (m = n - 1; m >= 0L; --m)
+		    {
+			if (PIXEL_EQUAL(ptr[m], p))
+			    PIXEL_SET(ptr[m], bg_color);
+		    }
+		    thin3(image, p); 
+		} 
+	    } 
+	    break;
+	} 
+
+	case 1:
+	{
+	    unsigned char *ptr = BITMAP_BITS(bm);
+	    unsigned char bg_color;
+
+	    if (background.r == background.g && background.g == background.b)
+		bg_color = background.r;
+	    else bg_color = COLOR_LUMINANCE(background);
+
+	    for (n = num_pixels - 1; n >= 0L; --n)
+	    {
+		unsigned char c = ptr[n];
+		if (c != bg_color)
+		{ 
+		    LOG1 ("Thinning colour %x\n", c);
+		    for (m = n - 1; m >= 0L; --m)
+			if (ptr[m] == c) ptr[m] = bg_color;
+		    thin1(image, c); 
+		} 
+	    } 
+	    break;
+	} 
+
+	default:
+	{
+	    WARNING1("thin_image: %u-plane images are not supported", spp);
+	    break;
+	}
+    } 
+    free (bm.bitmap); 
 } 
 
  
-void thin (bitmap_type *image, unsigned int colour) 
+void thin3(bitmap_type *image, Pixel colour) 
 { 
+      Pixel *ptr, *y_ptr, *y1_ptr;
+      Pixel bg_color;
       unsigned int    xsize, ysize;   /* Image resolution             */ 
       unsigned int    x, y;           /* Pixel location               */ 
       unsigned int    i;              /* Pass index           */ 
@@ -148,15 +178,20 @@ void thin (bitmap_type *image, unsigned int colour)
       unsigned int    count   = 1;    /* Deleted pixel count          */ 
       unsigned int    p, q;           /* Neighborhood maps of adjacent*/ 
                                       /* cells                        */ 
-      Pixel           *qb;            /* Neighborhood maps of previous*/ 
+      unsigned char   *qb;            /* Neighborhood maps of previous*/ 
                                       /* scanline                     */ 
       unsigned int    m;              /* Deletion direction mask      */ 
  
+      bg_color[0] = background.r;
+      bg_color[1] = background.g;
+      bg_color[2] = background.b;
+
       LOG (" Thinning image.....\n "); 
       xsize = BITMAP_WIDTH(*image); 
       ysize = BITMAP_HEIGHT(*image); 
-      qb    = (Pixel*)malloc (xsize*sizeof(Pixel)); 
+      qb    = malloc (xsize*sizeof(unsigned char)); 
       qb[xsize-1] = 0;                /* Used for lower-right pixel   */ 
+      ptr = (Pixel*)BITMAP_BITS(*image);
  
       while ( count ) {               /* Scan image while deletions   */ 
           pc++; 
@@ -167,52 +202,135 @@ void thin (bitmap_type *image, unsigned int colour)
               m = masks[i]; 
  
               /* Build initial previous scan buffer.                  */ 
-              p = (pixel (0,0,image) == colour); 
+              p = PIXEL_EQUAL(ptr[0], colour); 
               for ( x = 0 ; x < xsize-1 ; x++ ) 
-                  qb[x] = p = ((p<<1)&0006) | (pixel(x+1,0,image) == colour); 
+                  qb[x] = p = ((p<<1)&0006) | PIXEL_EQUAL(ptr[x+1], colour); 
  
               /* Scan image for pixel deletion candidates.            */ 
- 
-              for ( y = 0 ; y < ysize-1 ; y++ ) { 
- 
+	      y_ptr = ptr; y1_ptr = ptr + xsize; 
+              for (y = 0; y < ysize - 1; y++, y_ptr += xsize, y1_ptr += xsize)
+	      { 
                   q = qb[0]; 
-                  p = ((q<<3)&0110) | (pixel(0,y+1,image) == colour); 
+                  p = ((q<<2)&0330) | PIXEL_EQUAL(y1_ptr[0], colour); 
  
                   for ( x = 0 ; x < xsize-1 ; x++ ) { 
                       q = qb[x]; 
                       p = ((p<<1)&0666) | ((q<<3)&0110) | 
-                              (pixel(x+1,y+1,image) == colour); 
+			  PIXEL_EQUAL(y1_ptr[x+1], colour);
                       qb[x] = p; 
-                      if  ( ((p&m) == 0) && delete_map[p] ) { 
-                          count++; 
-                          clr_pixel(x,y,image); 
-                          /* delete the pixel */ 
+                      if  ( ((p&m) == 0) && delete[p] ) { 
+                          count++;  /* delete the pixel */ 
+			  PIXEL_SET(y_ptr[x], bg_color);
                       } 
                   } 
  
                   /* Process right edge pixel.                        */ 
- 
                   p = (p<<1)&0666; 
-                  if  ( (p&m) == 0 && delete_map[p] ) { 
+                  if  ( (p&m) == 0 && delete[p] ) { 
                       count++; 
-                      clr_pixel(xsize-1,y,image); 
+		      PIXEL_SET(y_ptr[xsize-1], bg_color);
                   } 
               } 
  
               /* Process bottom scan line.                            */ 
+	      q = qb[0]; 
+	      p = ((q<<2)&0330); 
  
+	      y_ptr = ptr + xsize * (ysize - 1);
               for ( x = 0 ; x < xsize ; x++ ) { 
                   q = qb[x]; 
                   p = ((p<<1)&0666) | ((q<<3)&0110); 
-                  if  ( (p&m) == 0 && delete_map[p] ) { 
+                  if  ( (p&m) == 0 && delete[p] ) { 
                       count++; 
-                      clr_pixel(x,ysize-1,image); 
+		      PIXEL_SET(y_ptr[x], bg_color);
                   } 
               } 
           } 
- 
           LOG2 ("ThinImage: pass %d, %d pixels deleted\n", pc, count); 
       } 
+      free (qb); 
+} 
+
  
+void thin1(bitmap_type *image, unsigned char colour) 
+{ 
+      unsigned char *ptr, *y_ptr, *y1_ptr;
+      unsigned char bg_color;
+      unsigned int    xsize, ysize;   /* Image resolution             */ 
+      unsigned int    x, y;           /* Pixel location               */ 
+      unsigned int    i;              /* Pass index           */ 
+      unsigned int    pc      = 0;    /* Pass count           */ 
+      unsigned int    count   = 1;    /* Deleted pixel count          */ 
+      unsigned int    p, q;           /* Neighborhood maps of adjacent*/ 
+                                      /* cells                        */ 
+      unsigned char   *qb;            /* Neighborhood maps of previous*/ 
+                                      /* scanline                     */ 
+      unsigned int    m;              /* Deletion direction mask      */ 
+
+      if (background.r == background.g && background.g == background.b)
+	  bg_color = background.r;
+      else bg_color = COLOR_LUMINANCE(background);
+
+      LOG (" Thinning image.....\n "); 
+      xsize = BITMAP_WIDTH(*image); 
+      ysize = BITMAP_HEIGHT(*image); 
+      qb    = malloc (xsize*sizeof(unsigned char)); 
+      qb[xsize-1] = 0;                /* Used for lower-right pixel   */ 
+      ptr = BITMAP_BITS(*image);
+ 
+      while ( count ) {               /* Scan image while deletions   */ 
+          pc++; 
+          count = 0; 
+ 
+          for ( i = 0 ; i < 4 ; i++ ) { 
+ 
+              m = masks[i]; 
+ 
+              /* Build initial previous scan buffer.                  */ 
+              p = (ptr[0] == colour); 
+              for ( x = 0 ; x < xsize-1 ; x++ ) 
+                  qb[x] = p = ((p<<1)&0006) | (ptr[x+1] == colour); 
+ 
+              /* Scan image for pixel deletion candidates.            */ 
+	      y_ptr = ptr; y1_ptr = ptr + xsize; 
+              for (y = 0; y < ysize - 1; y++, y_ptr += xsize, y1_ptr += xsize)
+	      { 
+                  q = qb[0]; 
+                  p = ((q<<2)&0330) | (y1_ptr[0] == colour); 
+ 
+                  for ( x = 0 ; x < xsize-1 ; x++ ) { 
+                      q = qb[x]; 
+                      p = ((p<<1)&0666) | ((q<<3)&0110) | (y1_ptr[x+1]==colour); 
+                      qb[x] = p; 
+                      if  ( ((p&m) == 0) && delete[p] ) { 
+                          count++; 
+			  y_ptr[x] = bg_color;  /* delete the pixel */ 
+                      } 
+                  } 
+ 
+                  /* Process right edge pixel.                        */ 
+                  p = (p<<1)&0666; 
+                  if  ( (p&m) == 0 && delete[p] ) { 
+                      count++; 
+                      y_ptr[xsize-1] = bg_color;
+                  } 
+              } 
+ 
+              /* Process bottom scan line.                            */ 
+	      q = qb[0]; 
+	      p = ((q<<2)&0330); 
+ 
+	      y_ptr = ptr + xsize * (ysize - 1);
+              for ( x = 0 ; x < xsize ; x++ ) { 
+                  q = qb[x]; 
+                  p = ((p<<1)&0666) | ((q<<3)&0110); 
+                  if  ( (p&m) == 0 && delete[p] ) { 
+                      count++; 
+                      y_ptr[x] = bg_color;
+                  } 
+              } 
+          } 
+          LOG2("thin1: pass %d, %d pixels deleted\n", pc, count); 
+      } 
       free (qb); 
 } 

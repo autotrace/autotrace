@@ -3,6 +3,7 @@
 
 #include "output.h"
 #include "output-eps.h"
+#include "output-er.h"
 #include "output-p2e.h"
 #include "output-sk.h"
 #include "output-svg.h"
@@ -36,6 +37,7 @@ static struct output_format_entry output_formats[] = {
     {"dxf",     "DXF R14",                      output_dxf_writer},
     {"dxf12",   "DXF R12",                      output_dxf12_writer},
     {"emf",     "Enhanced Metafile format",     output_emf_writer},
+    {"er",      "Elastic Reality Shape file",   output_er_writer},
     {NULL,	NULL}
 };
 

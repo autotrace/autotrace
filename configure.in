@@ -83,4 +83,4 @@ dnl	    ;;
 dnl  esac
 dnl fi
 
-AC_OUTPUT([Makefile autotrace-config], [chmod a+x autotrace-config])
+AC_OUTPUT([Makefile autotrace-config pkgwriteinfo], [chmod a+x autotrace-config])

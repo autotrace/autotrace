@@ -98,6 +98,7 @@ typedef struct
   curve_type *data;
   unsigned length;
   bool clockwise;
+  bool open;
 } curve_list_type;
 
 /* Number of curves in the list.  */

@@ -1,3 +1,80 @@
+2001-02-22  Masatake YAMATO  <yamato@redhat.com>
+
+	* output.h (OUTPUT_SUFFIX_LIST): Added "er".
+
+2001-02-20  Martin Weber <martweb@gmx.net>
+
+	-- Centerline vectorization
+
+	* Makefile.am: Added output-er.c and .h.
+
+	* autotrace.c: Modified at_splines_new() to support centerline
+		vectorization.
+
+	* autotrace.h: Added 'open' flag to at_spline_list_type.
+
+	* color.h: Added COLOR_LUMINANCE() macro.
+
+	* curve.h: Added 'open' flag to curve_list_type.
+
+	* fit.c: Made several modifications to handle open curves.
+
+	* input-pnm.c: In pnm_load_image(), replaced fopen()/fclose()
+		with xfopen()/xfclose() (see below).
+
+	* input-tga.c: Replaced C++-style comment with C-style comment.
+
+	* main.c: Added a -centerline option.  Commented out a call to
+		free() that was causing memory corruption.  Fixed a bug
+		in the conversion to decimal of the -background-color
+		hex string.  Reinstated 'remove_adj_corners' and 'thin'
+		globals as temporary variables (because the SGI MIPSpro
+		compiler doesn't allow initializing 'long_options' with
+		the addresses of a non-static variables).
+
+	* median.c: Added rudimentary support for single-channel images
+		(by interpreting them as three-channel images for which
+		R = G = B).  Changed the way the background color is
+		handled.  Changed some function prototypes.
+
+	* output-eps.c: Made changes to support open curves.
+
+	* output-er.c,
+	  output-er.h: New; adds Elastic Reality shape file output.
+
+	* output.c: Added Elastic Reality shape file output format (see
+		output-er.c and .h).
+
+	*  pxl-outline.c: Added find_centerline_pixels() and supporting
+		functions find_one_centerline(), concat_pixel_outline(),
+		next_edge(), next_unmarked_outline_edge(), opposite_edge(),
+		mark_pixel(), next_unmarked_outline_pixel(),
+		is_marked_pixel(), num_neighbors(), num_marked_neighbors(),
+		and is_open_junction() (some of these, as well as a few
+		macros, were resurrected from an earlier version of AutoTrace).
+
+	* pxl-outline.h: Added 'open' flag to pixel_outline_type.
+		Added function find_centerline_pixels().  Added optional
+		background color parameter to find_outline_pixels().
+
+	* quantize.h: Changed function prototype for quantize().
+
+	* spline.c: Reinstated patch to evaluate_spline() for SGI MIPSpro
+		compiler.
+
+	* thin-image.c: Added support for single-channel images.  Rewrote
+		code to eliminate most inner-loop function calls.  Fixed
+		two bugs that caused problems with border pixels.  Replaced
+		hard-coded BACKGROUND color with an optional parameter.
+
+	* thin-image.h: Added optional background color parameter to 
+		thin_image().
+
+	* vector.c: Rewrote normalize() to not abort if the vector is
+		zero-length.
+
+	* xstd.c: Modified xfopen() and xfclose() to allow reads from stdin.
+
 2001-02-21  Masatake YAMATO  <yamato@redhat.com>
 		
 	[Patches from from Martin.]

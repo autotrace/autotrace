@@ -42,14 +42,19 @@ evaluate_spline (spline_type s, real t)
   polynomial_degree degree = SPLINE_DEGREE (s);
 
   for (i = 0; i <= degree; i++)
-    V[0].v[i] = s.v[i];
+  {
+    V[0].v[i].x = s.v[i].x;
+    V[0].v[i].y = s.v[i].y;
+  }
 
   for (j = 1; j <= degree; j++)
     for (i = 0; i <= degree - j; i++)
       {
         real_coordinate_type t1 = Pmult_scalar (V[j - 1].v[i], one_minus_t);
         real_coordinate_type t2 = Pmult_scalar (V[j - 1].v[i + 1], t);
-        V[j].v[i] = Padd (t1, t2);
+        real_coordinate_type temp = Padd (t1, t2);
+        V[j].v[i].x = temp.x;
+        V[j].v[i].y = temp.y;
       }
 
   return V[degree].v[0];

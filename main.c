@@ -31,8 +31,17 @@ static at_output_write_func output_writer = NULL;
 /* Whether to print version information */
 static bool printed_version;
 
+/* Whether to trace a character's centerline or its outline */
+bool centerline = false;
+
 /* Whether to write a log file */
 static bool logging = false;
+
+/* Should adjacent corners be removed?  */
+static bool remove_adj_corners;
+
+/* Thin all the lines in the image prior to fitting. */
+static bool thin;
 
 static char * read_command_line (int, char * [], at_fitting_opts_type *);
 
@@ -64,6 +73,9 @@ main (int argc, char * argv[])
 
   input_name = read_command_line (argc, argv, fitting_opts);
 
+  fitting_opts->remove_adj_corners = remove_adj_corners;
+  fitting_opts->thin = thin;
+
   if (STREQ (output_name, input_name))
     FATAL("Input and output file may not be the same\n");
 
@@ -73,8 +85,12 @@ main (int argc, char * argv[])
   if (logging)
     log_file = xfopen (logfile_name = extend_filename (input_rootname, "log"), "w");
 
+  /* BUG: Sometimes input_rootname points to the heap, sometimes to
+     the stack, so it can't safely be freed. */
+/*
   if (input_rootname != input_name)
     free (input_rootname);
+*/
   if (logging)
     free (logfile_name);
 
@@ -133,6 +149,7 @@ main (int argc, char * argv[])
 background-color <hexadezimal>: the color of the background that\n\
   should be ignored, for example FFFFFF;\n\
   default is no background color.\n\
+centerline: trace a character's centerline, rather than its outline.\n\
 color-count <unsigned>: number of colors a color bitmap is reduced to,\n\
   it does not work on grayscale, allowed are 1..256;\n\
   default is 0, that means not color reduction is done.\n\
@@ -201,6 +218,7 @@ read_command_line (int argc, char * argv[],
   struct option long_options[]
     = { { "align-threshold",		1, 0, 0 },
 	{ "background-color",		1, 0, 0 },
+        { "centerline",			0, (int*)&centerline, 1},
         { "color-count",                1, 0, 0 },
         { "corner-always-threshold",    1, 0, 0 },
         { "corner-surround",            1, 0, 0 },
@@ -222,15 +240,14 @@ read_command_line (int argc, char * argv[],
         { "output-file",		1, 0, 0 },
         { "output-format",		1, 0, 0 },
         { "range",                      1, 0, 0 },
-        { "remove-adjacent-corners",     0,
-	      (int *) fitting_opts->remove_adj_corners, 1 },
+        { "remove-adjacent-corners",     0, (int *) &remove_adj_corners, 1 },
         { "reparameterize-improve",     1, 0, 0 },
         { "reparameterize-threshold",   1, 0, 0 },
         { "subdivide-search",		1, 0, 0 },
         { "subdivide-surround",		1, 0, 0 },
         { "subdivide-threshold",	1, 0, 0 },
         { "tangent-surround",           1, 0, 0 },
-        { "thin",                       1, (int*) fitting_opts->thin ,0},
+        { "thin",                       0, (int *) &thin, 1},
         { "version",                    0, (int *) &printed_version, 1 },
         { 0, 0, 0, 0 } };
 
@@ -254,9 +271,9 @@ read_command_line (int argc, char * argv[],
         {
            if (strlen (optarg) != 6)
                FATAL ("background-color be six chars long");
-	       fitting_opts->bgColor = at_color_new(hctoi (optarg[1]) * 16 + hctoi (optarg[0]),
-				       hctoi (optarg[3]) * 16 + hctoi (optarg[2]),
-				       hctoi (optarg[5]) * 16 + hctoi (optarg[4]));
+	       fitting_opts->bgColor = at_color_new(hctoi (optarg[0]) * 16 + hctoi (optarg[1]),
+				       hctoi (optarg[2]) * 16 + hctoi (optarg[3]),
+				       hctoi (optarg[4]) * 16 + hctoi (optarg[5]));
  	}
       else if (ARGUMENT_IS ("color-count"))
         fitting_opts->color_count = atou (optarg);

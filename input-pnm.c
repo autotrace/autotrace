@@ -126,7 +126,7 @@ bitmap_type pnm_load_image (string filename)
   bitmap_type bitmap;
 
   /* open the file */
-  fd = fopen (filename, "rb");
+  fd = xfopen (filename, "rb");
 
   if (fd == NULL)
     {
@@ -206,7 +206,7 @@ bitmap_type pnm_load_image (string filename)
   free (pnminfo);
 
   /* close the file */
-  fclose (fd);
+  xfclose (fd, filename);
   
   return (bitmap);
 }

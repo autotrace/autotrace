@@ -5,10 +5,16 @@
 FILE *
 xfopen (string filename, string mode)
 {
-  FILE *f = fopen (filename, mode);
+  FILE *f;
 
-  if (f == NULL)
-    FATAL_PERROR (filename);
+  if (strcmp(filename, "-") == 0)
+    f = stdin;
+  else
+    {
+      f = fopen (filename, mode);
+      if (f == NULL)
+	FATAL_PERROR (filename);
+    }
 
   return f;
 }
@@ -17,8 +23,11 @@ xfopen (string filename, string mode)
 void
 xfclose (FILE *f, string filename)
 {
-  if (fclose (f) == EOF)
-    FATAL_PERROR (filename);
+  if (f != stdin)
+    {
+      if (fclose (f) == EOF)
+	FATAL_PERROR (filename);
+    }
 }
 
 void

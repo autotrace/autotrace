@@ -3,6 +3,7 @@
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
+#include "message.h"
 #include "xstd.h"
 #include "quantize.h"
 
@@ -47,32 +48,51 @@ static void zero_histogram_rgb(Histogram histogram)
 		histogram[r * MR + g * MG + b] = 0;
 }
 
-static void generate_histogram_rgb(Histogram histogram,
-  unsigned char *src, long width, long height, color_type *ignoreColor) 
+static void generate_histogram_rgb(Histogram histogram, bitmap_type *image,
+    const color_type *ignoreColor) 
 {
+    unsigned char *src = image->bitmap;
     int num_elems;
     ColorFreq *col;
 
-    num_elems = width * height;
+    num_elems = DIMENSIONS_WIDTH(image->dimensions)
+	* DIMENSIONS_HEIGHT(image->dimensions);
     zero_histogram_rgb(histogram);
 
-    while (num_elems--)  
-      { 
-        /* If we have an ignorecolor, skip it. */ 
-    	if (ignoreColor) 
-    	  { 
-    	    if ((src[0] == ignoreColor->r)&&(src[1] == ignoreColor->g)&&(src[2] == ignoreColor->b))
-	      { 
-	        src += 3; 
-     	        continue; 
-     	      } 
-    	  } 
-    		 
-	col = &histogram[(src[0] >> R_SHIFT) * MR +
-			 (src[1] >> G_SHIFT) * MG +
-			 (src[2] >> B_SHIFT)];
-	(*col)++;
-	src += 3;
+    switch (BITMAP_PLANES(*image))
+    {
+	case 3:
+	    while (num_elems--)  
+	    { 
+		/* If we have an ignorecolor, skip it. */ 
+		if (ignoreColor) 
+		{ 
+		    if ((src[0] == ignoreColor->r)
+			&& (src[1] == ignoreColor->g)
+			&& (src[2] == ignoreColor->b))
+		    { 
+			src += 3; 
+			continue; 
+		    } 
+		} 
+		col = &histogram[(src[0] >> R_SHIFT) * MR
+		    + (src[1] >> G_SHIFT) * MG
+		    + (src[2] >> B_SHIFT)];
+		(*col)++;
+		src += 3;
+	    }
+	    break;
+
+	case 1:
+	    while (--num_elems >= 0)  
+	    { 
+		if (ignoreColor && src[num_elems] == ignoreColor->r) continue; 
+		col = &histogram[(src[num_elems] >> R_SHIFT) * MR
+		    + (src[num_elems] >> G_SHIFT) * MG
+		    + (src[num_elems] >> B_SHIFT)];
+		(*col)++;
+	    }
+	    break;
     }
 }
 
@@ -695,17 +715,17 @@ static void fill_inverse_cmap_rgb(QuantizeObj *quantobj, Histogram histogram,
 }
 
 /*  This is pass 1  */
-static void median_cut_pass1_rgb(QuantizeObj *quantobj, unsigned char *src,
-  long width, long height, color_type *ignoreColor) 
+static void median_cut_pass1_rgb(QuantizeObj *quantobj, bitmap_type *image,
+  const color_type *ignoreColor) 
 {
-    generate_histogram_rgb(quantobj->histogram, src, width, height, ignoreColor); 
+    generate_histogram_rgb(quantobj->histogram, image, ignoreColor); 
     select_colors_rgb(quantobj, quantobj->histogram);
 }
 
 
 /* Map some rows of pixels to the output colormapped representation. */
-static void median_cut_pass2_rgb(QuantizeObj *quantobj, unsigned char *src,
-  unsigned char	*dest,long width,long height, color_type *bgColor) 
+static void median_cut_pass2_rgb(QuantizeObj *quantobj, bitmap_type *image,
+  const color_type *bgColor) 
  /* This version performs no dithering */
 {
     Histogram       histogram = quantobj->histogram;
@@ -713,48 +733,90 @@ static void median_cut_pass2_rgb(QuantizeObj *quantobj, unsigned char *src,
     int             R, G, B;
     int             origR, origG, origB; 
     int             row, col;
+    int             spp = BITMAP_PLANES(*image);
+    int             width = DIMENSIONS_WIDTH(image->dimensions);
+    int             height = DIMENSIONS_HEIGHT(image->dimensions);
+    unsigned char   *src, *dest;
+    color_type      bg_color = { 0xff, 0xff, 0xff };
 
     zero_histogram_rgb(histogram);
-    for (row = 0; row < height; row++) {
-      for (col = 0; col < width; col++) {
-	/* get pixel value and index into the cache */
-        origR = (*src++); 
-        origG = (*src++); 
-        origB = (*src++); 
- 
-	/* Leave BGColor unchanged */ 
-	if (bgColor && origR == bgColor->r && origG == bgColor->g && origB == bgColor->b) 
-	  { 
-            (*dest++) = origR; 
-            (*dest++) = origG; 
-            (*dest++) = origB; 
-            continue; 
-	  } 
- 
-	if (origR > 253 && origG > 253 && origB > 253) 
-	  { 
-            (*dest++) = 255; 
-            (*dest++) = 255; 
-            (*dest++) = 255; 
-            continue; 
-	  } 
- 
-	/* get pixel value and index into the cache */ 
-        R = origR >> R_SHIFT; 
-        G = origG >> G_SHIFT; 
-        B = origB >> B_SHIFT; 
-        cachep = &histogram[R * MR + G * MG + B];
-        /* If we have not seen this color before, find nearest colormap entry
-           and update the cache */
-        if (*cachep == 0) {
-          fill_inverse_cmap_rgb(quantobj, histogram, R, G, B);
-		}
-          /* Now emit the colormap index for this cell */
-          (*dest++) = quantobj->cmap[*cachep - 1].r;
-          (*dest++) = quantobj->cmap[*cachep - 1].g;
-          (*dest++) = quantobj->cmap[*cachep - 1].b;
-        }
 
+    if (bgColor)
+    {
+	/* Find the nearest colormap entry for the background color. */
+	R = bgColor->r >> R_SHIFT;
+	G = bgColor->g >> G_SHIFT;
+	B = bgColor->b >> B_SHIFT; 
+	cachep = &histogram[R * MR + G * MG + B];
+	if (*cachep == 0)
+	    fill_inverse_cmap_rgb(quantobj, histogram, R, G, B);
+	bg_color = quantobj->cmap[*cachep - 1];
+    }
+
+    src = dest = image->bitmap;
+    if (spp == 3)
+    {
+	for (row = 0; row < height; row++) {
+	    for (col = 0; col < width; col++) {
+		/* get pixel value and index into the cache */
+		origR = (*src++); origG = (*src++); origB = (*src++); 
+
+		/*
+		if (origR > 253 && origG > 253 && origB > 253) 
+		{ 
+		    (*dest++) = 255; (*dest++) = 255; (*dest++) = 255; 
+		    continue; 
+		} 
+		*/
+
+		/* get pixel value and index into the cache */ 
+		R = origR >> R_SHIFT; 
+		G = origG >> G_SHIFT; 
+		B = origB >> B_SHIFT; 
+		cachep = &histogram[R * MR + G * MG + B];
+		/* If we have not seen this color before, find nearest
+		   colormap entry and update the cache */
+		if (*cachep == 0) {
+		    fill_inverse_cmap_rgb(quantobj, histogram, R, G, B);
+		}
+		/* Now emit the colormap index for this cell */
+		dest[0] = quantobj->cmap[*cachep - 1].r;
+		dest[1] = quantobj->cmap[*cachep - 1].g;
+		dest[2] = quantobj->cmap[*cachep - 1].b;
+
+		/* If the colormap entry for this pixel is the same as the
+		   background's colormap entry, set the pixel to the
+		   background color. */
+		if (bgColor && (dest[0] == bg_color.r
+		    && dest[1] == bg_color.g && dest[2] == bg_color.b))
+		{
+		    dest[0] = bgColor->r;
+		    dest[1] = bgColor->g;
+		    dest[2] = bgColor->b;
+		}
+		dest += 3;
+	    }
+	}
+    }
+    else if (spp == 1)
+    {
+	long idx = width * height;
+	while (--idx >= 0)
+	{
+	    origR = src[idx]; 
+	    R = origR >> R_SHIFT; G = origR >> G_SHIFT; B = origR >> B_SHIFT; 
+	    cachep = &histogram[R * MR + G * MG + B];
+	    if (*cachep == 0)
+		fill_inverse_cmap_rgb(quantobj, histogram, R, G, B);
+
+	    dest[idx] = quantobj->cmap[*cachep - 1].r;
+
+	    /* If the colormap entry for this pixel is the same as the
+	       background's colormap entry, set the pixel to the
+	       background color. */
+	    if (bgColor && dest[idx] == bg_color.r)
+		dest[idx] = bgColor->r;
+	}
     }
 }
 
@@ -776,18 +838,25 @@ static QuantizeObj *initialize_median_cut(int num_colors)
 }
 
 
-void quantize(unsigned char *src, unsigned char *dest, int width, int height,
-  long ncolors, color_type *bgColor, QuantizeObj **iQuant) 
+void quantize(bitmap_type *image, long ncolors, const color_type *bgColor,
+    QuantizeObj **iQuant) 
 {
     QuantizeObj *quantobj;
+    unsigned int spp = BITMAP_PLANES(*image);
  
+    if (spp != 3 && spp != 1)
+    {
+	WARNING1("quantize: %u-plane images are not supported", spp);
+	return;
+    }
+
     /* If a pointer was sent in, let's use it. */ 
     if (iQuant) 
       { 
 	if (*iQuant == NULL) 
 	  { 
     	quantobj = initialize_median_cut(ncolors-1); 
-	    median_cut_pass1_rgb  (quantobj, src, width, height, bgColor); 
+	    median_cut_pass1_rgb  (quantobj, image, bgColor); 
 	    *iQuant = quantobj; 
 	   } 
 	else 
@@ -796,11 +865,11 @@ void quantize(unsigned char *src, unsigned char *dest, int width, int height,
     else 
       {
         quantobj = initialize_median_cut(ncolors-1);
-        median_cut_pass1_rgb  (quantobj, src, width, height, bgColor); 
+	median_cut_pass1_rgb  (quantobj, image, bgColor); 
       } 
 		 
 			 
-    median_cut_pass2_rgb (quantobj, src, dest, width, height, bgColor); 
+    median_cut_pass2_rgb (quantobj, image, bgColor); 
     	 
     if (iQuant == NULL) 
       { 

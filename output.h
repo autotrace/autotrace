@@ -7,7 +7,7 @@
 #include "types.h"
 #include "autotrace.h"
 
-#define OUTPUT_SUFFIX_LIST "emf, eps, ai, sk, p2e, svg, swf, dxf, dxf12 and fig"
+#define OUTPUT_SUFFIX_LIST "er, emf, eps, ai, sk, p2e, svg, swf, dxf, dxf12 and fig"
 
 typedef at_output_write_func output_write;
 

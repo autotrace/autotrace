@@ -57,10 +57,13 @@ normalize (const vector_type v)
   vector_type new_v;
   real m = magnitude (v);
 
-  assert (m > 0.0);
+  /* assert (m > 0.0); */
 
-  new_v.dx = v.dx / m;
-  new_v.dy = v.dy / m;
+  if (m > 0.0)
+  {
+    new_v.dx = v.dx / m;
+    new_v.dy = v.dy / m;
+  }
 
   return new_v;
 }

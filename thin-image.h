@@ -9,7 +9,8 @@
  */
 
 #include "bitmap.h"
+#include "color.h"
 
-void  thin_image      (bitmap_type *image);
+void  thin_image      (bitmap_type *image, const color_type *bg_color);
 
 #endif

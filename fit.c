@@ -258,6 +258,8 @@ fit_curve_list (curve_list_type curve_list,
   spline_list_type *temp = new_spline_list ();
   spline_list_type curve_list_splines = *temp;
   
+  curve_list_splines.open = curve_list.open;
+
   free (temp);
 
   /* Remove the extraneous ``knee'' points before filtering.  Since the
@@ -420,6 +422,7 @@ split_at_corners (pixel_outline_list_type pixel_list, fitting_opts_type *fitting
       pixel_outline_type pixel_o = O_LIST_OUTLINE (pixel_list, this_pixel_o);
 
       CURVE_LIST_CLOCKWISE (curve_list) = O_CLOCKWISE (pixel_o);
+      curve_list.open = pixel_o.open;
 
       LOG1 ("#%u:", this_pixel_o);
 
@@ -457,8 +460,7 @@ split_at_corners (pixel_outline_list_type pixel_list, fitting_opts_type *fitting
           for (p = 0; p < O_LENGTH (pixel_o); p++)
             append_pixel (curve, O_COORDINATE (pixel_o, p));
 
-          /* This curve is cyclic.  */
-          CURVE_CYCLIC (curve) = true;
+	  CURVE_CYCLIC (curve) = !curve_list.open;
         }
       else
         { /* Each curve consists of the points between (inclusive) each pair
@@ -486,8 +488,17 @@ split_at_corners (pixel_outline_list_type pixel_list, fitting_opts_type *fitting
                p++)
             append_pixel (curve, O_COORDINATE (pixel_o, p));
 
-          for (p = 0; p <= GET_INDEX (corner_list, 0); p++)
-            append_pixel (curve, O_COORDINATE (pixel_o, p));
+	  if (!pixel_o.open)
+	  {
+	      for (p = 0; p <= GET_INDEX (corner_list, 0); p++)
+		  append_pixel (curve, O_COORDINATE (pixel_o, p));
+	  }
+	  else
+	  {
+	      curve_type last_curve = PREVIOUS_CURVE(curve);
+	      PREVIOUS_CURVE(first_curve) = NULL;
+	      NEXT_CURVE(last_curve) = NULL;
+	  }
         }
 
       LOG1 (" [%u].\n", corner_list.length);
@@ -533,11 +544,23 @@ static index_list_type
 find_corners (pixel_outline_type pixel_outline,
   fitting_opts_type *fitting_opts)
 {
-  unsigned p;
+  unsigned p, start_p, end_p;
   index_list_type corner_list = new_index_list ();
 
+  start_p = 0;
+  end_p = O_LENGTH(pixel_outline) - 1;
+  if (pixel_outline.open)
+  {
+      if (end_p <= fitting_opts->corner_surround * 2)
+	  return corner_list;
+      APPEND_CORNER(0, 0.0, '@');
+      APPEND_CORNER(O_LENGTH(pixel_outline) - 1, 0.0, '@');
+      start_p += fitting_opts->corner_surround;
+      end_p -= fitting_opts->corner_surround;
+  }
+
   /* Consider each pixel on the outline in turn.  */
-  for (p = 0; p < O_LENGTH (pixel_outline); p++)
+  for (p = start_p; p <= end_p; p++)
     {
       real corner_angle;
       vector_type in_vector, out_vector;
@@ -638,7 +661,8 @@ find_corners (pixel_outline_type pixel_outline,
     /* We never want two corners next to each other, since the
        only way to fit such a ``curve'' would be with a straight
        line, which usually interrupts the continuity dreadfully.  */
-    remove_adjacent_corners (&corner_list, O_LENGTH (pixel_outline) - 1,
+    remove_adjacent_corners (&corner_list,
+      O_LENGTH (pixel_outline) - (pixel_outline.open ? 2 : 1),
       fitting_opts->remove_adj_corners);
   return corner_list;
 }
@@ -727,9 +751,9 @@ remove_adjacent_corners (index_list_type *list, unsigned last_index,
       unsigned next = GET_INDEX (*list, j + 1);
 
       /* We should never have inserted the same element twice.  */
-      assert (current != next);
+      /* assert (current != next); */
 
-      if ((remove_adj_corners) && (next == current + 1))
+      if ((remove_adj_corners) && ((next == current + 1) || (next == current)))
         j++;
 
       append_index (&new_list, current);
@@ -1864,14 +1888,16 @@ change_bad_lines (spline_list_type *spline_list,
 static void
 align (spline_list_type *l, fitting_opts_type *fitting_opts)
 {
-  unsigned this_spline;
+  unsigned this_spline, sp_start, sp_end;
   unsigned length = SPLINE_LIST_LENGTH (*l);
 
   LOG1 ("\nAligning spline list (length %u):\n", length);
 
+  sp_start = 0; sp_end = length;
+  if (l->open) { sp_start = 1; sp_end = (length > 1 ? length - 1 : 0); }
   LOG ("  ");
 
-  for (this_spline = 0; this_spline < length; this_spline++)
+  for (this_spline = sp_start; this_spline < sp_end; this_spline++)
     {
       bool spline_change = false;
       spline_type *s = &SPLINE_LIST_ELT (*l, this_spline);

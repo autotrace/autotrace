@@ -106,6 +106,7 @@ static int output_eps_header(FILE* ps_file, string name,
   OUT_LINE ("/f { closepath F } bd");
 /*  OUT_LINE ("/S { incompound not {stroke} if } bd");
   OUT_LINE ("/s { closepath S } bd");*/
+  OUT_LINE ("/S { stroke } bd");
   OUT_LINE ("/*u { /incompound true def } bd");
   OUT_LINE ("/*U { /incompound false def f} bd");
   OUT_LINE ("/k { setcmykcolor } bd"); /* must symbol k for CorelDraw 3/4 */
@@ -122,6 +123,7 @@ static int output_eps_header(FILE* ps_file, string name,
 static void
 out_splines (FILE * ps_file, spline_list_array_type shape)
 {
+  extern bool centerline;  /* from main.c */
   unsigned this_list;
 
   for (this_list = 0; this_list < SPLINE_LIST_ARRAY_LENGTH (shape);
@@ -168,7 +170,7 @@ out_splines (FILE * ps_file, spline_list_array_type shape)
                           END_POINT (s).x, END_POINT (s).y,
                           "c");
         }
-      OUT_LINE ("f");
+      OUT_LINE ((centerline || list.open) ? "S" : "f");
       last_color = list.color;
     }
   if (SPLINE_LIST_ARRAY_LENGTH(shape) > 0)

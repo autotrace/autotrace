@@ -57,6 +57,7 @@ struct _at_spline_list_type
   unsigned length;
   bool clockwise;
   at_color_type color;
+  bool open;
 };
 
 /* Each character is in general made up of many outlines. So here is one

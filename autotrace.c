@@ -101,22 +101,30 @@ at_splines_new (at_bitmap_type * bitmap,
   at_splines_type * splines;
   pixel_outline_list_type pixels;
   QuantizeObj *myQuant = NULL; /* curently not used */
+  extern bool centerline; /* from main.c */
   
   image_header.width = at_bitmap_get_width(bitmap);
   image_header.height = at_bitmap_get_height(bitmap);
 
+  if (centerline)
+    opts->thin = true;
+
+  if (opts->color_count > 0)
+    quantize (bitmap, opts->color_count, opts->bgColor, &myQuant);
+  
   if (opts->thin) 
-    thin_image (bitmap); 
+    thin_image (bitmap, opts->bgColor); 
   
-  if (opts->color_count > 0 && BITMAP_PLANES(*bitmap)== 3)
-    quantize (bitmap->bitmap, 
-	      bitmap->bitmap, 
-	      image_header.width,
-	      image_header.height,
-	      opts->color_count,
-	      opts->bgColor, &myQuant);
-  
-  pixels = find_outline_pixels (*bitmap);
+  if (centerline)
+  {
+    color_type bg_color = { 0xff, 0xff, 0xff };
+    if (opts->bgColor) bg_color = *opts->bgColor;
+
+    pixels = find_centerline_pixels(*bitmap, bg_color);
+  }
+  else
+    pixels = find_outline_pixels(*bitmap, opts->bgColor);
+
   XMALLOC(splines, sizeof(at_splines_type)); 
   *splines = fitted_splines (pixels, opts);
   free_pixel_outline_list (&pixels);

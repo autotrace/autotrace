@@ -1,5 +1,6 @@
 /* Quantize a high color bitmap */
 
+#include "bitmap.h"
 #include "color.h"
 
 #ifndef QUANTIZE_H
@@ -27,7 +28,8 @@ typedef struct {
     Histogram       histogram; /* holds the histogram */ 
 } QuantizeObj; 
  
-void quantize(unsigned char *src,unsigned char *dest,int width, int height,long ncolors, color_type *bgColor, QuantizeObj **quantobj); 
+void quantize(bitmap_type*, long ncolors, const color_type *bgColor,
+    QuantizeObj**); 
 
 #endif /* NOT QUANTIZE_H */
 
