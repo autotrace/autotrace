@@ -80,5 +80,5 @@ autotrace_SOURCES=$(input_src) ${output_src}	\
 		quantize.h 
 
 
-INCLUDES = $(MAGICK_CFLAGS)
+INCLUDES = $(MAGICK_CFLAGS) -Wall
 autotrace_LDADD=	$(MAGICK_LDFLAGS) -lm

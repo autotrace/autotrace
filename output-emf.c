@@ -555,6 +555,7 @@ void GetEmfStats(EMFStats *stats, string name, spline_list_array_type shape)
   ColorListToColorTable(&color_list, &color_table, ncolors);
 }
 
+void
 OutputEmf(FILE* fdes, EMFStats *stats, string name, int width, int height, spline_list_array_type shape)
 {
   int i, j;
