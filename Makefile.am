@@ -1,4 +1,4 @@
-SUBDIRS = intl po
+SUBDIRS = m4  po
 man_MANS = autotrace.1
 EXTRA_DIST=$(man_MANS)						\
 output-swf.c output-swf.h					\

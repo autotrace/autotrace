@@ -1,3 +1,17 @@
+2003-01-23  Masatake YAMATO  <yamato@redhat.com>
+
+	* Makefile.am (SUBDIRS): Added m4. intl is removed.
+
+	* acconfig.h: use AUTOTRACE_VERSION instead of VERSION.
+	See my change at 2002-12-19. I forgot commiting.
+	
+	* configure.in: Added the 3rd argument for AC_DEFINE_UNQUOTED.
+	Added the 2nd added for AC_DEFINE.
+	Set, define, and subst GETTEXT_PACKAGE.
+	Use AC_CHECK_LIB instead of AC_CHECK_FUNC to check gettext.
+	Added m4/Makefile to AC_OUTPUT. Removed intl/Makefile to AC_OUTPUT.
+	Use AUTOTRACE_VERSION instead of VERSION.
+	
 2003-01-20  Martin Weber <martweb@gmx.net>
 
 	* despeckle.c: speedup and fix of bug in gray bitmap despeckle.

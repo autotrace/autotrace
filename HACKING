@@ -10,7 +10,7 @@
   autoconf (GNU Autoconf) 2.53
   
   automake --version
-  automake (GNU automake) 1.5
+  automake (GNU automake) 1.6.3
 
   libtool --version
   ltmain.sh (GNU libtool) 1.4.2 (1.922.2.53 2001/09/11 03:18:52)
@@ -20,6 +20,9 @@
 
   ./config.guess --version
   GNU config.guess (2002-07-23)
+
+  gettext --version
+  gettext (GNU gettext) 0.11.4
 
   when releasing.
 

@@ -14,9 +14,9 @@ dnl VERSION is not acceptable; it conflicts
 dnl with a variable defined in VC++.
 AUTOTRACE_VERSION=${MAJOR_VERSION}.${MINOR_VERSION}.${MICRO_VERSION}
 AM_INIT_AUTOMAKE($PACKAGE, $AUTOTRACE_VERSION, no-define)
-AC_DEFINE_UNQUOTED(PACKAGE, "$PACKAGE")
+AC_DEFINE_UNQUOTED(PACKAGE, "$PACKAGE", [Package name])
 AC_SUBST(PACKAGE)
-AC_DEFINE_UNQUOTED(AUTOTRACE_VERSION,"$VERSION")
+AC_DEFINE_UNQUOTED(AUTOTRACE_VERSION,"$VERSION", [Package version])
 
 #
 # version setting up for libtool
@@ -33,7 +33,7 @@ AC_PROG_CC
 AC_PROG_LIBTOOL
 
 AUTOTRACE_WEB=http://autotrace.sourceforge.net
-AC_DEFINE_UNQUOTED(AUTOTRACE_WEB, "$AUTOTRACE_WEB")
+AC_DEFINE_UNQUOTED(AUTOTRACE_WEB, "$AUTOTRACE_WEB", [Project home page])
 
 AM_MAINTAINER_MODE
 
@@ -47,10 +47,15 @@ AM_SANITY_CHECK
 AC_PROG_INSTALL
 AC_CHECK_HEADERS(malloc.h)
 
+dnl ALL_LINGUAS="ja de"
 ALL_LINGUAS="ja"
+GETTEXT_PACKAGE=$PACKAGE
+AC_SUBST(GETTEXT_PACKAGE)
+AC_DEFINE_UNQUOTED(GETTEXT_PACKAGE,"$GETTEXT_PACKAGE",[Translation domain used])
 AM_GNU_GETTEXT
-AC_CHECK_FUNC(gettext,,AC_CHECK_LIB(intl, gettext))
-dnl AC_PROG_INTLTOOL
+# Solaris requires -lintl if you want strerror (which calls dgettext)
+# to return localized messages.
+AC_CHECK_LIB(intl, dgettext)
 
 dnl
 dnl ImageMagick
@@ -100,7 +105,7 @@ if test $with_magick = yes ; then
 				AC_SUBST(MAGICK_CFLAGS)
 				AC_SUBST(MAGICK_LDFLAGS)
 				HAVE_MAGICK=yes
-				AC_DEFINE(HAVE_MAGICK)
+				AC_DEFINE(HAVE_MAGICK,[ImageMagick library is available or not])
 			fi
 		else
 			AC_MSG_WARN([*** Magick-config is found but magick/api.h is not found in $MAGICK_CFLAGS ***])
@@ -190,7 +195,7 @@ if test "x$HAVE_LIBPNG_STAGE1" = "xyes" ; then
 	if test "x$HAVE_LIBPNG" = "xyes" ; then
 		LIBPNG_LDFLAGS="-lpng -lz -lm"
 		AC_SUBST(LIBPNG_LDFLAGS)
-		AC_DEFINE(HAVE_LIBPNG)
+		AC_DEFINE(HAVE_LIBPNG,[PNG library is available or not])
 	else
 	   AC_MSG_WARN([*** libpng exists but cannot find png_read_png in the libpng. ***])
 	   AC_MSG_WARN([*** libpng might be old.                                      ***])
@@ -217,7 +222,7 @@ if test "${swf_header_found}" = yes ; then
 	if test "$HAVE_LIBSWF" = "yes" ; then
 		LIBSWF_LDFLAGS="-lming -lm"
 		AC_SUBST(LIBSWF_LDFLAGS)
-		AC_DEFINE(HAVE_LIBSWF)
+		AC_DEFINE(HAVE_LIBSWF,[SWF library is available or not])
 	else
  		AC_MSG_WARN([*** Cannot find libming.    ***])
 		AC_MSG_WARN([*** SWF output is disabled. ***])
@@ -305,7 +310,7 @@ if test ${HAVE_LIBPSTOEDIT_321} != yes; then
    if test ${HAVE_LIBPSTOEDIT_320} = yes; then
 	echo '*** The 2nd check is passed.                     ***'
         HAVE_LIBPSTOEDIT=yes
-	AC_DEFINE(HAVE_LIBPSTOEDIT)
+	AC_DEFINE(HAVE_LIBPSTOEDIT,[pstoedit library is available or not])
 	LIBPSTOEDIT_LIBS="${PSTOEDIT_LIBS} ${LIBPSTOEDIT_EXTRA_LIBS}"
 	LIBPSTOEDIT_CFLAGS="${PSTOEDIT_CFLAGS}"
    else
@@ -314,7 +319,7 @@ if test ${HAVE_LIBPSTOEDIT_321} != yes; then
 else
 	echo '*** The 1st check is passed.                     ***'
 	HAVE_LIBPSTOEDIT=yes
-	AC_DEFINE(HAVE_LIBPSTOEDIT)
+	AC_DEFINE(HAVE_LIBPSTOEDIT,[pstoedit library is available or not])
 	LIBPSTOEDIT_LIBS="${PSTOEDIT_LIBS} ${LIBPSTOEDIT_EXTRA_LIBS}"	
 	LIBPSTOEDIT_CFLAGS="${PSTOEDIT_CFLAGS}"
 fi
@@ -361,8 +366,7 @@ dnl	    ;;
 dnl  esac
 dnl fi
 
-dnl AC_OUTPUT([intl/Makefile po/Makefile.in po/Makefile.in m4/Makefile 
-AC_OUTPUT([intl/Makefile po/Makefile.in
+AC_OUTPUT([po/Makefile.in m4/Makefile 
 Makefile autotrace-config autotrace.pc autotrace.spec], 
 [chmod a+x autotrace-config])
 
