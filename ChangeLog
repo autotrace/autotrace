@@ -1,3 +1,11 @@
+2002-10-20  Masatake YAMATO  <yamato@redhat.com>
+
+	* autogen.sh: checked aclocal-1.4, automake-1.4
+	and autoconf-2.53 are available or not.
+
+	* autotrace.h: defined N_ and _ only if they are
+	not defined.
+
 2002-10-10  Martin Weber <martweb@gmx.net>
 
 	* autotrace.1: updated again.
