@@ -197,7 +197,7 @@ N_("preserve-width: whether to preserve linewith with centerline fitting; "	\
   at_bool preserve_width;
 
 #define  at_doc__width_factor			\
-N_("weight factor for fitting the linewidth")
+N_("weight-factor: weight factor for fitting the linewidth")
   at_real width_factor;
 };
 

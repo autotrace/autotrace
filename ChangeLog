@@ -1,3 +1,8 @@
+2002-10-08  Masatake YAMATO  <yamato@redhat.com>
+
+	* autotrace.h (at_doc__width_factor): added
+	label for width_factor.
+
 2002-10-07  Masatake YAMATO  <yamato@redhat.com>
 
 	* input-magick.c (input_magick_reader): removed
