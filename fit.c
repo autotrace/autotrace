@@ -114,7 +114,7 @@ new_fitting_opts (void)
   fitting_opts.corner_always_threshold = (at_real) 60.0;
   fitting_opts.corner_surround = 4;
   fitting_opts.corner_threshold = (at_real) 100.0;
-  fitting_opts.error_threshold = (at_real) .8;
+  fitting_opts.error_threshold = (at_real) 2.0;
   fitting_opts.filter_iterations = 4;
   fitting_opts.line_reversion_threshold = (at_real) .01;
   fitting_opts.line_threshold = (at_real) 1.0;
