@@ -16,11 +16,11 @@ Core:
 - Better thinning algorithm like CAT (Chordal Axis Transformation)
 
 Input:
-- Migrate to new plug-in interface with using glib(0.32.0)
+- Migrate to new plug-in interface using glib(0.32.0)
 - Support of image libraries as freeimage, gdk-pixbuf or paintlib(0.32.0)
 
 Output:
-- Migrate to new plug-in interface with using glib(0.32.0)
+- Migrate to new plug-in interface using glib(0.32.0)
 - Output API abstraction(0.32.0)
 - New export formats like wmf, cdr, cmx, compressed pdf, compressed svg and
   dxf with splines...
