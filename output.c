@@ -24,6 +24,7 @@
 #include "output.h"
 #include "xstd.h"
 #include "filename.h"
+#include "strgicmp.h"
 #include <string.h>
 
 #include "output-eps.h"
@@ -257,7 +258,7 @@ at_spline_list_foreach (at_spline_list_type * list,
 			AtSplineListForeachFunc func,
 			at_address user_data)
 {
-  int i;
+  unsigned i;
   for (i = 0; i < AT_SPLINE_LIST_LENGTH(list); i++)
     {
       func (list, AT_SPLINE_LIST_ELT(list, i), i, user_data);
@@ -270,7 +271,7 @@ at_spline_list_array_foreach (at_spline_list_array_type *list_array,
 			      AtSplineListArrayForeachFunc func,
 			      at_address user_data)
 {
-  int i;
+  unsigned i;
   for (i = 0; i < AT_SPLINE_LIST_ARRAY_LENGTH(list_array); i++)
     {
       func (list_array, AT_SPLINE_LIST_ARRAY_ELT(list_array, i), i, user_data);
