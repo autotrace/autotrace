@@ -1,3 +1,8 @@
+2003-06-11  Masatake YAMATO  <yamato@redhat.com>
+
+	* Makevars: Added to our CVS repository.
+	Suggested by "jakobfrandsen" <jakobfrandsen@yahoo.dk>.
+
 2003-01-23  Martin Weber <martweb@gmx.net>
 
 	* de.po: new translation.

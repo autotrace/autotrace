@@ -48,14 +48,11 @@ AM_SANITY_CHECK
 AC_PROG_INSTALL
 AC_CHECK_HEADERS(malloc.h)
 
-ALL_LINGUAS="ja de"
 GETTEXT_PACKAGE=$PACKAGE
 AC_SUBST(GETTEXT_PACKAGE)
 AC_DEFINE_UNQUOTED(GETTEXT_PACKAGE,"$GETTEXT_PACKAGE",[Translation domain used])
-AM_GNU_GETTEXT
-# Solaris requires -lintl if you want strerror (which calls dgettext)
-# to return localized messages.
-AC_CHECK_LIB(intl, dgettext)
+ALL_LINGUAS="ja de"
+AM_GLIB_GNU_GETTEXT
 
 dnl
 dnl ImageMagick
@@ -437,7 +434,8 @@ dnl	    ;;
 dnl  esac
 dnl fi
 
-AC_OUTPUT([po/Makefile.in m4/Makefile 
+AC_OUTPUT([
+po/Makefile.in 
 Makefile autotrace-config autotrace.pc autotrace.spec], 
 [chmod a+x autotrace-config])
 

@@ -14,12 +14,10 @@ ${srcdir}/tools-version.sh
 
 autofig autotrace-config.af
 
-gettextize --force
-
 if (aclocal-1.5 --version)  < /dev/null > /dev/null 2>&1; then
-    aclocal-1.5 $ACLOCAL_FLAGS
+    aclocal-1.5 -I m4 $ACLOCAL_FLAGS
 else
-    aclocal $ACLOCAL_FLAGS
+    aclocal -I m4 $ACLOCAL_FLAGS
 fi
 
 autoheader
@@ -36,3 +34,12 @@ else
     autoconf
 fi
 
+echo "checking for glib-gettextize"
+(glib-gettextize --version) < /dev/null > /dev/null 2>&1 || {
+    echo
+    echo "  You must have glib-gettextize installed to compile autotrace"
+    echo "  glib-gettextize is part of glib-2.0, so you should already"
+    echo "  have it. Make sure it is in your PATH."
+    exit 1
+}
+glib-gettextize --copy --force
