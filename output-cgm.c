@@ -42,7 +42,7 @@ static at_bool write8(FILE *fdes, UI8 data)
 }
 
 
-static at_bool output_beginmetafilename(FILE *fdes, UI8 *string)
+static at_bool output_beginmetafilename(FILE *fdes, const char *string)
 {
   int count = 0, len = strlen (string);
  
@@ -69,7 +69,7 @@ static at_bool output_beginmetafilename(FILE *fdes, UI8 *string)
   return true;
 }
 
-static at_bool output_beginpicture(FILE *fdes, UI8 *string)
+static at_bool output_beginpicture(FILE *fdes, const char *string)
 {
   int count = 0, len = strlen (string);
  
@@ -96,7 +96,7 @@ static at_bool output_beginpicture(FILE *fdes, UI8 *string)
   return true;
 }
 
-static at_bool output_metafiledescription(FILE *fdes, UI8 *string)
+static at_bool output_metafiledescription(FILE *fdes, const char *string)
 {
   int count = 0, len = strlen (string);
  

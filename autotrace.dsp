@@ -401,10 +401,6 @@ SOURCE=.\vector.h
 # End Source File
 # Begin Source File
 
-SOURCE=.\version.c
-# End Source File
-# Begin Source File
-
 SOURCE=.\xstd.c
 # End Source File
 # Begin Source File

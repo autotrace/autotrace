@@ -1,3 +1,11 @@
+2001-12-24  Martin Weber <martweb@gmx.net>
+
+	* autotrace.[dsp,vcproj]: removed version.c
+
+	* output-cgm.c: fixed a C++ issue.
+
+	(Message-ID: <3C264E86.9948791C@gmx.net>).
+
 2001-12-24  Masatake YAMATO  <yamato@redhat.com>
 
 	* configure.in: Version 0.29pre1.

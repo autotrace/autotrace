@@ -357,9 +357,6 @@
 			RelativePath=".\vector.h">
 		</File>
 		<File
-			RelativePath=".\version.c">
-		</File>
-		<File
 			RelativePath=".\xstd.c">
 		</File>
 		<File
