@@ -1,5 +1,9 @@
 2000-11-14  Masatake YAMATO  <yamato@redhat.com>
 
+	* THANKS: New file.
+
+	* input-magick.c: Replaced with new one from Martin.
+
 	* Makefile.am (INCLUDES): -Wall is removed.
 
 2000-11-11  Masatake YAMATO  <yamato@redhat.com>

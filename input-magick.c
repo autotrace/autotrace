@@ -19,7 +19,7 @@ bitmap_type magick_load_image(string filename)
   PixelPacket *pixel=&p;
   ExceptionInfo exception;
 #endif
-#if MagickLibVersion < 0x521
+#if MagickLibVersion >= 0x521
   MagickIncarnate("");
 #endif
 #if MagickLibVersion < 0x500
@@ -54,10 +54,10 @@ bitmap_type magick_load_image(string filename)
     for(i=0;i<image->columns;i++) {
 #if MagickLibVersion < 0x500
       if(runcount)
-	runcount--;
+        runcount--;
       else {
-	runcount=pixel->length;
-	pixel++;
+        runcount=pixel->length;
+        pixel++;
       }
 #else
       p=GetOnePixel(image,i,j);
@@ -65,8 +65,8 @@ bitmap_type magick_load_image(string filename)
 
       bitmap.bitmap[point++]=pixel->red; /* if gray: red=green=blue */
       if(np==3) {
-	bitmap.bitmap[point++]=pixel->green;
-	bitmap.bitmap[point++]=pixel->blue;
+        bitmap.bitmap[point++]=pixel->green;
+        bitmap.bitmap[point++]=pixel->blue;
       }
     }
   return(bitmap);
