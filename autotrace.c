@@ -62,7 +62,7 @@ at_bitmap_new(unsigned short width,
 	      unsigned int planes)
 {
   at_bitmap_type * bitmap;
-  XMALLOC(bitmap, sizeof(at_bitmap_type)); 
+  XCALLOC(bitmap, sizeof(at_bitmap_type)); 
   *bitmap = at_bitmap_init(NULL, width, height, planes);
   return bitmap;
 }
