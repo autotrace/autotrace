@@ -38,6 +38,8 @@
 #include "thin-image.h"
 #include "despeckle.h"
 
+#include "output-pstoedit.h"
+
 #define AT_DEFAULT_DPI 72
 
 at_fitting_opts_type *
@@ -367,8 +369,21 @@ at_splines_write (at_output_write_func output_writer,
       new_opts = true;
       opts     = at_output_opts_new();
     }
+#if HAVE_LIBPSTOEDIT 
+  if (output_pstoedit_is_writer(output_writer))
+    output_pstoedit_invoke_writer (output_writer, 
+				   writeto, file_name,
+				   llx, lly, urx, ury,
+				   opts,
+				   *splines,
+				   msg_func, msg_data);
+  else
+    (*output_writer) (writeto, file_name, llx, lly, urx, ury, opts, *splines,
+		      msg_func, msg_data);
+#else 
   (*output_writer) (writeto, file_name, llx, lly, urx, ury, opts, *splines,
 		    msg_func, msg_data);
+#endif /* HAVE_LIBPSTOEDIT */  
   if (new_opts)
     at_output_opts_free(opts);
 }

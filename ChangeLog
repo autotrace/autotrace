@@ -1,4 +1,18 @@
+2002-10-23  Masatake YAMATO  <yamato@redhat.com>
+
+	* output-pstoedit.[ch]: rewrote code that 
+	handles suffix.
+
+	* autotrace.c (at_splines_write): Use output_pstoedit_invoke_writer
+	if output_pstoedit_is_writer returns true for output_writer.
+
+	* HACKING: Updated about autotools.
+
 2002-10-22  Masatake YAMATO  <yamato@redhat.com>
+
+	* output-pstoedit.c (remove_temporary_file): Renamed
+	from remove_tmpfile.
+	(output_pstoedit_writer): Make static.
 
 	* pxl-outline.[ch]: removed unsed ifdefs.
 

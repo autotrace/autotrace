@@ -37,9 +37,12 @@
    mkstemp is the best in the security aspect, however it is not portable.
    (Read http://groups.yahoo.com/group/autotrace/message/369) */
 
+/* #define OUTPUT_PSTOEDIT_DEBUG */
+
 #include "output-pstoedit.h"
 #include "output-p2e.h"
 #include "filename.h"
+#include "xstd.h"
 
 #include <stdio.h>
 #include <stdlib.h>
@@ -49,25 +52,129 @@
 #define BO_DEBUG 0
 #define TMPDIR "/tmp/"
 
-static void remove_tmpfile (const at_string tmpfile_name);
+static char ** pstoedit_suffix_table = NULL;
+static void      pstoedit_suffix_table_init           (void);
+static at_string pstoedit_suffix_table_lookup_deep    (const at_string suffix);
+static at_bool   pstoedit_suffix_table_lookup_shallow (const void * suffix);
 static const at_string get_symbolicname(const at_string suffix);
-static void   set_last_suffix (const at_string suffix);
-static at_string get_last_suffix (void);
-static at_string output_pstoedit_suffix = NULL;	/* Don't use directly. */
+
+static int output_pstoedit_writer (const at_string suffix,
+				   FILE* file, at_string name,
+				   int llx, int lly, int urx, int ury, 
+				   at_output_opts_type * opts,
+				   at_spline_list_array_type shape,
+				   at_msg_func msg_func, 
+				   at_address msg_data);
+
+static void remove_temporary_file (const at_string tmpfile_name);
 static FILE * make_temporary_file(char *template, char * mode);
+
+static void
+pstoedit_suffix_table_init (void)
+{
+  struct DriverDescription_S* dd_start, *dd_tmp;
+  
+  if (pstoedit_suffix_table != NULL)
+    return;
+
+  pstoedit_checkversion(pstoeditdllversion);
+  dd_start = getPstoeditDriverInfo_plainC();
+  if (dd_start)
+    {
+      dd_tmp   = dd_start;
+      while (dd_tmp->symbolicname)
+	dd_tmp++;
+      XMALLOC(pstoedit_suffix_table, sizeof(char *) * 2 * (dd_tmp - dd_start) + 1);
+
+#if defined (OUTPUT_PSTOEDIT_DEBUG) && defined(__GNUC__)
+  fprintf(stderr, "OUTPUT PSTOEDIT BACKEND DEBUG(%s)\n", __FUNCTION__);
+#endif /* Def: OUTPUT_PSTOEDIT_DEBUG */      
+      dd_tmp   = dd_start;
+      while (dd_tmp->symbolicname)
+	{
+#ifdef OUTPUT_PSTOEDIT_DEBUG
+	  fprintf(stderr, "[symbolicname: %d]%s\n", (dd_tmp - dd_start), dd_tmp->symbolicname);
+	  fprintf(stderr, "[      suffix: %d]%s\n", (dd_tmp - dd_start), dd_tmp->suffix);
+#endif /* Def: OUTPUT_PSTOEDIT_DEBUG */
+	  pstoedit_suffix_table[2 * (dd_tmp - dd_start)]     = strdup(dd_tmp->symbolicname);
+	  pstoedit_suffix_table[2 * (dd_tmp - dd_start) + 1] = strdup(dd_tmp->suffix);
+	  dd_tmp++;
+	}
+      pstoedit_suffix_table[2 * (dd_tmp - dd_start)] = NULL;
+    }
+  else
+    {
+      XMALLOC(pstoedit_suffix_table, sizeof(char *));
+      pstoedit_suffix_table[0] = NULL;
+    }
+}
+
+static at_string
+pstoedit_suffix_table_lookup_deep    (const at_string suffix)
+{
+  char ** tmp;
+  
+  if (pstoedit_suffix_table == NULL)
+    pstoedit_suffix_table_init();
+
+#if defined (OUTPUT_PSTOEDIT_DEBUG) && defined(__GNUC__)
+  fprintf(stderr, "OUTPUT PSTOEDIT BACKEND DEBUG(%s)\n", __FUNCTION__);
+#endif /* Def: OUTPUT_PSTOEDIT_DEBUG */
+
+  for (tmp = pstoedit_suffix_table; *tmp != NULL; tmp++)
+    {
+#ifdef OUTPUT_PSTOEDIT_DEBUG
+      fprintf(stderr, "%s\n", *tmp);
+#endif /* Def: OUTPUT_PSTOEDIT_DEBUG */
+
+      if (0 == strcmp(suffix, *tmp))
+	return * tmp;
+    }
+  return NULL;
+}
+
+static at_bool
+pstoedit_suffix_table_lookup_shallow (const void * suffix)
+{
+  char ** tmp;
+  
+  if (pstoedit_suffix_table == NULL)
+    pstoedit_suffix_table_init();
+
+  for (tmp = pstoedit_suffix_table; *tmp != NULL; tmp++)
+    if (*tmp == suffix)
+      return true;
+  return false;
+}
 
 at_output_write_func
 output_pstoedit_get_writer(const at_string suffix)
 {
-  pstoedit_checkversion(pstoeditdllversion);
-    
-  if (get_symbolicname(suffix))
-    {
-      set_last_suffix (suffix);
-      return (at_output_write_func) output_pstoedit_writer;
-    }
-  else
-    return NULL;
+  return (at_output_write_func)pstoedit_suffix_table_lookup_deep (suffix);
+}
+
+at_bool
+output_pstoedit_is_writer              (at_output_write_func writer)
+{
+  return pstoedit_suffix_table_lookup_shallow(writer);
+}
+
+int
+output_pstoedit_invoke_writer          (at_output_write_func writer,
+					FILE* file, at_string name,
+					int llx, int lly, int urx, int ury, 
+					at_output_opts_type * opts,
+					at_spline_list_array_type shape,
+					at_msg_func msg_func, 
+					at_address msg_data)
+{
+  return output_pstoedit_writer((const at_string) writer, 
+				file, name, 
+				llx, lly, urx, ury, 
+				opts, 
+				shape, 
+				msg_func, msg_data);
+				
 }
 
 /* This output routine uses two temporary files to keep the
@@ -77,8 +184,9 @@ output_pstoedit_get_writer(const at_string suffix)
    shape -> bo file(tmpfile_name_p2e) 
    -> specified formatted file(tmpfile_name_pstoedit) 
    -> file */
-int
-output_pstoedit_writer (FILE* file, at_string name,
+static int
+output_pstoedit_writer (const at_string suffix,
+			FILE* file, at_string name,
 			int llx, int lly, int urx, int ury, 
 			at_output_opts_type * opts,
 			at_spline_list_array_type shape,
@@ -102,26 +210,24 @@ output_pstoedit_writer (FILE* file, at_string name,
   char * argv[]  = {"pstoedit", "-f", 0, "-bo", 0, 0};
 
   argc = sizeof(argv) / sizeof(char *);
+
+  if (false == pstoedit_suffix_table_lookup_shallow(suffix))
+    {
+      if (msg_func) 
+	msg_func ("Suffix for pstoedit backend driver is wrong", 
+		  AT_MSG_WARNING, msg_data);
+      return -1;
+    }
+
+  symbolicname = get_symbolicname(suffix);
+  if (!symbolicname)
+    {
+      if (msg_func) 
+	msg_func ("Symbolicname for pstoedit backend driver is wrong", 
+		  AT_MSG_WARNING, msg_data);
+      return -1;
+    }
   
-  pstoedit_checkversion(pstoeditdllversion);
-
-  if (NULL == get_last_suffix())
-    {
-      if (msg_func) 
-	msg_func ("Suffix or pstoedit backend driver name is not given", 
-		  AT_MSG_WARNING, msg_data);
-      return -1;
-    }
-
-  symbolicname = get_symbolicname(get_last_suffix());
-  if (NULL == symbolicname)
-    {
-      if (msg_func) 
-	msg_func ("Suffix or pstoedit backend driver name is wrong", 
-		  AT_MSG_WARNING, msg_data);
-      return -1;
-    }
-
   tmpfile = make_temporary_file(tmpfile_name_p2e, "w");
   if (NULL == tmpfile)
     {
@@ -161,20 +267,10 @@ output_pstoedit_writer (FILE* file, at_string name,
   fclose(tmpfile);
   
  remove_tmp_pstoedit:
-  remove_tmpfile(tmpfile_name_pstoedit);
+  remove_temporary_file(tmpfile_name_pstoedit);
  remove_tmp_p2e:
-  remove_tmpfile(tmpfile_name_p2e);
+  remove_temporary_file(tmpfile_name_p2e);
   return result;
-}
-
-static void
-remove_tmpfile (const at_string tmpfile_name)
-{
-#if BO_DEBUG == 0
-  remove (tmpfile_name);
-#else 
-  fprintf(stderr, "tmp file name: %s\n", tmpfile_name);
-#endif /* Not BO_DEBUG == 0 */ 
 }
 
 at_bool
@@ -182,24 +278,17 @@ output_pstoedit_is_unusable_writer(const at_string name)
 {
   if (0 == strcmp(name, "sam")
       || 0 == strcmp(name, "dbg")
-      || 0 == strcmp(name, "gs"))
+      || 0 == strcmp(name, "gs")
+      || 0 == strcmp(name, "psf")
+      || 0 == strcmp(name, "fps")
+      || 0 == strcmp(name, "ps")
+      || 0 == strcmp(name, "spsc")
+      || 0 == strcmp(name, "debug")
+      || 0 == strcmp(name, "dump")
+      || 0 == strcmp(name, "ps2as"))
     return true;
   else
     return false;
-}
-
-static void
-set_last_suffix (const at_string suffix)
-{
-  if (output_pstoedit_suffix)
-    free(output_pstoedit_suffix);
-  output_pstoedit_suffix = strdup (suffix);  
-}
-
-static at_string
-get_last_suffix (void)
-{
-  return output_pstoedit_suffix;
 }
 
 /* get_symbolicname --- Return symbolicname associated with SUFFIX 
@@ -230,7 +319,6 @@ get_symbolicname(const at_string suffix)
   return NULL;
 }
 
-
 /* make_temporary_file --- Make a temporary file */
 static FILE *
 make_temporary_file(char *template, char * mode)
@@ -250,4 +338,14 @@ make_temporary_file(char *template, char * mode)
     return NULL;
   return fopen(tmpname, mode);
 #endif  /* HAVE_MKSTEMP */
+}
+
+static void
+remove_temporary_file (const at_string tmpfile_name)
+{
+#if BO_DEBUG == 0
+  remove (tmpfile_name);
+#else 
+  fprintf(stderr, "tmp file name: %s\n", tmpfile_name);
+#endif /* Not BO_DEBUG == 0 */ 
 }

@@ -7,7 +7,7 @@
   Versions I (Masatake) am using:
 
   autoconf --version
-  autoconf (GNU Autoconf) 2.52
+  autoconf (GNU Autoconf) 2.53
   
   automake --version
   automake (GNU automake) 1.5
@@ -19,7 +19,9 @@
   therefore I'm replacing it with
 
   ./config.guess --version
-  GNU config.guess (2001-04-20)
+  GNU config.guess (2002-07-23)
+
+  when releasing.
 
 * AM_PATH_PSTOEDIT
 
@@ -110,30 +112,7 @@ http://cvs.gnome.org/bonsai/rview.cgi?cvsroot=/cvs/gnome&dir=autofig
 
 * Library
 
-Here is a sample progaram that uses libautotrace.a.
-To compile, invoke following commands:
-gcc sample.c `./autotrace-config --libs` `./autotrace-config --cflags`
-
-/* sample.c */
-#include <autotrace/autotrace.h>
-
-int main()
-{
-  char * fname = "img/triangle.png";
-  at_fitting_opts_type * opts = at_fitting_opts_new();
-  at_input_read_func rfunc = at_input_get_handler(fname);
-  at_bitmap_type * bitmap ;
-  at_splines_type * splines;
-  at_output_write_func wfunc = at_output_get_handler_by_suffix("eps");
-
-  bitmap = at_bitmap_read(rfunc, fname);
-  splines = at_splines_new(bitmap, opts);
-  at_splines_write(splines, stdout, "", 
-                   AT_DEFAULT_DPI,
-		   wfunc);
-  return 0;
-}
-
+See README
 
 * Tag naming scheme
 
