@@ -1,3 +1,7 @@
+2002-11-12  Masatake YAMATO  <yamato@redhat.com>
+
+	* strgicmp.c (strgnicmp): Fix a typo.
+
 2002-11-10  Martin Weber <martweb@gmx.net>
 
 	* strgicmp.c (strgnicmp): Use size_t instead of

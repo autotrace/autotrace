@@ -25,7 +25,7 @@ at_bool strgicmp (const char *s1, const char *s2)
 
 at_bool strgnicmp (const char *s1, const char *s2, size_t len)
 {
-  size_t i = 0
+  size_t i = 0;
 
   if (s1 == NULL || s2 == NULL)
     return (false);
