@@ -1,3 +1,13 @@
+2002-09-11  Masatake YAMATO  <yamato@redhat.com>
+
+	* output-pstoedit.c (make_temporary_file): New function.
+	(output_pstoedit_writer): used make_temporary_file. 
+
+	* configure.in: checked mkstemp and tmpnam if 
+	HAVE_LIBPSTOEDIT is yes.
+
+	* acconfig.h: Added HAVE_MKSTEMP and HAVE_TMPNAM.
+
 2002-09-10  Martin Weber <martweb@gmx.net>
 
 	* input.c (at_input_get_handler_by_suffix): added 

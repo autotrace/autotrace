@@ -269,6 +269,18 @@ fi
 
 AC_SUBST(LIBPSTOEDIT_CFLAGS)
 AC_SUBST(LIBPSTOEDIT_LIBS)
+
+dnl A function creating temporary file 
+if test x$HAVE_LIBPSTOEDIT = xyes; then
+   FOUND_MAKE_TMPFILE_FUNC=no
+   AC_CHECK_FUNCS([mkstemp tmpnam],[FOUND_MAKE_TMPFILE_FUNC=yes])
+   if test $FOUND_MAKE_TMPFILE_FUNC = no; then
+      AC_MSG_WARN([
+*** Cannot find function for creating a temporary file. ***
+*** Output functions using libpstoedit are disabled ***])
+      HAVE_LIBPSTOEDIT=no
+   fi
+fi
 AM_CONDITIONAL(HAVE_LIBPSTOEDIT, test x$HAVE_LIBPSTOEDIT = xyes)
 
 dnl

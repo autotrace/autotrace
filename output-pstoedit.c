@@ -45,9 +45,6 @@
 #include <stdlib.h>
 #include <string.h>
 #include <errno.h>
-#ifdef _VISUALC_    
-#include <io.h>
-#endif
 
 #define BO_DEBUG 0
 #define TMPDIR "/tmp/"
@@ -57,6 +54,7 @@ static const at_string get_symbolicname(const at_string suffix);
 static void   set_last_suffix (const at_string suffix);
 static at_string get_last_suffix (void);
 static at_string output_pstoedit_suffix = NULL;	/* Don't use directly. */
+static FILE * make_temporary_file(char *template, char * mode);
 
 at_output_write_func
 output_pstoedit_get_writer(const at_string suffix)
@@ -89,11 +87,6 @@ output_pstoedit_writer (FILE* file, at_string name,
   char  tmpfile_name_p2e[] = TMPDIR "at-bo-" "XXXXXX";
   char  tmpfile_name_pstoedit[] = TMPDIR "at-fo-" "XXXXXX";
   char * symbolicname;
-#ifdef _VISUALC_    
-  char * tmpfd;
-#else
-  int tmpfd;
-#endif
   FILE * tmpfile;
   int result = 0;
   int c;
@@ -127,36 +120,10 @@ output_pstoedit_writer (FILE* file, at_string name,
 		  AT_MSG_WARNING, msg_data);
       return -1;
     }
-#ifdef _VISUALC_    
-  tmpfd = _mktemp(tmpfile_name_p2e);
-#else
-  tmpfd = mkstemp(tmpfile_name_p2e);
-#endif
-  if (tmpfd < 0)
-    {
-      if (msg_func)
-	{
-	  msg_func ("Fail to create a tmp file that is passed to pstoedit(mkstemp)", 
-		    AT_MSG_WARNING, msg_data);
-	  msg_func (strerror(errno), AT_MSG_WARNING, msg_data);
-	}
-      return -1;
-    }
 
-#ifdef _VISUALC_    
-  tmpfile = fopen(tmpfd, "w");
-#else
-  tmpfile = fdopen(tmpfd, "w");
-#endif
+  tmpfile = make_temporary_file(tmpfile_name_p2e, "w");
   if (NULL == tmpfile)
     {
-      if (msg_func)
-	{
-	  msg_func ("Fail to create a tmp file that is passed to pstoedit(fdopen)", 
-		    AT_MSG_WARNING, msg_data);
-	  msg_func (strerror(errno), AT_MSG_FATAL, msg_data);
-	}
-      fclose(tmpfile);
       result = -1;
       goto remove_tmp_p2e;
     }
@@ -169,21 +136,11 @@ output_pstoedit_writer (FILE* file, at_string name,
 		    shape, msg_func, msg_data);
   fclose(tmpfile);
 
-#ifdef _VISUALC_    
-  tmpfd = _mktemp(tmpfile_name_pstoedit);
-#else
-  tmpfd = mkstemp(tmpfile_name_pstoedit);
-#endif
-  if (tmpfd < 0)
+  tmpfile = make_temporary_file(tmpfile_name_pstoedit, "r");
+  if (NULL == tmpfile)
     {
-      if (msg_func)
-	{
-	  msg_func ("Fail to create a tmp file that is passed to pstoedit(mkstemp)", 
-		    AT_MSG_WARNING, msg_data);
-	  msg_func (strerror(errno), AT_MSG_WARNING, msg_data);
-	}
       result = -1;
-      goto remove_tmp_p2e;
+      goto remove_tmp_pstoedit;
     }
 
   /*
@@ -197,24 +154,7 @@ output_pstoedit_writer (FILE* file, at_string name,
   /*
    * specified formatted file(tmpfile_name_pstoedit) -> file  
    */
-#ifdef _VISUALC_    
-  tmpfile = fopen(tmpfd, "r");
-#else
-  tmpfile = fdopen(tmpfd, "r");
-#endif
-  if (NULL == tmpfile)
-    {
-      if (msg_func)
-	{
-	  msg_func ("Fail to create a tmp file that is passed to pstoedit(fdopen)", 
-		    AT_MSG_WARNING, msg_data);
-	  msg_func (strerror(errno), AT_MSG_FATAL, msg_data);
-	}
-      fclose(tmpfile);
-      result = -1;
-      goto remove_tmp_pstoedit;
-    }
-  fseek(tmpfile, 0, SEEK_SET);
+  /* fseek(tmpfile, 0, SEEK_SET); */
   while (EOF != (c = fgetc(tmpfile)))
     fputc(c, file);
   fclose(tmpfile);
@@ -287,4 +227,28 @@ get_symbolicname(const at_string suffix)
 	 }
     }
   return NULL;
+}
+
+
+/* make_temporary_file --- Make a temporary file */
+static FILE *
+make_temporary_file(char *template, char * mode)
+{
+#ifdef HAVE_MKSTEMP
+  /* #warning "To make temporary file, mkstemp will be used." */
+  int tmpfd;
+  tmpfd = mkstemp(template);
+  if (tmpfd < 0)
+    return NULL;
+  return fdopen(tmpfd, mode);
+#elif HAVE_TMPNAM
+  /* #warning "To make temporary file, tmpnam will be used." */
+  char * tmpname;
+  tmpname = tmpnam(template);
+  if (template == NULL)
+    return NULL;
+  return fopen(tmpname, mode);
+#else 
+#error cannot find both mkstemp and tmpnam
+#endif  /* HAVE_MKSTEMP or HAVE_TMPNAM */
 }

@@ -21,6 +21,8 @@
 #undef HAVE_LIBSWF
 #undef HAVE_MAGICK
 #undef HAVE_LIBPSTOEDIT
+#undef HAVE_MKSTEMP
+#undef HAVE_TMPNAM
 
 
 /* Leave that blank line there!!  Autoheader needs it.
