@@ -9,7 +9,7 @@ AC_INIT(fit.c)
 # 
 AUTOTRACE_MAJOR_VERSION=0
 AUTOTRACE_MINOR_VERSION=30
-AUTOTRACE_MICRO_VERSION=7
+AUTOTRACE_MICRO_VERSION=8
 AUTOTRACE_VERSION=${AUTOTRACE_MAJOR_VERSION}.${AUTOTRACE_MINOR_VERSION}.${AUTOTRACE_MICRO_VERSION}
 AC_DEFINE_UNQUOTED(AUTOTRACE_VERSION,"$AUTOTRACE_VERSION")
 AC_SUBST(AUTOTRACE_VERSION)
@@ -283,7 +283,7 @@ if test "x${LIBLD_LDFLAGS}" != x; then
    LIBPSTOEDIT_EXTRA_LIBS="${LIBPSTOEDIT_EXTRA_LIBS} ${LIBLD_LDFLAGS}"
 fi
 
-echo '*** Checking pstoedit existence TWICE ***'
+echo '*** Checking pstoedit existence TWICE(if needed) ***'
 AM_PATH_PSTOEDIT(3.32.1,HAVE_LIBPSTOEDIT_321=yes)
 if test ${HAVE_LIBPSTOEDIT_321} != yes; then
    LIBS_BAKCUP=$LIBS
@@ -306,10 +306,10 @@ fi
 
 if test ${HAVE_LIBPSTOEDIT} = yes; then
 	AC_CHECK_FUNCS([mkstemp])
-	echo '*** pstoedit output functions are enabled.'
-	echo '*** However, this is experimental functions in autotrace.'
-	echo '*** If you get an error about pstoedit in building time,'
-	echo '*** you can run configure with --without-pstoedit option.'
+	echo '*** pstoedit output functions are enabled.                      ***'
+	echo '*** However, these are experimental functions in autotrace.     ***'
+	echo '*** If you get an error in building time about pstoedit,        ***'
+	echo '*** you can run configure with --without-pstoedit option again. ***'
 else
 	AC_MSG_WARN([
 *** Cannot find libpstoedit. ***

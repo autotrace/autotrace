@@ -1,0 +1,43 @@
+Some collectoins of "Question and Answers" posted to autotrace mailing
+list. Some of these are not "Frequently" but are worth to be known(TIPS).
+
+Q1. Using Windows you type autotrace -help you only see the last 25
+lines, so how could we check that the user can read the whole help
+text? (Martin Weber <martweb@gmx.net>)
+
+A1. For NT-based Windows systems (WinNT, Win2000, XP), it's possible
+to activate scrolling for the console window (DOS prompt). Just do a
+right click on the title bar of the window, -> preferences -> layout,
+and increase the buffer size.  This don't work for Win9x. I don't know
+if it works for WinME. (Manfred Schwarb <manfred.schwarb@gmx.ch>)
+
+Q2. Why configure checks pstoedit twice?
+    
+    First you are checking
+    checking for PSTOEDIT - version >= 3.32.1... no
+    and then
+    checking for PSTOEDIT - version >= 3.32.0... yes
+
+    why not
+    checking for PSTOEDIT - version == 3.32.0... yes
+    instead?
+
+    (Martin Weber <martweb@gmx.net>)
+A2. We have to detect one of the three states:
+
+    1. We don't have pstoedit or have pstoedit older than 3.32.
+       -- We should not build pstoedit output functions.
+    2. We have pstoedit 3.32.
+       -- pstoedit-config in 3.32 has some bugs. workaround macros
+	  must be enabled.
+    3. We have pstoedit 3.33. or higher
+       -- The workaround macros must be diasbled. I sent patches 
+	  that fixes the bugs to the author of pstoedit. So the 
+	  pstoedit-config in 3.33 will not have the bugs.
+
+So, configure checks pstoedit twice.
+
+autotrace.m4 has only '>=' version checking. It doesn't have == or >
+version checking. (In other hand, PKG_CHECK_MODULES has such version
+checking.) I don't want to extend autotrace.m4 anymore.  It will cause
+bugs. (Masatake YAMATO<yamato@redhat.com>)

@@ -1,5 +1,10 @@
-Basic Installation
-==================
+Index:
+	1. Basic Installation
+	2. ImageMagick related issues
+	3. Pstoedit related issues
+
+1. Basic Installation
+=====================
 
    These are generic installation instructions.
 
@@ -180,3 +185,64 @@ operates.
      script, and exit.
 
 `configure' also accepts some other, not widely useful, options.
+
+2. ImageMagick related issues
+=============================
+
+If you use Red Hat Linux 7.2 to build autotrace with ImageMagick,
+you will get a trouble something like:
+
+    /bin/sh ./libtool --mode=link gcc  -g -O2  -o autotrace  atou.o main.o ...
+    libtool: link: cannot find the library `/usr/lib/libxml2.la'
+    gmake: *** [autotrace] Error 1
+
+The reasons of thie trouble are 1. libMagick.la is broken;
+and 2. libxml2.so does not exist. There are two ways to avoid
+this trouble.
+
+1. Build autotrace without ImageMagick.
+   Run configure with "--withoud-magick" option(then run make clean; make).
+   However, you lost input functions that use ImageMagick.
+
+2. Hack the broken files.
+   Replace "/usr/lib/libxml2.la" with -lxml2 in ImageMagick.la then
+   Make a symbolic link, /usr/lib/libxml2.so, that referees
+/usr/lib/libxml2.so.2.
+   If you don't understand what I write, you should not do.
+
+Pstoedit related issues
+=======================
+
+If you are using pstoedit-3.32, pstoedit checking in configure of
+autotrace runs TWICE. Ignore the warning message of first checking.
+If you are using pstoedit-3.33, pstoedit checking runs only once.
+If you got a trouble to build autotrace with pstoedit, you can
+disable to use pstoedit with giving --without-pstoedit to configure
+of autotrace. Is you want to use pstoedit anyway linked with autotrace, 
+let me(Masatake YAMATO<yamato@redhat.com> or autotrace mailing list) know 
+following informations:
+
+    your operating system name and version
+    autotrace version
+    pstoedit version
+    value of $LD_LIBRARY_PATH
+    value of $PATH
+    options given to configure of autotrace
+    options given to configure of pstoedit
+    output of configure of autotrace
+    output of configure of pstoedit
+    config.log of configure of autotrace
+    config.log of configure of pstoedit
+    Makefile of autotrace if generated
+    src/Makefile of pstoedit
+    output of pstoedit-config --libs
+    output of pstoedit-config --cflags
+    output of autotrace-config --libs
+    output of autotrace-config --cflags
+    path for pstoedit-config
+    path for autotrace-config
+    path for libautotrace.so
+    path for libpstoedit.so
+    if there is a compile farm on that the same OS as you use
+
+(Of couse, I cannot promise anything.)

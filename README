@@ -42,32 +42,11 @@ the p2e format. This format can be converted by pstoedit
 (www.pstoedit.net) to a large number of other formats. If you have
 installed the lastes pstoedit(3.32 or newer), autotrace uses pstoedit
 directly. However, pstoedit directly supports is still broken. See
-INSTALL for more detail.
+INSATALL file for more detail.
 
 Installation
 ============
 See the file INSTALL.
-
-If you use Red Hat Linux 7.2 to build autotrace with ImageMagick,
-you will get a trouble something like:
-
-    /bin/sh ./libtool --mode=link gcc  -g -O2  -o autotrace  atou.o main.o ...
-    libtool: link: cannot find the library `/usr/lib/libxml2.la'
-    gmake: *** [autotrace] Error 1
-
-The reasons of thie trouble are 1. libMagick.la is broken;
-and 2. libxml2.so does not exist. There are two ways to avoid
-this trouble.
-
-1. Build autotrace without ImageMagick.
-   Run configure with "--withoud-magick" option(then run make clean; make).
-   However, you lost input functions that use ImageMagick.
-
-2. Hack the broken files.
-   Replace "/usr/lib/libxml2.la" with -lxml2 in ImageMagick.la then
-   Make a symbolic link, /usr/lib/libxml2.so, that referees
-/usr/lib/libxml2.so.2.
-   If you don't understand what I write, you should not do.
 
 Usage
 =====
@@ -155,7 +134,7 @@ gcc sample.c `./autotrace-config --libs` `./autotrace-config --cflags`
 
 GUI Frontend
 ============
-Frontline, a Gtk+ based GUI frontend, is under development.
+Frontline, a Gtk+/Gnome based GUI frontend, is under development.
 See http://autotrace.sourceforge.net/frontline
 
 autotrace mailing list is used to discuss frontline.  See next.

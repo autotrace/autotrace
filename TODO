@@ -1,3 +1,10 @@
+TODO for 0.31.0
+===============
+- Make libautotrace.a shared library(DONE)
+- Test with pstoedit-3.33.
+- Documents
+
+-------------
 Core: 
 - Speed up
 - Improve tracing quality
@@ -26,12 +33,11 @@ Output:
   dxf with splines...
 
 Library and its clients:
-- Make libautotrace.a shared library(0.31.0)
 - Graphical userinterface
   -- For gnome/gtk+, frontline is under developing.
      See http://autotrace.sourceforge.net/frontline
   -- For KDE/Qt?
 
 Misc:
-- Gettextize(0.31.0)
+- Gettextize(0.32.0)
 - Better documentations

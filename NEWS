@@ -1,3 +1,9 @@
+What's new in AutoTrace 0.30.8?
+- added variable line width in centerline tracing(--width-factor, --preserve-width)
+  autotrace library API is changed.
+- fixed memory leaks
+- many bugs fixes
+
 What's new in AutoTrace 0.30.6?
 - added workarround for a compile time error that appears when 
   autotrace is linked to pstoedit-3.32.0.
