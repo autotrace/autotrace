@@ -1,3 +1,12 @@
+2000-11-21  Masatake YAMATO  <yamato@redhat.com>
+
+	* main.c (read_command_line): Use at_color_new.
+
+	* autotrace.[ch] (at_fitting_opts_copy): 
+	(at_color_new):
+	(at_color_free):
+	(at_color_copy): New functions.
+		
 2000-11-20  Masatake YAMATO  <yamato@redhat.com>
 
 	* HACKING: Write about autofig.

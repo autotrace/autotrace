@@ -255,10 +255,9 @@ read_command_line (int argc, char * argv[],
         {
            if (strlen (optarg) != 6)
                FATAL ("background-color be six chars long");
-           XMALLOC (opts.bgColor, sizeof (opts.bgColor));
-           opts.bgColor->r = hctoi (optarg[1]) * 16 + hctoi (optarg[0]);
-           opts.bgColor->g = hctoi (optarg[3]) * 16 + hctoi (optarg[2]);
-           opts.bgColor->b = hctoi (optarg[5]) * 16 + hctoi (optarg[4]);
+	   opts.bgColor = at_color_new(hctoi (optarg[1]) * 16 + hctoi (optarg[0]),
+				       hctoi (optarg[3]) * 16 + hctoi (optarg[2]),
+				       hctoi (optarg[5]) * 16 + hctoi (optarg[4]));
  	}
       else if (ARGUMENT_IS ("color-count"))
         opts.color_count = atou (optarg);

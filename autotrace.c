@@ -20,6 +20,20 @@ at_fitting_opts_new(void)
   return opts;
 }
 
+at_fitting_opts_type *
+at_fitting_opts_copy (at_fitting_opts_type * original)
+{
+  at_fitting_opts_type * new_opts;
+  if (original == NULL)
+    return NULL;
+
+  new_opts = at_fitting_opts_new ();
+  *new_opts = *original;
+  if (original->bgColor)
+    new_opts->bgColor = at_color_copy(original->bgColor);
+  return new_opts;
+}
+
 void 
 at_fitting_opts_free(at_fitting_opts_type * opts)
 {
@@ -145,6 +159,34 @@ void
 at_output_list_free(char ** list)
 {
   free(list);
+}
+
+at_color_type * 
+at_color_new (unsigned char r, 
+	      unsigned char g,
+	      unsigned char b)
+{
+  at_color_type * color;
+  XMALLOC (color, sizeof (at_color_type));
+  color->r = r;
+  color->g = g;
+  color->b = b;
+  return color;
+}
+
+at_color_type *
+at_color_copy (at_color_type * original)
+{
+  if (original == NULL)
+    return NULL;
+  return at_color_new(original->r, 
+		      original->g, 
+		      original->b);
+}
+void 
+at_color_free(at_color_type * color)
+{
+  free(color);
 }
 
 const char *

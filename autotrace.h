@@ -198,9 +198,9 @@ int            (*at_output_write_func) (FILE*, string name,
 
 /* Option related */
 at_fitting_opts_type * at_fitting_opts_new(void);
+at_fitting_opts_type * at_fitting_opts_copy (at_fitting_opts_type * original); 
 void at_fitting_opts_free(at_fitting_opts_type * opts);
-/* TODO internal data access, copy 
-   at_fitting_opts_type * at_fitting_opts_copy (at_fitting_opts_type * original); */
+/* TODO internal data access, copy */
 
 /* Bitmap related */
 at_bitmap_type * at_bitmap_new (at_input_read_func input_reader,
@@ -234,6 +234,13 @@ at_output_write(at_output_write_func output_writer,
 char ** at_output_list_new (void);
 void at_output_list_free(char ** list);
 /* at_output_write_add_handler (string suffix, at_output_write_func); */
+
+/* Color related */
+at_color_type * at_color_new (unsigned char r, 
+			      unsigned char g,
+			      unsigned char b);
+at_color_type * at_color_copy (at_color_type * original);
+void at_color_free(at_color_type * color);
 
 /* Version and other informations */
 const char * at_version ();
