@@ -16,7 +16,7 @@ typedef at_fitting_opts_type fitting_opts_type;
 /* Fit splines and lines to LIST.  */
 extern spline_list_array_type fitted_splines (pixel_outline_list_type, 
 					      fitting_opts_type *,
-					      distance_map_type *,
+					      at_distance_map *,
 					      unsigned short width, unsigned short height,
 					      at_exception_type * exception,
 					      at_progress_func, gpointer,

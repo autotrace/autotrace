@@ -1,5 +1,7 @@
 2003-08-06  Masatake YAMATO  <yamato@redhat.com>
 
+	* *.[ch]: distance_map_type -> at_distance_map_type.
+
 	* private.h (at_time_string): New decl.
 
 	* autotrace.c (at_time_string): New function.

@@ -87,7 +87,7 @@ static spline_list_type *fit_curve (curve_type,
   fitting_opts_type *,
   at_exception_type * exception);
 static spline_list_type fit_curve_list (curve_list_type,
- fitting_opts_type *, distance_map_type *,
+ fitting_opts_type *, at_distance_map *,
  at_exception_type * exception);
 static spline_list_type *fit_with_least_squares (curve_type,
  fitting_opts_type *,
@@ -137,7 +137,7 @@ new_fitting_opts (void)
 
 spline_list_array_type
 fitted_splines (pixel_outline_list_type pixel_outline_list,
-  fitting_opts_type *fitting_opts, distance_map_type *dist,
+  fitting_opts_type *fitting_opts, at_distance_map *dist,
   unsigned short width, unsigned short height,
   at_exception_type * exception,
   at_progress_func notify_progress, 
@@ -207,7 +207,7 @@ fitted_splines (pixel_outline_list_type pixel_outline_list,
 
 static spline_list_type
 fit_curve_list (curve_list_type curve_list,
-		fitting_opts_type *fitting_opts, distance_map_type *dist,
+		fitting_opts_type *fitting_opts, at_distance_map *dist,
 		at_exception_type * exception)
 {
   curve_type curve;

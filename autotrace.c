@@ -286,7 +286,7 @@ at_splines_new_full (at_bitmap_type * bitmap,
   pixel_outline_list_type pixels;
   QuantizeObj *myQuant = NULL; /* curently not used */
   at_exception_type exp     = at_exception_new(msg_func, msg_data);
-  distance_map_type dist_map, *dist = NULL;
+  at_distance_map dist_map, *dist = NULL;
 
 #define CANCELP (test_cancel && test_cancel(testcancel_data))
 #define FATALP  (at_exception_got_fatal(&exp))

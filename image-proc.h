@@ -19,19 +19,19 @@ typedef struct
   unsigned height, width;
   float **weight;
   float **d;
-} distance_map_type;
+} at_distance_map;
 
 
 /* Allocate and compute a new distance map. */
-extern distance_map_type new_distance_map(bitmap_type,
+extern at_distance_map new_distance_map(bitmap_type,
     unsigned char target_value, gboolean padded,
 					  at_exception_type * exp);
 
 /* Free the dynamically-allocated storage associated with a distance map. */
-extern void free_distance_map(distance_map_type*);
+extern void free_distance_map(at_distance_map*);
 
 
-extern void medial_axis(bitmap_type *bitmap, distance_map_type *dist,
+extern void medial_axis(bitmap_type *bitmap, at_distance_map *dist,
     const at_color *bg_color);
 
 

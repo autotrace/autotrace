@@ -30,12 +30,12 @@ static void check(int v1, int v2, int v3, struct etyp *t);
    distance infinity.  Then compute the gray-weighted distance from
    every non-target point to the nearest target point. */
 
-distance_map_type
+at_distance_map
 new_distance_map(bitmap_type bitmap, unsigned char target_value, gboolean padded, at_exception_type * exp)
 {
     signed x, y;
     float d, min;
-    distance_map_type dist;
+    at_distance_map dist;
     unsigned char *b = BITMAP_BITS(bitmap);
     unsigned w = BITMAP_WIDTH(bitmap);
     unsigned h = BITMAP_HEIGHT(bitmap);
@@ -174,7 +174,7 @@ new_distance_map(bitmap_type bitmap, unsigned char target_value, gboolean padded
 /* Free the dynamically-allocated storage associated with a distance map. */
 
 void
-free_distance_map(distance_map_type *dist)
+free_distance_map(at_distance_map *dist)
 {
     unsigned y, h;
 
@@ -199,7 +199,7 @@ free_distance_map(distance_map_type *dist)
 
 #if 0
 void
-medial_axis(bitmap_type *bitmap, distance_map_type *dist,
+medial_axis(bitmap_type *bitmap, at_distance_map *dist,
     const at_color *bg_color)
 {
     unsigned x, y, test;
