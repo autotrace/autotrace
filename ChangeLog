@@ -1,5 +1,13 @@
 2001-12-23  Martin Weber <martweb@gmx.net>
 
+	* libming.sln: New file.
+
+	* libming.vcproj: Likewise.
+
+	(Message-ID: <3C230B4F.AC6B7392@gmx.net>).
+
+2001-12-23  Martin Weber <martweb@gmx.net>
+
 	* main.c, fit.c, autotrace.[ch]: removed unnecessary 
 	thin option.
 
