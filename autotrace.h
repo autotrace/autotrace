@@ -262,12 +262,14 @@ at_bitmap_type * at_bitmap_read (at_input_read_func input_reader,
 at_bitmap_type * at_bitmap_new(unsigned short width,
 			       unsigned short height,
 			       unsigned int planes);
+at_bitmap_type * at_bitmap_copy(at_bitmap_type * src);
 
 /* We have to export functions that supports internal datum 
    access. Such functions might be useful for 
    at_bitmap_new user. */
 unsigned short at_bitmap_get_width (at_bitmap_type * bitmap);
 unsigned short at_bitmap_get_height (at_bitmap_type * bitmap);
+unsigned short at_bitmap_get_planes (at_bitmap_type * bitmap);
 void at_bitmap_free (at_bitmap_type * bitmap);
 
 

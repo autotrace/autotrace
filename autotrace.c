@@ -68,6 +68,23 @@ at_bitmap_new(unsigned short width,
   return bitmap;
 }
 
+at_bitmap_type *
+at_bitmap_copy(at_bitmap_type * src)
+{
+  at_bitmap_type * dist;
+  unsigned short width, height, planes;
+
+  width  = at_bitmap_get_width(src);
+  height = at_bitmap_get_height(src);
+  planes = at_bitmap_get_planes(src);
+    
+  dist = at_bitmap_new(width, height, planes);
+  memcpy(dist->bitmap, 
+	 src->bitmap, 
+	 width * height * planes * sizeof(unsigned char));
+  return dist;
+}
+
 at_bitmap_type
 at_bitmap_init(unsigned char * area,
 	       unsigned short width,
@@ -109,6 +126,12 @@ unsigned short
 at_bitmap_get_height (at_bitmap_type * bitmap)
 {
   return bitmap->height;
+}
+
+unsigned short
+at_bitmap_get_planes (at_bitmap_type * bitmap)
+{
+  return bitmap->np;
 }
 
 at_splines_type * 

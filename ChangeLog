@@ -1,3 +1,8 @@
+2002-03-16  Masatake YAMATO  <yamato@redhat.com>
+
+	* autotrace.c (at_bitmap_get_planes): New function.
+	(at_bitmap_copy): New function.
+
 2002-03-15  Masatake YAMATO  <yamato@redhat.com>
 
 	* configure.in: Added AM_MAINTAINER_MODE.
