@@ -10,6 +10,7 @@
 #include "filename.h"
 #include "xstd.h"
 #include "atou.h"
+#include "despeckle.h"
 
 #include <string.h>
 #include <assert.h>
@@ -33,6 +34,12 @@ static bool printed_version;
 
 /* Whether to trace a character's centerline or its outline */
 static bool centerline = false;
+
+/* Despeckle level */
+static int despeckle_level = 0;
+
+/* Despeckle tightness */
+static real despeckle_tightness = 2.0;
 
 /* Whether to write a log file */
 static bool logging = false;
@@ -117,7 +124,9 @@ main (int argc, char * argv[])
   if (input_reader != NULL)
     bitmap = at_bitmap_new(input_reader, input_name);
   else
-    FATAL ("Unsupported inputformat\n"); 
+    FATAL ("Unsupported inputformat\n");
+
+  despeckle (bitmap, despeckle_level, despeckle_tightness);
 
   splines = at_splines_new(bitmap, fitting_opts);
 
@@ -161,6 +170,8 @@ corner-surround <unsigned>: number of pixels on either side of a\n\
 corner-threshold <angle-in-degrees>: if a pixel, its predecessor(s),\n\
   and its successor(s) meet at an angle smaller than this, it's a\n\
   corner; default is 100.\n\
+despeckle-level <unsigned>: 0..20; default is no despeckling.\n\
+despeckle-tightness <real>: 0.0..8.0; default is 2.0.\n\
 error-threshold <real>: subdivide fitted curves that are off by\n\
   more pixels than this; default is 2.0.\n\
 filter-iterations <unsigned>: smooth the curve this many times\n\
@@ -252,6 +263,12 @@ read_command_line (int argc, char * argv[],
 
       else if (ARGUMENT_IS ("corner-threshold"))
         fitting_opts->corner_threshold = (real) atof (optarg);
+
+      else if (ARGUMENT_IS ("despeckle-level"))
+        despeckle_level = atou (optarg);
+
+      else if (ARGUMENT_IS ("despeckle-tightness"))
+        despeckle_tightness = (real) atof (optarg);
 
       else if (ARGUMENT_IS ("error-threshold"))
         fitting_opts->error_threshold = (real) atof (optarg);

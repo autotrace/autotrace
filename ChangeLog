@@ -1,3 +1,7 @@
+2001-10-11  Martin Weber  <martweb@gmx.net>
+
+        * main.c, despeckle.c, despeckle.h: Added new despeckling code.
+
 2001-10-12  Masatake YAMATO  <yamato@redhat.com>
 
 	* Makefile.am: Added despeckle.[ch].

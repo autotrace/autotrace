@@ -130,7 +130,7 @@ find_size_8 (/* in */     unsigned char  color,
 
   if (data[y * width + x] != color)
     {
-      temp_error = ABS (color - data[y * width + x]);
+      temp_error = abs (color - data[y * width + x]);
       if (temp_error < *error_amount)
         {
           *closest_color = data[y * width + x];
@@ -146,7 +146,7 @@ find_size_8 (/* in */     unsigned char  color,
 
   if (x1 > 0)
     {
-      temp_error = ABS (color - data[y * width + x1 - 1]);
+      temp_error = abs (color - data[y * width + x1 - 1]);
       if (temp_error < *error_amount)
         {
           *closest_color = data[y * width + x1 - 1];
@@ -156,7 +156,7 @@ find_size_8 (/* in */     unsigned char  color,
 
   if (x2 < width)
     {
-      temp_error = ABS (color - data[y * width + x2]);
+      temp_error = abs (color - data[y * width + x2]);
       if (temp_error < *error_amount)
         {
           *closest_color = data[y * width + x2];
@@ -466,7 +466,7 @@ recolor_24 (/* in */     int            current_size,
   /* This condition only fails if the bitmap is all the same color */
   if (error_amount != 0xffffff)
     {
-      error_amount = sqrt (error_amount / 3.0);
+      error_amount = (int) sqrt (error_amount / 3.0);
 
       /*
        * If the difference between the two colors is too great,
@@ -509,7 +509,7 @@ despeckle_iteration (/* in/out */ bitmap_type *bitmap,
   height = BITMAP_HEIGHT (*bitmap);
 
   for (i = 0, current_size = 1; i < level; i++, current_size *= 2);
-  tightness = 256 / (1.0 + adaptive_tightness * level);
+  tightness = 256 / (int) (1.0 + adaptive_tightness * level);
 
   XMALLOC (mask, width * height);
 

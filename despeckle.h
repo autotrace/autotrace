@@ -21,6 +21,8 @@
 #define DESPECKLE_H
 
 #include "types.h"
+#include "bitmap.h"
+
 
 /* Despeckle - Despeckle an 8 bit image
 /* Despeckle - Despeckle a 8 or 24 bit image
