@@ -1,3 +1,10 @@
+2001-09-15  Masatake YAMATO  <yamato@redhat.com>
+
+	* autotrace.c (at_home_site): Update the homepage of 
+	autotrace.
+
+	* README: Likewise.
+
 2001-04-13  Masatake YAMATO  <yamato@redhat.com>
 
 	* configure.in: Warn if libping is not found.

@@ -1,6 +1,6 @@
 AutoTrace is a utility that converts bitmap to vector graphics.
 You find more information at:
-http://homepages.go.com/~martweb/AutoTrace.htm
+http://autotrace.sourceforge.net
 
 The program was tested using Linux, HP UX, Solaris, Windows98,
 Windows NT, Windows 2000 and OS/2 4.0. It compiles with GCC,

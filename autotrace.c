@@ -211,7 +211,5 @@ at_home_site ()
 {
   /* TODO: This should be defined in configure.in
      -- Masatake */
-  return "http://homepages.go.com/~martweb/AutoTrace.htm"
-    " or "
-    "http://sourceforge.net/projects/autotrace";
+  return "http://autotrace.sourceforge.net";
 }
