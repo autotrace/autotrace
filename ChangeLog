@@ -1,3 +1,22 @@
+2002-06-05  Masatake YAMATO  <yamato@redhat.com>
+
+	* output.h (at_output_add_handler): Added stab.
+
+	* output.c: Added experimental pstoedit supports.
+
+	* output-pstoedit.[ch]: New files.
+
+	* configure.in(AC_ARG_PROGRAM, AM_SANITY_CHECK,AC_PROG_INSTALL): 
+	Added.
+	Added experimental pstoedit supports.
+
+	* acconfig.h (HAVE_LIBPSTOEDIT): Added experimental pstoedit 
+	supports.
+
+	* Makefile.am (EXTRA_DIST): Added HACKING.
+	(autotrace_LDADD, INCLUDES): Added experimental pstoedit 
+	supports.
+
 2002-05-12  Masatake YAMATO  <yamato@redhat.com>
 
 	* configure.in: linker messages that warns symbols are multiply defined are 

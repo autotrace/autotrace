@@ -20,6 +20,7 @@
 #undef HAVE_LIBPNG
 #undef HAVE_LIBSWF
 #undef HAVE_MAGICK
+#undef HAVE_LIBPSTOEDIT
 
 
 /* Leave that blank line there!!  Autoheader needs it.

@@ -16,7 +16,7 @@ Core:
 - Better thinning algorithm like CAT (Chordal Axis Transformation)
 
 Input:
-- Mirgrate new plug-in interface with using glib(0.32.0)
+- Migrate new plug-in interface with using glib(0.32.0)
 - Support of image libraries as freeimage, gdk-pixbuf or paintlib(0.32.0)
 
 Output:
@@ -30,6 +30,5 @@ Library and its clients:
 - Graphical userinterface
   -- For gnome/gtk, frontline is under developing.
      See http://autotrace.sourceforge.net/frontline
-     It works well with sodipodi, a drawing editor.
   -- For KDE/Qt?
 

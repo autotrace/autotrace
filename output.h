@@ -1,4 +1,4 @@
-/* output.h: output routines
+/* output.h: interface for output handlers
 
    Copyright (C) 1999, 2000, 2001, 2002 Bernhard Herzog.
 
@@ -28,7 +28,6 @@
    spline_list_array (splines)
    -> spline_list...
    --> spline */
-
 
 /* Accessors to the Data member  */
 #define AT_SPLINE_START_POINT_VALUE(spl)      ((spl).v[0])
@@ -81,5 +80,9 @@ void at_spline_list_foreach (at_spline_list_type *,
 void at_spline_list_array_foreach (at_spline_list_array_type *,
 				   AtSplineListArrayForeachFunc func,
 				   at_address user_data);
+
+int   at_output_add_handler (at_string suffix, 
+			     at_string description, 
+			     at_output_write_func func);
 
 #endif /* not OUTPUT_H */

@@ -6,7 +6,7 @@ autotrace-config.af autotrace.dsp autotrace.dsw			\
 autotrace.m4 shape_cubic.c.diff README.MING			\
 libming.dsw libming.dsp						\
 autotrace.sln autotrace.vcproj libming.sln libming.vcproj	\
-autotrace.pc.in autotrace.spec.in TODO
+autotrace.pc.in autotrace.spec.in TODO HACKING
 
 AUTOMAKE_OPTIONS = foreign no-dependencies
 
@@ -26,18 +26,23 @@ else
 input_png_src=
 endif
 
-if HAVE_LIBSWF
-output_swf_src=output-swf.c output-swf.h
-else
-output_swf_src=
-endif
 input_src=input-pnm.c input-pnm.h \
 input-bmp.c input-bmp.h \
 input-tga.c input-tga.h \
 $(input_png_src) \
 $(input_magick_src)
 
+if HAVE_LIBSWF
+output_swf_src=output-swf.c output-swf.h
+else
+output_swf_src=
+endif
 
+if HAVE_LIBPSTOEDIT
+output_pstoedit_src=output-pstoedit.h output-pstoedit.c
+else
+output_pstoedit_src=
+endif
 output_src=output-eps.c output-eps.h \
 output-er.c output-er.h \
 output-fig.c  output-fig.h \
@@ -51,7 +56,8 @@ output-pdf.c output-pdf.h \
 output-mif.c output-mif.h \
 output-cgm.c output-cgm.h \
 output-dr2d.c output-dr2d.h \
-$(output_swf_src)
+$(output_swf_src) \
+$(output_pstoedit_src)
 
 libautotrace_a_SOURCES =\
                 $(input_src) ${output_src}	\
@@ -113,12 +119,13 @@ autotrace_SOURCES=\
 		getopt1.c			\
 		strgicmp.h
 
-INCLUDES = $(MAGICK_CFLAGS)
-autotrace_LDADD =                 \
-		libautotrace.a    \
-		$(MAGICK_LDFLAGS) \
-		$(LIBPNG_LDFLAGS) \
-		$(LIBSWF_LDFLAGS) \
+INCLUDES = $(MAGICK_CFLAGS) $(LIBPSTOEDIT_CFLAGS)
+autotrace_LDADD =				\
+		libautotrace.a			\
+		$(MAGICK_LDFLAGS)		\
+		$(LIBPNG_LDFLAGS)		\
+		$(LIBSWF_LDFLAGS)		\
+		$(LIBPSTOEDIT_LIBS)		\
 		-lm
 
 m4datadir = $(datadir)/aclocal
