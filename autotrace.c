@@ -103,21 +103,28 @@ at_splines_type *
 at_splines_new (at_bitmap_type * bitmap,
 		at_fitting_opts_type * opts)
 {
-  return at_splines_new_with_progress(bitmap, opts, NULL, NULL);
+  return at_splines_new_full(bitmap, opts, NULL, NULL, NULL, NULL);
 }
   
 at_splines_type * 
-at_splines_new_with_progress (at_bitmap_type * bitmap,
-			      at_fitting_opts_type * opts,
-			      at_progress_func notify_progress,
-			      address client_data)
+at_splines_new_full (at_bitmap_type * bitmap,
+		     at_fitting_opts_type * opts,
+		     at_progress_func notify_progress,
+		     address progress_data,
+		     at_testcancel_func test_cancel,
+		     address testcancel_data)
+
 {
   image_header_type image_header;
-  at_splines_type * splines;
+  at_splines_type * splines = NULL;
   pixel_outline_list_type pixels;
   QuantizeObj *myQuant = NULL; /* curently not used */
+#define CANCELP (test_cancel && test_cancel(testcancel_data))
+#define CANCEL_THEN_RETURN() if (CANCELP) return splines;
+#define CANCEL_THEN_CLEANUP() if (CANCELP) goto cleanup;
 
   despeckle (bitmap, opts->despeckle_level, opts->despeckle_tightness);
+  CANCEL_THEN_RETURN();
   
   image_header.width = at_bitmap_get_width(bitmap);
   image_header.height = at_bitmap_get_height(bitmap);
@@ -127,27 +134,47 @@ at_splines_new_with_progress (at_bitmap_type * bitmap,
 
   if (opts->color_count > 0)
     quantize (bitmap, opts->color_count, opts->bgColor, &myQuant);
-  
+  CANCEL_THEN_RETURN();
+
   if (opts->thin) 
     thin_image (bitmap, opts->bgColor); 
-  
+  CANCEL_THEN_RETURN();
+
+  /* Hereafter, pixels is allocated. pixels must be freed if 
+     the execution is canceled; use CANCEL_THEN_CLEANUP. */
   if (at_centerline)
   {
     color_type bg_color = { 0xff, 0xff, 0xff };
     if (opts->bgColor) bg_color = *opts->bgColor;
 
     pixels = find_centerline_pixels(*bitmap, bg_color, 
-				    notify_progress, client_data);
+				    notify_progress, progress_data,
+				    test_cancel, testcancel_data);
   }
   else
     pixels = find_outline_pixels(*bitmap, opts->bgColor, 
-				 notify_progress, client_data);
+				 notify_progress, progress_data,
+				 test_cancel, testcancel_data);
+  CANCEL_THEN_CLEANUP();
 
+  
   XMALLOC(splines, sizeof(at_splines_type)); 
   *splines = fitted_splines (pixels, opts,
-			     notify_progress, client_data);
+			     notify_progress, progress_data,
+			     test_cancel, testcancel_data);
+  if (CANCELP)
+    {
+      at_splines_free (splines);
+      splines = NULL;
+      goto cleanup;
+    }
+  
+ cleanup:
   free_pixel_outline_list (&pixels);
   return splines;
+#undef CANCEL_THEN_CLEANUP
+#undef CANCEL_THEN_RETURN
+#undef CANCELP
 }
 
 void 

@@ -17,7 +17,8 @@ typedef at_fitting_opts_type fitting_opts_type;
 /* Fit splines and lines to LIST.  */
 extern spline_list_array_type __declspec(dllexport) __stdcall
   fitted_splines (pixel_outline_list_type, fitting_opts_type *,
-		  progress_func, address);
+		  progress_func, address,
+		  testcancel_func, address);
 
 /* Get a new set of fitting options */
 extern fitting_opts_type __declspec(dllexport)
@@ -28,7 +29,8 @@ __stdcall new_fitting_opts (void);
 /* Fit splines and lines to LIST.  */
 extern spline_list_array_type __declspec(dllimport) __stdcall
   fitted_splines (pixel_outline_list_type, fitting_opts_type *,
-		  progress_func, address);
+		  progress_func, address,
+		  testcancel_func, address);
 
 /* Get a new set of fitting options */
 extern fitting_opts_type __declspec(dllimport)
@@ -38,7 +40,9 @@ __stdcall new_fitting_opts (void);
 
 /* Fit splines and lines to LIST.  */
 extern spline_list_array_type fitted_splines
-  (pixel_outline_list_type, fitting_opts_type *, progress_func, address);
+  (pixel_outline_list_type, fitting_opts_type *, 
+   progress_func, address,
+   testcancel_func, address);   
 
 /* Get a new set of fitting options */
 extern fitting_opts_type new_fitting_opts (void);

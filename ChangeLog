@@ -1,3 +1,30 @@
+2001-11-11  Masatake YAMATO  <yamato@redhat.com>
+
+	* pxl-outline.c (find_outline_pixels): 
+	(find_centerline_pixels): Put cancel points.
+
+	* main.c (main): Use at_splines_new_full.
+
+	* fit.[hc] (fitted_splines): Put cancel points.
+	If `test_cancel' is given and it returns TRUE,
+	execution is stopped and the control is returned.
+
+	* types.h (testcancel_func): New type.
+
+	* autotrace.h (at_testcancel_func): New type.
+
+	* autotrace.[hc] (at_splines_new_full): New function.
+	at_splines_new_with_progress is removed.
+	at_splines_new_full is almost the same as 
+	`at_splines_new_with_progress' but has cancel points.
+
+2001-11-09  Masatake YAMATO  <yamato@redhat.com>
+
+	* despeckle.h: Remove nest '/*'.
+
+	* pxl-outline.h: Change the indent style.
+	Lines were too long.
+
 2001-10-14  Martin Weber  <martweb@gmx.net>
 
         * output-dxf.c: adopted so it could also be compiled as C++

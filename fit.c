@@ -158,13 +158,17 @@ __declspec(dllexport) spline_list_array_type
 __stdcall fitted_splines (pixel_outline_list_type pixel_outline_list,
   fitting_opts_type *fitting_opts,
   progress_func notify_progress, 
-  address client_data)
+  address progress_data,
+  testcancel_func test_cancel,
+  address testcancel_data)
 #else
 spline_list_array_type
 fitted_splines (pixel_outline_list_type pixel_outline_list,
   fitting_opts_type *fitting_opts,
   progress_func notify_progress, 
-  address client_data)
+  address progress_data,
+  testcancel_func test_cancel,
+  address testcancel_data)
 #endif
 {
   unsigned this_list;
@@ -180,7 +184,10 @@ fitted_splines (pixel_outline_list_type pixel_outline_list,
 
       if (notify_progress)
 	notify_progress((((real)this_list)/((real)CURVE_LIST_ARRAY_LENGTH (curve_array)*(real)3.0) + (real)0.333),
-			client_data);
+			progress_data);
+      if (test_cancel && test_cancel(testcancel_data))
+	goto cleanup;
+
       LOG1 ("\nFitting curve list #%u:\n", this_list);
 
       curve_list_splines = fit_curve_list (curves, fitting_opts);
@@ -191,8 +198,8 @@ fitted_splines (pixel_outline_list_type pixel_outline_list,
         sizeof (color_type));
       append_spline_list (&char_splines, curve_list_splines);
     }
-
-  free_curve_list_array (&curve_array, notify_progress, client_data);
+ cleanup:
+  free_curve_list_array (&curve_array, notify_progress, progress_data);
 
   for (this_list = 0; this_list < SPLINE_LIST_ARRAY_LENGTH (char_splines);
        this_list++)

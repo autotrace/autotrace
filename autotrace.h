@@ -186,10 +186,17 @@ int            (*at_output_write_func) (FILE*, string name,
 					at_splines_type shape);
 
 /*
- * Progress handler typeders
+ * Progress handler typedefs
  * 0.0 <= percentage <= 1.0
  */
 typedef progress_func at_progress_func;
+
+/*
+ * Test cancel
+ * Return true if auto-tracing should be stopped.
+ */
+typedef testcancel_func at_testcancel_func;
+
 
 /*
  * Functions
@@ -219,10 +226,31 @@ void at_input_list_free(char ** list);
 /* Spline related */
 at_splines_type * at_splines_new (at_bitmap_type * bitmap,
 				  at_fitting_opts_type * opts);
-at_splines_type * at_splines_new_with_progress (at_bitmap_type * bitmap,
-						at_fitting_opts_type * opts,
-						at_progress_func notify_progress,
-						address client_data);
+/* notify_progress is called repeatedly inside at_splines_new_full
+   to notify the progress of the execution. This might be useful for 
+   interactive applications. notify_progress is called following 
+   format:
+
+   notify_progress (percentage, progress_data);
+
+   test_cancel is called repeatedly inside at_splines_new_full
+   to test whether the execution is canceled or not.
+   If test_cancel returns TRUE, execution of at_splines_new_full
+   is stopped as soon as possible and returns NULL. If test_cancel 
+   returns FALSE, nothing happens. test_cancel  is called following
+   format:
+
+   test_cancel (testcancel_data);
+   
+   NULL is valid value for notify_progress and/or test_cancel if 
+   you don't need to know the progress of the execution and/or 
+   cancel the execution */ 
+at_splines_type * at_splines_new_full (at_bitmap_type * bitmap,
+				       at_fitting_opts_type * opts,
+				       at_progress_func notify_progress,
+				       address progress_data,
+				       at_testcancel_func test_cancel,
+				       address testcancel_data);
 
 void at_splines_free (at_splines_type * splines);
 /* TODO internal data access */

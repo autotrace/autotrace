@@ -129,8 +129,9 @@ main (int argc, char * argv[])
   else
     FATAL ("Unsupported inputformat\n");
 
-  splines = at_splines_new_with_progress(bitmap, fitting_opts,
-					 progress_reporter, &progress_stat);
+  splines = at_splines_new_full(bitmap, fitting_opts,
+				progress_reporter, &progress_stat,
+				NULL, NULL);
 
   at_output_write (output_writer,
 		   output_file, 

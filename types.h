@@ -59,4 +59,7 @@ typedef struct
 typedef void           (* progress_func)    (real percentage,
 					     address client_data);
 
+/* See autotrace.h::at_testcancel_func */
+typedef bool          (*  testcancel_func) (address client_data);
+
 #endif /* not TYPES_H */

@@ -90,11 +90,14 @@ static coordinate_type NextPoint(bitmap_type, edge_type *, unsigned int *, unsig
 #ifdef _EXPORTING
 __declspec(dllexport) pixel_outline_list_type
 __stdcall find_outline_pixels (bitmap_type bitmap, color_type *bg_color,
-			       progress_func notify_progress, address client_data)
+			       progress_func notify_progress, address progress_data,
+			       testcancel_func test_cancel, address testcancel_data)
 #else
-pixel_outline_list_type
+     pixel_outline_list_type
 find_outline_pixels (bitmap_type bitmap, color_type *bg_color,
-		     progress_func notify_progress, address client_data)
+		     progress_func notify_progress, address progress_data,
+		     testcancel_func test_cancel, address testcancel_data)
+		     
 #endif
 {
   pixel_outline_list_type outline_list;
@@ -107,58 +110,63 @@ find_outline_pixels (bitmap_type bitmap, color_type *bg_color,
   outline_list.data = NULL;
 
   for (row = 0; row < BITMAP_HEIGHT (bitmap); row++)
-    for (col = 0; col < BITMAP_WIDTH (bitmap); col++)
-      {
-        edge_type edge;
+    {
+      for (col = 0; col < BITMAP_WIDTH (bitmap); col++)
+	{
+	  edge_type edge;
 
-	if (notify_progress)
-	  notify_progress((real)(row * BITMAP_WIDTH(bitmap) + col) / ((real) max_progress * (real)3.0),
-			  client_data);
+	  if (notify_progress)
+	    notify_progress((real)(row * BITMAP_WIDTH(bitmap) + col) / ((real) max_progress * (real)3.0),
+			    progress_data);
 
-        color = GET_COLOR (bitmap, row, col);
-	if (bg_color && COLOR_EQUAL(color, bg_color[0])) continue;
+	  color = GET_COLOR (bitmap, row, col);
+	  if (bg_color && COLOR_EQUAL(color, bg_color[0])) continue;
 
-        /* A valid edge can be TOP for an outside outline.
-           Outside outlines are traced counterclockwise */
-		if (is_unmarked_outline_edge (row, col, edge = TOP, bitmap, marked, color))
+	  /* A valid edge can be TOP for an outside outline.
+	     Outside outlines are traced counterclockwise */
+	  if (is_unmarked_outline_edge (row, col, edge = TOP, bitmap, marked, color))
+	    {
+	      pixel_outline_type outline;
+
+	      LOG1 ("#%u: (counterclockwise)", O_LIST_LENGTH (outline_list));
+
+	      outline = find_one_outline (bitmap, edge, row, col, &marked, false, false);
+
+	      O_CLOCKWISE (outline) = false;
+	      append_pixel_outline (&outline_list, outline);
+
+	      LOG1 (" [%u].\n", O_LENGTH (outline));
+	    }
+
+	  /* A valid edge can be BOTTOM for an inside outline.
+	     Inside outlines are traced clockwise */
+	  if (row!=0)
+	    {
+	      color = GET_COLOR (bitmap, row-1, col);
+	      if (!(bg_color && COLOR_EQUAL(color, bg_color[0]))
+		  && is_unmarked_outline_edge (row-1, col, edge = BOTTOM,
+					       bitmap, marked, color))
 		{
-          pixel_outline_type outline;
+		  pixel_outline_type outline;
 
-          LOG1 ("#%u: (counterclockwise)", O_LIST_LENGTH (outline_list));
+		  /* This lines are for debugging only:
+		     LOG1 ("#%u: (clockwise)", O_LIST_LENGTH (outline_list));*/
 
-          outline = find_one_outline (bitmap, edge, row, col, &marked, false, false);
+		  outline = find_one_outline (bitmap, edge, row-1, col,
+					      &marked, true, true);
 
-          O_CLOCKWISE (outline) = false;
-		  append_pixel_outline (&outline_list, outline);
+		  /* This lines are for debugging only:
+		     O_CLOCKWISE (outline) = true;
+		     append_pixel_outline (&outline_list, outline);
 
-          LOG1 (" [%u].\n", O_LENGTH (outline));
+		     LOG1 (" [%u].\n", O_LENGTH (outline));*/
 		}
-
-        /* A valid edge can be BOTTOM for an inside outline.
-           Inside outlines are traced clockwise */
-        if (row!=0)
-	  {
-	    color = GET_COLOR (bitmap, row-1, col);
-	    if (!(bg_color && COLOR_EQUAL(color, bg_color[0]))
-	        && is_unmarked_outline_edge (row-1, col, edge = BOTTOM,
-		    bitmap, marked, color))
-	      {
-		pixel_outline_type outline;
-
-		/* This lines are for debugging only:
-		   LOG1 ("#%u: (clockwise)", O_LIST_LENGTH (outline_list));*/
-
-		outline = find_one_outline (bitmap, edge, row-1, col,
-		  &marked, true, true);
-
-		/* This lines are for debugging only:
-		   O_CLOCKWISE (outline) = true;
-		   append_pixel_outline (&outline_list, outline);
-
-		   LOG1 (" [%u].\n", O_LENGTH (outline));*/
-	      }
-	  }
-      }
+	    }
+	}
+      if (test_cancel && test_cancel(testcancel_data))
+	goto cleanup;
+    }
+ cleanup:
 
   free_bitmap (&marked);
 
@@ -210,11 +218,13 @@ find_one_outline (bitmap_type bitmap, edge_type original_edge,
 #ifdef _EXPORTING
 __declspec(dllexport) pixel_outline_list_type
 __stdcall find_centerline_pixels (bitmap_type bitmap, color_type bg_color,
-				  progress_func notify_progress, address client_data)
+				  progress_func notify_progress, address progress_data,
+				  testcancel_func test_cancel, address testcancel_data)
 #else
 pixel_outline_list_type
 find_centerline_pixels(bitmap_type bitmap, color_type bg_color,
-		       progress_func notify_progress, address client_data)
+		       progress_func notify_progress, address progress_data,
+		       testcancel_func test_cancel, address testcancel_data)
 #endif
 {
     pixel_outline_list_type outline_list;
@@ -233,7 +243,7 @@ find_centerline_pixels(bitmap_type bitmap, color_type bg_color,
 
 	    if (notify_progress)
 	      notify_progress((real)(row * BITMAP_WIDTH(bitmap) + col) / ((real) max_progress * (real)3.0),
-			      client_data);
+			      progress_data);
 
 	    if (COLOR_EQUAL(GET_COLOR(bitmap, row, col), bg_color)) continue;
 
@@ -279,7 +289,10 @@ if (O_LENGTH(outline) > 1)
 		LOG1(" [%u].\n", O_LENGTH(outline));
 	    }
 	}
+	if (test_cancel && test_cancel(testcancel_data))
+	  goto cleanup;
     }
+ cleanup:
     free_bitmap(&marked);
     flush_log_output();
     return outline_list;
@@ -374,9 +387,13 @@ free_pixel_outline_list (pixel_outline_list_type *outline_list)
     if (o.data != NULL)
       free (o.data);
   }
+  outline_list->length = 0;
 
   if (outline_list->data != NULL)
+  {
     free (outline_list->data);
+    outline_list->data = NULL;
+  }
 
   flush_log_output ();
 }
