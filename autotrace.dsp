@@ -42,7 +42,7 @@ RSC=rc.exe
 # PROP Ignore_Export_Lib 0
 # PROP Target_Dir ""
 # ADD BASE CPP /nologo /W3 /GX /O2 /D "WIN32" /D "NDEBUG" /D "_CONSOLE" /D "_MBCS" /YX /FD /c
-# ADD CPP /W3 /Gm /GX /Zi /O2 /I "C:\ImageMagick-5.5.3" /I "C:\ming-0.2a" /I "C:\pstoeditb" /D "WIN32" /D "_WINDOWS" /D "_VISUALC_" /D "NeedFunctionPrototypes" /D "HAVE_MAGICK" /D AUTOTRACE_VERSION=\"0.31\" /D "HAVE_LIBSWF" /D inline=__inline /D "_MAGICKDLL_" /D "HAVE_LIBPSTOEDIT" /Fp"autotrace___Win32_Release/autotraceexe.pch" /YX /FD /D AUTOTRACE_WEB=\""http://autotrace.sourceforge.net"\" /c
+# ADD CPP /W3 /Gm /GX /Zi /O2 /I "C:\ImageMagick-5.5.3" /I "C:\ming-0.2a" /I "C:\pstoeditb" /I "C:\libpng" /I "C:\zlib" /D "WIN32" /D "_WINDOWS" /D "_VISUALC_" /D "NeedFunctionPrototypes" /D "HAVE_MAGICK" /D AUTOTRACE_VERSION=\"0.31\" /D "HAVE_LIBSWF" /D inline=__inline /D "_MAGICKDLL_" /D "HAVE_LIBPSTOEDIT" /D "HAVE_LIBPNG" /Fp"autotrace___Win32_Release/autotraceexe.pch" /YX /FD /D AUTOTRACE_WEB=\""http://autotrace.sourceforge.net"\" /c
 # ADD BASE RSC /l 0x407 /d "NDEBUG"
 # ADD RSC /l 0x407 /d "NDEBUG"
 BSC32=bscmake.exe
@@ -50,7 +50,7 @@ BSC32=bscmake.exe
 # ADD BSC32 /nologo
 LINK32=link.exe
 # ADD BASE LINK32 kernel32.lib user32.lib gdi32.lib winspool.lib comdlg32.lib advapi32.lib shell32.lib ole32.lib oleaut32.lib uuid.lib odbc32.lib odbccp32.lib kernel32.lib user32.lib gdi32.lib winspool.lib comdlg32.lib advapi32.lib shell32.lib ole32.lib oleaut32.lib uuid.lib odbc32.lib odbccp32.lib /nologo /subsystem:console /machine:I386
-# ADD LINK32 CORE_RL_magick_.lib libming.lib kernel32.lib user32.lib gdi32.lib winspool.lib comdlg32.lib advapi32.lib shell32.lib ole32.lib oleaut32.lib uuid.lib odbc32.lib odbccp32.lib pstoedit.lib /nologo /subsystem:console /machine:I386 /libpath:"C:\ImageMagick-5.5.3\VisualMagick\lib\\" /libpath:"C:\ming-0.2a\Release" /libpath:"C:\pstoeditb"
+# ADD LINK32 CORE_RL_magick_.lib libming.lib kernel32.lib user32.lib gdi32.lib winspool.lib comdlg32.lib advapi32.lib shell32.lib ole32.lib oleaut32.lib uuid.lib odbc32.lib odbccp32.lib pstoedit.lib libpng.lib zlib.lib /nologo /subsystem:console /machine:I386 /libpath:"C:\ImageMagick-5.5.3\VisualMagick\lib\\" /libpath:"C:\ming-0.2a\Release" /libpath:"C:\pstoeditb" /libpath:"C:\libpng\msvc\win32\libpng\lib" /libpath:"C:\zlib\lib"
 # SUBTRACT LINK32 /pdb:none
 
 !ELSEIF  "$(CFG)" == "autotrace - Win32 Debug"
@@ -67,7 +67,7 @@ LINK32=link.exe
 # PROP Ignore_Export_Lib 0
 # PROP Target_Dir ""
 # ADD BASE CPP /nologo /W3 /Gm /GX /ZI /Od /D "WIN32" /D "_DEBUG" /D "_CONSOLE" /D "_MBCS" /YX /FD /GZ /c
-# ADD CPP /nologo /W3 /Gm /GX /Zi /Od /I "C:\ImageMagick-5.5.3" /I "C:\ming-0.2a" /I "C:\pstoeditb" /D "_DEBUG" /D "WIN32" /D "_WINDOWS" /D "_VISUALC_" /D "NeedFunctionPrototypes" /D "HAVE_MAGICK" /D AUTOTRACE_VERSION=\"0.31\" /D "HAVE_LIBSWF" /D inline=__inline /D "_MAGICKDLL_" /D "HAVE_LIBPSTOEDIT" /FD /D AUTOTRACE_WEB=\""http://autotrace.sourceforge.net"\" /c
+# ADD CPP /nologo /W3 /Gm /GX /Zi /Od /I "C:\ImageMagick-5.5.3" /I "C:\ming-0.2a" /I "C:\pstoeditb" /I "C:\libpng" /I "C:\zlib" /D "_DEBUG" /D "WIN32" /D "_WINDOWS" /D "_VISUALC_" /D "NeedFunctionPrototypes" /D "HAVE_MAGICK" /D AUTOTRACE_VERSION=\"0.31\" /D "HAVE_LIBSWF" /D inline=__inline /D "_MAGICKDLL_" /D "HAVE_LIBPSTOEDIT" /D "HAVE_LIBPNG" /FD /D AUTOTRACE_WEB=\""http://autotrace.sourceforge.net"\" /c
 # ADD BASE RSC /l 0x407 /d "_DEBUG"
 # ADD RSC /l 0x407 /d "_DEBUG"
 BSC32=bscmake.exe
@@ -75,7 +75,7 @@ BSC32=bscmake.exe
 # ADD BSC32 /nologo
 LINK32=link.exe
 # ADD BASE LINK32 kernel32.lib user32.lib gdi32.lib winspool.lib comdlg32.lib advapi32.lib shell32.lib ole32.lib oleaut32.lib uuid.lib odbc32.lib odbccp32.lib kernel32.lib user32.lib gdi32.lib winspool.lib comdlg32.lib advapi32.lib shell32.lib ole32.lib oleaut32.lib uuid.lib odbc32.lib odbccp32.lib /nologo /subsystem:console /debug /machine:I386 /pdbtype:sept
-# ADD LINK32 libming.lib kernel32.lib user32.lib gdi32.lib winspool.lib comdlg32.lib advapi32.lib shell32.lib ole32.lib oleaut32.lib uuid.lib odbc32.lib odbccp32.lib CORE_DB_magick_.lib pstoedit.lib /nologo /subsystem:console /debug /machine:I386 /pdbtype:sept /libpath:"C:\ImageMagick-5.5.3\VisualMagick\lib\\" /libpath:"C:\ming-0.2a\Debug" /libpath:"C:\pstoeditb"
+# ADD LINK32 libming.lib kernel32.lib user32.lib gdi32.lib winspool.lib comdlg32.lib advapi32.lib shell32.lib ole32.lib oleaut32.lib uuid.lib odbc32.lib odbccp32.lib CORE_DB_magick_.lib pstoedit.lib libpng.lib zlib.lib /nologo /subsystem:console /debug /machine:I386 /pdbtype:sept /libpath:"C:\ImageMagick-5.5.3\VisualMagick\lib\\" /libpath:"C:\ming-0.2a\Debug" /libpath:"C:\pstoeditb" /libpath:"C:\libpng\msvc\win32\libpng\lib" /libpath:"C:\zlib\lib"
 
 !ENDIF 
 
@@ -206,6 +206,14 @@ SOURCE=".\input-magick.c"
 # Begin Source File
 
 SOURCE=".\input-magick.h"
+# End Source File
+# Begin Source File
+
+SOURCE=".\input-png.c"
+# End Source File
+# Begin Source File
+
+SOURCE=".\input-png.h"
 # End Source File
 # Begin Source File
 

@@ -24,8 +24,8 @@
 				InlineFunctionExpansion="1"
 				OptimizeForProcessor="0"
 				OptimizeForWindowsApplication="TRUE"
-				AdditionalIncludeDirectories="C:\ImageMagick-5.5.3,C:\ming-0.2a,C:\pstoeditb"
-				PreprocessorDefinitions="_DEBUG;WIN32;_WINDOWS;_VISUALC_;NeedFunctionPrototypes;HAVE_MAGICK;AUTOTRACE_VERSION=\&quot;0.31\&quot;;HAVE_LIBSWF;HAVE_LIBPSTOEDIT;inline=__inline;_MAGICKDLL_;AUTOTRACE_WEB=\&quot;&quot;http://autotrace.sourceforge.net&quot;\&quot;"
+				AdditionalIncludeDirectories="C:\ImageMagick-5.5.3,C:\ming-0.2a,C:\pstoeditb;C:\libpng;C:\zlib"
+				PreprocessorDefinitions="_DEBUG;WIN32;_WINDOWS;_VISUALC_;NeedFunctionPrototypes;HAVE_MAGICK;AUTOTRACE_VERSION=\&quot;0.31\&quot;;HAVE_LIBSWF;HAVE_LIBPSTOEDIT;inline=__inline;_MAGICKDLL_;AUTOTRACE_WEB=\&quot;&quot;http://autotrace.sourceforge.net&quot;\&quot;;HAVE_LIBPNG"
 				StringPooling="TRUE"
 				RuntimeLibrary="4"
 				EnableFunctionLevelLinking="TRUE"
@@ -42,11 +42,11 @@
 			<Tool
 				Name="VCLinkerTool"
 				AdditionalOptions="/MACHINE:I386"
-				AdditionalDependencies="CORE_RL_magick_.lib libming.lib odbc32.lib odbccp32.lib pstoedit.lib"
+				AdditionalDependencies="CORE_RL_magick_.lib libming.lib odbc32.lib odbccp32.lib pstoedit.lib libpng.lib zlib.lib"
 				OutputFile=".\autotrace___Win32_Release/autotrace.exe"
 				LinkIncremental="1"
 				SuppressStartupBanner="TRUE"
-				AdditionalLibraryDirectories="C:\ImageMagick-5.5.3\VisualMagick\lib,C:\ming-0.2a\Release,C:\pstoeditb"
+				AdditionalLibraryDirectories="C:\ImageMagick-5.5.3\VisualMagick\lib,C:\ming-0.2a\Release,C:\pstoeditb;C:\libpng\msvc\win32\libpng\lib;C:\zlib\lib"
 				ProgramDatabaseFile=".\autotrace___Win32_Release/autotrace.pdb"
 				SubSystem="1"/>
 			<Tool
@@ -77,9 +77,11 @@
 			<Tool
 				Name="VCCLCompilerTool"
 				Optimization="0"
-				AdditionalIncludeDirectories="C:\ImageMagick-5.5.3,C:\ming-0.2a,C:\pstoeditb"
-				PreprocessorDefinitions="_DEBUG;WIN32;_WINDOWS;_VISUALC_;NeedFunctionPrototypes;HAVE_MAGICK;AUTOTRACE_VERSION=\&quot;0.30\&quot;;HAVE_LIBSWF;HAVE_LIBPSTOEDIT;inline=__inline;_MAGICKDLL_;AUTOTRACE_WEB=\&quot;&quot;http://autotrace.sourceforge.net&quot;\&quot;"
+				AdditionalIncludeDirectories="C:\ImageMagick-5.5.3,C:\ming-0.2a,C:\pstoeditb;C:\libpng;C:\zlib"
+				PreprocessorDefinitions="_DEBUG;WIN32;_WINDOWS;_VISUALC_;NeedFunctionPrototypes;HAVE_MAGICK;AUTOTRACE_VERSION=\&quot;0.30\&quot;;HAVE_LIBSWF;HAVE_LIBPSTOEDIT;inline=__inline;_MAGICKDLL_;AUTOTRACE_WEB=\&quot;&quot;http://autotrace.sourceforge.net&quot;\&quot;;HAVE_LIBPNG"
+				BasicRuntimeChecks="3"
 				RuntimeLibrary="5"
+				StructMemberAlignment="5"
 				UsePrecompiledHeader="0"
 				PrecompiledHeaderFile=".\autotrace___Win32_Debug\autotrace.exe.pch"
 				AssemblerListingLocation=".\autotrace___Win32_Debug/"
@@ -95,11 +97,11 @@
 			<Tool
 				Name="VCLinkerTool"
 				AdditionalOptions="/MACHINE:I386"
-				AdditionalDependencies="CORE_DB_magick_.lib libming.lib odbc32.lib odbccp32.lib pstoedit.lib"
+				AdditionalDependencies="CORE_DB_magick_.lib libming.lib odbc32.lib odbccp32.lib pstoedit.lib libpng.lib zlib.lib"
 				OutputFile=".\autotrace___Win32_Debug/autotrace.exe"
 				LinkIncremental="2"
 				SuppressStartupBanner="TRUE"
-				AdditionalLibraryDirectories="C:\ImageMagick-5.5.3\VisualMagick\lib,C:\ming-0.2a\Debug,C:\pstoeditb"
+				AdditionalLibraryDirectories="C:\ImageMagick-5.5.3\VisualMagick\lib,C:\ming-0.2a\Debug,C:\pstoeditb;C:\libpng\msvc\win32\libpng\lib;C:\zlib\lib"
 				GenerateDebugInformation="TRUE"
 				ProgramDatabaseFile=".\autotrace___Win32_Debug/autotrace.pdb"
 				SubSystem="1"/>
@@ -215,6 +217,12 @@
 		</File>
 		<File
 			RelativePath=".\input-magick.h">
+		</File>
+		<File
+			RelativePath="input-png.c">
+		</File>
+		<File
+			RelativePath="input-png.h">
 		</File>
 		<File
 			RelativePath=".\input-pnm.c">
