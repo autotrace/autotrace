@@ -1,5 +1,9 @@
 2001-10-14  Martin Weber  <martweb@gmx.net>
 
+        * output-dxf.c: adopted so it could also be compiled as C++
+	
+2001-10-14  Martin Weber  <martweb@gmx.net>
+
         * NEWS: Upated
 
 	* README (version): Updated

@@ -283,7 +283,7 @@ int bspline_to_lines(xypnt_head_rec *vtx_list          /*  */,
   xypnt curr_pnt, spline_pnt;
   char end_of_list;
 
-  *new_vtx_list = calloc(1, sizeof (struct xypnt_head_t));
+  *new_vtx_list = (struct xypnt_head_t *) calloc(1, sizeof (struct xypnt_head_t));
   if (vtx_list)
     { 
       n = vtx_count + spline_order+1; 
@@ -435,7 +435,7 @@ static void out_splines (FILE * ps_file, spline_list_array_type shape)
             }
           else
             {
-             vec = calloc(1, sizeof (struct xypnt_head_t));
+             vec = (struct xypnt_head_t *) calloc(1, sizeof (struct xypnt_head_t));
 
              pnt.xp = ROUND(startx*RESOLUTION);  pnt.yp = ROUND(starty*RESOLUTION);
              xypnt_add_pnt(vec, pnt);
@@ -575,5 +575,4 @@ int output_dxf_writer(FILE* ps_file, string name,
   OUT_LINE ("EOF");
   return 0;
 }
-
 
