@@ -1,8 +1,13 @@
 2000-12-02  Masatake YAMATO  <yamato@redhat.com>
 
+	Following two changes are suggested 
+	by Brian V. Smith <bvsmith@epb1.lbl.gov>.
+	
+	* input-magick.c (magick_load_image): Invoke
+	GetExceptionInfo if MagickLibVersion > 0x500.
+	
 	* input-tga.c: Include unistd.h.
-	Suggested by Brian V. Smith <bvsmith@epb1.lbl.gov>.
-
+	
 2000-12-01  Masatake YAMATO  <yamato@redhat.com>
 
 	* Merge branch TOWARD_RELEASE_0_26->RELEASE_0_26.

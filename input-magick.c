@@ -22,7 +22,7 @@ bitmap_type magick_load_image(string filename)
 #if MagickLibVersion >= 0x521
   MagickIncarnate("");
 #endif
-#if MagickLibVersion < 0x500
+#if MagickLibVersion > 0x500
   GetExceptionInfo(&exception);
 #endif
   image_info=CloneImageInfo((ImageInfo *) NULL);
