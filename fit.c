@@ -835,6 +835,7 @@ filter (curve_type curve, fitting_opts_type *fitting_opts)
 {
   unsigned iteration, this_point;
   unsigned offset = CURVE_CYCLIC (curve) ? 0 : 1;
+  at_real_coord prev_new_point;
 
   /* We must have at least three points---the previous one, the current
      one, and the next one.  But if we don't have at least five, we will
@@ -845,6 +846,9 @@ filter (curve_type curve, fitting_opts_type *fitting_opts)
       LOG1 ("Length is %u, not enough to filter.\n", CURVE_LENGTH (curve));
       return;
     }
+
+  prev_new_point.x = FLT_MAX;
+  prev_new_point.y = FLT_MAX;
 
   for (iteration = 0; iteration < fitting_opts->filter_iteration_count;
    iteration++)
@@ -860,7 +864,7 @@ filter (curve_type curve, fitting_opts_type *fitting_opts)
            this_point++)
         {
           vector_type in, out, sum;
-          at_real_coord new_point, prev_new_point;
+          at_real_coord new_point;
 
           /* Calculate the vectors in and out, computed by looking at n points
              on either side of this_point. Experimental it was found that 2 is
@@ -869,9 +873,6 @@ filter (curve_type curve, fitting_opts_type *fitting_opts)
           signed int prev, prevprev; /* have to be signed */
           unsigned int next, nextnext;
           at_real_coord candidate = CURVE_POINT (curve, this_point);
-
-          prev_new_point.x = FLT_MAX;
-          prev_new_point.y = FLT_MAX;
 
           prev = CURVE_PREV (curve, this_point);
           prevprev = CURVE_PREV (curve, prev);
@@ -899,7 +900,7 @@ filter (curve_type curve, fitting_opts_type *fitting_opts)
           /* Start with the old point.  */
           new_point = candidate;
           sum = Vadd (in, out);
-          /* Experimental we have found that division by six is optimal */
+          /* We added 2*n+2 points, so we have to divide the sum by 2*n+2 */
           new_point.x += sum.dx / 6;
           new_point.y += sum.dy / 6;
           if (fabs (prev_new_point.x - new_point.x) < 0.3
@@ -1609,5 +1610,6 @@ real_to_int_coord (at_real_coord real_coord)
 static at_real
 distance (at_real_coord p1, at_real_coord p2)
 {
-  return (at_real) hypot (p1.x - p2.x, p1.y - p2.y);
+  at_real x = p1.x - p2.x, y = p1.y - p2.y;
+  return (at_real) sqrt (x * x + y * y);
 }

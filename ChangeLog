@@ -1,3 +1,12 @@
+2002-03-08  Martin Weber <martweb@gmx.net>
+
+	* fit.c (filter): Put the definition 
+	of prev_new_point out of the loop.
+
+	(distance): Don't use hypot.
+
+	Message-ID: <3C87B48C.82FAC8CF@gmx.net>.
+	
 2002-03-06  Martin Weber <martweb@gmx.net>
 
 	* curve.c: Corrected copyright notice
