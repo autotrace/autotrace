@@ -1,5 +1,15 @@
 2000-09-26  Masatake YAMATO  <yamato@redhat.com>
 
+	* output-eps.c: Applied a revised patch from
+	Bernhard Herzog <herzog@online.de>.
+
+	  Message-ID: <m3itro7146.fsf@greebo.nodomain.de>
+	  Subject: Re: [AutoTrace] autotrace 0.23
+	  From: Bernhard Herzog <herzog@online.de>
+	  To: autotrace@egroups.com
+	  Date: 22 Sep 2000 20:06:17 +0200
+
+
 	* main.c: Applied a patch from <Johannes.Schindelin@gmx.de> 
 	for Magick input support. See blocks surrounded by HAVE_MAGICK.
 	(SUFFIX_LIST): New macro definition.
