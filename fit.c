@@ -312,7 +312,7 @@ fit_curve_list (curve_list_type curve_list,
      and three points isn't enough to determine a spline.  Therefore,
      the fitting will fail.  */
   curve = CURVE_LIST_ELT (curve_list, 0);
-  if ((CURVE_CYCLIC (curve) == true) && CURVE_LENGTH (curve) != 3)
+  if (CURVE_CYCLIC (curve) == true)
     append_point (curve, CURVE_POINT (curve, 0));
 
   /* Finally, fit each curve in the list to a list of splines.  */
@@ -455,7 +455,7 @@ split_at_corners (pixel_outline_list_type pixel_list, fitting_opts_type *fitting
 
       else {
         int surround;
-        if ((surround = (int)(O_LENGTH (pixel_o) - 3) / 2) >= 4)
+        if ((surround = (int)(O_LENGTH (pixel_o) - 3) / 2) >= 2)
           {
             unsigned save_corner_surround = fitting_opts->corner_surround;
             fitting_opts->corner_surround = surround;

@@ -1,3 +1,11 @@
+2002-10-08  Martin Weber <martweb@gmx.net>
+
+	* fit.c (split_at_corners, fit_curve_list): 
+	handle very small objects.
+
+	Message-ID: <3DA1C87D.786E8E52@gmx.net>
+	Message-ID: <3DA1DB6F.1DDA16A1@gmx.net>
+	
 2002-10-08  Masatake YAMATO  <yamato@redhat.com>
 
 	* autotrace.h (at_doc__width_factor): added
