@@ -1,5 +1,13 @@
 2002-03-30  Martin Weber <martweb@gmx.net>
 
+	* output-emf.c: Removed unnecessary #define, 
+	set pen width to zero when in outline mode. Now checking whether 
+	it should write to stdout only for Windows.
+
+	Message-ID: <3CA4C008.8B921285@gmx.net>.
+	
+2002-03-30  Martin Weber <martweb@gmx.net>
+
 	* output-pdf.c (out_splines): Reduced color precision to get 
 	smaller files.
 

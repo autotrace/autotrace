@@ -30,6 +30,7 @@
 #define ENMT_LINETO               54
 #define ENMT_POLYBEZIERTO16       88
 
+#define STOCK_NULL_PEN 0x80000008
 
 #define FM_ALTERNATE 1
 
@@ -38,15 +39,15 @@
 #define WDEVMLMTR 320
 #define HDEVMLMTR 240
 
-#define SCALE 1
+#define SCALE (at_real) 1.0
 
 #define MAKE_COLREF(r,g,b) (((r) & 0x0FF) | (((g) & 0x0FF) << 8) | (((b) & 0x0FF) << 16))
 #define MK_PEN(n) ((n) * 2 + 1)
 #define MK_BRUSH(n) ((n) * 2 + 2)
-#define X_FLOAT_TO_UI32(num) ((UI32)(num * scale))
-#define X_FLOAT_TO_UI16(num) ((UI16)(num * scale))
-#define Y_FLOAT_TO_UI32(num) ((UI32)(y_offset - num * scale))
-#define Y_FLOAT_TO_UI16(num) ((UI16)(y_offset - num * scale))
+#define X_FLOAT_TO_UI32(num) ((UI32)(num * SCALE))
+#define X_FLOAT_TO_UI16(num) ((UI16)(num * SCALE))
+#define Y_FLOAT_TO_UI32(num) ((UI32)(y_offset - num * SCALE))
+#define Y_FLOAT_TO_UI16(num) ((UI16)(y_offset - num * SCALE))
 
 /* maybe these definitions be put into types.h 
    with some ifdefs ... */
@@ -76,7 +77,6 @@ typedef struct
 
 static EMFColorList *color_list = NULL;  /* Color list */
 static UI32 *color_table = NULL;         /* Color table */
-static float scale;
 static float y_offset;
 
 /* color list & table functions */
@@ -375,8 +375,8 @@ static int WriteSetWorldTransform(FILE *fdes, UI32 height)
   
   if(fdes != NULL)
   {
-	float s1 = (float) (1.0/scale);
-	float s2 = (float) (1.0/scale);
+	float s1 = (float) (1.0/SCALE);
+	float s2 = (float) (1.0/SCALE);
 	UI32 t1;
 	UI32 t2;
     /* conversion to float */
@@ -636,8 +636,7 @@ static void OutputEmf(FILE* fdes, EMFStats *stats, at_string name, int width, in
   /* output EMF header */
   WriteHeader(fdes, name, width, height, stats->filesize, stats->nrecords, (stats->ncolors * 2) +1);
   
-  scale = 1.;
-  y_offset = scale * height;
+  y_offset = SCALE * height;
   /* output pens & brushes */
   for(i=0; i<(unsigned int) stats->ncolors; i++)
   {
@@ -661,7 +660,10 @@ static void OutputEmf(FILE* fdes, EMFStats *stats, at_string name, int width, in
     if(i == 0 || curr_color != last_color)
     {
       color_index = ColorLookUp(curr_color, color_table, stats->ncolors);
-      WriteSelectObject(fdes, MK_PEN(color_index));
+      if (shape.centerline)
+        WriteSelectObject(fdes, MK_PEN(color_index));
+      else
+        WriteSelectObject(fdes, STOCK_NULL_PEN);
       WriteSelectObject(fdes, MK_BRUSH(color_index));
       last_color = curr_color;
     }
@@ -727,14 +729,13 @@ int output_emf_writer(FILE* file, at_string name,
 {
   EMFStats stats;
 
-  /* test for file descriptor */
-  if(file != stdout)
-    freopen(name, "wb", file);
-  else
-  {
-    fprintf(stderr, "This driver couldn't write to stdout!\n");
-    return -1;
-  }
+#ifdef _WINDOWS 
+    if(file == stdout)
+	  {
+        fprintf(stderr, "This driver couldn't write to stdout!\n");
+        return -1;
+      }
+#endif
 
   /* Get EMF stats */
   GetEmfStats(&stats, name, shape);
