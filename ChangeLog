@@ -1,5 +1,8 @@
 2002-09-26  Masatake YAMATO  <yamato@redhat.com>
 
+	* autotrace.m4 ($LIBS): changed the order of appending
+	$LIBS to $AUTOTRACE_LIBS.
+
 	* Makefile.am (EXTRA_DIST): Added output-pstoedit.[ch].
 
 	* configure.in (HAVE_LIBPSTOEDIT): Fix typo.
