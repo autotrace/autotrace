@@ -498,28 +498,18 @@ dot_printer(at_real percentage, at_address client_data)
   if (((percentage - last) >= 0.01 || percentage == 0.0)
       && (percentage < 0.99))
     {
-      putc ('.', stderr);
-      if ((((int)(ceil(100.0 * percentage))) % 33) == 0
-	  && percentage != 0.0)
-	{
-	  switch (((int)(ceil(100.0 * percentage))) / 33)
-	    {
-	    case 1:
-	      fputs (" [done] find pixels\n", stderr);
-	      break;
-	    case 2:
-	      fputs (" [done] fit splines\n", stderr);
-	      break;
-	    case 3:
-	      fputs (" [done] free pixels\n", stderr);
-	      break;
-	    default:
-	      fputs ("xxx\n", stderr);
-	    }
-	}
+      if (percentage < 0.33)
+	putc ('o', stderr);
+      else if (percentage < 0.66)
+	putc ('0', stderr);
+      else
+	putc ('O', stderr);
       *(at_real *)client_data = percentage;
-    }
+    } 
+  else if (percentage == 1.0)
+    fputs (" [done]\n", stderr);
 }
+
 
 static void
 dump (at_bitmap_type * bitmap, FILE * fp)

@@ -1,5 +1,11 @@
 2002-01-27  Masatake YAMATO  <yamato@redhat.com>
 
+	* autotrace.c (at_splines_new_full): Set progress 1.0
+	at the end of this function.
+
+	* main.c (dot_printer): Style of progress report
+	is changed.
+
 	* xstd.h (XREALLOC): Remove the last backslash
 	at XREALLOC. This is my typo.
 

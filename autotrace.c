@@ -210,6 +210,9 @@ at_splines_new_full (at_bitmap_type * bitmap,
       goto cleanup;
     }
   
+  if (notify_progress)
+    notify_progress(1.0, progress_data);
+  
  cleanup:
   free_pixel_outline_list (&pixels);
   return splines;
