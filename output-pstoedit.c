@@ -101,7 +101,7 @@ pstoedit_suffix_table_init (void)
 	  dd_tmp++;
 	}
       pstoedit_suffix_table[2 * (dd_tmp - dd_start)] = NULL;
-      free(dd_start);
+      clearPstoeditDriverInfo_plainC(dd_start);
     }
   else
     {
@@ -325,7 +325,7 @@ get_symbolicname(const at_string suffix)
 	   else
 	     dd_tmp++;
 	 }
-      free (dd_start);
+      clearPstoeditDriverInfo_plainC(dd_start);
     }
   return symbolicname;
 }
