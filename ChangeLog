@@ -1,3 +1,7 @@
+2002-07-09  Masatake YAMATO  <yamato@redhat.com>
+
+	* configure.in: Version 0.30.2.
+
 2002-07-01  Masatake YAMATO  <yamato@redhat.com>
 
 	* configure.in: Don't use libdir value defined

@@ -33,12 +33,13 @@ rm -rf $RPM_BUILD_ROOT
 
 %files
 %defattr(-,root,root)
-%doc /usr/man/man1/autotrace.1.gz
+%doc AUTHORS COPYING COPYING.LIB ChangeLog NEWS README 
+%doc /usr/man/man1/autotrace.1.*
 
 /usr/include/autotrace/autotrace.h
 /usr/lib/pkgconfig/autotrace.pc
 /usr/include/autotrace/types.h
-/usr/lib/libautotrace.a
+/usr/lib/libautotrace.*
 /usr/include/autotrace/exception.h
 /usr/include/autotrace/input.h
 /usr/include/autotrace/output.h
@@ -47,6 +48,9 @@ rm -rf $RPM_BUILD_ROOT
 /usr/bin/autotrace
 
 %changelog
+* Tue Jul  9 2002  Masatake YAMATO<yamato@redhat.com>
+- Supported shared library and bzip'ed manual.
+
 * Sun May 12 2002  Masatake YAMATO<yamato@redhat.com>
 - Install output.h.
 
