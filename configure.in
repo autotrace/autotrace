@@ -4,22 +4,38 @@
 #
 AC_INIT(fit.c)
 
+#
+# version setting up for Automake 
+# 
 AUTOTRACE_MAJOR_VERSION=0
 AUTOTRACE_MINOR_VERSION=30
 AUTOTRACE_MICRO_VERSION=1
-AUTOTRACE_VERSION=\"${AUTOTRACE_MAJOR_VERSION}.${AUTOTRACE_MINOR_VERSION}.${AUTOTRACE_MICRO_VERSION}\"
+AUTOTRACE_VERSION=${AUTOTRACE_MAJOR_VERSION}.${AUTOTRACE_MINOR_VERSION}.${AUTOTRACE_MICRO_VERSION}
 AC_DEFINE_UNQUOTED(AUTOTRACE_VERSION,$AUTOTRACE_VERSION)
 AC_SUBST(AUTOTRACE_VERSION)
 AM_INIT_AUTOMAKE(autotrace, $AUTOTRACE_VERSION, no-define)
 
-AUTOTRACE_WEB=\""http://autotrace.sourceforge.net"\"
+#
+# version setting up for libtool
+#
+LT_CURRENT=0
+LT_REVISION=0
+LT_AGE=0
+AC_SUBST(LT_RELEASE)
+AC_SUBST(LT_CURRENT)
+AC_SUBST(LT_REVISION)
+AC_SUBST(LT_AGE)
+AC_SUBST(LT_CURRENT_MINUS_AGE)
+AC_PROG_CC
+AC_PROG_LIBTOOL
+
+AUTOTRACE_WEB=http://autotrace.sourceforge.net
 AC_DEFINE_UNQUOTED(AUTOTRACE_WEB, $AUTOTRACE_WEB)
 
 AM_MAINTAINER_MODE
 
 AM_CONFIG_HEADER(config.h)
 
-AC_PROG_CC
 AC_PROG_CPP
 AC_PROG_RANLIB
 AC_CANONICAL_HOST
@@ -30,7 +46,7 @@ AC_CHECK_HEADERS(malloc.h)
 
 dnl
 dnl ImageMagick
-dnl 
+dnl
 HAVE_MAGICK=no
 AC_ARG_WITH(magick, 
 [  --with-magick  compile with maigck(default)
@@ -88,7 +104,55 @@ if test $with_magick = yes ; then
 		AC_MSG_WARN([*** ImageMagick input handler is disabled.           ***])		
 	fi
 fi
-AM_CONDITIONAL(HAVE_MAGICK, test x$HAVE_MAGICK = xyes)
+AM_CONDITIONAL(HAVE_MAGICK, test $HAVE_MAGICK = yes)
+
+dnl
+dnl libMagick.la sanity check
+dnl 
+dnl It seems that libMagick.la in RedHat 7.2 is broken.
+dnl libMagick.la refers /usr/lib/libxml2.la. However, 
+dnl /usr/lib/libxml2.la is not existed. Therefore linking
+dnl against libMagick.la is failed.
+dnl
+libMagick_la_path=
+libMagick_la_sanity=yes
+
+dnl Stage one: finding libMagick.la
+if test $HAVE_MAGICK = yes && test $enable_shared = yes; then
+   for f in $MAGICK_LDFLAGS; do
+      case ${f} in
+	   -L*)
+	       f=`echo $f | sed -e 's/-L//'`
+	       if test -f ${f}/libMagick.la; then
+		  libMagick_la_path="${f}/libMagick.la"
+	       fi;;
+      esac
+   done
+fi
+
+dnl Stage two: Check internal of libMagick.la
+if test -n "${libMagick_la_path}"; then
+   AC_MSG_CHECKING([Sanity of libMagick.la])
+    . ${libMagick_la_path}
+    for elt in ${dependency_libs}; do
+	case ${elt} in
+	    *.la )
+		if test ! -f ${elt}; then
+		   if test ${libMagick_la_sanity} = yes; then
+		      AC_MSG_RESULT([broken])
+		      libMagick_la_sanity=no
+		   fi
+		   AC_MSG_WARN([Cannot find $elt refereed in ${libMagick_la_path}])
+		fi;;
+	esac
+    done
+   if test ${libMagick_la_sanity} = yes; then
+      AC_MSG_RESULT([ok])
+   else
+      AC_MSG_WARN([*** Building will be failed at link time.])
+      AC_MSG_WARN([*** To avoid this failure, don't link libMagick.so: Run ./configure --without-magick])
+   fi
+fi
 
 dnl
 dnl LIBPNG
@@ -125,7 +189,7 @@ else
 	AC_MSG_WARN([*** Cannot find libpng.            ***])
 	AC_MSG_WARN([*** Png input handler is disabled. ***])
 fi
-AM_CONDITIONAL(HAVE_LIBPNG, test x$HAVE_LIBPNG = xyes)
+AM_CONDITIONAL(HAVE_LIBPNG, test $HAVE_LIBPNG = yes)
 
 dnl
 dnl LIBMING(LIBSWF)

@@ -1,3 +1,15 @@
+2002-06-09  Masatake YAMATO  <yamato@redhat.com>
+
+	* autotrace.c (make_string): New macro.
+	(at_version, at_home_site): Use make_string.
+
+	* configure.in (AUTOTRACE_VERSION): Remove double quotes.
+	(AUTOTRACE_WEB): Likewise.
+	(LT_*): Introduce libtool.
+	Check the broken ImageMagick.la.
+
+	* Makefile.am (lib_LTLIBRARIES): Introduce libtool.
+
 2002-06-05  Masatake YAMATO  <yamato@redhat.com>
 
 	* output.h (at_output_add_handler): Added stab.

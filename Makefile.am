@@ -11,7 +11,7 @@ autotrace.pc.in autotrace.spec.in TODO HACKING
 AUTOMAKE_OPTIONS = foreign no-dependencies
 
 autotraceincludedir=$(includedir)/autotrace
-lib_LIBRARIES=libautotrace.a
+lib_LTLIBRARIES=libautotrace.la
 bin_PROGRAMS=autotrace
 
 if HAVE_MAGICK
@@ -59,7 +59,7 @@ output-dr2d.c output-dr2d.h \
 $(output_swf_src) \
 $(output_pstoedit_src)
 
-libautotrace_a_SOURCES =\
+libautotrace_la_SOURCES =\
                 $(input_src) ${output_src}	\
 		fit.c				\
 		bitmap.c 			\
@@ -100,6 +100,8 @@ autotraceinclude_HEADERS=\
 		output.h 			\
 		exception.h
 
+libautotrace_la_LDFLAGS = -version-info $(LT_CURRENT):$(LT_REVISION):$(LT_AGE)
+
 #
 # noinst_HEADERS: headers shared between lib and bin.
 # File not installed and not shared should be in
@@ -121,7 +123,7 @@ autotrace_SOURCES=\
 
 INCLUDES = $(MAGICK_CFLAGS) $(LIBPSTOEDIT_CFLAGS)
 autotrace_LDADD =				\
-		libautotrace.a			\
+		libautotrace.la			\
 		$(MAGICK_LDFLAGS)		\
 		$(LIBPNG_LDFLAGS)		\
 		$(LIBSWF_LDFLAGS)		\
@@ -143,3 +145,6 @@ autotrace-config.in: autotrace-config.af
 
 dist-hook: autotrace.spec
 	cp autotrace.spec $(distdir)
+
+rpm: dist autotrace.spec
+	rpm -bb autotrace.spec
