@@ -24,6 +24,7 @@ Q2. Why configure checks pstoedit twice?
     instead?
 
     (Martin Weber <martweb@gmx.net>)
+
 A2. We have to detect one of the three states:
 
     1. We don't have pstoedit or have pstoedit older than 3.32.
@@ -43,18 +44,29 @@ version checking. (In other hand, PKG_CHECK_MODULES has such version
 checking.) I don't want to extend autotrace.m4 anymore.  It will cause
 bugs. (Masatake YAMATO<yamato@redhat.com>)
 
-Q3. Does autotrace could be built on MacOSX? (Many people)
-A3. Yes. I tested on sourceforge's compilefarm.
-    libtool shows a strange warning but autotrace could
-    be built and run. (Masatake YAMATO<yamato@redhat.com>)
+Q3. Can I build and run Autotrace on MacOS X?
+
+A3. Yes. The easiest way to compile Autotrace and the software libraries 
+on which it depends is to install Fink <http://fink.sf.net>. Fink is a 
+porting system for MacOS X, and is well documented and supported, please 
+refer to the Fink documentation on its web site and Fink mailing lists 
+for help getting fink installed and running.
+
+If you have X11 installed you can also install the Autotrace X11 GUI 
+software, called Frontline, using Fink (you can even install X11 this way).
+
+Once Fink is installed open a Terminal and type:
+fink install autotrace frontline
+(Adrian Simmons <adrinux@ntlworld.com>)
 
 Q4. Is there autotrace GUI runs on Windows? Is it possible to port
-    frontline, gnome based GUI, to Windows? (Many people)
+frontline, gnome based GUI, to Windows? (Many people)
+
 A4. There is no GUI that runs on Windows. frontline highly depends on
-    libgnomeui, so if libgnomeui is ported, porting frontline to
-    windows might be easy task. If you consider to write a GUI for
-    frontline running on Windows, it is worth to consider using
-    Qt. rob@mediasolution.it might have some interests.  Read the
-    archive of autotrace mailing list.  I, the author of frontline, am
-    using GNU/Linux only, so I don't have much interests in porting.
-    (Masatake YAMATO<yamato@redhat.com>)
+libgnomeui, so if libgnomeui is ported, porting frontline to
+windows might be easy task. If you consider to write a GUI for
+frontline running on Windows, it is worth to consider using
+Qt. rob@mediasolution.it might have some interests.  Read the
+archive of autotrace mailing list.  I, the author of frontline, am
+using GNU/Linux only, so I don't have much interests in porting.
+(Masatake YAMATO<yamato@redhat.com>)
