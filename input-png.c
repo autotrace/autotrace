@@ -32,7 +32,7 @@
 #include <png.h>
 #include "input-png.h"
 
-static volatile char rcsid[]="$Id: input-png.c,v 1.13 2002/09/29 11:13:12 masata-y Exp $";
+static volatile char rcsid[]="$Id: input-png.c,v 1.14 2002/09/29 12:41:50 masata-y Exp $";
 static png_bytep * read_png(png_structp png_ptr, png_infop info_ptr, at_input_opts_type * opts);
 
 /* for pre-1.0.6 versions of libpng */
@@ -170,9 +170,9 @@ read_png(png_structp png_ptr, png_infop info_ptr, at_input_opts_type * opts)
 			my_bg.red   = 256 * opts->background_color->r;
 			my_bg.green = 256 * opts->background_color->g;
 			my_bg.blue  = 256 * opts->background_color->b;
-			my_bg.gray  = (opts->background_color->r
-				       + opts->background_color->g
-				       + opts->background_color->b) / 3;
+			my_bg.gray  = 256* ((opts->background_color->r
+					     + opts->background_color->g
+					     + opts->background_color->b) / 3);
 		} else
 			  /* else, use white */
 			  my_bg.red = my_bg.green = my_bg.blue = my_bg.gray = 0xFFFF;

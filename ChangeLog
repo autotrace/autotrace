@@ -1,5 +1,8 @@
 2002-09-29  Masatake YAMATO  <yamato@redhat.com>
 
+	* input-png.c (read_png): my_bg.gray is 
+	multiplied by 256.
+
 	* autotrace.c (at_bitmap_read): If opts 
 	is null, give dummy to a handler.
 	(at_input_opts_copy): New function.
