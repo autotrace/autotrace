@@ -1,6 +1,6 @@
 EXTRA_DIST=swf.h output-swf.c output-swf.h  \
 input-magick.h input-magick.c input-png.c input-png.h \
-autotrace-config.af
+autotrace-config.af vc++6.0.txt autotrace.dsp autotrace.dsw
 
 AUTOMAKE_OPTIONS = foreign no-dependencies
 

@@ -12,6 +12,7 @@ extern "C" {
 #ifndef bool
 typedef enum { false = 0, true = 1 } bool;
 #endif
+#endif
 
 /* The X11 library defines `FALSE' and `TRUE', and so we only want to
    define them if necessary.  */
@@ -19,7 +20,6 @@ typedef enum { false = 0, true = 1 } bool;
 #define FALSE false
 #define TRUE true
 #endif /* FALSE */
-#endif
 
 /* The usual null-terminated string.  */
 typedef char *string;
@@ -65,5 +65,3 @@ typedef struct
 #endif /* __cplusplus */
 
 #endif /* not TYPES_H */
-
-/* version 0.25 */

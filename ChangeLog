@@ -1,3 +1,14 @@
+2001-02-21  Masatake YAMATO  <yamato@redhat.com>
+		
+	[Patches from from Martin.]
+
+	* THANKS: Updated contributors.
+
+	* types.h: Fixed a bug when compiling with C++.
+
+ 	* Makefile.am (EXTRA_DIST): Added vc++6.0.txt 
+	autotrace.dsp autotrace.dsw.
+
 2001-02-19  Masatake YAMATO  <yamato@redhat.com>
 
 	Applied patches from Martin.

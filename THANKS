@@ -1,6 +1,14 @@
-If soneone missing please let us(Martin Weber <martweb@gmx.net>
-or Masatake YAMATO  <yamato@redhat.com>) know.
+If soneone missing please let me
+(Martin Weber <martweb@gmx.net>) know.
 
 ---
-Magick input is contributed by <Johannes.Schindelin@gmx.de>.
-PNG input is contributed by MenTaLguY <mental@rydia.net>.
+Bernhard Herzog (Postscript, svg and sk export filter) 
+Ian MacPhedran (xfig export filter) 
+Martin Kroeker (bugfixes) 
+Tobias Polzin (bugfixes) 
+Kevin O'Gorman (Shockwave support) 
+MenTaLguY (png import filter)
+Peter Cucka 
+Enrico Persiani (emf export) 
+Johannes Schindelin (Magick import filter)
+Masatake YAMATO (library, help with cvs)
