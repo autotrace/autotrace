@@ -70,7 +70,9 @@ libautotrace_a_SOURCES = version.c               \
 		curve.h 			\
 		vector.h 			\
 		color.h 			\
-		pxl-outline.h
+		pxl-outline.h                   \
+                despeckle.c                     \
+                despeckle.h
 
 autotraceinclude_HEADERS=\
 		types.h 			\
