@@ -1,5 +1,11 @@
 2003-06-10  Masatake YAMATO  <yamato@redhat.com>
 
+	* module.c (at_module_init): Use at_input_add_handler_full
+	for "PBM", "PNM", "PGM" and "PPM".
+	Added some preprocessor tricks to deal with ImageMagick.
+	(at_module_init): Use at_input_add_handler_full to deal
+	with ImageMagick.
+
 	* Makefile.am: Fix a typo.
 	(libautotrace_la_SOURCES): Added module.c.
 	Suggested by "jakobfrandsen" <jakobfrandsen@yahoo.dk>.
