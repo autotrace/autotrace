@@ -1,3 +1,7 @@
+2002-03-20  Masatake YAMATO  <yamato@redhat.com>
+
+	* configure.in: Create a pre release(0.30pre1).
+	
 2002-03-20  Martin Weber <martweb@gmx.net>
 
 	* output-emf.c: Include output.h.

@@ -4,7 +4,7 @@
 #
 AC_INIT(fit.c)
 
-AM_INIT_AUTOMAKE(autotrace, "0.29")
+AM_INIT_AUTOMAKE(autotrace, "0.30pre1")
 AM_MAINTAINER_MODE
 
 AC_PROG_CC
