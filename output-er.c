@@ -45,6 +45,9 @@ output_er_header(FILE* er_file, at_string name, int llx, int lly, int urx, int u
 
     free(time);
 
+    fprintf(er_file, "ImageSize = {\n\tWidth = %d\n\tHeight = %d\n}\n\n",
+	urx - llx, ury - lly);
+
     return 0;
 }
 
@@ -65,7 +68,7 @@ out_splines(FILE* er_file, spline_list_array_type shape,
 
         spline_list_type list = SPLINE_LIST_ARRAY_ELT(shape, this_list);
         unsigned length = SPLINE_LIST_LENGTH(list);
-        unsigned out_length = (list.open ? length + 1 : length);
+        unsigned out_length = (list.open || length == 1 ? length + 1 : length);
 
         fprintf(er_file, "Shape = {\n");
         fprintf(er_file, "\t#Shape Number %d\n", this_list + 1);
@@ -87,7 +90,7 @@ out_splines(FILE* er_file, spline_list_array_type shape,
         fprintf(er_file, "\t\tPointList = {\n");
 
         prev = PREV_SPLINE_LIST_ELT(list, 0);
-        if (list.open)
+        if (list.open || length == 1)
             SPLINE_DEGREE(prev) = (polynomial_degree) -1;
 
         for (this_spline = 0; this_spline < length; this_spline++)
@@ -115,7 +118,7 @@ out_splines(FILE* er_file, spline_list_array_type shape,
             prev = s;
         }
 
-        if (list.open)
+        if (list.open || length == 1)
         {
             x0 = CONTROL2(prev).x; y0 = CONTROL2(prev).y;
             x2 = x1 = END_POINT(prev).x; y2 = y1 = END_POINT(prev).y;
@@ -175,3 +178,4 @@ now(void)
 
     return time_string;
 }
+

@@ -15,6 +15,10 @@
 #include "pxl-outline.h"
 #include <assert.h>
 
+#define GET_PIXEL(ptr,spp,c) \
+  ((spp)==3?(((c).r)=(ptr)[0]),(((c).g)=(ptr)[1]),(((c).b)=(ptr)[2])\
+  :(((c).r)=((c).g)=((c).b)=(ptr)[0]))
+
 /* We consider each pixel to consist of four edges, and we travel along
    edges, instead of through pixel centers.  This is necessary for those
    unfortunate times when a single pixel is on both an inside and an
@@ -108,16 +112,23 @@ find_outline_pixels (bitmap_type bitmap, color_type *bg_color,
 #endif
 {
   pixel_outline_list_type outline_list;
-  unsigned short row, col;
+  unsigned row, col, w, h, spp, row_bytes;
   bitmap_type marked = new_bitmap (BITMAP_WIDTH (bitmap), BITMAP_HEIGHT (bitmap));
   unsigned int max_progress = BITMAP_HEIGHT (bitmap) * BITMAP_WIDTH (bitmap);
+  unsigned char *bptr;  /* running pointer to the current pixel */
 
   O_LIST_LENGTH (outline_list) = 0;
   outline_list.data = NULL;
 
-  for (row = 0; row < BITMAP_HEIGHT (bitmap); row++)
+  h = BITMAP_HEIGHT(bitmap);
+  w = BITMAP_WIDTH(bitmap);
+  spp = BITMAP_PLANES(bitmap);
+  row_bytes = spp * w;
+  bptr = BITMAP_BITS(bitmap);
+
+  for (row = 0; row < h; row++)
     {
-      for (col = 0; col < BITMAP_WIDTH (bitmap); col++)
+    for (col = 0; col < w; col++, bptr += spp)
 	{
 	  edge_type edge;
 	  color_type color;
@@ -129,7 +140,7 @@ find_outline_pixels (bitmap_type bitmap, color_type *bg_color,
 
 	  /* A valid edge can be TOP for an outside outline.
 	     Outside outlines are traced counterclockwise */
-	  color = GET_COLOR (bitmap, row, col);
+        GET_PIXEL(bptr, spp, color);
 	  if (!(is_background = (bg_color && COLOR_EQUAL(color, *bg_color)))
 	      && is_unmarked_outline_edge (row, col, edge = TOP,
 					   bitmap, marked, color, exp))
@@ -154,7 +165,8 @@ find_outline_pixels (bitmap_type bitmap, color_type *bg_color,
 	     Inside outlines are traced clockwise */
 	  if (row!=0)
           {
-            color = GET_COLOR (bitmap, row-1, col);
+            unsigned char* rptr = bptr - row_bytes;  /* previous row */
+            GET_PIXEL(rptr, spp, color);
             if (!(bg_color && COLOR_EQUAL(color, *bg_color))
 	          && is_unmarked_outline_edge (row-1, col, edge = BOTTOM,
 					       bitmap, marked, color, exp))
@@ -256,24 +268,32 @@ find_centerline_pixels(bitmap_type bitmap, color_type bg_color,
 #endif
 {
     pixel_outline_list_type outline_list;
-    unsigned short row, col;
+    unsigned row, col, w, h, spp;
     bitmap_type marked = new_bitmap(BITMAP_WIDTH(bitmap), BITMAP_HEIGHT (bitmap));
     unsigned int max_progress = BITMAP_HEIGHT (bitmap) * BITMAP_WIDTH (bitmap);
+    unsigned char *bptr;  /* running pointer to the current pixel */
     
     O_LIST_LENGTH(outline_list) = 0;
     outline_list.data = NULL;
 
-    for (row = 0; row < BITMAP_HEIGHT(bitmap); row++)
+    h = BITMAP_HEIGHT(bitmap);
+    w = BITMAP_WIDTH(bitmap);
+    spp = BITMAP_PLANES(bitmap);
+    bptr = BITMAP_BITS(bitmap);
+
+    for (row = 0; row < h; row++)
     {
 	for (col = 0; col < BITMAP_WIDTH(bitmap); col++)
 	{
 	    edge_type edge;
+	    color_type color;
 
 	    if (notify_progress)
 	      notify_progress((at_real)(row * BITMAP_WIDTH(bitmap) + col) / ((at_real) max_progress * (at_real)3.0),
 			      progress_data);
 
-	    if (COLOR_EQUAL(GET_COLOR(bitmap, row, col), bg_color)) continue;
+          GET_PIXEL(bptr, spp, color);
+          if (COLOR_EQUAL(color, bg_color)) continue;
 
 	    edge = next_unmarked_outline_edge(row, col, TOP, bitmap, marked, exp);
 	    CHECK_FATAL ();
@@ -283,9 +303,6 @@ find_centerline_pixels(bitmap_type bitmap, color_type bg_color,
 		pixel_outline_type outline;
 		at_bool clockwise = (at_bool)(edge == BOTTOM);
 
-		LOG2("#%u: (%sclockwise, ", O_LIST_LENGTH(outline_list),
-		    clockwise ? "" : "counter");
-
 		outline = find_one_centerline(bitmap, edge, row, col, &marked);
 
 		/* If the outline is open (i.e., we didn't return to the
@@ -294,17 +311,10 @@ find_centerline_pixels(bitmap_type bitmap, color_type bg_color,
 		if (outline.open)
 		{
 		    pixel_outline_type partial_outline;
-		    edge_type opp_edge = opposite_edge(edge);
-		    edge = next_unmarked_outline_edge(row, col, opp_edge,
-						      bitmap, marked, exp);
-		    CHECK_FATAL ();
-
-		    if (edge == opp_edge)
-		    {
-			partial_outline =
-			  find_one_centerline(bitmap, edge, row, col, &marked);
-			concat_pixel_outline(&outline, &partial_outline);
-		    }
+		    edge = opposite_edge(edge);
+		    partial_outline =
+		      find_one_centerline(bitmap, edge, row, col, &marked);
+		    concat_pixel_outline(&outline, &partial_outline);
 		}
 
 		/* Outside outlines will start at a top edge, and move
@@ -312,12 +322,16 @@ find_centerline_pixels(bitmap_type bitmap, color_type bg_color,
 		   bottom edge, and move clockwise.  This happens because of
 		   the order in which we look at the edges. */
 		O_CLOCKWISE(outline) = clockwise;
-/* if (clockwise) */
-if (O_LENGTH(outline) > 1)
+		if (O_LENGTH(outline) > 1)
+		{
+		    LOG2("#%u: (%sclockwise, ", O_LIST_LENGTH(outline_list),
+			clockwise ? "" : "counter");
+		    LOG2("%s) [%u].\n", (outline.open ? "open" : "closed"),
+			O_LENGTH(outline));
+
 		    append_pixel_outline(&outline_list, outline);
 
-		LOG1("%s)", (outline.open ? "open" : "closed"));
-		LOG1(" [%u].\n", O_LENGTH(outline));
+		}
 	    }
 	}
 	if (test_cancel && test_cancel(testcancel_data))
@@ -1043,3 +1057,4 @@ else
  cleanup:
   return(pos);
 }
+
