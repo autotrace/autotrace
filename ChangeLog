@@ -1,6 +1,15 @@
+2001-02-27  Masatake YAMATO  <yamato@redhat.com>
+
+ 	Applied a patch from Martin.
+
+	* NEWS: Updated.	
+
+	* output.c: Don't include output-dxf.h and
+	output-dxf12.h.
+
 2001-02-26  Masatake YAMATO  <yamato@redhat.com>
 
- 	Applied two patches from Martin.
+ 	Applied a patch from Martin.
 	
 	* output.c: Remove dxf supports.
 

@@ -11,8 +11,6 @@
 #ifdef LIBSWF
 #include "output-swf.h"
 #endif /* LIBSWF */
-#include "output-dxf.h"
-#include "output-dxf12.h"
 #include "output-emf.h"
 #include "xstd.h"
 #include <string.h>
