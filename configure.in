@@ -62,6 +62,31 @@ fi
 AM_CONDITIONAL(HAVE_LIBPNG, test x$HAVE_LIBPNG = xyes)
 
 dnl
+dnl LIBMING(LIBSWF)
+dnl
+HAVE_LIBSWF=no
+
+AC_CHECK_HEADER(ming.h,
+	        swf_header_found=yes,
+		swf_header_found=no)
+if test "${swf_header_found}" = yes ; then
+	AC_CHECK_LIB(ming, Ming_init, 
+		     HAVE_LIBSWF=yes,,-lm)
+	if test "$HAVE_LIBSWF" = "yes" ; then
+		LIBSWF_LDFLAGS="-lming"
+		AC_SUBST(LIBSWF_LDFLAGS)
+		AC_DEFINE(HAVE_LIBSWF)
+	else
+ 		AC_MSG_WARN([Cannot find libming.])
+		AC_MSG_WARN([SWF output is disabled.])
+	fi
+else
+	AC_MSG_WARN([Cannot find ming.h.])
+	AC_MSG_WARN([SWF output is disabled.])
+fi
+AM_CONDITIONAL(HAVE_LIBSWF, test x$HAVE_LIBSWF = xyes)
+
+dnl
 dnl Vender's cc(not gcc)
 dnl
 dnl AC_CANONICAL_HOST

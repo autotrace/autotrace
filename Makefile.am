@@ -1,4 +1,4 @@
-EXTRA_DIST=swf.h output-swf.c output-swf.h  \
+EXTRA_DIST=output-swf.c output-swf.h  \
 input-magick.h input-magick.c input-png.c input-png.h \
 autotrace-config.af vc++6.0.txt autotrace.dsp autotrace.dsw \
 autotrace.m4
@@ -21,6 +21,11 @@ else
 input_png_src=
 endif
 
+if HAVE_LIBSWF
+output_swf_src=output-swf.c output-swf.h
+else
+output_swf_src=
+endif
 input_src=input-pnm.c input-pnm.h \
 input-bmp.c input-bmp.h \
 input-tga.c input-tga.h \
@@ -34,7 +39,8 @@ output-fig.c  output-fig.h \
 output-sk.c output-sk.h \
 output-svg.c output-svg.h \
 output-p2e.c output-p2e.h \
-output-emf.c output-emf.h
+output-emf.c output-emf.h \
+$(output_swf_src)
 
 libautotrace_a_SOURCES = version.c               \
                 $(input_src) ${output_src}	\
@@ -93,7 +99,12 @@ autotrace_SOURCES=\
 		getopt1.c
 
 libautotrace_a_INCLUDES = $(MAGICK_CFLAGS)
-autotrace_LDADD = libautotrace.a $(MAGICK_LDFLAGS) $(LIBPNG_LDFLAGS) -lm
+autotrace_LDADD =                 \
+		libautotrace.a    \
+		$(MAGICK_LDFLAGS) \
+		$(LIBPNG_LDFLAGS) \
+		$(LIBSWF_LDFLAGS) \
+		-lm
 
 m4datadir = $(datadir)/aclocal
 m4data_DATA = autotrace.m4

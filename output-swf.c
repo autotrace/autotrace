@@ -1,7 +1,6 @@
-/* output-swf.h - output in SWF format
+/* output-swf.c - output in SWF format */
 
-Copyright (C) 1999 Kevin O' Gorman - but see header file for notes on swf 
-library. */
+
 
 #include "spline.h"
 #include "output-swf.h"
@@ -9,36 +8,27 @@ library. */
 #define FPS 24.0
 #define IMGID 1
 #define IMGLAYER 1
-
-void play(void)
-{
-    swf_startdoaction();
-    swf_actionPlay();
-    swf_enddoaction();
-}
-
-void stop(void) {
-   swf_startdoaction();
-   swf_actionStop();
-   swf_enddoaction();
-}
+#define SWFSCALE 20
 
 static void
-out_splines (FILE * file, spline_list_array_type shape, int height)
+out_splines (SWFMovie m, spline_list_array_type shape, int height)
 {
     unsigned this_list;
-
-    swf_shapefillsolid (0.0, 0.0, 0.0, 1.0); 
-    swf_shapelinesolid (0.0, 0.0, 0.0, 0.0, 0.0);
 
     for (this_list = 0; this_list < SPLINE_LIST_ARRAY_LENGTH (shape);
 	 this_list++)
     {
+        SWFShape k;
+
 	unsigned this_spline;
 	spline_list_type list = SPLINE_LIST_ARRAY_ELT (shape, this_list);
 	spline_type first = SPLINE_LIST_ELT (list, 0);
 
-        swf_shapemoveto (START_POINT(first).x, START_POINT(first).y);
+        k = newSWFShape();
+ /*       SWFShape_setLine(k, 10, 0x7f, 0, 0, 0xff); */
+        SWFShape_setRightFill(k, SWFShape_addSolidFill(k, list.color.r, list.color.g, list.color.b, 0xff));
+        SWFShape_movePenTo(k, (int)(SWFSCALE*START_POINT(first).x),
+			     SWFSCALE*height - (int) (SWFSCALE*START_POINT(first).y));
      
 	for (this_spline = 0; this_spline < SPLINE_LIST_LENGTH (list);
 	     this_spline++)
@@ -47,17 +37,21 @@ out_splines (FILE * file, spline_list_array_type shape, int height)
 
 	    if (SPLINE_DEGREE(s) == LINEARTYPE)
 	    {
-                swf_shapelineto (END_POINT(s).x, END_POINT(s).y);
+                SWFShape_drawLineTo(k, (int)(SWFSCALE*END_POINT(s).x),
+				      SWFSCALE*height -(int)(SWFSCALE*END_POINT(s).y));
 	    }
 	    else
 	    {
-	     	swf_shapecurveto3 (CONTROL1(s).x, CONTROL1(s).y,
-        	     		   CONTROL2(s).x, CONTROL2(s).y,
-	     		           END_POINT(s).x, END_POINT(s).y);
-             
+		SWFShape_drawCubicTo (k, (int)(SWFSCALE*CONTROL1(s).x),
+				      SWFSCALE*height -(int)(SWFSCALE*CONTROL1(s).y),
+				      (int)(SWFSCALE*CONTROL2(s).x),
+				      SWFSCALE*height -(int)(SWFSCALE*CONTROL2(s).y),
+				      (int)(SWFSCALE*END_POINT(s).x),
+				      SWFSCALE*height -(int)(SWFSCALE*END_POINT(s).y));
 
 	    }
         }
+        SWFMovie_add(m,k);
     }
 }
 
@@ -68,17 +62,19 @@ int output_swf_writer(FILE* file, string name,
 {
     int width = urx - llx;
     int height = ury - lly;
-    swf_openfile (name, (float) width, (float) height, FPS, 1.0, 1.0, 1.0 );
-    play();
-    swf_startshape (IMGID);    
-    out_splines(file, shape, height);
-    swf_endshape();
+    SWFMovie m;
 
-    swf_placeobject(IMGID, IMGLAYER);
-    swf_showframe();
-    stop();
-    swf_closefile();
+    Ming_init();
+    Ming_setCubicThreshold(20000);
+
+    m = newSWFMovie();
+
+    out_splines(m, shape, height);
+
+    SWFMovie_setDimension(m, (int)(SWFSCALE*width), (int)(SWFSCALE*height));
+    SWFMovie_setRate(m, FPS);
+    SWFMovie_nextFrame(m);
+    SWFMovie_save(m, name);
     return 0;
 }
 
-/* version 0.17 */

@@ -7,7 +7,13 @@
 #include "types.h"
 #include "autotrace.h"
 
-#define OUTPUT_SUFFIX_LIST "er, emf, eps, ai, sk, p2e, svg, swf, dxf, dxf12 and fig"
+#if HAVE_LIBSWF
+#define SWF_SUFFIX "swf, "
+#else 
+#define SWF_SUFFIX ""
+#endif /* HAVE_LIBSWF */
+
+#define OUTPUT_SUFFIX_LIST "er, emf, eps, ai, sk, p2e, svg, " SWF_SUFFIX "dxf, dxf12 and fig"
 
 typedef at_output_write_func output_write;
 

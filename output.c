@@ -2,18 +2,19 @@
    Copyright (C) 1999 Bernhard Herzog. */
 
 #include "output.h"
+#include "xstd.h"
+#include <string.h>
+
 #include "output-eps.h"
 #include "output-er.h"
 #include "output-p2e.h"
 #include "output-sk.h"
 #include "output-svg.h"
 #include "output-fig.h"
-#ifdef LIBSWF
+#ifdef HAVE_LIBSWF
 #include "output-swf.h"
-#endif /* LIBSWF */
+#endif /* HAVE_LIBSWF */
 #include "output-emf.h"
-#include "xstd.h"
-#include <string.h>
 
 struct output_format_entry {
     const char * name;
@@ -29,9 +30,9 @@ static struct output_format_entry output_formats[] = {
     {"sk",	"Sketch",			output_sk_writer},
     {"svg",	"Scalable Vector Graphics",	output_svg_writer},
     {"fig",     "XFIG 3.2",                     output_fig_writer},
-#ifdef LIBSWF
+#ifdef HAVE_LIBSWF
     {"swf",	"Shockwave Flash 3",		output_swf_writer},
-#endif /* LIBSWF */
+#endif /* HAVE_LIBSWF */
     {"emf",     "Enhanced Metafile format",     output_emf_writer},
     {"er",      "Elastic Reality Shape file",   output_er_writer},
     {NULL,	NULL}

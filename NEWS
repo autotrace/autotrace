@@ -4,4 +4,5 @@ What's new in AutoTrace 0.27
 - Centerline support
 - Elastic Reality output
 - Now works with new versions of ImageMagick
+- Swf output
 - The dxf output never worked.

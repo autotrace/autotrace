@@ -1,3 +1,27 @@
+2001-03-08  Masatake YAMATO  <yamato@redhat.com>
+
+	* output-swf.h: Use triangle brackets instead of
+	double quotes to include ming.h.
+
+	* NEWS: Write about swf output.
+
+	* configure.in: Added ming(swf) supports.
+
+	* Makefile.am (EXTRA_DIST): Remove swf.h.
+	(HAVE_LIBSWF): Added ming(swf) supports.
+
+2001-03-08  Masatake YAMATO  <yamato@redhat.com>
+
+	Kevin O' Gorman <k_ogorman@kompass.ie> updates swf output.
+	
+	* output.h: Added ".swf".
+
+	* output.c: Addd swf handler.
+
+	* output-swf.h: Updated.
+
+	* output-swf.c: Updated.
+
 2001-03-07  Masatake YAMATO  <yamato@redhat.com>
 
 	* spline.h (LINEARTYPE): 
