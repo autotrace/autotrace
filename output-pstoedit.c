@@ -37,8 +37,6 @@
    mkstemp is the best in the security aspect, however it is not portable.
    (Read http://groups.yahoo.com/group/autotrace/message/369) */
 
-/* #define OUTPUT_PSTOEDIT_DEBUG */
-
 #include "output-pstoedit.h"
 #include "output-p2e.h"
 #include "filename.h"
@@ -51,6 +49,8 @@
 
 #define BO_DEBUG 0
 #define TMPDIR "/tmp/"
+
+/* #define OUTPUT_PSTOEDIT_DEBUG */
 
 static char ** pstoedit_suffix_table = NULL;
 static void      pstoedit_suffix_table_init           (void);

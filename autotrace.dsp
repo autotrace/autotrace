@@ -42,7 +42,7 @@ RSC=rc.exe
 # PROP Ignore_Export_Lib 0
 # PROP Target_Dir ""
 # ADD BASE CPP /nologo /W3 /GX /O2 /D "WIN32" /D "NDEBUG" /D "_CONSOLE" /D "_MBCS" /YX /FD /c
-# ADD CPP /W3 /Gm /GX /Zi /O2 /I "C:\ImageMagick-5.3.4" /I "C:\ming-0.2a" /I "C:\pstoedit-3.32" /D "WIN32" /D "_WINDOWS" /D "_VISUALC_" /D "NeedFunctionPrototypes" /D "HAVE_MAGICK" /D AUTOTRACE_VERSION=\"0.30\" /D "HAVE_LIBSWF" /D inline=__inline /D "_MAGICKDLL_" /D "HAVE_LIBPSTOEDIT" /Fp"C:\autotrace-neu\autotrace___Win32_Release/autotraceexe.pch" /YX /Fo"C:\autotrace-neu\autotrace___Win32_Release/" /Fd"C:\autotrace-neu\autotrace___Win32_Release/" /FD /D AUTOTRACE_WEB=\""http://autotrace.sourceforge.net"\" /c
+# ADD CPP /W3 /Gm /GX /Zi /O2 /I "C:\ImageMagick-5.3.4" /I "C:\ming-0.2a" /I "C:\pstoedit-3.32" /D "WIN32" /D "_WINDOWS" /D "_VISUALC_" /D "NeedFunctionPrototypes" /D "HAVE_MAGICK" /D AUTOTRACE_VERSION=\"0.31\" /D "HAVE_LIBSWF" /D inline=__inline /D "_MAGICKDLL_" /D "HAVE_LIBPSTOEDIT" /Fp"autotrace___Win32_Release/autotraceexe.pch" /YX /FD /D AUTOTRACE_WEB=\""http://autotrace.sourceforge.net"\" /c
 # ADD BASE RSC /l 0x407 /d "NDEBUG"
 # ADD RSC /l 0x407 /d "NDEBUG"
 BSC32=bscmake.exe
@@ -67,8 +67,7 @@ LINK32=link.exe
 # PROP Ignore_Export_Lib 0
 # PROP Target_Dir ""
 # ADD BASE CPP /nologo /W3 /Gm /GX /ZI /Od /D "WIN32" /D "_DEBUG" /D "_CONSOLE" /D "_MBCS" /YX /FD /GZ /c
-# ADD CPP /nologo /W3 /Gm /GX /Zi /Od /I "C:\ImageMagick-5.3.4" /I "C:\ming-0.2a" /I "C:\pstoedit-3.32" /D "_DEBUG" /D "WIN32" /D "_WINDOWS" /D "_VISUALC_" /D "NeedFunctionPrototypes" /D "HAVE_MAGICK" /D AUTOTRACE_VERSION=\"0.30\" /D "HAVE_LIBSWF" /D inline=__inline /D "_MAGICKDLL_" /D "HAVE_LIBPSTOEDIT" /Fo"C:\autotrace-neu/" /Fd"C:\autotrace-neu/" /FD /D AUTOTRACE_WEB=\""http://autotrace.sourceforge.net"\" /c
-# SUBTRACT CPP /Gy /Fr /YX
+# ADD CPP /nologo /W3 /Gm /GX /Zi /Od /I "C:\ImageMagick-5.3.4" /I "C:\ming-0.2a" /I "C:\pstoedit-3.32" /D "_DEBUG" /D "WIN32" /D "_WINDOWS" /D "_VISUALC_" /D "NeedFunctionPrototypes" /D "HAVE_MAGICK" /D AUTOTRACE_VERSION=\"0.31\" /D "HAVE_LIBSWF" /D inline=__inline /D "_MAGICKDLL_" /D "HAVE_LIBPSTOEDIT" /FD /D AUTOTRACE_WEB=\""http://autotrace.sourceforge.net"\" /c
 # ADD BASE RSC /l 0x407 /d "_DEBUG"
 # ADD RSC /l 0x407 /d "_DEBUG"
 BSC32=bscmake.exe
