@@ -34,8 +34,7 @@ from http://autotrace.sourceforge.net/tools/.
 * How to release
 
   (0) Update NEWS file
-  (1) Check and/or set 
-  (1) Version number in configure.in
+  (1) Check and/or set Version number in configure.in
   (2) CVS tagging
   (3) sourceforge(http://sourceforge.net/docman/display_doc.php?docid=781&group_id=1)
 

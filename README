@@ -35,14 +35,14 @@ files and with ImageMagick a very broad range of input formats is
 available.
 
 You will need at least libpng 1.0.6 and ImageMagick 5.2.1.  Most
-output formats like dxf, emf, eps, ai, er, fig, svg, epd and sk are
-directly integrated in AutoTrace, but if you need swf export you need
-to install Ming (http://www.opaque.net/ming/). Also you can export to
-the p2e format. This format can be converted by pstoedit
+output formats like dxf, emf, eps, ai, er, fig, svg, epd, dr2d and sk
+are directly integrated in AutoTrace, but if you need swf export you
+need to install Ming (http://www.opaque.net/ming/). Also you can
+export to the p2e format. This format can be converted by pstoedit
 (www.pstoedit.net) to a large number of other formats. If you have
 installed the lastes pstoedit(3.32 or newer), autotrace uses pstoedit
-directly. However, pstoedit directly supports is still broken. See
-INSATALL file for more detail.
+directly. However, pstoedit directly supports is not stable enough. 
+See INSATALL file for more detail.
 
 Installation
 ============

@@ -21,7 +21,7 @@ compiled on any UNIX platform using GCC.
 %setup -q
 
 %build
-./configure --prefix=/usr/local
+%configure --without-magick --without-pstoedit
 make
 
 %install
@@ -48,6 +48,9 @@ rm -rf $RPM_BUILD_ROOT
 /usr/bin/autotrace
 
 %changelog
+* Wed Oct 23 2002  Masatake YAMATO<yamato@redhat.com>
+- make disabled magick and pstoedit.
+
 * Tue Jul  9 2002  Masatake YAMATO<yamato@redhat.com>
 - Supported shared library and bzip'ed manual.
 

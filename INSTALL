@@ -1,4 +1,7 @@
-Index:
+		   Installation guide for Autotrace
+			     -*- text -*-
+Index of this file:
+
 	1. Basic Installation
 	2. ImageMagick related issues
 	3. Pstoedit related issues
@@ -189,7 +192,7 @@ operates.
 2. ImageMagick related issues
 =============================
 
-If you use Red Hat Linux 7.2 to build autotrace with ImageMagick,
+If you use Red Hat Linux 7.2 to build autotrace with ImageMagick rpm,
 you will get a trouble something like:
 
     /bin/sh ./libtool --mode=link gcc  -g -O2  -o autotrace  atou.o main.o ...
@@ -210,16 +213,38 @@ this trouble.
 /usr/lib/libxml2.so.2.
    If you don't understand what I write, you should not do.
 
+If you use Red Hat Linux 8.0 to build autotrace with ImageMagick rpm,
+you will get a trouble something like in configure time:
+
+    checking for Magick-config... Magick-config
+    checking magick/api.h usability... no
+    checking magick/api.h presence... no
+    checking for magick/api.h... no
+    configure: WARNING: *** Magick-config is found but magick/api.h is not found in -I/usr/X11R6/include/X11/magick -D_REENTRANT -D_FILE_OFFSET_BITS=64 -I/usr/X11R6/include -I/usr/X11R6/include/X11 -I/usr/include/freetype2 -I/usr/include/libxml2 ***
+    configure: WARNING: *** Check Magick-config.                                                   ***
+    configure: WARNING: *** ImageMagick input handler is disabled.                                 ***
+
+in spite of following rpm -q results:
+
+    [jet@chuf autotrace]$ rpm -q ImageMagick
+    ImageMagick-5.4.7-5
+    [jet@chuf autotrace]$ rpm -q ImageMagick-devel
+    ImageMagick-devel-5.4.7-5
+
+I guess some of header files are missed in ImageMagick-devel.
+I recommend you to install ImageMagick from tar.gz. file.
+
+
 Pstoedit related issues
 =======================
 
 If you are using pstoedit-3.32, pstoedit checking in configure of
 autotrace runs TWICE. Ignore the warning message of first checking.
-If you are using pstoedit-3.33, pstoedit checking runs only once.
-If you got a trouble to build autotrace with pstoedit, you can
-disable to use pstoedit with giving --without-pstoedit to configure
-of autotrace. Is you want to use pstoedit anyway linked with autotrace, 
-let me(Masatake YAMATO<yamato@redhat.com> or autotrace mailing list) know 
+If you are using pstoedit-3.33 or higher, pstoedit checking runs only
+once.  If you got a trouble to build autotrace with pstoedit, you can
+disable to use pstoedit with giving --without-pstoedit to configure of
+autotrace. Is you want to use pstoedit anyway linked with autotrace,
+let me(Masatake YAMATO<yamato@redhat.com> or autotrace mailing list) know
 following informations:
 
     your operating system name and version
@@ -245,4 +270,5 @@ following informations:
     path for libpstoedit.so
     if there is a compile farm on that the same OS as you use
 
-(Of couse, I cannot promise anything.)
+(Of couse, I(Masatake YAMATO) cannot promise anything even 
+if you sent me above informations.)

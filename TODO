@@ -41,3 +41,4 @@ Library and its clients:
 Misc:
 - Gettextize(0.32.0)
 - Better documentations
+- Predefined parameter system(discussed as aop file, 0.32.0)
