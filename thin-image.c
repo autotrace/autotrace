@@ -4,7 +4,8 @@
 #include "logreport.h"
 #include "message.h"
 #include "types.h" 
-#include "bitmap.h" 
+#include "bitmap.h"
+#include "xstd.h"
 #include <string.h>
  
 #define PIXEL_SET(p, new)  ((void)memcpy((p), (new), sizeof(Pixel)))
@@ -45,7 +46,7 @@ static        unsigned int     masks[]         = { 0200, 0002, 0040, 0010 };
 /*                            d e f                                   */ 
 /*                            g h i                                   */ 
  
-static        unsigned char   delete[512] = { 
+static        unsigned char   todelete[512] = { 
               0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 
               0, 0, 0, 1, 0, 0, 1, 1, 0, 1, 1, 1, 0, 0, 1, 1, 
               0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 
@@ -99,7 +100,7 @@ void thin_image(bitmap_type *image, const color_type *bg)
     if (bg) background = *bg;
 
     memcpy(&bm, image, sizeof(bitmap_type)); 
-    bm.bitmap = malloc(height * width * spp); 
+    XMALLOC(bm.bitmap, height * width * spp); 
     memcpy(bm.bitmap, image->bitmap, height * width * spp); 
     /* that clones the image */ 
 
@@ -189,7 +190,7 @@ void thin3(bitmap_type *image, Pixel colour)
       LOG (" Thinning image.....\n "); 
       xsize = BITMAP_WIDTH(*image); 
       ysize = BITMAP_HEIGHT(*image); 
-      qb    = malloc (xsize*sizeof(unsigned char)); 
+      XMALLOC (qb, xsize*sizeof(unsigned char)); 
       qb[xsize-1] = 0;                /* Used for lower-right pixel   */ 
       ptr = (Pixel*)BITMAP_BITS(*image);
  
@@ -218,7 +219,7 @@ void thin3(bitmap_type *image, Pixel colour)
                       p = ((p<<1)&0666) | ((q<<3)&0110) | 
 			  PIXEL_EQUAL(y1_ptr[x+1], colour);
                       qb[x] = p; 
-                      if  ( ((p&m) == 0) && delete[p] ) { 
+                      if  ( ((p&m) == 0) && todelete[p] ) { 
                           count++;  /* delete the pixel */ 
 			  PIXEL_SET(y_ptr[x], bg_color);
                       } 
@@ -226,7 +227,7 @@ void thin3(bitmap_type *image, Pixel colour)
  
                   /* Process right edge pixel.                        */ 
                   p = (p<<1)&0666; 
-                  if  ( (p&m) == 0 && delete[p] ) { 
+                  if  ( (p&m) == 0 && todelete[p] ) { 
                       count++; 
 		      PIXEL_SET(y_ptr[xsize-1], bg_color);
                   } 
@@ -240,7 +241,7 @@ void thin3(bitmap_type *image, Pixel colour)
               for ( x = 0 ; x < xsize ; x++ ) { 
                   q = qb[x]; 
                   p = ((p<<1)&0666) | ((q<<3)&0110); 
-                  if  ( (p&m) == 0 && delete[p] ) { 
+                  if  ( (p&m) == 0 && todelete[p] ) { 
                       count++; 
 		      PIXEL_SET(y_ptr[x], bg_color);
                   } 
@@ -274,7 +275,7 @@ void thin1(bitmap_type *image, unsigned char colour)
       LOG (" Thinning image.....\n "); 
       xsize = BITMAP_WIDTH(*image); 
       ysize = BITMAP_HEIGHT(*image); 
-      qb    = malloc (xsize*sizeof(unsigned char)); 
+      XMALLOC (qb, xsize*sizeof(unsigned char)); 
       qb[xsize-1] = 0;                /* Used for lower-right pixel   */ 
       ptr = BITMAP_BITS(*image);
  
@@ -302,7 +303,7 @@ void thin1(bitmap_type *image, unsigned char colour)
                       q = qb[x]; 
                       p = ((p<<1)&0666) | ((q<<3)&0110) | (y1_ptr[x+1]==colour); 
                       qb[x] = p; 
-                      if  ( ((p&m) == 0) && delete[p] ) { 
+                      if  ( ((p&m) == 0) && todelete[p] ) { 
                           count++; 
 			  y_ptr[x] = bg_color;  /* delete the pixel */ 
                       } 
@@ -310,7 +311,7 @@ void thin1(bitmap_type *image, unsigned char colour)
  
                   /* Process right edge pixel.                        */ 
                   p = (p<<1)&0666; 
-                  if  ( (p&m) == 0 && delete[p] ) { 
+                  if  ( (p&m) == 0 && todelete[p] ) { 
                       count++; 
                       y_ptr[xsize-1] = bg_color;
                   } 
@@ -324,7 +325,7 @@ void thin1(bitmap_type *image, unsigned char colour)
               for ( x = 0 ; x < xsize ; x++ ) { 
                   q = qb[x]; 
                   p = ((p<<1)&0666) | ((q<<3)&0110); 
-                  if  ( (p&m) == 0 && delete[p] ) { 
+                  if  ( (p&m) == 0 && todelete[p] ) { 
                       count++; 
                       y_ptr[x] = bg_color;
                   } 

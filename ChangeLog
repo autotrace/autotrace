@@ -1,5 +1,26 @@
 2001-02-24  Masatake YAMATO  <yamato@redhat.com>
 
+	Applied patches from Martin.
+	
+	* output-eps.c: Made the centerline eps output 
+	compatible to CorelDraw.
+
+	Applied patches from Martin.
+
+	* thin-image.c: 
+	Made it C++ compatible again (replaced delete by todelete) and 
+	removed some warnings.
+
+ 	* output-er.c: Made it C++ compatible, replaced malloc my 
+	XMALLOC and removed some unnecessary code.
+
+	* pxl-outline.c: Moved edge.h to pxl-outline.c, some cleanup and
+	removed some warnings.
+
+	* edge.h: Removed, because the code was added to pxl-outline.c.
+
+2001-02-24  Masatake YAMATO  <yamato@redhat.com>
+
 	* median.c (quantize): Applied a patch from Martin.
 	-- I removed a bug in median.c:
 	fixed wrong color count

@@ -11,16 +11,31 @@
 #include "pxl-outline.h"
 #include <assert.h>
 
+/* We consider each pixel to consist of four edges, and we travel along
+   edges, instead of through pixel centers.  This is necessary for those
+   unfortunate times when a single pixel is on both an inside and an
+   outside outline.
+
+   The numbers chosen here are not arbitrary; the code that figures out
+   which edge to move to depends on particular values.  See the
+   `TRY_PIXEL' macro in `edge.c'.  To emphasize this, I've written in the
+   numbers we need for each edge value.  */
+
+typedef enum
+{
+  TOP = 1, LEFT = 2, BOTTOM = 3, RIGHT = 0, NO_EDGE = 4
+} edge_type;
+
+/* This choice is also not arbitrary: starting at the top edge makes the
+   code find outside outlines before inside ones, which is certainly
+   what we want.  */
+#define START_EDGE  top
+
 typedef enum
 {
   NORTH = 0, NORTHWEST = 1, WEST = 2, SOUTHWEST = 3, SOUTH = 4,
   SOUTHEAST = 5, EAST = 6, NORTHEAST = 7
 } direction_type;
-
-typedef enum
-{
-  TOP, LEFT, BOTTOM, RIGHT, NO_EDGE
-} edge_type;
 
 #define NUM_EDGES NO_EDGE
 
@@ -487,7 +502,7 @@ is_outline_edge (edge_type edge, bitmap_type character,
 static edge_type
 next_edge (edge_type edge)
 {
-  return edge == NO_EDGE ? edge : (edge + 1) % NUM_EDGES;
+  return (edge_type)(((int)edge == (int)NO_EDGE) ? edge : (edge + 1) % NUM_EDGES);
 }
 
 
@@ -496,7 +511,7 @@ next_edge (edge_type edge)
 edge_type
 opposite_edge(edge_type edge)
 {
-    return edge == NO_EDGE ? edge : (edge + 2) % NUM_EDGES;
+    return (edge_type)(((int)edge == (int)NO_EDGE) ? edge : (edge + 2) % NUM_EDGES);
 }
 
 
@@ -548,7 +563,7 @@ next_unmarked_outline_pixel(unsigned *row, unsigned *col,
 	unsigned int test_row = orig_row + delta_r;
 	unsigned int test_col = orig_col + delta_c;
 
-	test_edge = (test_dir / 2 + 3) % 4;
+	test_edge = (edge_type)((test_dir / 2 + 3) % 4);
 	if (BITMAP_VALID_PIXEL(character, test_row, test_col)
 	    && COLOR_EQUAL(GET_COLOR(character, test_row, test_col), color)
 	    && !is_marked_edge(test_edge, test_row, test_col, *marked))
@@ -561,7 +576,7 @@ next_unmarked_outline_pixel(unsigned *row, unsigned *col,
 	    break;
 	}
 
-	test_dir = (orig_dir + next_dir_offset + 8) % 8;
+	test_dir = (direction_type)((orig_dir + next_dir_offset + 8) % 8);
 	next_dir_offset = -next_dir_offset;
 	if (next_dir_offset > 0)
 	    ++next_dir_offset;

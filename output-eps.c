@@ -105,12 +105,11 @@ static int output_eps_header(FILE* ps_file, string name,
   OUT_LINE ("/c { curveto } bd");
   OUT_LINE ("/F { incompound not {fill} if } bd");
   OUT_LINE ("/f { closepath F } bd");
-/*  OUT_LINE ("/S { incompound not {stroke} if } bd");
-  OUT_LINE ("/s { closepath S } bd");*/
   OUT_LINE ("/S { stroke } bd");
   OUT_LINE ("/*u { /incompound true def } bd");
   OUT_LINE ("/*U { /incompound false def f} bd");
   OUT_LINE ("/k { setcmykcolor } bd"); /* must symbol k for CorelDraw 3/4 */
+  OUT_LINE ("/K { k } bd");
   OUT_LINE ("%%EndProlog");
   OUT_LINE ("%%BeginSetup"); /* needed for CorelDraw 3/4 */
   OUT_LINE ("%%EndSetup");  /* needed for CorelDraw 3/4 */
@@ -152,8 +151,9 @@ out_splines (FILE * ps_file, spline_list_array_type shape)
           m -= k;
           y -= k;
           /* symbol k is used for CorelDraw 3/4 compatibility */
-          OUT4 ("%f %f %f %f k\n", (double) c/255.0,
-	    (double) m/255.0,(double) y/255.0, (double) k/255.0);
+          OUT5 ("%f %f %f %f %s\n", (double) c/255.0,
+	    (double) m/255.0,(double) y/255.0, (double) k/255.0,
+		(at_centerline || list.open) ? "K" : "k");
 	  OUT_LINE("*u");    
 	}    
       OUT_COMMAND2 (START_POINT (first).x, START_POINT (first).y, "m");
@@ -210,4 +210,3 @@ now (void)
   return time_string;
 }
 
-/* version 0.26 */

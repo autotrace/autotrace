@@ -75,7 +75,7 @@ out_splines(FILE* er_file, spline_list_array_type shape,
 
 	prev = PREV_SPLINE_LIST_ELT(list, 0);
 	if (list.open)
-	    SPLINE_DEGREE(prev) = -1;
+	    SPLINE_DEGREE(prev) = (polynomial_degree) -1;
 
 	for (this_spline = 0; this_spline < length; this_spline++)
 	{
@@ -112,23 +112,8 @@ out_splines(FILE* er_file, spline_list_array_type shape,
 		x2 / width, y2 / height);
 	}
 
-/* Close PointList and enclosing FormKey. */
-fprintf(er_file, "\t\t}\n\n\t}\n\n");
-
-#if 0
-fprintf(er_file, "\tWeightKey = {\n");
-fprintf(er_file, "\t\tFrame = 1\n");
-fprintf(er_file, "\t\tPointList = {\n");
-for (this_spline = 0; this_spline < length; this_spline++)
-{
-    spline_type s = SPLINE_LIST_ELT(list, this_spline);
-    fprintf(er_file, "\t\t\t%g, %g, %g,\n",
-	SPLINE_WIDTH(s, 1), SPLINE_WIDTH(s, 2), SPLINE_WIDTH(s, 3));
-}
-/* Close PointList and enclosing WidthKey. */
-fprintf(er_file, "\t\t}\n\n\t}\n\n");
-#endif
-
+	/* Close PointList and enclosing FormKey. */
+	fprintf(er_file, "\t\t}\n\n\t}\n\n");
 	fprintf(er_file, "\tCorrKey = {\n");
 	fprintf(er_file, "\t\tFrame = 1\n");
 	fprintf(er_file, "\t\tPointList = {\n");
