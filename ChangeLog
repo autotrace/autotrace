@@ -1,3 +1,7 @@
+2004-02-26  Henning Makholm <henning@makholm.net>
+
+	* README: Added missing comma in the sample code.
+
 2004-01-05  Masatake YAMATO  <yamato@redhat.com>
 
 	* autotrace.h(enum _at_msg_type): Applied a patch

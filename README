@@ -128,7 +128,7 @@ gcc sample.c `./autotrace-config --libs` `./autotrace-config --cflags`
 
       bitmap = at_bitmap_read(rfunc, fname, NULL, NULL, NULL);
       splines = at_splines_new(bitmap, opts, NULL, NULL);
-      at_splines_write(wfunc, stdout, "", NULL splines, NULL, NULL);
+      at_splines_write(wfunc, stdout, "", NULL, splines, NULL, NULL);
       return 0;
     }
 
