@@ -1,3 +1,7 @@
+2002-10-10  Martin Weber <martweb@gmx.net>
+
+	* autotrace.1: updated again.
+
 2002-10-10  Masatake YAMATO  <yamato@redhat.com>
 
 	* configure.in: Use ' instead of " to retrieve
