@@ -1,5 +1,7 @@
 2001-03-21  Masatake YAMATO  <yamato@redhat.com>
 
+	* configure.in: Version 0.27.
+
 	* output-fig.c (get_fig_colour): Added static keyword.
 	(fig_col_init): Likewise.
 
