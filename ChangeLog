@@ -1,3 +1,8 @@
+2001-11-17  Martin Weber  <martweb@gmx.net>
+	
+	* fit.c (find_half_tangent): fixed a problem in calculation of
+	halftangent with cyclic curves.
+
 2001-11-11  Masatake YAMATO  <yamato@redhat.com>
 
 	* pxl-outline.c (find_outline_pixels): 
