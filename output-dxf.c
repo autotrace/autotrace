@@ -371,14 +371,10 @@ static void out_splines (FILE * dxf_file, spline_list_array_type shape)
 
       if (this_list == 0 || !COLOR_EQUAL(list.color, last_color))
         {
-          /* sometimes RGB 0,0,0 is in list.color, assume that this means no color change */
-          if (!(list.color.r==0 && list.color.g==0 && list.color.b==0))
-            {
-             idx = GetIndexByRGBValue(list.color.r, list.color.g, list.color.b);
-             sprintf(layerstr, "C%d", idx);
-             new_layer = 1;
-             last_color = list.color;
-            }
+          idx = GetIndexByRGBValue(list.color.r, list.color.g, list.color.b);
+          sprintf(layerstr, "C%d", idx);
+          new_layer = 1;
+          last_color = list.color;
     	}
       startx = START_POINT (first).x;
       starty = START_POINT (first).y;

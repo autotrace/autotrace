@@ -79,3 +79,32 @@ output_list (void)
   list[2*i] = NULL;
   return list;
 }
+
+char *
+output_shortlist (void)
+{
+  char * list;
+  int count = 0;
+  int length = 0;
+  int i;
+
+  struct output_format_entry * entry;
+  for (entry = output_formats; entry->name; entry++)
+    {
+      count++;
+      length += strlen (entry->name) + 2;
+    }
+  
+  XMALLOC(list, sizeof (char) * (length + 1 + 2));
+
+  entry = output_formats;
+  strcpy (list, (char *) entry[0].name);
+  for (i = 1; i < count - 1; i++)
+    {
+      strcat (list, ", ");
+      strcat (list, (char *) entry[i].name);
+    }
+  strcat (list, " or ");
+  strcat (list, (char *) entry[i].name);
+  return list;
+}

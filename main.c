@@ -191,8 +191,8 @@ list-output-formats: print a list of support output formats to stderr.\n\
 list-input-formats:  print a list of support input formats to stderr.\n\
 log: write detailed progress reports to <input_name>.log.\n\
 output-file <filename>: write to <filename>\n\
-output-format <format>: use format <format> for the output file\n"\
-"  " OUTPUT_SUFFIX_LIST " can be used.\n\
+output-format <format>: use format <format> for the output file\n\
+ %s can be used.\n\
 remove-adjacent-corners: remove corners that are adjacent.\n\
 tangent-surround <unsigned>: number of points on either side of a\n\
   point to consider when computing the tangent at that point; default is 3.\n\
@@ -286,7 +286,7 @@ read_command_line (int argc, char * argv[],
       else if (ARGUMENT_IS ("help"))
         {
           fprintf (stderr, "Usage: %s [options] <input_name>.\n", argv[0]);
-          fprintf (stderr, USAGE);
+          fprintf (stderr, USAGE, output_shortlist());
 	      fprintf (stderr, 
 		   "\nYou can get the source code of autotrace from \n%s\n",
 		   at_home_site());

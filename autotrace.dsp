@@ -293,6 +293,14 @@ SOURCE=".\output-p2e.h"
 # End Source File
 # Begin Source File
 
+SOURCE=".\output-pdf.c"
+# End Source File
+# Begin Source File
+
+SOURCE=".\output-pdf.h"
+# End Source File
+# Begin Source File
+
 SOURCE=".\output-sk.c"
 # End Source File
 # Begin Source File

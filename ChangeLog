@@ -1,3 +1,24 @@
+2001-11-25  Martin Weber <martweb@gmx.net>
+
+	* output-dxf.c (out_splines): Removed code that was needed due to 
+	an old bug in AutoTrace.
+
+	* output-epd.c (out_splines): Removed wrong comment.
+
+	* output-pdf.c (output_pdf_tailor): Removed unnecessary xref part.
+
+	* output.h (output_shortlist): New declaration.
+
+	* output.c (output_shortlist): New function.
+
+	* main.c (read_command_line): Invoke output_shortlist.
+	(USAGE): Remove OUTPUT_SUFFIX_LIST.
+	(main.c, output.c, output.h: Dynamic generation of output format list.)
+
+	* autotrace.dsp: output-pdf.c and output-pdf.h are added.
+
+	(Message-ID: <3C0112EA.EB49E12A@gmx.net>).
+	
 2001-11-25  Masatake YAMATO  <yamato@redhat.com>
 
 	* Makefile.am (output_src): Added output-pdf.[hc].
