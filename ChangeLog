@@ -1,5 +1,15 @@
-2002-09-06  Masatake YAMATO  <yamato@redhat.com>
+2002-09-08  Masatake YAMATO  <yamato@redhat.com>
 
+	* configure.in: Version 0.30.4.
+	LT_CURRENT = 1, LT_AGE = 1.
+
+	* output-pstoedit.h: Addec comments about MT unsafe.
+
+	* output-pstoedit.c (get_last_suffix): New file.
+	Use get_last_suffix in all functions in output-pstoedit.c.
+
+2002-09-06  Masatake YAMATO  <yamato@redhat.com>
+ 		
 	* main.c: removed unnecessary '\n' in FATAL*.
 	
 	* output.c (at_output_get_handler_by_suffix): used
@@ -39,6 +49,7 @@
 	* logreport.h (at_log_file): Renamed from
 	log_file. I guess the symbol `log_file'
 	conflicts with something defined on debian libc.
+	The bug is reported by Gerhard Gaussling <ggrubbish@web.de>.
 
 2002-07-10  Martin Weber <martweb@gmx.net>
 

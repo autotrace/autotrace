@@ -1,4 +1,4 @@
-/* output-pstoedit.c: utility routines for libpstoedit.so function
+/* output-pstoedit.c: utility routines for libpstoedit.so functions
 
    Copyright (C) 2002 Masatake YAMATO
 
@@ -49,10 +49,11 @@
 #define BO_DEBUG 0
 #define TMPDIR "/tmp/"
 
-static at_string output_pstoedit_suffix = NULL;
 static void remove_tmpfile (const at_string tmpfile_name);
 static const at_string get_symbolicname(const at_string suffix);
-static at_bool set_last_suffix (const at_string suffix);
+static at_bool   set_last_suffix (const at_string suffix);
+static at_string get_last_suffix (void);
+static at_string output_pstoedit_suffix = NULL;	/* Don't use directly. */
 
 at_output_write_func
 output_pstoedit_get_writer(const at_string suffix)
@@ -103,7 +104,7 @@ output_pstoedit_writer (FILE* file, at_string name,
   
   pstoedit_checkversion(pstoeditdllversion);
 
-  if (NULL == output_pstoedit_suffix)
+  if (NULL == get_last_suffix())
     {
       if (msg_func) 
 	msg_func ("Suffix or pstoedit backend driver name is not given", 
@@ -111,7 +112,7 @@ output_pstoedit_writer (FILE* file, at_string name,
       return -1;
     }
 
-  symbolicname = get_symbolicname(output_pstoedit_suffix);
+  symbolicname = get_symbolicname(get_last_suffix());
   if (NULL == symbolicname)
     {
       if (msg_func) 
@@ -230,6 +231,12 @@ set_last_suffix (const at_string suffix)
   if (output_pstoedit_suffix)
     free(output_pstoedit_suffix);
   output_pstoedit_suffix = strdup (suffix);  
+}
+
+static at_string
+get_last_suffix (void)
+{
+  return output_pstoedit_suffix;
 }
 
 /* get_symbolicname --- Return symbolicname associated with SUFFIX 

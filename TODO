@@ -32,3 +32,6 @@ Library and its clients:
      See http://autotrace.sourceforge.net/frontline
   -- For KDE/Qt?
 
+Misc:
+- Gettextize
+- Better documentations

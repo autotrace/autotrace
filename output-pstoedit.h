@@ -1,4 +1,4 @@
-/* output-pstoedit.h: utility routines for libpstoedit.so function
+/* output-pstoedit.h: utility routines for libpstoedit.so functions
 
    Copyright (C) 2002 Masatake YAMATO
 
@@ -23,6 +23,14 @@
 #include <pstoedit/pstoedit.h>
 #include "output.h"
 
+/* THREAD UNSAFE!
+   This routines are mutlple threads unsafe.
+   output_pstoedit_get_writer and output_pstoedit_writer
+   invocation sequence must be called in a mutex. 
+   These two functions use a shared memory object. 
+
+   TODO: With thread private variable, the limitation will 
+   be removed. -- Masatake */
 at_output_write_func output_pstoedit_get_writer(const at_string);
 int output_pstoedit_writer (FILE* file, at_string name,
 			    int llx, int lly, int urx, int ury, int dpi,

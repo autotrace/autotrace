@@ -1,3 +1,7 @@
+What's new in AutoTrace 0.30.4?
+- fixed a bug reported by Gerhard Gaussling <ggrubbish@web.de>
+- improved the interface between pstoedit and autotrace
+
 What's new in AutoTrace 0.30.2?
 - added library level pstoedit support
 - built autotrace library as a shared library
