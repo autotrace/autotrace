@@ -182,9 +182,9 @@ find_outline_pixels (bitmap_type bitmap, color_type *bg_color,
 		CHECK_FATAL();
               }
           }
+	  if (test_cancel && test_cancel(testcancel_data))
+	    goto cleanup;
 	}
-      if (test_cancel && test_cancel(testcancel_data))
-	goto cleanup;
     }
  cleanup:
   free_bitmap (&marked);

@@ -1,3 +1,8 @@
+2002-03-30  Masatake YAMATO  <yamato@redhat.com>
+
+	* pxl-outline.c (find_outline_pixels): moved
+	test_cancel func to inner loop.
+
 2002-03-28  Martin Weber <martweb@gmx.net>
 
 	* HACKING (Tools for debugging output): Updated.
