@@ -132,16 +132,7 @@ main (int argc, char * argv[])
     bitmap = at_bitmap_read(input_reader, input_name, exception_handler, NULL);
   else
     FATAL ("Unsupported inputformat\n");
-  
-  /* Dump loaded bitmap if needed */
-  if (dumping_bitmap)
-    {
-      dumpfile_name = extend_filename (input_rootname, "bitmap");
-      dump_file   = xfopen (dumpfile_name, "w");
-      dump(bitmap, dump_file);
-      fclose(dump_file);
-    }
-  
+
   if (report_progress)
     {
       progress_reporter = dot_printer;
@@ -152,6 +143,15 @@ main (int argc, char * argv[])
 				exception_handler, NULL,
 				progress_reporter, &progress_stat,
 				NULL, NULL);
+  
+  /* Dump loaded bitmap if needed */
+  if (dumping_bitmap)
+    {
+      dumpfile_name = extend_filename (input_rootname, "bitmap");
+      dump_file   = xfopen (dumpfile_name, "w");
+      dump(bitmap, dump_file);
+      fclose(dump_file);
+    }
 
   at_splines_write (splines,
 		    output_file, 

@@ -1,3 +1,10 @@
+2002-03-20  Martin Weber <martweb@gmx.net>
+
+	* main.c (main): Moved dumping of the bitmap so that quantize 
+	and despeckle are also in effect.
+
+	Message-ID: <3C9A4462.47488039@gmx.net>.
+
 2002-03-24  Ian MacPhedran <Ian_MacPhedran@engr.USask.Ca>
 
 	* output-fig.c (out_fig_splines): Added a new 
