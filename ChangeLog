@@ -1,5 +1,9 @@
 2002-04-16  Masatake YAMATO  <yamato@redhat.com>
 
+	* autotrace.dsp: s/VERSION/AUTOTRACE_VERSION/g.
+
+	* autotrace.vcproj: ditto. Suggested by Martin.
+
 	* autotrace.c (at_version): Use AUTOTRACE_VERSION
 	instead of VERSION.
 	(at_home_site): Use AUTOTRACE_WEB.
