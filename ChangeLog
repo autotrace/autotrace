@@ -1,3 +1,11 @@
+2002-09-18  Martin Weber <martweb@gmx.net>
+
+	* autotrace.dsp: 
+
+	* autotrace.vcproj: Updated.
+
+	Message-ID: <3D874D91.A57E8569@gmx.net>.
+
 2002-09-12  Masatake YAMATO  <yamato@redhat.com>
 
 	Martin suggested me that tmpnam is ANSI C 

@@ -5,17 +5,17 @@
 # TARGTYPE "Win32 (x86) Console Application" 0x0103
 
 CFG=autotrace - Win32 Debug
-!MESSAGE Dies ist kein gÅltiges Makefile. Zum Erstellen dieses Projekts mit NMAKE
-!MESSAGE verwenden Sie den Befehl "Makefile exportieren" und fÅhren Sie den Befehl
+!MESSAGE Dies ist kein g¸ltiges Makefile. Zum Erstellen dieses Projekts mit NMAKE
+!MESSAGE verwenden Sie den Befehl "Makefile exportieren" und f¸hren Sie den Befehl
 !MESSAGE 
 !MESSAGE NMAKE /f "autotrace.mak".
 !MESSAGE 
-!MESSAGE Sie kÅ˜nnen beim AusfÅhren von NMAKE eine Konfiguration angeben
+!MESSAGE Sie kˆnnen beim Ausf¸hren von NMAKE eine Konfiguration angeben
 !MESSAGE durch Definieren des Makros CFG in der Befehlszeile. Zum Beispiel:
 !MESSAGE 
 !MESSAGE NMAKE /f "autotrace.mak" CFG="autotrace - Win32 Debug"
 !MESSAGE 
-!MESSAGE FÅr die Konfiguration stehen zur Auswahl:
+!MESSAGE F¸r die Konfiguration stehen zur Auswahl:
 !MESSAGE 
 !MESSAGE "autotrace - Win32 Release" (basierend auf  "Win32 (x86) Console Application")
 !MESSAGE "autotrace - Win32 Debug" (basierend auf  "Win32 (x86) Console Application")
@@ -42,7 +42,7 @@ RSC=rc.exe
 # PROP Ignore_Export_Lib 0
 # PROP Target_Dir ""
 # ADD BASE CPP /nologo /W3 /GX /O2 /D "WIN32" /D "NDEBUG" /D "_CONSOLE" /D "_MBCS" /YX /FD /c
-# ADD CPP /W3 /Gm /GX /Zi /O2 /I "C:\ImageMagick-5.3.4" /I "C:\ming-0.2a" /D "WIN32" /D "_WINDOWS" /D "_VISUALC_" /D "NeedFunctionPrototypes" /D "HAVE_MAGICK" /D AUTOTRACE_VERSION=\"0.30\" /D "HAVE_LIBSWF" /D inline=__inline /D "_MAGICKDLL_" /D AUTOTRACE_WEB=\""http://autotrace.sourceforge.net"\" /Fp"C:\autotrace-neu\autotrace___Win32_Release/autotraceexe.pch" /YX /Fo"C:\autotrace-neu\autotrace___Win32_Release/" /Fd"C:\autotrace-neu\autotrace___Win32_Release/" /FD /c
+# ADD CPP /W3 /Gm /GX /Zi /O2 /I "C:\ImageMagick-5.3.4" /I "C:\ming-0.2a" /I "C:\pstoedit-3.32" /D "WIN32" /D "_WINDOWS" /D "_VISUALC_" /D "NeedFunctionPrototypes" /D "HAVE_MAGICK" /D AUTOTRACE_VERSION=\"0.30\" /D "HAVE_LIBSWF" /D inline=__inline /D "_MAGICKDLL_" /D "HAVE_LIBPSTOEDIT" /Fp"C:\autotrace-neu\autotrace___Win32_Release/autotraceexe.pch" /YX /Fo"C:\autotrace-neu\autotrace___Win32_Release/" /Fd"C:\autotrace-neu\autotrace___Win32_Release/" /FD /D AUTOTRACE_WEB=\""http://autotrace.sourceforge.net"\" /c
 # ADD BASE RSC /l 0x407 /d "NDEBUG"
 # ADD RSC /l 0x407 /d "NDEBUG"
 BSC32=bscmake.exe
@@ -50,7 +50,7 @@ BSC32=bscmake.exe
 # ADD BSC32 /nologo
 LINK32=link.exe
 # ADD BASE LINK32 kernel32.lib user32.lib gdi32.lib winspool.lib comdlg32.lib advapi32.lib shell32.lib ole32.lib oleaut32.lib uuid.lib odbc32.lib odbccp32.lib kernel32.lib user32.lib gdi32.lib winspool.lib comdlg32.lib advapi32.lib shell32.lib ole32.lib oleaut32.lib uuid.lib odbc32.lib odbccp32.lib /nologo /subsystem:console /machine:I386
-# ADD LINK32 CORE_RL_magick_.lib libming.lib kernel32.lib user32.lib gdi32.lib winspool.lib comdlg32.lib advapi32.lib shell32.lib ole32.lib oleaut32.lib uuid.lib odbc32.lib odbccp32.lib /nologo /subsystem:console /machine:I386 /libpath:"C:\ImageMagick-5.3.4\VisualMagick\lib\\" /libpath:"C:\ming-0.2a\Release"
+# ADD LINK32 CORE_RL_magick_.lib libming.lib kernel32.lib user32.lib gdi32.lib winspool.lib comdlg32.lib advapi32.lib shell32.lib ole32.lib oleaut32.lib uuid.lib odbc32.lib odbccp32.lib pstoedit.lib /nologo /subsystem:console /machine:I386 /libpath:"C:\ImageMagick-5.3.4\VisualMagick\lib\\" /libpath:"C:\ming-0.2a\Release"
 # SUBTRACT LINK32 /pdb:none
 
 !ELSEIF  "$(CFG)" == "autotrace - Win32 Debug"
@@ -67,7 +67,7 @@ LINK32=link.exe
 # PROP Ignore_Export_Lib 0
 # PROP Target_Dir ""
 # ADD BASE CPP /nologo /W3 /Gm /GX /ZI /Od /D "WIN32" /D "_DEBUG" /D "_CONSOLE" /D "_MBCS" /YX /FD /GZ /c
-# ADD CPP /nologo /W3 /Gm /GX /Zi /Od /I "C:\ImageMagick-5.3.4" /I "C:\ming-0.2a" /D "_DEBUG" /D "WIN32" /D "_WINDOWS" /D "_VISUALC_" /D "NeedFunctionPrototypes" /D "HAVE_MAGICK" /D AUTOTRACE_VERSION=\"0.30\" /D "HAVE_LIBSWF" /D inline=__inline /D "_MAGICKDLL_" /D AUTOTRACE_WEB=\""http://autotrace.sourceforge.net"\" /Fo"C:\autotrace-neu/" /Fd"C:\autotrace-neu/" /FD /c
+# ADD CPP /nologo /W3 /Gm /GX /Zi /Od /I "C:\ImageMagick-5.3.4" /I "C:\ming-0.2a" /I "C:\pstoedit-3.32" /D "_DEBUG" /D "WIN32" /D "_WINDOWS" /D "_VISUALC_" /D "NeedFunctionPrototypes" /D "HAVE_MAGICK" /D AUTOTRACE_VERSION=\"0.30\" /D "HAVE_LIBSWF" /D inline=__inline /D "_MAGICKDLL_" /D "HAVE_LIBPSTOEDIT" /Fo"C:\autotrace-neu/" /Fd"C:\autotrace-neu/" /FD /D AUTOTRACE_WEB=\""http://autotrace.sourceforge.net"\" /c
 # SUBTRACT CPP /Gy /Fr /YX
 # ADD BASE RSC /l 0x407 /d "_DEBUG"
 # ADD RSC /l 0x407 /d "_DEBUG"
@@ -76,7 +76,7 @@ BSC32=bscmake.exe
 # ADD BSC32 /nologo
 LINK32=link.exe
 # ADD BASE LINK32 kernel32.lib user32.lib gdi32.lib winspool.lib comdlg32.lib advapi32.lib shell32.lib ole32.lib oleaut32.lib uuid.lib odbc32.lib odbccp32.lib kernel32.lib user32.lib gdi32.lib winspool.lib comdlg32.lib advapi32.lib shell32.lib ole32.lib oleaut32.lib uuid.lib odbc32.lib odbccp32.lib /nologo /subsystem:console /debug /machine:I386 /pdbtype:sept
-# ADD LINK32 libming.lib kernel32.lib user32.lib gdi32.lib winspool.lib comdlg32.lib advapi32.lib shell32.lib ole32.lib oleaut32.lib uuid.lib odbc32.lib odbccp32.lib CORE_DB_magick_.lib /nologo /subsystem:console /debug /machine:I386 /pdbtype:sept /libpath:"C:\ImageMagick-5.3.4\VisualMagick\lib\\" /libpath:"C:\ming-0.2a\Debug"
+# ADD LINK32 libming.lib kernel32.lib user32.lib gdi32.lib winspool.lib comdlg32.lib advapi32.lib shell32.lib ole32.lib oleaut32.lib uuid.lib odbc32.lib odbccp32.lib CORE_DB_magick_.lib pstoedit.lib /nologo /subsystem:console /debug /machine:I386 /pdbtype:sept /libpath:"C:\ImageMagick-5.3.4\VisualMagick\lib\\" /libpath:"C:\ming-0.2a\Debug"
 
 !ENDIF 
 
@@ -250,15 +250,15 @@ SOURCE=".\output-cgm.c"
 # End Source File
 # Begin Source File
 
+SOURCE=".\output-cgm.h"
+# End Source File
+# Begin Source File
+
 SOURCE=".\output-dr2d.c"
 # End Source File
 # Begin Source File
 
 SOURCE=".\output-dr2d.h"
-# End Source File
-# Begin Source File
-
-SOURCE=".\output-cgm.h"
 # End Source File
 # Begin Source File
 
@@ -331,6 +331,14 @@ SOURCE=".\output-pdf.c"
 # Begin Source File
 
 SOURCE=".\output-pdf.h"
+# End Source File
+# Begin Source File
+
+SOURCE=".\output-pstoedit.c"
+# End Source File
+# Begin Source File
+
+SOURCE=".\output-pstoedit.h"
 # End Source File
 # Begin Source File
 
