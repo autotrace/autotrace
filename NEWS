@@ -1,3 +1,9 @@
+What's new in AutoTrace 0.28?
+- Small bugfixes
+- Progress bar
+- Dxf export
+- Despeckling filter
+
 What's new in AutoTrace 0.27
 - Parts of the code were rearranged
 - Fixed a bug in color quantization
@@ -8,4 +14,3 @@ What's new in AutoTrace 0.27
 	     http://www.opaque.net/ming/)
 - The dxf output was removed because it never worked.
 - Speed up and simplification of the fitting routine
-

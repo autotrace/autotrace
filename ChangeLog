@@ -1,5 +1,15 @@
 2001-10-14  Martin Weber  <martweb@gmx.net>
 
+        * NEWS: Upated
+
+	* README (version): Updated
+
+	* THANKS: Updated.
+
+	* autotrace.dsp (SOURCE): Update again.
+	
+2001-10-14  Martin Weber  <martweb@gmx.net>
+
 	* autotrace.dsp: adopted to newer versions of ImageMagick. 
 
 	* input-magick.c: Likewise.
