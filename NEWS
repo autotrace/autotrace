@@ -1,4 +1,4 @@
-What's new in AutoTrace 0.31.0?
+at's new in AutoTrace 0.31.0?
 (This NEWS items are the summary of changed from 0.30.1 to 0.30.8.
  For more detail, see ChangeLog.)
 - improved interface between pstoedit and autotrace
@@ -8,7 +8,7 @@ What's new in AutoTrace 0.31.0?
 - changing the license of sources files input and output 
   to GNU Lesser Public License(LGPL)
 - checking libautotrace version number in autotrace.m4
-- output in dz2d format(Andrew Elia)
+- output in dr2d format(Andrew Elia)
 - introduced config.h
 - corrected thin-image
 - made more portable

@@ -6,7 +6,7 @@ Core:
 - Addition of code to recognize lines, splines and circles even if there is
   a lot of noise
 - Currently pictures have to fit completely into memory
-- New algorithm to work best with antialiased pictures
+- New algorithm to work best with anti-aliased pictures
 - 3D recognition
 - Better list management, that means the current generation of lists is time
   consuming and fragmentates the heap.
@@ -16,17 +16,17 @@ Core:
 - Better thinning algorithm like CAT (Chordal Axis Transformation)
 
 Input:
-- Migrate new plug-in interface with using glib(0.32.0)
+- Migrate to new plug-in interface with using glib(0.32.0)
 - Support of image libraries as freeimage, gdk-pixbuf or paintlib(0.32.0)
 
 Output:
-- migrate new plug-in interface with using glib(0.32.0)
+- Migrate to new plug-in interface with using glib(0.32.0)
 - Output API abstraction(0.32.0)
 - New export formats like wmf, cdr, cmx, compressed pdf, compressed svg and
   dxf with splines...
 
 Library and its clients:
-- Graphical userinterface
+- Graphical user interface
   -- For gnome/gtk+, frontline is under developing.
      See http://autotrace.sourceforge.net/frontline
   -- For KDE/Qt?
