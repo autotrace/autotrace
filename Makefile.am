@@ -33,8 +33,6 @@ output-fig.c  output-fig.h \
 output-sk.c output-sk.h \
 output-svg.c output-svg.h \
 output-p2e.c output-p2e.h \
-output-dxf.c output-dxf.h \
-output-dxf12.c output-dxf12.h \
 output-emf.c output-emf.h
 
 libautotrace_a_SOURCES = version.c               \

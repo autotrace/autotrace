@@ -34,8 +34,6 @@ static struct output_format_entry output_formats[] = {
 #ifdef LIBSWF
     {"swf",	"Shockwave Flash 3",		output_swf_writer},
 #endif /* LIBSWF */
-    {"dxf",     "DXF R14",                      output_dxf_writer},
-    {"dxf12",   "DXF R12",                      output_dxf12_writer},
     {"emf",     "Enhanced Metafile format",     output_emf_writer},
     {"er",      "Elastic Reality Shape file",   output_er_writer},
     {NULL,	NULL}
@@ -76,4 +74,3 @@ output_list (void)
   list[2*i] = NULL;
   return list;
 }
-/* version 0.24a */

@@ -1,3 +1,15 @@
+2001-02-26  Masatake YAMATO  <yamato@redhat.com>
+
+ 	Applied two patches from Martin.
+	
+	* output.c: Remove dxf supports.
+
+ 	* Makefile.am (output_src): Likewise.
+
+	* autotrace.dsw: Updated.
+
+	* autotrace.dsp: Likewise.
+	
 2001-02-25  Masatake YAMATO  <yamato@redhat.com>
 
 	Applied two patches from Martin.
