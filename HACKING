@@ -11,9 +11,9 @@ Makefile.in and so on. autogen.sh invokes automake, autoconf, aclocal
 and autogen.
 
 
-* Autogen
+* Autofig
 
-Autogen generate autotrace-config.in from autotrace-config.am.
+Autofig generate autotrace-config.in from autotrace-config.am.
 You can get autogen from
 http://gnomecd.copyleft.no/sources/unstable/snapshots/?N=D
 
