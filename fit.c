@@ -1861,36 +1861,26 @@ change_bad_lines (spline_list_type *spline_list,
 static void
 align (spline_list_type *l, fitting_opts_type *fitting_opts)
 {
-  bool change;
   unsigned this_spline;
   unsigned length = SPLINE_LIST_LENGTH (*l);
 
   LOG1 ("\nAligning spline list (length %u):\n", length);
 
-  do
+  LOG ("  ");
+
+  for (this_spline = 0; this_spline < length; this_spline++)
     {
-      change = false;
+      bool spline_change = false;
+      spline_type *s = &SPLINE_LIST_ELT (*l, this_spline);
+      real_coordinate_type start = START_POINT (*s);
+      real_coordinate_type end = END_POINT (*s);
 
-      LOG ("  ");
-
-      for (this_spline = 0; this_spline < length; this_spline++)
-        {
-          bool spline_change = false;
-          spline_type *s = &SPLINE_LIST_ELT (*l, this_spline);
-          real_coordinate_type start = START_POINT (*s);
-          real_coordinate_type end = END_POINT (*s);
-
-          TRY_AXIS (x);
-          TRY_AXIS (y);
-          if (spline_change)
-            {
-              LOG1 ("%u ", this_spline);
-              change |= spline_change;
-            }
-        }
-      LOG ("\n");
+      TRY_AXIS (x);
+      TRY_AXIS (y);
+      if (spline_change)
+        LOG1 ("%u ", this_spline);
     }
-  while (change);
+  LOG ("\n");
 }
 
 

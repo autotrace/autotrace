@@ -8,8 +8,8 @@
 #include "getopt.h"
 #include "input.h"
 
+#include "image-header.h"
 #include "fit.h"
-#include "main.h"
 #include "output.h"
 #include "pxl-outline.h"
 #include "find-suffix.h"

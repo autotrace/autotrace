@@ -1,5 +1,12 @@
 2000-11-14  Masatake YAMATO  <yamato@redhat.com>
 
+	* fit.c: Apply a patch from martin.
+	"I fixed a bug in fit.c that sometimes causes an endless 
+	loop in AutoTrace."
+
+	* main.c: Don't include main.h.
+	Include image-header.h.
+
 	* Makefile.am (autotrace_SOURCES): Remove main.h.
 	
 	* main.c(input_reader): Renamed from load_image.
