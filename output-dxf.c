@@ -560,7 +560,7 @@ int bspline_to_lines(xypnt_head_rec *vtx_list          /*  */,
     { 
       n = vtx_count + spline_order+1; 
       m = spline_order + 1;  
-      weight = (double *) malloc( n*m* sizeof(double)); 
+      XMALLOC (weight, n*m* sizeof(double)); 
 
       for (i = 0; i < vtx_count + spline_order; i++)
         knot[i] = (i < spline_order) ? 0 : 

@@ -1,3 +1,11 @@
+2003-03-10  Martin Weber <martweb@gmx.net>
+
+	* output-dxf.c: Now checks memory allocation.
+
+2003-03-09  Martin Weber <martweb@gmx.net>
+
+	* output-sk.c: Fixed sketch output.
+
 2003-02-13  Masatake YAMATO  <yamato@redhat.com>
 
 	* input.c (_at_input_format_entry): Added new field, 
