@@ -82,63 +82,19 @@ fitting_opts_type new_fitting_opts (void)
 {
   fitting_opts_type fitting_opts;
 
-/* Background color, the color of the background that should be ignored */
   fitting_opts.bgColor = NULL;
-
-/* To how many colors the bitmap is reduced */
   fitting_opts.color_count = 0;
-
-/* If the angle defined by a point and its predecessors and successors
-   is smaller than this, it's a corner, even if it's within
-   `corner_surround' pixels of a point with a smaller angle.
-   (-corner-always-threshold)  */
   fitting_opts.corner_always_threshold = (at_real) 60.0;
-
-/* Number of points to consider when determining if a point is a corner
-   or not.  (-corner-surround)  */
   fitting_opts.corner_surround = 4;
-
-/* If a point, its predecessors, and its successors define an angle
-    smaller than this, it's a corner.  Should be in range 0..180.
-   (-corner-threshold)  */
   fitting_opts.corner_threshold = (at_real) 100.0;
-
-/* Amount of error at which a fitted spline is unacceptable.  If any
-   pixel is further away than this from the fitted curve, we try again.
-   (-error-threshold) */
   fitting_opts.error_threshold = (at_real) .8;
-
-/* Number of times to smooth original data points.  Increasing this
-   number dramatically---to 50 or so---can produce vastly better
-   results.  But if any points that ``should'' be corners aren't found,
-   the curve goes to hell around that point.  (-filter-iterations)  */
   fitting_opts.filter_iteration_count = 4;
-
-/* If a spline is closer to a straight line than this, it remains a
-   straight line, even if it would otherwise be changed back to a curve.
-   This is weighted by the square of the curve length, to make shorter
-   curves more likely to be reverted.  (-line-reversion-threshold)  */
   fitting_opts.line_reversion_threshold = (at_real) .01;
-
-/* How many pixels (on the average) a spline can diverge from the line
-   determined by its endpoints before it is changed to a straight line.
-   (-line-threshold) */
   fitting_opts.line_threshold = (at_real) 1.0;
-
-/* Should adjacent corners be removed?  */
   fitting_opts.remove_adj_corners = false;
-
-/* Number of points to look at on either side of a point when computing
-   the approximation to the tangent at that point.  (-tangent-surround)  */
   fitting_opts.tangent_surround = 3;
-
-/* Despeckle level */
   fitting_opts.despeckle_level = 0;
-
-/* Despeckle tightness */
   fitting_opts.despeckle_tightness = 2.0;
-
-/* Whether to trace a character's centerline or its outline  */
   fitting_opts.centerline = false;
 
   return (fitting_opts);
@@ -152,6 +108,7 @@ fitting_opts_type new_fitting_opts (void)
 __declspec(dllexport) spline_list_array_type
 __stdcall fitted_splines (pixel_outline_list_type pixel_outline_list,
   fitting_opts_type *fitting_opts,
+  unsigned short width, unsigned short height,
   progress_func notify_progress, 
   address progress_data,
   testcancel_func test_cancel,
@@ -160,6 +117,7 @@ __stdcall fitted_splines (pixel_outline_list_type pixel_outline_list,
 spline_list_array_type
 fitted_splines (pixel_outline_list_type pixel_outline_list,
   fitting_opts_type *fitting_opts,
+  unsigned short width, unsigned short height,
   at_progress_func notify_progress, 
   at_address progress_data,
   at_testcancel_func test_cancel,
@@ -172,6 +130,10 @@ fitted_splines (pixel_outline_list_type pixel_outline_list,
   curve_list_array_type curve_array = split_at_corners (pixel_outline_list, fitting_opts);
 
   char_splines.centerline = fitting_opts->centerline;
+
+  /* Set dummy values. Real value is set in upper context. */
+  char_splines.width = width;
+  char_splines.height = height;
 
   for (this_list = 0; this_list < CURVE_LIST_ARRAY_LENGTH (curve_array);
        this_list++)

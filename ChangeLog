@@ -1,5 +1,24 @@
 2001-12-24  Masatake YAMATO  <yamato@redhat.com>
 
+	* fit.[ch] (fitted_splines): Pass width and height.
+	
+	* autotrace.[ch] (at_splines_write): Don't pass
+	bbox. Get bbox from splines.
+
+	* main.c (main): Don't pass width and height to 
+	at_splines_write.
+	
+	* autotrace.h (struct _at_fitting_opts_type): Removed
+	comments. Instead defined doc strings.
+	(AT_DEFAULT_DPI): New def.
+	(at_fitting_opts_doc): New macro.
+	(struct _at_spline_list_array_type): Added height
+	and width.
+
+	* fit.c (new_fitting_opts): Remove comments.
+
+	* main.c: used AT_DEFAULT_DPI.
+
 	* strgicmp.c (strgnicmp): Added parentheses around
 	conditions.
 	(main): Added test.

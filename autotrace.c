@@ -131,6 +131,8 @@ at_splines_new_full (at_bitmap_type * bitmap,
   
   XMALLOC(splines, sizeof(at_splines_type)); 
   *splines = fitted_splines (pixels, opts,
+			     image_header.width,
+			     image_header.height,
 			     notify_progress, progress_data,
 			     test_cancel, testcancel_data);
 
@@ -153,9 +155,15 @@ void
 at_splines_write(at_splines_type * splines,
 		 FILE * writeto,
 		 char * name,
-		 int llx, int lly, int urx, int ury, int dpi,
+		 int dpi,
 		 at_output_write_func output_writer)
 {
+  int llx, lly, urx, ury;
+  llx = 0;
+  lly = 0;
+  urx = splines->width;
+  ury = splines->height;
+
   if (!name)
     name = "";
   (*output_writer) (writeto, name, llx, lly, urx, ury, dpi, *splines);

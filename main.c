@@ -41,7 +41,7 @@ static at_bool logging = false;
 static at_bool remove_adj_corners;
 
 /* image dpi used in mif backend. */
-static int dpi = 72;
+static int dpi = AT_DEFAULT_DPI;
 
 /* Report tracing status in real time (--report-progress) */
 static at_bool report_progress = false;
@@ -131,9 +131,6 @@ main (int argc, char * argv[])
   at_splines_write (splines,
 		    output_file, 
 		    output_name,
-		    0, 0, 
-		    at_bitmap_get_width(bitmap), 
-		    at_bitmap_get_height(bitmap),
 		    dpi,
 		    output_writer);
   

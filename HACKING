@@ -49,12 +49,9 @@ int main()
 
   bitmap = at_bitmap_new(rfunc, fname);
   splines = at_splines_new(bitmap, opts);
-  at_output_write(wfunc, stdout, "", 
-		  0, 0,
-		  at_bitmap_get_width(bitmap),
-		  at_bitmap_get_height(bitmap),
-		  72,   /* defalt dpi */
-		  splines);
+  at_splines_write(splines, stdout, "", 
+                   AT_DEFAULT_DPI,
+		   wfunc);
   return 0;
 }
 

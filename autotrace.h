@@ -91,73 +91,90 @@ struct _at_spline_list_array_type
 {
   at_spline_list_type *data;
   unsigned length;
-  /* Whether to trace a character's centerline or its outline  */
+  /* whether to trace a character's centerline or its outline  */
   at_bool centerline;
+  /* splines bbox */
+  unsigned short height, width;
 };
 
+/* Fitting option.
+   With using at_doc macro, the description of each option could
+   be get. e.g. at_doc(bgColor) */
 struct _at_fitting_opts_type
 {
-/* Background color, the color of the background that should be ignored */
+#define at_doc__bgColor							\
+"background-color <hexadezimal>: the color of the background that "	\
+"should be ignored, for example FFFFFF; "				\
+"default is no background color."
   at_color_type *bgColor;
 
-/* To how many colors the bitmap is reduced */
+#define at_doc__color_count						  \
+"color-count <unsigned>: number of colors a color bitmap is reduced to, " \
+"it does not work on grayscale, allowed are 1..256; "			  \
+"default is 0, that means not color reduction is done." 
   unsigned color_count;
 
-/* If the angle defined by a point and its predecessors and successors
-   is smaller than this, it's a corner, even if it's within
-   `corner_surround' pixels of a point with a smaller angle.
-   (-corner-always-threshold)  */
+#define at_doc__corner_always_threshold					  \
+"corner-always-threshold <angle-in-degrees>: if the angle at a pixel is " \
+"less than this, it is considered a corner, even if it is within "	  \
+"`corner-surround' pixels of another corner; default is 60. "
   at_real corner_always_threshold;
 
-/* Number of points to consider when determining if a point is a corner
-   or not.  (-corner-surround)  */
+#define at_doc__corner_surround						\
+"corner-surround <unsigned>: number of pixels on either side of a "	\
+"point to consider when determining if that point is a corner; "	\
+"default is 4. "
   unsigned corner_surround;
 
-/* If a point, its predecessors, and its successors define an angle
-    smaller than this, it's a corner.  Should be in range 0..180.
-   (-corner-threshold)  */
+#define  at_doc__corner_threshold					\
+"corner-threshold <angle-in-degrees>: if a pixel, its predecessor(s), "	\
+"and its successor(s) meet at an angle smaller than this, it's a "	\
+"corner; default is 100. "
   at_real corner_threshold;
 
-/* Amount of error at which a fitted spline is unacceptable.  If any
-   pixel is further away than this from the fitted curve, we try again.
-   (-error-threshold) */
+#define at_doc__error_threshold						\
+"error-threshold <real>: subdivide fitted curves that are off by "	\
+"more pixels than this; default is 2.0. "
   at_real error_threshold;
 
-/* Number of times to smooth original data points.  Increasing this
-   number dramatically---to 50 or so---can produce vastly better
-   results.  But if any points that ``should'' be corners aren't found,
-   the curve goes to hell around that point.  (-filter-iterations)  */
+#define  at_doc__filter_iteration_count					\
+"filter-iterations <unsigned>: smooth the curve this many times "	\
+"before fitting; default is 4."
   unsigned filter_iteration_count;
 
-/* To produce the new point, use the old point plus this times the
-   neighbors.  (-filter-percent)  */
-  at_real filter_percent;
-
-/* If a spline is closer to a straight line than this, it remains a
-   straight line, even if it would otherwise be changed back to a curve.
-   This is weighted by the square of the curve length, to make shorter
-   curves more likely to be reverted.  (-line-reversion-threshold)  */
+#define at_doc__line_reversion_threshold				 \
+"line-reversion-threshold <real>: if a spline is closer to a straight "	 \
+"line than this, weighted by the square of the curve length, keep it a " \
+"straight line even if it is a list with curves; default is .01. "
   at_real line_reversion_threshold;
 
-/* How many pixels (on the average) a spline can diverge from the line
-   determined by its endpoints before it is changed to a straight line.
-   (-line-threshold) */
+#define at_doc__line_threshold						\
+"line-threshold <real>: if the spline is not more than this far away "	\
+"from the straight line defined by its endpoints,"			\
+"then output a straight line; default is 1. "
   at_real line_threshold;
 
-/* Should adjacent corners be removed?  */
+#define at_doc__remove_adj_corners				\
+"remove-adjacent-corners: remove corners that are adjacent; "	\
+"default doesn't remove."
   at_bool remove_adj_corners;
 
-/* Number of points to look at on either side of a point when computing
-   the approximation to the tangent at that point.  (-tangent-surround)  */
+#define at_doc__tangent_surround					\
+"tangent-surround <unsigned>: number of points on either side of a "	\
+"point to consider when computing the tangent at that point; "		\
+" default is 3."
   unsigned tangent_surround;
 
-/* Despeckle level */
+#define at_doc__despeckle_level						\
+"despeckle-level <unsigned>: 0..20; default is no despeckling. "
   int despeckle_level;
 
-/* Despeckle tightness */
+#define at_doc__despeckle_tightness				\
+"despeckle-tightness <real>: 0.0..8.0; default is 2.0. "
   at_real despeckle_tightness;
 
-/* Whether to trace a character's centerline or its outline  */
+#define  at_doc__centerline						\
+"centerline: trace a character's centerline, rather than its outline. "
   at_bool centerline;
 };
 
@@ -197,37 +214,46 @@ typedef at_bool          (*  at_testcancel_func) (at_address client_data);
 
 /* ===================================================================== *
  * Functions
- * ----------------------------------------------------------------------*/
+ * ===================================================================== */
 
-/*
+/* --------------------------------------------------------------------- *
  * Option related
- */
+ *
+ * TODO: internal data access, copy
+ * --------------------------------------------------------------------- */
 at_fitting_opts_type * at_fitting_opts_new(void);
 at_fitting_opts_type * at_fitting_opts_copy (at_fitting_opts_type * original); 
 void at_fitting_opts_free(at_fitting_opts_type * opts);
-/* TODO internal data access, copy */
+#define at_fitting_opts_doc(opt) at_doc__##opt 
 
-/*
+/* --------------------------------------------------------------------- *
  * Bitmap related 
- */
+ *
+ * TODO: internal data access
+ * --------------------------------------------------------------------- */
 at_bitmap_type * at_bitmap_new (at_input_read_func input_reader,
 				at_string filename);
 unsigned short at_bitmap_get_width (at_bitmap_type * bitmap);
 unsigned short at_bitmap_get_height (at_bitmap_type * bitmap);
 void at_bitmap_free (at_bitmap_type * bitmap);
-/* TODO internal data access */
 
-/* 
+
+/* --------------------------------------------------------------------- *
  * Spline related
- */
+ *
+ * TODO: internal data access
+ * --------------------------------------------------------------------- */
 at_splines_type * at_splines_new (at_bitmap_type * bitmap,
 				  at_fitting_opts_type * opts);
-/* notify_progress is called repeatedly inside at_splines_new_full
+/* at_splines_new_full
+
+   args:
+   NOTIFY_PROGRESS is called repeatedly inside at_splines_new_full
    to notify the progress of the execution. This might be useful for 
-   interactive applications. notify_progress is called following 
+   interactive applications. NOTIFY_PROGRESS is called following 
    format:
 
-   notify_progress (percentage, progress_data);
+   NOTIFY_PROGRESS (percentage, progress_data);
 
    test_cancel is called repeatedly inside at_splines_new_full
    to test whether the execution is canceled or not.
@@ -236,7 +262,7 @@ at_splines_type * at_splines_new (at_bitmap_type * bitmap,
    returns FALSE, nothing happens. test_cancel  is called following
    format:
 
-   test_cancel (testcancel_data);
+   TEST_CANCEL (testcancel_data);
    
    NULL is valid value for notify_progress and/or test_cancel if 
    you don't need to know the progress of the execution and/or 
@@ -247,53 +273,73 @@ at_splines_type * at_splines_new_full (at_bitmap_type * bitmap,
 				       at_address progress_data,
 				       at_testcancel_func test_cancel,
 				       at_address testcancel_data);
+
+#define AT_DEFAULT_DPI 72
+/* at_splines_write
+   args:
+   DPI is used only in MIF output. */
 void at_splines_write(at_splines_type * splines,
 		      FILE * writeto,
 		      char * name,
-		      int llx, int lly, int urx, int ury, int dpi,
+		      int dpi,
 		      at_output_write_func output_writer);
-void at_splines_free (at_splines_type * splines);
-/* TODO internal data access */
 
-/*
+void at_splines_free (at_splines_type * splines);
+
+/* --------------------------------------------------------------------- *
  * Color related 
- */
+ * --------------------------------------------------------------------- */
 at_color_type * at_color_new (unsigned char r, 
 			      unsigned char g,
 			      unsigned char b);
 at_color_type * at_color_copy (at_color_type * original);
 void at_color_free(at_color_type * color);
 
-/* 
+/* --------------------------------------------------------------------- *
  * Input related 
- */
+ * --------------------------------------------------------------------- */
 at_input_read_func at_input_get_handler (at_string filename);
 at_input_read_func at_input_get_handler_by_suffix (at_string suffix);
 char ** at_input_list_new (void);
 void at_input_list_free(char ** list);
-char * at_input_shortlist (void); /* Do free by yourself */
+/* at_input_shortlist
+   return value: Do free by yourself */
+char * at_input_shortlist (void); 
 int at_input_add_handler (at_string suffix, 
 			  at_string description,
 			  at_input_read_func func);
 
-/* 
+/* --------------------------------------------------------------------- *
  * Output related
- */
+ * --------------------------------------------------------------------- */
 at_output_write_func at_output_get_handler (at_string filename);
 at_output_write_func at_output_get_handler_by_suffix (at_string suffix);
 char ** at_output_list_new (void);
 void at_output_list_free(char ** list);
-char * at_output_shortlist (void); /* Do free by yourself */
+
+/* at_output_shortlist
+   return value: Do free by yourself */
+char * at_output_shortlist (void); 
 int   at_output_add_handler (at_string suffix, 
 			     at_string description, 
 			     at_output_write_func func);
+/* --------------------------------------------------------------------- *
+ * Misc
+ * --------------------------------------------------------------------- */
 
-/* 
- * Version and other informations 
- * long_format == true: "AutoTrace version x.y"
- * long_format == false: "x.y" */
+/* at_version
+
+   args:
+   LONG_FORMAT == true: "AutoTrace version x.y"
+   LONG_FORMAT == false: "x.y" 
+
+   return value: Don't free. It is allocated statically */
 const char * at_version (at_bool long_format);
-const char * at_home_site ();
+
+/* at_home_site
+
+   return value: Don't free. It is allocated statically */
+const char * at_home_site (void);
 
 #ifdef __cplusplus
 }
