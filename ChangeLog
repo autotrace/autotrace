@@ -1,3 +1,16 @@
+2002-04-16  Masatake YAMATO  <yamato@redhat.com>
+
+	* autotrace.c (at_version): Use AUTOTRACE_VERSION
+	instead of VERSION.
+	(at_home_site): Use AUTOTRACE_WEB.
+
+	* autotrace.m4 (AM_PATH_AUTOTRACE): Check version number.
+
+	* configure.in (AUTOTRACE_VERSION, AUTOTRACE_MAJOR_VERSION,
+	AUTOTRACE_MINOR_VERSION, AUTOTRACE_MICRO_VERSION,
+	AUTOTRACE_WEB): 
+	New constants.
+	
 2002-04-15  Martin Weber <martweb@gmx.net>
 
 	* fit.c (find_half_tangent): 

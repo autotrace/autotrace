@@ -305,15 +305,13 @@ const char *
 at_version (at_bool long_format)
 {
   if (long_format)
-    return "AutoTrace version " VERSION;
+    return "AutoTrace version " AUTOTRACE_VERSION;
   else
-    return VERSION;
+    return AUTOTRACE_VERSION;
 }
 
 const char * 
-at_home_site ()
+at_home_site (void)
 {
-  /* TODO: This should be defined in configure.in
-     -- Masatake */
-  return "http://autotrace.sourceforge.net";
+  return AUTOTRACE_WEB;
 }
