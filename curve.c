@@ -116,7 +116,7 @@ log_curve (curve_type curve, at_bool print_t)
 
   if (!log_file) return;
 
-  LOG1 ("curve id = %x:\n", (unsigned) curve);
+  LOG1 ("curve id = %x:\n", (unsigned long) curve);
   LOG1 ("  length = %u.\n", CURVE_LENGTH (curve));
   if (CURVE_CYCLIC (curve))
     LOG ("  cyclic.\n");
@@ -177,7 +177,7 @@ log_entire_curve (curve_type curve)
 
   if (!log_file) return;
 
-  LOG1 ("curve id = %x:\n", (unsigned) curve);
+  LOG1 ("curve id = %x:\n", (unsigned long) curve);
   LOG1 ("  length = %u.\n", CURVE_LENGTH (curve));
   if (CURVE_CYCLIC (curve))
     LOG ("  cyclic.\n");

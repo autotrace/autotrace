@@ -1,3 +1,18 @@
+2002-05-06  Martin Weber <martweb@gmx.net>
+
+	* filename.c (make_suffix): length_through_dot
+	is typed to unsigned long for 64bit arch.
+	(remove_suffix): Likewise.
+
+	* curve.c (log_curve): Cast curve to unsigned long for 64bit
+	arch.
+	(log_entire_curve): Likewise.
+
+	* autotrace.vcproj: Added output-dr2d.[ch].
+
+	Message-ID: <3CD5A1C6.8717C29F@gmx.net>.
+	Message-ID: <3CD5A2DB.2F467808@gmx.net>.
+
 2002-05-04  Masatake YAMATO  <yamato@redhat.com>
 
 	* *.c: include config.h.

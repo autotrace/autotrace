@@ -73,7 +73,7 @@ make_suffix (at_string s, at_string new_suffix)
     new_s = concat3 (s, ".", new_suffix);
   else
     {
-      unsigned length_through_dot = old_suffix - s;
+      unsigned long length_through_dot = old_suffix - s;
 
       XMALLOC (new_s, length_through_dot + strlen (new_suffix) + 1);
       strncpy (new_s, s, length_through_dot);
@@ -88,7 +88,7 @@ remove_suffix (at_string s)
 {
   at_string suffix = find_suffix (s);
 
-  return suffix == NULL ? s : suffix - 2 - s < 0 ? NULL : substring (s, 0, suffix - 2 - s);
+  return suffix == NULL ? s : suffix - 2 - s < 0 ? NULL : substring (s, 0, (unsigned)(suffix - 2 - s));
 }
 
 /* From substring.c */

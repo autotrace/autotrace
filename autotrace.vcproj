@@ -245,6 +245,12 @@
 		<File
 			RelativePath="output-cgm.h">
 		</File>
+ 		<File
+			RelativePath="output-dr2d.c">
+		</File>
+		<File
+			RelativePath="output-dr2d.h">
+		</File>	
 		<File
 			RelativePath=".\output-dxf.c">
 		</File>
