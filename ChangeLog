@@ -1,3 +1,14 @@
+2002-11-15  Masatake YAMATO  <yamato@redhat.com>
+
+	* autotrace.h (enum _at_msg_type): Added
+	AT_MSG_NOT_SET.
+
+	* exception.c (at_exception_got_fatal): 
+	return true or false explicitly.
+	(at_exception_new): Don't use GCC C extension.
+
+	Suggested by Nelson H. F. Beebe <beebe@math.utah.edu>.
+
 2002-11-12  Masatake YAMATO  <yamato@redhat.com>
 
 	* strgicmp.c (strgnicmp): Fix a typo.

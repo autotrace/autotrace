@@ -222,6 +222,7 @@ struct _at_bitmap_type
 
 enum _at_msg_type
 {
+  AT_MSG_NOT_SET = 0,		/* is used in autotrace internally */
   AT_MSG_FATAL = 1,
   AT_MSG_WARNING,
 };

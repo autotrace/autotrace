@@ -8,14 +8,17 @@ at_exception_type
 at_exception_new(at_msg_func client_func,
 		 at_address client_data)
 {
-  at_exception_type e = {0, client_func, client_data};
+  at_exception_type e;
+  e.msg_type 	= AT_MSG_NOT_SET;
+  e.client_func = client_func;
+  e.client_data = client_data;
   return e;
 }
 
 at_bool
 at_exception_got_fatal(at_exception_type * exception)
 {
-  return (exception->msg_type == AT_MSG_FATAL);
+  return (exception->msg_type == AT_MSG_FATAL)? true: false;
 }
 
 void
