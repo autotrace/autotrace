@@ -70,4 +70,9 @@ at_output_write(at_output_write_func output_writer,
 char ** at_output_list_new (void);
 void at_output_list_free(char ** list);
 
+/*
+ * Version
+ */
+char * at_version ();
+
 #endif /* AUTOTRACE_H */

@@ -139,3 +139,9 @@ at_output_list_free(char ** list)
 {
   free(list);
 }
+
+char *
+at_version ()
+{
+  return VERSION;
+}

@@ -3,6 +3,8 @@ input-magick.h input-magick.c input-png.c input-png.h
 
 AUTOMAKE_OPTIONS = foreign no-dependencies
 
+autotraceincludedir=$(includedir)/autotrace
+lib_LIBRARIES=libautotrace.a
 bin_PROGRAMS=autotrace
 
 if HAVE_MAGICK
@@ -33,65 +35,69 @@ output-dxf.c output-dxf.h \
 output-dxf12.c output-dxf12.h \
 output-emf.c output-emf.h
 
-autotrace_SOURCES=$(input_src) ${output_src}	\
-		atou.c 				\
+libautotrace_a_SOURCES= version.c               \
+                $(input_src) ${output_src}	\
 		fit.c				\
+		bitmap.c 			\
+		spline.c 			\
+		curve.c 			\
+		image-header.h    		\
+		epsilon-equal.c 		\
+		epsilon-equal.h 		\
+		vector.c 			\
+		color.c 			\
+		autotrace.c			\
+		output.c 			\
+		input.c 			\
+		pxl-outline.c 			\
+		median.c 			\
+	        thin-image.c			
+
+autotraceinclude_HEADERS=\
+		fit.h  				\
+		bitmap.h 			\
+		spline.h 			\
+		curve.h 			\
+		types.h 			\
+		vector.h 			\
+		color.h 			\
+		xmem.h 				\
+		autotrace.h                     \
+		output.h 			\
+		input.h 			\
+		pxl-outline.h 			\
+		median.h 			\
+	        quantize.h                      \
+	        thin-image.h			
+
+autotrace_SOURCES=\
+		atou.c 				\
+		atou.h 				\
 		main.c				\
 		remove-suffx.c			\
-		atou.h 				\
-		fit.h  				\
 		remove-suffx.h 			\
-		bitmap.c 			\
 		make-suffix.c 			\
-		bitmap.h 			\
 		make-suffix.h 			\
 		cmdline.h 			\
 		message.h 			\
-		spline.c 			\
 		concat3.c 			\
 		getopt.c 			\
-		spline.h 			\
 		concat3.h 			\
 		getopt.h 			\
 		substring.c 			\
-		curve.c 			\
 		getopt1.c 			\
 		substring.h 			\
-		curve.h 			\
-		image-header.h    		\
-		types.h 			\
-		epsilon-equal.c 		\
 		usefull.h 			\
-		epsilon-equal.h 		\
-		vector.c 			\
 		extend-fname.c 			\
-		vector.h 			\
 		extend-fname.h 			\
-		version.c 			\
-		output.c 			\
-		input.c 			\
 		xfile.h 			\
-		output.h 			\
-		input.h 			\
 		xfopen.c 			\
 		xfseek.c 			\
 		xmem.h 				\
-		color.c 			\
-		color.h 			\
 		find-suffix.c 			\
 		logreport.c 			\
-		pxl-outline.c 			\
 		find-suffix.h 			\
-		logreport.h 			\
-		pxl-outline.h 			\
-		median.c 			\
-		median.h 			\
-	        quantize.h                      \
-	        thin-image.c                    \
-	        thin-image.h                    \
-		autotrace.c			\
-		autotrace.h
+		logreport.h 			
 
-
-INCLUDES = $(MAGICK_CFLAGS)
-autotrace_LDADD=	$(MAGICK_LDFLAGS) $(LIBPNG_LDFLAGS) -lm
+libautotrace_a_INCLUDES = $(MAGICK_CFLAGS)
+autotrace_LDADD = libautotrace.a $(MAGICK_LDFLAGS) $(LIBPNG_LDFLAGS) -lm

@@ -129,10 +129,6 @@ main (int argc, char * argv[])
 
 /* Reading the options.  */
 
-/* This is defined in version.c.  */
-extern char * version_string;
-
-
 #define USAGE1 "Options:\
 <input_name> should be a filename, " AT_INPUT_SUFFIX_LIST ".\n"\
   GETOPT_USAGE								\
@@ -363,7 +359,7 @@ read_command_line (int argc, char * argv[],
         opts.tangent_surround = atou (optarg);
 
       else if (ARGUMENT_IS ("version"))
-        printf ("%s.\n", version_string);
+        printf ("AutoTrace version %s.\n", at_version());
 
       /* Else it was just a flag; getopt has already done the assignment.  */
     }

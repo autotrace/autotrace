@@ -1,5 +1,11 @@
 2000-11-14  Masatake YAMATO  <yamato@redhat.com>
 
+	* main.c (read_command_line): Use at_version().
+
+	* autotrace.c (at_version): New function.
+
+	* Makefile.am: Create libautotrace.a.
+
 	* main.c: use autotrace.[ch].
 
 	* autotrace.c: New file.
