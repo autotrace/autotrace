@@ -1,5 +1,11 @@
 2001-11-27  Martin Weber <martweb@gmx.net>
 
+	* output-swf.c (output_swf_writer): Now using file instead of name 
+	so that it works also to stdout.
+	(Message-ID: <3C02BF23.9D19CCC0@gmx.net>).
+	
+2001-11-27  Martin Weber <martweb@gmx.net>
+
 	* output-swf.c (output_swf_writer, out_splines): 
 	Removed some warnings.
 	(Message-ID: <3C02B6A9.D9EF762D@gmx.net>).
