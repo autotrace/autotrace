@@ -76,25 +76,6 @@ static void generate_histogram_rgb(Histogram histogram,
     }
 }
 
-static boxptr find_biggest_color_pop (boxptr boxlist, int numboxes) 
-/* Find the splittable box with the largest color population */
-/* Returns 0 if no splittable boxes remain */
-{
-    boxptr          boxp;
-    int             i;
-    long            maxc = 0;
-    boxptr          which = 0;
-
-    for (i = 0, boxp = boxlist; i < numboxes; i++, boxp++) {
-	if (boxp->colorcount > maxc && boxp->volume > 0) {
-	    which = boxp;
-	    maxc = boxp->colorcount;
-	}
-    }
-
-    return which;
-}
-
 
 static boxptr find_biggest_volume (boxptr boxlist, int numboxes) 
 /* Find the splittable box with the largest (scaled) volume */
@@ -236,15 +217,11 @@ static int median_cut_rgb (Histogram histogram, boxptr boxlist, int numboxes,
     int             R, G, B, cmax;
     boxptr          b1, b2;
 
-    while (numboxes * 11 < desired_colors << 3) {
+    while (numboxes < desired_colors) {
 	/* Select box to split.
 	 * Current algorithm: by population for first half, then by volume.
 	 */
-	if (numboxes * 2 <= desired_colors) {
-	    b1 = find_biggest_color_pop (boxlist, numboxes);
-	} else {
-	    b1 = find_biggest_volume (boxlist, numboxes);
-	}
+    b1 = find_biggest_volume (boxlist, numboxes);
 
 	if (b1 == 0)		/* no splittable boxes left! */
 	    break;
@@ -809,7 +786,7 @@ void quantize(unsigned char *src, unsigned char *dest, int width, int height,
       { 
 	if (*iQuant == NULL) 
 	  { 
-    	    quantobj = initialize_median_cut(ncolors); 
+    	quantobj = initialize_median_cut(ncolors-1); 
 	    median_cut_pass1_rgb  (quantobj, src, width, height, bgColor); 
 	    *iQuant = quantobj; 
 	   } 
@@ -818,8 +795,8 @@ void quantize(unsigned char *src, unsigned char *dest, int width, int height,
       } 
     else 
       {
-        quantobj = initialize_median_cut(ncolors);
-	median_cut_pass1_rgb  (quantobj, src, width, height, bgColor); 
+        quantobj = initialize_median_cut(ncolors-1);
+        median_cut_pass1_rgb  (quantobj, src, width, height, bgColor); 
       } 
 		 
 			 
@@ -831,5 +808,3 @@ void quantize(unsigned char *src, unsigned char *dest, int width, int height,
         free (quantobj);
       }
 }
-
-/* version 0.26 */
