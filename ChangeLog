@@ -1,3 +1,10 @@
+2001-04-12  Martin Weber <martweb@gmx.net>
+
+	Message-ID: <3AD446C7.9045830B@gmx.net>
+
+	* input-tga.c: I fixed a bug in input-tga.c:
+	Indexed tga images are now interpreted correctly.
+
 2001-04-11  Masatake YAMATO  <yamato@redhat.com>
 
 	* configure.in: Don't check malloc.h.

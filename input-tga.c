@@ -421,11 +421,11 @@ ReadImage (FILE              *fp,
       /* Now pretend as if we only have 8 bpp. */
       abpp = 0;
       pbpp = 8;
+	  pelbytes = 1;
     }
+  else
+	  pelbytes = 3;
  
-  /* Calculate number of bytes per pixel. */
-  pelbytes = 3;
-
   image.bitmap = (unsigned char *) malloc (width * height * 3 * sizeof(unsigned char));
   BITMAP_WIDTH (image) = width;
   BITMAP_HEIGHT (image) = height;
@@ -437,7 +437,7 @@ ReadImage (FILE              *fp,
   /* Maybe we need to reverse the data. */
   buffer = NULL;
   if (horzrev || vertrev)
-    buffer = (unsigned char *) malloc (width * height * pelbytes * sizeof (char));  
+    buffer = (unsigned char *) malloc (width * height * pelbytes * sizeof (unsigned char));  
   if (rle)
     myfread = rle_fread;        
   else
@@ -503,6 +503,7 @@ ReadImage (FILE              *fp,
         }
     }
  
+  
  
   if (horzrev || vertrev)
     {
@@ -569,5 +570,3 @@ ReadImage (FILE              *fp,
  
   return image;
 }  /* read_image */
-
-/* version 0.xx */
