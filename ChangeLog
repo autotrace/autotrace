@@ -1,3 +1,9 @@
+2004-10-22  Steven P. Hirshman
+
+	* output-plt.[ch]: New files.
+
+	* module.c: Added plt.
+	
 2004-10-14  S. P. Hirshman
 
 	* output-emf.c:

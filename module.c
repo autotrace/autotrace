@@ -64,6 +64,7 @@ int install_input_magick_readers(void) {return 0;}
 int install_output_pstoedit_writers(void) {return 0;}
 #endif /* HAVE_LIBPSTOEDIT */
 #include "output-pov.h"
+#include "output-plt.h"
 
 static int install_input_readers  (void);
 static int install_output_writers (void);
@@ -123,6 +124,8 @@ install_output_writers (void)
   at_output_add_handler ("CGM",  "Computer Graphics Metafile",   output_cgm_writer);
   at_output_add_handler ("DR2D", "IFF DR2D format",              output_dr2d_writer);
   at_output_add_handler ("POV",  "Povray format",                output_pov_writer);
+  at_output_add_handler ("POV",  "Povray format",                output_pov_writer);
+  at_output_add_handler ("PLT",  "HPGL format",                  output_plt_writer);
 
   return (0 << 1) || install_output_pstoedit_writers();
 }
