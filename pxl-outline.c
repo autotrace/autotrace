@@ -58,7 +58,7 @@ typedef enum
 
 static pixel_outline_type find_one_outline (bitmap_type, edge_type, unsigned short,
                                             unsigned short, bitmap_type *, at_bool, at_bool, at_exception_type *);
-static pixel_outline_type find_one_centerline (bitmap_type, direction_type *,
+static pixel_outline_type find_one_centerline (bitmap_type, direction_type,
                                                unsigned short, unsigned short, bitmap_type *);
 static void append_pixel_outline (pixel_outline_list_type *,
                                   pixel_outline_type);
@@ -325,10 +325,10 @@ find_centerline_pixels (bitmap_type bitmap, color_type bg_color,
                 }
             }
 
-          LOG2("#%u: (%sclockwise, ", O_LIST_LENGTH(outline_list),
+          LOG2("#%u: (%sclockwise) ", O_LIST_LENGTH(outline_list),
                clockwise ? "" : "counter");
 
-          outline = find_one_centerline(bitmap, &dir, row, col, &marked);
+          outline = find_one_centerline(bitmap, dir, row, col, &marked);
 
           /* If the outline is open (i.e., we didn't return to the
              starting pixel), search from the starting pixel in the
@@ -394,7 +394,7 @@ find_centerline_pixels (bitmap_type bitmap, color_type bg_color,
               if (okay)
                 {
                   partial_outline =
-                    find_one_centerline(bitmap, &dir, row, col, &marked);
+                    find_one_centerline(bitmap, dir, row, col, &marked);
                   concat_pixel_outline(&outline, &partial_outline);
                   if (partial_outline.data)
                     free(partial_outline.data);
@@ -410,7 +410,7 @@ find_centerline_pixels (bitmap_type bitmap, color_type bg_color,
           O_CLOCKWISE(outline) = clockwise;
           if (O_LENGTH(outline) > 1)
             append_pixel_outline(&outline_list, outline);
-          LOG1("%s)", (outline.open ? " open" : " closed"));
+          LOG1("(%s)", (outline.open ? " open" : " closed"));
           LOG1(" [%u].\n", O_LENGTH(outline));
           if (O_LENGTH(outline) == 1)
             free_pixel_outline(&outline);
@@ -430,11 +430,11 @@ find_centerline_pixels (bitmap_type bitmap, color_type bg_color,
 
 
 static pixel_outline_type
-find_one_centerline(bitmap_type bitmap, direction_type *search_dir,
+find_one_centerline(bitmap_type bitmap, direction_type search_dir,
                     unsigned short original_row, unsigned short original_col, bitmap_type *marked)
 {
   pixel_outline_type outline = new_pixel_outline();
-  direction_type original_dir = *search_dir;
+  direction_type original_dir = search_dir;
   unsigned short row = original_row, col = original_col;
   unsigned short prev_row, prev_col;
   at_coord pos;
@@ -455,7 +455,7 @@ find_one_centerline(bitmap_type bitmap, direction_type *search_dir,
 
       /* If there is no adjacent, unmarked pixel, we can't proceed
          any further, so return an open outline. */
-      if (!next_unmarked_pixel(&row, &col, search_dir,
+      if (!next_unmarked_pixel(&row, &col, &search_dir,
                                bitmap, marked))
         {
           outline.open = true;
@@ -465,8 +465,8 @@ find_one_centerline(bitmap_type bitmap, direction_type *search_dir,
       /* If we've moved to a new pixel, mark all edges of the previous
          pixel so that it won't be revisited. */
 	  if (!(prev_row == original_row && prev_col == original_col))
-        mark_dir(prev_row, prev_col, *search_dir, marked);
-      mark_dir(row, col, (*search_dir+4)%8, marked);
+        mark_dir(prev_row, prev_col, search_dir, marked);
+      mark_dir(row, col, (search_dir+4)%8, marked);
 
       /* If we've returned to the starting pixel, we're done. */
       if (row == original_row && col == original_col)
@@ -477,7 +477,6 @@ find_one_centerline(bitmap_type bitmap, direction_type *search_dir,
       LOG2 (" (%d,%d)", pos.x, pos.y);
       append_outline_pixel(&outline, pos);
     }
-
   mark_dir(original_row, original_col, original_dir, marked);
   return outline;
 }

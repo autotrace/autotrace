@@ -1,3 +1,13 @@
+2002-11-09 Martin Weber <martweb@gmx.net>
+
+	* pxl-outline.c (find_one_centerline): search_dir,
+	an argument, is now actual value, not a pointer.
+	(*): passed a value to find_one_centerline at
+	the function argument, search_dir.
+	(*): fix a broken log fromat string.
+
+	Message-ID: <3DCBBBC9.A3F8985E@gmx.net>.
+
 2002-11-08 Martin Weber <martweb@gmx.net>
 
 	* pxl-outline.c: Big changes again that fix a bug 

@@ -1,5 +1,6 @@
-Some collections of "Question and Answers" posted to autotrace mailing
-list. Some of these are not "Frequently" but are worth to be known(TIPS).
+These are collections of "Question and Answers", originally posted to 
+autotrace mailing list. Some of these are not "Frequently" but are worth 
+to be known.
 
 Q1. Using Windows you type autotrace -help you only see the last 25
 lines, so how could we check that the user can read the whole help
@@ -42,7 +43,18 @@ version checking. (In other hand, PKG_CHECK_MODULES has such version
 checking.) I don't want to extend autotrace.m4 anymore.  It will cause
 bugs. (Masatake YAMATO<yamato@redhat.com>)
 
-Q3. Does autotrace could be built on MacOSX? (Many)
+Q3. Does autotrace could be built on MacOSX? (Many people)
 A3. Yes. I tested on sourceforge's compilefarm.
     libtool shows a strange warning but autotrace could
     be built and run. (Masatake YAMATO<yamato@redhat.com>)
+
+Q4. Is there autotrace GUI runs on Windows? Is it possible to port
+    frontline, gnome based GUI, to Windows? (Many people)
+A4. There is no GUI that runs on Windows. frontline highly depends on
+    libgnomeui, so if libgnomeui is ported, porting frontline to
+    windows might be easy task. If you consider to write a GUI for
+    frontline running on Windows, it is worth to consider using
+    Qt. rob@mediasolution.it might have some interests.  Read the
+    archive of autotrace mailing list.  I, the author of frontline, am
+    using GNU/Linux only, so I don't have much interests in porting.
+    (Masatake YAMATO<yamato@redhat.com>)
