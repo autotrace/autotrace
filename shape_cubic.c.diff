@@ -1,0 +1,10 @@
+--- shape_cubic.c.old	Fri Aug 17 18:06:16 2001
++++ shape_cubic.c	Mon Nov 26 21:13:48 2001
+@@ -1,6 +1,7 @@
+ 
+ #include <math.h>
+ #include "shape_util.h"
++#include "libming.h"
+ 
+ extern int Ming_cubicThreshold;
+ extern float Ming_scale;

@@ -1,0 +1,3 @@
+If you want swf support you have to get Ming at http://www.opaque.net/ming/.
+In Ming-0.2a shape_cubic.c has to be patched. Project files for Visual C++
+6.0 you can find in this directory.
