@@ -1,3 +1,8 @@
+2002-09-18  Masatake YAMATO  <yamato@redhat.com>
+
+	* configure.in: Added workarround for pstoedit-3.32.0.
+	added c++ runtime library to LIBPSTOEDIT_LIBS.
+
 2002-09-18  Martin Weber <martweb@gmx.net>
 
 	* autotrace.dsp: 
