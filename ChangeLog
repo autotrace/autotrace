@@ -22,7 +22,9 @@
 	* cmdline.h: Likewise.
 
 	* strgicmp.[ch]: New files.
-	
+
+	(Message-ID: <3C15248C.C9AC71C9@gmx.net>).
+
 2001-12-08  Martin Weber <martweb@gmx.net>
 
 	* input.c (input_list): Fix a bug for magicklib support.
