@@ -1,5 +1,8 @@
 2001-03-12  Masatake YAMATO  <yamato@redhat.com>
 
+	* autotrace.h: Added copyright notice.
+	* types.h: Likewise.
+
 	* Makefile.am (INCLUDES): Renamed from libautotrace_a_INCLUDES.
 	Suggested by Martin.
 
