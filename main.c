@@ -42,9 +42,6 @@ static bool logging = false;
 /* Should adjacent corners be removed?  */
 static bool remove_adj_corners;
 
-/* Thin all the lines in the image prior to fitting. */
-static bool thin = false;
-
 /* image dpi used in mif backend. */
 static int dpi = 72;
 
@@ -79,7 +76,6 @@ main (int argc, char * argv[])
 
   fitting_opts->centerline = centerline;
   fitting_opts->remove_adj_corners = remove_adj_corners;
-  fitting_opts->thin = thin;
 
   if (report_progress)
     progress_reporter = dot_printer;
@@ -200,7 +196,6 @@ output-format <format>: use format <format> for the output file\n\
 remove-adjacent-corners: remove corners that are adjacent.\n\
 tangent-surround <unsigned>: number of points on either side of a\n\
   point to consider when computing the tangent at that point; default is 3.\n\
-thin: thin all the lines in the image prior to fitting.\n\
 report-progress: report tracing status in real time.\n\
 version: print the version number of this program.\n\
 "
@@ -238,7 +233,6 @@ read_command_line (int argc, char * argv[],
         { "range",                      1, 0, 0 },
         { "remove-adjacent-corners",     0, (int *) &remove_adj_corners, 1 },
         { "tangent-surround",           1, 0, 0 },
-        { "thin",                       0, (int *) &thin, 1},
 	{ "report-progress",            0, (int *) &report_progress, 1},
         { "version",                    0, (int *) &printed_version, 1 },
         { 0, 0, 0, 0 } };

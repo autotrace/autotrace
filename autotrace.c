@@ -128,14 +128,11 @@ at_splines_new_full (at_bitmap_type * bitmap,
   image_header.width = at_bitmap_get_width(bitmap);
   image_header.height = at_bitmap_get_height(bitmap);
 
-  if (opts->centerline)
-    opts->thin = true;
-
   if (opts->color_count > 0)
     quantize (bitmap, opts->color_count, opts->bgColor, &myQuant);
   CANCEL_THEN_RETURN();
 
-  if (opts->thin) 
+  if (opts->centerline) 
     thin_image (bitmap, opts->bgColor); 
   CANCEL_THEN_RETURN();
 

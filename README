@@ -67,7 +67,6 @@ output-format <format>: use format <format> for the output file
 remove-adjacent-corners: remove corners that are adjacent.
 tangent-surround <unsigned>: number of points on either side of a
   point to consider when computing the tangent at that point; default is 3.
-thin: thin all the lines in the image prior to fitting.
 report-progress: report tracing status in real time.
 version: print the version number of this program.
 

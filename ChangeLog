@@ -1,3 +1,11 @@
+2001-12-23  Martin Weber <martweb@gmx.net>
+
+	* main.c, fit.c, autotrace.[ch]: removed unnecessary 
+	thin option.
+
+	(Message-ID: <3C23097C.64BB84F8@gmx.net>,
+	Message-ID: <3C230A3D.C0F29BE6@gmx.net>)
+	
 2001-12-23  Masatake YAMATO  <yamato@redhat.com>
 
 	* input-png.h: string->at_string.
