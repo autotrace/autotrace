@@ -1,7 +1,8 @@
 /* input.c: interface for input handlers
 
    Copyright (C) 1999, 2000, 2001 Bernhard Herzog.
-
+   Copyright (C) 2003 Masatake YAMATO
+   
    This library is free software; you can redistribute it and/or
    modify it under the terms of the GNU Lesser General Public License
    as published by the Free Software Foundation; either version 2.1 of
@@ -22,43 +23,113 @@
 #endif /* Def: HAVE_CONFIG_H */
 
 #include "autotrace.h"
-#include "input.h"
-#include "input-pnm.h"
-#include "input-bmp.h"
-#include "input-tga.h"
-#ifdef HAVE_LIBPNG
-#include "input-png.h"
-#endif /* HAVE_LIBPNG */
-#if HAVE_MAGICK
-#include <sys/types.h> /* Needed for correct interpretation of magick/api.h */
-#include <magick/api.h>
-#include "input-magick.h"
-#endif /* HAVE_MAGICK */
 
 #include "xstd.h"
 #include "filename.h"
 #include "strgicmp.h"
 #include <string.h>
+#include <glib.h>
 
-struct input_format_entry {
-  const char * name;
-  const char * descr;
+typedef struct _at_input_format_entry at_input_format_entry;
+struct _at_input_format_entry {
+  const gchar * descr;
   at_input_read_func reader;
 };
 
-#define END   {NULL, NULL, NULL}
-static struct input_format_entry input_formats[] = {
-#ifdef HAVE_LIBPNG
-  { "PNG",   "Portable network graphics",      input_png_reader},
-#endif /* HAVE_LIBPNG */
-  { "TGA",   "Truevision Targa image",         input_tga_reader },
-  { "PBM",   "Portable bitmap format",         input_pnm_reader },
-  { "PNM",   "Portable anymap format",         input_pnm_reader },
-  { "PGM",   "Portable graymap format",        input_pnm_reader },
-  { "PPM",   "Portable pixmap format",         input_pnm_reader },
-  { "BMP",   "Microsoft Windows bitmap image", input_bmp_reader },
-  END
-};
+static GHashTable * at_input_formats = NULL;
+static at_input_format_entry * at_input_format_new(const char * descr,
+						   at_input_read_func reader);
+static void at_input_format_free (at_input_format_entry * entry);
+
+/* 
+ * Helper functions 
+ */
+static void input_list_set (gpointer key, gpointer value, gpointer user_data);
+static void input_list_strlen (gpointer key, gpointer value, gpointer user_data);
+static void input_list_strcat (gpointer key, gpointer value, gpointer user_data);
+
+/**
+ * at_input_init: 
+ * Initialize at_input input plugin sub system. 
+ *
+ * Return value: 1 for success, else for failure
+ **/
+int
+at_input_init (void)
+{
+  if (at_input_formats)
+    return 1;
+
+  at_input_formats = g_hash_table_new_full (NULL, 
+					    (GEqualFunc)strgicmp,
+					    g_free,
+					    (GDestroyNotify)at_input_format_free);
+  if (!at_input_formats)
+    return 0;
+  return 1;
+}
+
+static at_input_format_entry *
+at_input_format_new(const gchar * descr,
+		    at_input_read_func reader)
+{
+  at_input_format_entry * entry;
+  entry = g_malloc (sizeof(at_input_format_entry));
+  if (entry)
+    {
+      entry->descr  = g_strdup(descr);
+      entry->reader = reader;
+    }
+  return entry;
+}
+
+static void
+at_input_format_free(at_input_format_entry * entry)
+{
+  g_free((gpointer)entry->descr);
+  g_free(entry);
+}
+
+int
+at_input_add_handler (const at_string suffix, 
+		      const at_string description,
+		      at_input_read_func reader)
+{
+  return at_input_add_handler_full (suffix, description, reader, 0);
+}
+
+int
+at_input_add_handler_full (const at_string suffix, 
+			   const at_string description,
+			   at_input_read_func reader,
+			   at_bool override)
+{
+  gchar * gsuffix;
+  const gchar * gdescription;
+  gboolean goverride;
+  at_input_format_entry * old_entry;
+  at_input_format_entry * new_entry;
+  
+  g_return_val_if_fail (suffix, 0);
+  g_return_val_if_fail (description, 0);
+  g_return_val_if_fail (reader, 0);
+  
+  gsuffix      = (gchar *)suffix;
+  gdescription = (const gchar *)description;
+  goverride    = (gboolean)override;
+
+  old_entry        = g_hash_table_lookup (at_input_formats, gsuffix);
+  if (old_entry && !override) 
+    return 1;
+
+  new_entry = at_input_format_new(gdescription, reader);
+  g_return_val_if_fail (new_entry, 0);
+
+  gsuffix = g_strdup(gsuffix);
+  g_return_val_if_fail (gsuffix, 0);  
+  g_hash_table_replace(at_input_formats, gsuffix, new_entry);
+  return 1;
+}
 
 at_input_read_func
 at_input_get_handler (at_string filename)
@@ -73,106 +144,31 @@ at_input_get_handler (at_string filename)
 at_input_read_func
 at_input_get_handler_by_suffix (at_string suffix)
 {
-  struct input_format_entry * format;
+  at_input_format_entry * format;
   
   if (!suffix || suffix[0] == '\0')
     return NULL;
 
-  for (format = input_formats ; format->name; format++)
-    {
-      if (strgicmp (suffix, format->name))
-        {
-          return format->reader;
-        }
-    }
-#if HAVE_MAGICK
-  return (at_input_read_func)input_magick_reader;
-#else
-  return NULL;
-#endif /* HAVE_MAGICK */
+  format = g_hash_table_lookup (at_input_formats, suffix);
+  if (format)
+    return format->reader;
 }
 
 const char **
 at_input_list_new (void)
 {
-  const char ** list;
-  int count, count_int = 0;
-  int i;
-#if HAVE_MAGICK
-  ExceptionInfo exception;
-#if (MagickLibVersion < 0x0540)
-  MagickInfo *info, *magickinfo;
-#else
-  const MagickInfo *info, *magickinfo;
-#endif
-#endif
+  char ** list, **tmp;
+  gint format_count;
+  gint list_count;
 
-  struct input_format_entry * entry;
-  for (entry = input_formats; entry->name; entry++)
-    count_int++;
-#if HAVE_MAGICK
-#if (MagickLibVersion < 0x0538)
-  MagickIncarnate("");
-#else
-  InitializeMagick("");
-#endif
-  GetExceptionInfo(&exception);
-#if (MagickLibVersion < 0x0534)
-  magickinfo = info = GetMagickInfo(NULL);
-#else
-  info = GetMagickInfo(NULL, &exception);
-  if (info && !info->next)
-    info = GetMagickInfo("*", &exception);
-  magickinfo = info;
-#endif
-#endif
-  count = count_int;
-#if HAVE_MAGICK
-  while (info)
-    {
-#if (MagickLibVersion < 0x0537)
-      if (info->tag && info->description)
-#else
-      if (info->name && info->description)
-#endif
-        count ++;
-      info = info->next ;
-    }
-#endif
+  format_count 	   = g_hash_table_size(at_input_formats);
+  list_count   	   = 2 * format_count;
+  list 	       	   = g_new(gchar *, list_count + 1);
+  list[list_count] = NULL;
 
-  XMALLOC(list, sizeof(char*)*((2*count)+1));
-
-  entry = input_formats;
-  for (i = 0; i < count_int; i++)
-    {
-      list[2*i] = (char *)entry[i].name;
-      list[2*i+1] = (char *)entry[i].descr;
-    }
-
-#if HAVE_MAGICK
-  info = magickinfo;
-
-  while (info)
-    {
-#if (MagickLibVersion < 0x0537)
-      if (info->tag && info->description)
-#else
-      if (info->name && info->description)
-#endif
-        {
-#if (MagickLibVersion < 0x0537)
-          list[2*i] = info->tag;
-#else
-          list[2*i] = info->name;
-#endif
-          list[2*i+1] = info->description;
-          i++;
-        }
-      info = info->next ;
-    }
-#endif
-  list[2*i] = NULL;
-  return list;
+  tmp 		   = list;
+  g_hash_table_foreach (at_input_formats, input_list_set, &tmp);
+  return (const char **)list;
 }
 
 void
@@ -184,96 +180,58 @@ at_input_list_free(const char ** list)
 char *
 at_input_shortlist (void)
 {
-  char * list;
-  int count_int = 0;
-  size_t length = 0;
-  int i;
-#if HAVE_MAGICK
-  ExceptionInfo exception;
-#if (MagickLibVersion < 0x0540)
-  MagickInfo *info, *magickinfo;
-#else
-  const MagickInfo *info, *magickinfo;
-#endif
-#endif
+  gint length = 0, count;
+  char * list, *tmp;
+  g_hash_table_foreach (at_input_formats, input_list_strlen, &length);
+  count = g_hash_table_size(at_input_formats);
 
-  struct input_format_entry * entry;
-  for (entry = input_formats; entry->name; entry++)
-    {
-      count_int++;
-      length += strlen (entry->name) + 2;
-  }
+  /* 2 for ", " */
+  length  += (2*count);	
+  list 	  = g_malloc(length + 1); 
+  list[0] = '\0';
 
-#if HAVE_MAGICK
-#if (MagickLibVersion < 0x0538)
-  MagickIncarnate("");
-#else
-  InitializeMagick("");
-#endif
-  GetExceptionInfo(&exception);
-#if (MagickLibVersion < 0x0534)
-  magickinfo = info = GetMagickInfo(NULL);
-#else
-  magickinfo = info = GetMagickInfo(NULL, &exception);
-#endif
-#endif
-#if HAVE_MAGICK
-  while (info)
-    {
-#if (MagickLibVersion < 0x0537)
-      if (info->tag && info->description)
-#else
-      if (info->name && info->description)
-#endif
-        {
-#if (MagickLibVersion < 0x0537)
-          length += strlen (info->tag) + 2;
-#else
-          length += strlen (info->name) + 2;
-#endif
-        }
-      info = info->next ;
-    }
-#endif
+  tmp = list;
+  g_hash_table_foreach(at_input_formats, input_list_strcat, &tmp);
 
-  XMALLOC(list, sizeof (char) * (length + 1 + 2));
-
-  entry = input_formats;
-  strcpy (list, (char *) entry[0].name);
-  for (i = 1; i < count_int - 1; i++)
-    {
-      strcat (list, ", ");
-      strcat (list, (char *) entry[i].name);
-    }
-#if HAVE_MAGICK
-  info = magickinfo;
-  while (info)
-    {
-#if (MagickLibVersion < 0x0537)
-      if (info->tag && info->description)
-#else
-      if (info->name && info->description)
-#endif
-        {
-          strcat (list, ", ");
-#if (MagickLibVersion < 0x0537)
-          strcat (list, info->tag);
-#else
-          strcat (list, info->name);
-#endif
-        }
-      info = info->next ;
-    }
-#endif
-  strcat (list, " or ");
-  strcat (list, (char *) entry[i].name);
+  /* remove final ", " */
+  g_return_val_if_fail (list[length - 2] == ',', NULL);
+  list[length - 2] = '\0';
   return list;
 }
 
-int
-at_input_add_handler (at_string suffix, 
-		      at_string description,
-		      at_input_read_func func)
+static void 
+input_list_set (gpointer key, gpointer value, gpointer user_data)
 {
-  return 0;
+  at_input_format_entry * format = value;
+  const char *** list_ptr = user_data;
+  const char ** list = *list_ptr;
+  list[0] 	     = key;
+  list[1] 	     = format->descr;
+  *list_ptr 	     = &(list[2]); 
 }
+
+static void
+input_list_strlen (gpointer key, gpointer value, gpointer user_data)
+{
+  gint * length;
+  g_return_if_fail (key);
+  g_return_if_fail (user_data);
+
+  length  = user_data;
+  *length += strlen(key);
+}
+
+static void
+input_list_strcat (gpointer key, gpointer value, gpointer user_data)
+{
+  gchar ** list_ptr;
+  gchar *  list;
+  list_ptr = user_data;
+  list 	   = *list_ptr;
+  strcat (list, key);
+  strcat (list, ", ");
+  
+  /* 2 for ", " */
+  *list_ptr = list + strlen(key) + 2;
+}
+

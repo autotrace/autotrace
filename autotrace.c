@@ -23,6 +23,8 @@
 #endif /* Def: HAVE_CONFIG_H */
 #include "intl.h"
 
+#include "private.h"
+
 #include "autotrace.h"
 #include "exception.h"
 
@@ -471,6 +473,11 @@ autotrace_init (void)
       setlocale (LC_ALL, "");
       bindtextdomain (PACKAGE, LOCALEDIR);
 #endif /* Def: ENABLE_NLS */
+
+      /* Initialize subsystems */
+      at_input_init ();
+      at_module_init ();
+
       initialized = 1;
     }
 }

@@ -31,10 +31,19 @@ extern "C" {
    following functions and macros. */
 
 /* at_input_add_handler
-   Register an input handler to autotrace. */
-extern int at_input_add_handler (at_string suffix, 
-				 at_string description,
-				 at_input_read_func func);
+   Register an input handler to autotrace. 
+   If a handler for the suffix is already existed, do nothing. */
+extern int at_input_add_handler (const at_string suffix, 
+				 const at_string description,
+				 at_input_read_func reader);
+/* at_input_add_handler_full
+   If OVERRIDE is true and if the old handler for suffix is existed,
+   remove the old handler first then add new handler.  
+   If OVERRIDE is false, do nothing. */
+extern int at_input_add_handler_full (const at_string suffix, 
+				      const at_string description,
+				      at_input_read_func reader,
+				      at_bool override);
 
 /* at_bitmap_init
    Return initialized at_bitmap_type value.

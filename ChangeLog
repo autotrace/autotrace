@@ -1,5 +1,24 @@
 2003-02-09  Masatake YAMATO  <yamato@redhat.com>
 
+	* autotrace.c: Include private.h.
+	(autotrace_init): invoke at_input_init and
+	at_module_init.
+
+	* input.c: rewrote. All imagemagick code are moved
+	to module.c.
+
+	* input.[ch] (at_input_add_handler_full): New function.
+
+	* module.c: New file.
+
+	* configure.in: Checking pkg-config.
+
+	* private.h: New file
+
+2003-02-09  Masatake YAMATO  <yamato@redhat.com>
+
+	* main.c (USAGE2): 1.0..0.0 => 0.0..1.0.
+
 	* Makefile.am (output_src): Added output-pov.*.
 
 2003-02-08  Martin Weber <martweb@gmx.net>
