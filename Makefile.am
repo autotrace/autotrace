@@ -3,6 +3,12 @@ AUTOMAKE_OPTIONS = foreign no-dependencies
 
 bin_PROGRAMS=autotrace
 
+if HAVE_MAGICK
+input_magick_src=input-magick.h input-magick.c
+else
+input_magick_src=""
+endif
+
 autotrace_SOURCES=atou.c fit.c  main.c  remove-suffx.c \
 atou.h fit.h  main.h remove-suffx.h \
 bitmap.c make-suffix.c \
@@ -25,7 +31,8 @@ xmem.h color.c color.h \
 find-suffix.c logreport.c pxl-outline.c \
 find-suffix.h logreport.h pxl-outline.h \
 output-dxf.c output-dxf.h output-dxf12.c \
-output-dxf12.h median.c median.h quantize.h
+output-dxf12.h median.c median.h quantize.h \
+$(input_magick_src)
 
-INCLUDES = $(GTK_DPS_CFLAGS)
-autotrace_LDADD=	$(GTK_DPS_LDFLAGS) -lm
+INCLUDES = $(MAGICK_CFLAGS)
+autotrace_LDADD=	$(MAGICK_LDFLAGS) -lm

@@ -1,5 +1,16 @@
 2000-09-26  Masatake YAMATO  <yamato@redhat.com>
 
+	* main.c: Applied a patch from <Johannes.Schindelin@gmx.de> 
+	for Magick input support. See blocks surrounded by HAVE_MAGICK.
+	(SUFFIX_LIST): New macro definition.
+
+ 	* input-magick.[ch]: Magick input plug donated by 
+	<Johannes.Schindelin@gmx.de>.
+	
+	* configure.in(MAGICK_CONFIG): Check Magick-config.
+
+	* Makefile.am(HAVE_MAGICK): New condition.
+
 	* output-eps.c: Applied a patch from 
 	Bernhard Herzog <herzog@online.de>.
 		

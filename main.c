@@ -8,6 +8,10 @@
 #include "getopt.h"
 #include "input-pnm.h"
 #include "input-bmp.h"
+#if HAVE_MAGICK
+#include "input-magick.h"
+#endif /* HAVE_MAGICK */
+
 #include "fit.h"
 #include "main.h"
 #include "output.h"
@@ -56,6 +60,9 @@ static void set_pnm_input_format (void);
 static void set_pgm_input_format (void);
 static void set_ppm_input_format (void);
 static void set_bmp_input_format (void);
+#if HAVE_MAGICK
+static void set_magick_input_format (void);
+#endif /* HAVE_MAGICK */
 
 static string read_command_line (int, string []);
 
@@ -143,8 +150,16 @@ main (int argc, string argv[])
 /* This is defined in version.c.  */
 extern string version_string;
 
+#if HAVE_MAGICK
+#define MAGICK_SUFFIX "magick, "
+#else 
+#define MAGICK_SUFFIX ""
+#endif /* HAVE_MAGICK */
+
+#define SUFFIX_LIST MAGICK_SUFFIX "pbm, pnm, pgm, ppm or bmp"
+
 #define USAGE1 "Options:\
-<input_name> should be a filename, pbm, pnm, pgm, ppm or bmp.\n"\
+<input_name> should be a filename, " SUFFIX_LIST ".\n"\
   GETOPT_USAGE								\
 "align-threshold <real>: if either coordinate of the endpoints on a\n\
   spline is closer than this, make them the same; default is .5.\n\
@@ -173,7 +188,7 @@ filter-percent <percent>: when filtering, use the old point plus this\n\
   much of neighbors to determine the new point; default is 33.\n\
 filter-surround <unsigned>: number of pixels on either side of a point\n\
   to consider when filtering that point; default is 2.\n\
-input-format: pbm, pnm, pgm, ppm or bmp. \n\
+input-format: " SUFFIX_LIST ". \n\
 help: print this message.\n"
 #define USAGE2 "line-reversion-threshold <real>: if a spline is closer to a straight\n\
   line than this, weighted by the square of the curve length, keep it a\n\
@@ -309,9 +324,14 @@ read_command_line (int argc, string argv[])
 	    set_ppm_input_format ();
 	  else if (STREQ ("bmp", optarg))
 	    set_bmp_input_format ();
+#if HAVE_MAGICK
+	  else if (STREQ ("magick", optarg))
+	    set_magick_input_format ();
+#endif /* HAVE_MAGICK */
 	  else
-	    FATAL1("autotrace: Unknown input format `%s'; expected one of \
-`pnm', `pbm', `pgm', `ppm' or `bmp´", optarg);
+	    FATAL2("autotrace: Unknown input format `%s'; expected one of %s", 
+		   SUFFIX_LIST,
+		   optarg);
         }
 
       else if (ARGUMENT_IS ("line-reversion-threshold"))
@@ -388,7 +408,10 @@ set_input_format (string filename)
 
   else if (STREQ (input_extension, "bmp"))
     set_bmp_input_format ();
-
+#if HAVE_MAGICK
+  else
+    set_magick_input_format ();
+#else   
   else /* Can't guess it; quit.  */
     {
       fprintf (stderr, "You must supply an input format.\n");
@@ -396,6 +419,7 @@ set_input_format (string filename)
       fprintf (stderr, "For more information, use ``-help''.\n");
       exit (1);
     }
+#endif /* HAVE_MAGICK */
 }
 
 
@@ -438,7 +462,6 @@ set_ppm_input_format (void)
   input_extension = "ppm";
 }
 
-
 /* Set up for reading an BMP file.  */
 
 static void
@@ -448,6 +471,15 @@ set_bmp_input_format (void)
   input_extension = "bmp";
 }
 
+#if HAVE_MAGICK
+/* Set up for reading via ImageMagick */
+static void
+set_magick_input_format (void)
+{
+  load_image = magick_load_image;
+  input_extension = "any";
+}
+#endif /* HAVE_MAGICK */
 
 /* Return NAME with any leading path stripped off.  This returns a
    pointer into NAME.  For example, `basename ("/foo/bar.baz")'

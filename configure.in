@@ -3,24 +3,20 @@
 # Author: Masatake YAMATO (yamato@redhat.com)
 #
 AC_INIT(fit.c)
-AM_INIT_AUTOMAKE(autotrace, 0.201+frontline, no-define)
+AM_INIT_AUTOMAKE(autotrace, 0.24a, no-define)
 
 AC_PROG_CC
 AC_PROG_CPP
 AC_PROG_RANLIB
 
-AC_CHECK_PROG(GTK_DPS_CONFIG, gtkDPS-config, gtkDPS-config, "")
-
-if test "x$GTK_DPS_CONFIG" = "xgtkDPS-config" ; then
-	AM_PATH_GTK_DPS()
-	AC_DEFINE(FRONTLINE)
-else
-	AC_MSG_WARN(Cannot find GtkDPS; GUI frontend is omitted)
-	GTK_DPS_CFLAGS=""
-	GTK_DPS_LDFLAGS=""
-	AC_SUBST(GTK_DPS_CFLAGS)
-	AC_SUBST(GTK_DPS_LDFLAGS)
+AC_CHECK_PROG(MAGICK_CONFIG, Magick-config, Magick-config, "")
+if test "x$MAGICK_CONFIG" = "xMagick-config" ; then
+	MAGICK_CFLAGS="`Magick-config --cppflags`"
+	MAGICK_LDFLAGS="`Magick-config --ldflags` `Magick-config --libs`"
+	AC_SUBST(MAGICK_CFLAGS)
+	AC_SUBST(MAGICK_LDFLAGS)
+	AC_DEFINE(HAVE_MAGICK)
 fi
-AM_CONDITIONAL(FRONTLINE, test x$GTK_DPS_CONFIG = xgtkDPS-config)
+AM_CONDITIONAL(HAVE_MAGICK, test x$MAGICK_CONFIG = xMagick-config)
 
 AC_OUTPUT(Makefile)
