@@ -24,7 +24,7 @@ and autofig.
 Autofig generate autotrace-config.in from autotrace-config.af.
 You can get autofig from:
 
-ftp://ftp.gyve.org/pub/misc/autofig-SNAP.tar.gz 
+http://autotrace.sourceforge.net/tools/
 
 You can get the LATEST version of autofig.
 http://cvs.gnome.org/bonsai/rview.cgi?cvsroot=/cvs/gnome&dir=autofig
