@@ -22,9 +22,13 @@
 
 #ifndef __cplusplus
 /* Booleans.  */
-#ifndef at_bool
+#ifndef bool
 typedef enum { false = 0, true = 1 } at_bool;
+#else
+#define at_bool bool
 #endif
+#else
+#define at_bool bool
 #endif
 
 /* The usual null-terminated string.  */

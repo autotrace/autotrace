@@ -1,3 +1,11 @@
+2001-12-02  Martin Weber <martweb@gmx.net>
+
+	* types.h: adopted to C++.
+
+	* main.c (read_command_line): Likewise.
+
+	(Message-ID: <B82F2B8A.275630@[192.168.1.2]>).
+
 2001-12-01  Masatake YAMATO  <yamato@redhat.com>
 
 	* README.MING: Write about Visual C++ and libming.*.

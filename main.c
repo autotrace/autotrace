@@ -285,7 +285,7 @@ read_command_line (int argc, char * argv[],
 
       else if (ARGUMENT_IS ("help"))
         {
-		  unsigned char *ishortlist, *oshortlist;
+		  char *ishortlist, *oshortlist;
           fprintf (stderr, "Usage: %s [options] <input_name>.\n", argv[0]);
           fprintf (stderr, USAGE1);
           fprintf (stderr, USAGE2, ishortlist = input_shortlist(),
