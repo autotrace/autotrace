@@ -8,8 +8,8 @@
 #include "autotrace.h"
 
 typedef at_output_write_func output_write;
-
-output_write output_get_handler(string name);
+output_write output_get_handler (string filename);
+output_write output_get_handler_by_suffix(string name);
 char ** output_list (void);
 char * output_shortlist (void);
 

@@ -1,6 +1,19 @@
+2001-12-19  Masatake YAMATO  <yamato@redhat.com>
+
+	* main.c (read_command_line): Used
+	output_get_handler_by_suffix.
+	(main): Use at_output_get_handler.
+	Use suffix of output_name to select output_handler.
+	
+	* output.c (output_get_handler): Used suffix.
+
+	* output.[ch] (output_get_handler_by_suffix): New function.
+	
+	* autotrace.[ch] (at_output_get_handler_by_suffix): New function.
+	
 2001-12-18  Masatake YAMATO  <yamato@redhat.com>
 	
-	* Makefile.am (output_src): Addd mif.[ch].
+	* Makefile.am (output_src): Added mif.[ch].
 
 2001-12-18  Per Grahn <pergra@foi.se>
 

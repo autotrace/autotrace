@@ -109,10 +109,14 @@ main (int argc, char * argv[])
   if (!input_reader)
     input_reader = at_input_get_handler (input_name);
 
-  /* Set output_writer if it is not set in command line args */
+  /* Set output_writer if it is not set in command line args 
+     Step1. Guess from a file name.
+     Step2. Use default. */
+  if (!output_writer)
+    output_writer = at_output_get_handler (output_name);
   if (!output_writer)
     {
-      output_writer = at_output_get_handler(DEFAULT_FORMAT);
+      output_writer = at_output_get_handler_by_suffix(DEFAULT_FORMAT);
       if (output_writer == NULL)
 	FATAL1("Default format %s not supported\n", DEFAULT_FORMAT);
     }
@@ -336,7 +340,7 @@ read_command_line (int argc, char * argv[],
 
       else if (ARGUMENT_IS ("output-format"))
         {
-	    output_writer = at_output_get_handler (optarg);
+	    output_writer = at_output_get_handler_by_suffix (optarg);
 	    if (output_writer == NULL)
 	      {
 		    FATAL1 ("Output format %s not supported\n", optarg);

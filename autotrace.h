@@ -254,7 +254,9 @@ void at_splines_free (at_splines_type * splines);
 /* TODO internal data access */
 
 /* Output related */
-at_output_write_func at_output_get_handler (at_string suffix);
+at_output_write_func at_output_get_handler (at_string filename);
+at_output_write_func at_output_get_handler_by_suffix (at_string suffix);
+
 void 
 at_output_write(at_output_write_func output_writer,
 		FILE * writeto,

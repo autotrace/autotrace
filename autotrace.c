@@ -186,9 +186,15 @@ at_splines_free (at_splines_type * splines)
 /* TODO internal data access */
 
 at_output_write_func 
-at_output_get_handler (string suffix)
+at_output_get_handler (string filename)
 {
-  return output_get_handler(suffix);
+  return output_get_handler(filename);
+}
+
+at_output_write_func 
+at_output_get_handler_by_suffix (string suffix)
+{
+  return output_get_handler_by_suffix(suffix);
 }
 
 void 

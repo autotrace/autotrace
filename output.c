@@ -3,6 +3,7 @@
 
 #include "output.h"
 #include "xstd.h"
+#include "filename.h"
 #include <string.h>
 
 #include "output-eps.h"
@@ -41,12 +42,24 @@ static struct output_format_entry output_formats[] = {
     {"mif",     "FrameMaker MIF format",       output_mif_writer},
     {"er",      "Elastic Reality Shape file",   output_er_writer},
     {"dxf12",   "DXF format (without splines)", output_dxf12_writer},
+    {"dxf",     "default DXF format", output_dxf12_writer},
     {"epd",     "EPD format",   output_epd_writer},
     {"pdf",     "PDF format",                 output_pdf_writer},
     {NULL,	NULL}
 };
 
-output_write output_get_handler(string name)
+output_write
+output_get_handler(string filename)
+{
+  char * ext = find_suffix (filename);
+  if (ext == NULL)
+    ext = "";
+  
+  return output_get_handler_by_suffix (ext);
+}
+
+output_write 
+output_get_handler_by_suffix(string name)
 {
     struct output_format_entry *entry;
 
