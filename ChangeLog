@@ -1,3 +1,15 @@
+2004-01-05  Masatake YAMATO  <yamato@redhat.com>
+
+	* autotrace.h(enum _at_msg_type): Applied a patch
+	#843475 at sourceforge's patch tracker.
+
+	Jon A. Cruz:
+	Can't forward declare enums                                                                       
+	when compiling with g++ (as when trying to include                                                
+	autotrace or frontline support), it errors out on                                                 
+	typedefs of enums that occurr before the enum                                                     
+	declarations themselves.                                                                          	
+
 2003-08-17  Masatake YAMATO  <yamato@redhat.com>
 
 	* autotrace.c (at_time_string): check the value of
