@@ -29,7 +29,8 @@ extern char *version_string;
 #define ENMT_CREATEBRUSHINDIRECT  39
 #define ENMT_SELECTOBJECT         37
 #define ENMT_SETWORLDTRANSFORM    35
-#define ENMT_SETPOLYFILLMODE       19
+#define ENMT_SETPOLYFILLMODE      19
+#define ENMT_STROKEPATH           64
 
 #define FM_ALTERNATE 1
 
@@ -274,6 +275,22 @@ int WriteStrokeAndFillPath(FILE *fdes)
   if(fdes != NULL)
   {
     write32(fdes, ENMT_STROKEANDFILLPATH);
+    write32(fdes, (UI32) recsize);
+    write32(fdes, (UI32) 0x0);
+    write32(fdes, (UI32) 0x0);
+    write32(fdes, (UI32) 0xFFFFFFFF);
+    write32(fdes, (UI32) 0xFFFFFFFF);
+  }
+  return recsize;
+}
+
+int WriteStrokePath(FILE *fdes)
+{
+  int recsize = sizeof(UI32) * 6;
+  
+  if(fdes != NULL)
+  {
+    write32(fdes, ENMT_STROKEPATH);
     write32(fdes, (UI32) recsize);
     write32(fdes, (UI32) 0x0);
     write32(fdes, (UI32) 0x0);
@@ -547,6 +564,7 @@ void OutputEmf(FILE* fdes, EMFStats *stats, string name, int width, int height, 
   spline_type curr_spline;
   int last_degree, open_path = 0;
   int nlines;
+  extern bool at_centerline; 
   
   /* output EMF header */
   WriteHeader(fdes, name, width, height, stats->filesize, stats->nrecords, (stats->ncolors * 2) +1);
@@ -579,8 +597,12 @@ void OutputEmf(FILE* fdes, EMFStats *stats, string name, int width, int height, 
 		/* output EndPath */
 		WriteEndPath(fdes);
 
-        /* output StrokeAndFillPath */
-        WriteStrokeAndFillPath(fdes);
+		if (at_centerline)
+			/* output StrokePath */
+			WriteStrokePath(fdes);
+		else
+			/* output StrokePath */
+			WriteStrokeAndFillPath(fdes);
 	  }
 	  
 	  /* output a BeginPath for current shape */
@@ -637,8 +659,12 @@ void OutputEmf(FILE* fdes, EMFStats *stats, string name, int width, int height, 
     /* output EndPath */
 	WriteEndPath(fdes);
 
-    /* output StrokeAndFillPath */
-    WriteStrokeAndFillPath(fdes);
+	if (at_centerline)
+		/* output StrokePath */
+		WriteStrokePath(fdes);
+	else
+		/* output StrokePath */
+		WriteStrokeAndFillPath(fdes);
   }
   
   /* output EndOfMetafile */
