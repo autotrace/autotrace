@@ -41,6 +41,7 @@ output-svg.c output-svg.h \
 output-p2e.c output-p2e.h \
 output-emf.c output-emf.h \
 output-dxf.c output-dxf.h \
+output-epd.c output-epd.h \
 $(output_swf_src)
 
 libautotrace_a_SOURCES = version.c               \

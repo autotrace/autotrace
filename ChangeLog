@@ -1,3 +1,15 @@
+2001-11-24  Masatake YAMATO  <yamato@redhat.com>
+
+	* Makefile.am (output_src): Added output-epd.[ch].
+
+2001-11-21  Martin Weber <martweb@gmx.net>
+
+	* output-epd.[ch]: New files.
+
+	* output.c (output_formats): output_epd_writer is added.
+
+	(Message-ID: <3BFC27DC.DE9DE0E7@gmx.net>)
+	
 2001-11-21  Martin Weber <martweb@gmx.net>
 
 	* output.h (OUTPUT_SUFFIX_LIST): Removed dxf12.
