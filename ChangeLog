@@ -1,3 +1,8 @@
+2000-12-02  Masatake YAMATO  <yamato@redhat.com>
+
+	* input-tga.c: Include unistd.h.
+	Suggested by Brian V. Smith <bvsmith@epb1.lbl.gov>.
+
 2000-12-01  Masatake YAMATO  <yamato@redhat.com>
 
 	* Merge branch TOWARD_RELEASE_0_26->RELEASE_0_26.
