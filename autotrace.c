@@ -38,7 +38,9 @@
 #include "thin-image.h"
 #include "despeckle.h"
 
+#if HAVE_LIBPSTOEDIT 
 #include "output-pstoedit.h"
+#endif /* HAVE_LIBPSTOEDIT */  
 
 #define AT_DEFAULT_DPI 72
 
