@@ -4,6 +4,8 @@
 	Added image-header.h. 
 	(noinst_HEADERS): Added xstd.h, epsilon-equal.h,
 	logreport.h, usefull.h, message.h.
+	(libautotrace_a_SOURCES): Added quantize.h and
+	median.h.
 
 	* (substring.[ch]): Merged into filename.c.
 

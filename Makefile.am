@@ -35,7 +35,7 @@ output-dxf.c output-dxf.h \
 output-dxf12.c output-dxf12.h \
 output-emf.c output-emf.h
 
-libautotrace_a_SOURCES= version.c               \
+libautotrace_a_SOURCES = version.c               \
                 $(input_src) ${output_src}	\
 		fit.c				\
 		bitmap.c 			\
@@ -52,7 +52,11 @@ libautotrace_a_SOURCES= version.c               \
 	        thin-image.c			\
 		logreport.c 			\
 		filename.c                      \
-                xstd.c
+                xstd.c                          \
+                epsilon-equal.h 		\
+	        thin-image.h                    \
+	        quantize.h                      \
+		median.h
 
 autotraceinclude_HEADERS=\
 		image-header.h    		\
@@ -66,14 +70,15 @@ autotraceinclude_HEADERS=\
 		autotrace.h                     \
 		output.h 			\
 		input.h 			\
-		pxl-outline.h 			\
-		median.h 			\
-	        quantize.h                      \
-	        thin-image.h
+		pxl-outline.h
 
+#
+# noinst_HEADERS: headers shared between lib and bin.
+# File not installed and not shared should be in
+# libautotrace_a_SOURCES.
+#
 noinst_HEADERS = filename.h                     \
 		xstd.h                          \
-		epsilon-equal.h 		\
 		logreport.h			\
 		usefull.h                       \
 		message.h

@@ -11,7 +11,7 @@
 #include "curve.h"
 #include "pxl-outline.h"
 #include "epsilon-equal.h"
-#include "xmem.h"
+#include "xstd.h"
 #include <math.h>
 #ifndef FLT_MAX
 #include <limits.h>
