@@ -352,7 +352,6 @@ int bspline_to_lines(xypnt_head_rec *vtx_list          /*  */,
 */
 static void out_splines (FILE * ps_file, spline_list_array_type shape)
 {
-  extern bool at_centerline; 
   unsigned this_list;
   double startx, starty;
   xypnt_head_rec *vec, *res;

@@ -146,6 +146,9 @@ fitting_opts_type new_fitting_opts (void)
 /* Despeckle tightness */
   fitting_opts.despeckle_tightness = 2.0;
 
+/* Whether to trace a character's centerline or its outline  */
+  fitting_opts.centerline = false;
+
   return (fitting_opts);
 }
 
@@ -175,6 +178,8 @@ fitted_splines (pixel_outline_list_type pixel_outline_list,
   unsigned total = 0;
   spline_list_array_type char_splines = new_spline_list_array ();
   curve_list_array_type curve_array = split_at_corners (pixel_outline_list, fitting_opts);
+
+  char_splines.centerline = fitting_opts->centerline;
 
   for (this_list = 0; this_list < CURVE_LIST_ARRAY_LENGTH (curve_array);
        this_list++)

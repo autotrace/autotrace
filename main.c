@@ -80,7 +80,7 @@ main (int argc, char * argv[])
 
   input_name = read_command_line (argc, argv, fitting_opts);
 
-  at_centerline = centerline;	/* Dirty  */
+  fitting_opts->centerline = centerline;
   fitting_opts->remove_adj_corners = remove_adj_corners;
   fitting_opts->thin = thin;
 

@@ -121,7 +121,7 @@ out_splines (FILE * ps_file, spline_list_array_type shape)
 
 
       OUT1("\n\n%% %d pathnumber\n",pathnr); 
-	  OUT_LINE ((at_centerline || list.open) ? "% strokedpath" : "% filledpath");
+	  OUT_LINE ((shape.centerline || list.open) ? "% strokedpath" : "% filledpath");
 	  if (pathnr == 1) {
 		OUT_LINE (" 612 792 setPageSize");
 		OUT_LINE (" 0 setlinecap");
@@ -174,7 +174,7 @@ out_splines (FILE * ps_file, spline_list_array_type shape)
                           "curveto");
         }
       if (!list.open) OUT_LINE (" closepath");
-      OUT_LINE ((at_centerline || list.open) ? "stroke" : "fill");
+      OUT_LINE ((shape.centerline || list.open) ? "stroke" : "fill");
 
     }
 }

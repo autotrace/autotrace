@@ -14,8 +14,6 @@
 #include "thin-image.h"
 #include "despeckle.h"
 
-bool at_centerline = false;
-
 at_fitting_opts_type *
 at_fitting_opts_new(void)
 {
@@ -129,7 +127,7 @@ at_splines_new_full (at_bitmap_type * bitmap,
   image_header.width = at_bitmap_get_width(bitmap);
   image_header.height = at_bitmap_get_height(bitmap);
 
-  if (at_centerline)
+  if (opts->centerline)
     opts->thin = true;
 
   if (opts->color_count > 0)
@@ -142,7 +140,7 @@ at_splines_new_full (at_bitmap_type * bitmap,
 
   /* Hereafter, pixels is allocated. pixels must be freed if 
      the execution is canceled; use CANCEL_THEN_CLEANUP. */
-  if (at_centerline)
+  if (opts->centerline)
   {
     color_type bg_color = { 0xff, 0xff, 0xff };
     if (opts->bgColor) bg_color = *opts->bgColor;
@@ -162,6 +160,7 @@ at_splines_new_full (at_bitmap_type * bitmap,
   *splines = fitted_splines (pixels, opts,
 			     notify_progress, progress_data,
 			     test_cancel, testcancel_data);
+
   if (CANCELP)
     {
       at_splines_free (splines);

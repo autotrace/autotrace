@@ -1,5 +1,19 @@
 2001-11-21  Masatake YAMATO  <yamato@redhat.com>
 
+	* main.c (main): Set fitting_opts->centerline.
+
+	* fit.c (fitted_splines, new_fitting_opts): set value for
+	new field `centerline'.
+	
+	* autotrace.[ch] (at_centerline):  removed.
+	(struct _at_spline_list_array_type, struct _at_fitting_opts_type): 
+	new field `centerline' is added. 
+
+	* output-*.[ch]: at_centerline is removed.
+	Use shape.centerline instead.
+
+2001-11-21  Masatake YAMATO  <yamato@redhat.com>
+
 	* ptypes.h: New file.
 
 	* Makefile.am: Added ptypes.h.

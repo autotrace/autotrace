@@ -18,10 +18,10 @@ out_splines (FILE * file, spline_list_array_type shape)
 	spline_list_type list = SPLINE_LIST_ARRAY_ELT (shape, this_list);
 	spline_type first = SPLINE_LIST_ELT (list, 0);
 
-	fprintf(file, (at_centerline || list.open) ? "lp((%g,%g,%g))\n"
+	fprintf(file, (shape.centerline || list.open) ? "lp((%g,%g,%g))\n"
 		: "fp((%g,%g,%g))\n", list.color.r / 255.0,
 		list.color.g / 255.0, list.color.b / 255.0); 
-	fputs((at_centerline || list.open) ? "fe()\n" : "le()\n", file); /* no outline */
+	fputs((shape.centerline || list.open) ? "fe()\n" : "le()\n", file); /* no outline */
     
 	fputs("b()\n", file); /* the beginning of a bezier object */
 	fprintf(file, "bs(%g,%g,0)\n",
@@ -44,7 +44,7 @@ out_splines (FILE * file, spline_list_array_type shape)
 			END_POINT(s).x, END_POINT(s).y);
 	    }
         }
-	if (!at_centerline)
+	if (!shape.centerline)
 	  fputs("bC()\n", file);
     }
 }

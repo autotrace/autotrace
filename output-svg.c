@@ -18,9 +18,9 @@ out_splines (FILE * file, spline_list_array_type shape, int height)
 	spline_type first = SPLINE_LIST_ELT (list, 0);
 
 	fprintf(file, "<path style=\"%s:#%02x%02x%02x; %s:none\" d=\"",
-		(at_centerline || list.open) ? "stroke" : "fill",
+		(shape.centerline || list.open) ? "stroke" : "fill",
 		list.color.r, list.color.g, list.color.b,
-		(at_centerline || list.open) ? "fill" : "stroke");
+		(shape.centerline || list.open) ? "fill" : "stroke");
 	fprintf(file, "M%g %g",
 		START_POINT(first).x, height - START_POINT(first).y);
       
@@ -42,7 +42,7 @@ out_splines (FILE * file, spline_list_array_type shape, int height)
 			END_POINT(s).x, height - END_POINT(s).y);
 	    }
         }
-	if (!(at_centerline || list.open)) fputs("z", file);
+	if (!(shape.centerline || list.open)) fputs("z", file);
 	fputs("\"/>\n", file);
     }
 }

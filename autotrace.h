@@ -28,13 +28,6 @@ extern "C" {
 #endif /* __cplusplus */
 
 /*
- * Global variables
- */
-/* Whether to trace a character's centerline or its outline 
- - This should be in filtering_opts and output_opts */
-extern at_bool at_centerline;
-
-/*
  * Typedefs
  */
 typedef struct _at_fitting_opts_type at_fitting_opts_type;
@@ -96,6 +89,8 @@ struct _at_spline_list_array_type
 {
   at_spline_list_type *data;
   unsigned length;
+  /* Whether to trace a character's centerline or its outline  */
+  at_bool centerline;
 };
 
 struct _at_fitting_opts_type
@@ -162,6 +157,9 @@ struct _at_fitting_opts_type
 
 /* Despeckle tightness */
   at_real despeckle_tightness;
+
+/* Whether to trace a character's centerline or its outline  */
+  at_bool centerline;
 };
 
 struct _at_bitmap_type
@@ -171,7 +169,6 @@ struct _at_bitmap_type
   unsigned char *bitmap;
   unsigned int np;
 };
-
 
 /*
  * IO Handler typedefs

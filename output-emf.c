@@ -639,8 +639,7 @@ static void OutputEmf(FILE* fdes, EMFStats *stats, string name, int width, int h
   spline_type curr_spline;
   int last_degree, open_path = 0;
   int nlines;
-  extern bool at_centerline; 
-  
+
   /* output EMF header */
   WriteHeader(fdes, name, width, height, stats->filesize, stats->nrecords, (stats->ncolors * 2) +1);
   
@@ -674,7 +673,7 @@ static void OutputEmf(FILE* fdes, EMFStats *stats, string name, int width, int h
 		/* output EndPath */
 		WriteEndPath(fdes);
 
-		if (at_centerline)
+		if (shape.centerline)
 			/* output StrokePath */
 			WriteStrokePath(fdes);
 		else
@@ -736,7 +735,7 @@ static void OutputEmf(FILE* fdes, EMFStats *stats, string name, int width, int h
     /* output EndPath */
 	WriteEndPath(fdes);
 
-	if (at_centerline)
+	if (shape.centerline)
 		/* output StrokePath */
 		WriteStrokePath(fdes);
 	else

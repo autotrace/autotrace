@@ -92,7 +92,6 @@ static void out_fig_splines(FILE * file, spline_list_array_type shape,
 /*    int fig_colour, fig_depth, i; */
     int fig_colour, fig_fill, fig_width, i;
     int *spline_colours;
-    extern bool at_centerline;
 
 /*
 	add an array of colours for splines (one for each group)
@@ -191,7 +190,7 @@ static void out_fig_splines(FILE * file, spline_list_array_type shape,
 		is_spline=1;
 	    }
         }
-	if (at_centerline) {
+	if (shape.centerline) {
 	    fig_fill = -1; fig_width = 1;
 	} else {
 	    /* Use zero width lines - unit width is too thick */

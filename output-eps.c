@@ -123,7 +123,6 @@ static int output_eps_header(FILE* ps_file, string name,
 static void
 out_splines (FILE * ps_file, spline_list_array_type shape)
 {
-  extern bool at_centerline; 
   unsigned this_list;
 
   color_type last_color = {0,0,0};
@@ -154,7 +153,7 @@ out_splines (FILE * ps_file, spline_list_array_type shape)
           /* symbol k is used for CorelDraw 3/4 compatibility */
           OUT5 ("%f %f %f %f %s\n", (double) c/255.0,
 		(double) m/255.0,(double) y/255.0, (double) k/255.0,
-		(at_centerline || list.open) ? "K" : "k");
+		(shape.centerline || list.open) ? "K" : "k");
 	  OUT_LINE("*u");    
 	  last_color = list.color;
 	}    
@@ -173,7 +172,7 @@ out_splines (FILE * ps_file, spline_list_array_type shape)
                           END_POINT (s).x, END_POINT (s).y,
                           "c");
         }
-      OUT_LINE ((at_centerline || list.open) ? "S" : "f");
+      OUT_LINE ((shape.centerline || list.open) ? "S" : "f");
 
     }
   if (SPLINE_LIST_ARRAY_LENGTH(shape) > 0)
