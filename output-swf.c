@@ -74,7 +74,7 @@ int output_swf_writer(FILE* file, string name,
     SWFMovie_setDimension(m, SWFSCALE*(float)width, SWFSCALE*(float)height);
     SWFMovie_setRate(m, FPS);
     SWFMovie_nextFrame(m);
-    SWFMovie_output(m, fileOutputMethod, file);
+    SWFMovie_save(m, name);
     return 0;
 }
 

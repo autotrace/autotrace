@@ -1,7 +1,18 @@
 2001-12-01  Martin Weber <martweb@gmx.net>
 
+	* output-swf.c (output_swf_writer): Now using file instead of 
+	name so that it works also to stdout.
+
+	(Message-ID: <3C02BF23.9D19CCC0@gmx.net>).
+	
+2001-12-01  Martin Weber <martweb@gmx.net>
+
 	* Makefile.am (EXTRA_DIST): Added shape_cubic.c.diff README.MING.
 
+	* shape_cubic.c.diff: Patch for ming.
+
+	* README.MING: About shape_cubic.c.diff.
+	
 	(Message-ID: <3C02B6A9.D9EF762D@gmx.net>, Message-ID: <5962.1006945825@www21.gmx.net>)
 
 2001-11-27  Martin Weber <martweb@gmx.net>
