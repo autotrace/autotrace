@@ -1,5 +1,7 @@
 2001-02-27  Masatake YAMATO  <yamato@redhat.com>
 
+	* NEWS: Write about dxf.
+
  	Applied a patch from Martin.
 
 	* NEWS: Updated.	
