@@ -1,3 +1,10 @@
+2002-10-30  Masatake YAMATO  <yamato@redhat.com>
+
+	* configure.in: Display more messages
+	while checking pstoedit twice.
+	Suggested by Markus Demleitner 
+	<msdemlei@cl.uni-heidelberg.de>.
+
 2002-10-29  Martin Weber <martweb@gmx.net>
 
 	* pxl-outline.c (num_neighbors): New function.

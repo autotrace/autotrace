@@ -284,20 +284,27 @@ if test "x${LIBLD_LDFLAGS}" != x; then
 fi
 
 echo '*** Checking pstoedit existence TWICE(if needed) ***'
+echo '*** This is the 1st check                        ***'
 AM_PATH_PSTOEDIT(3.32.1,HAVE_LIBPSTOEDIT_321=yes)
 if test ${HAVE_LIBPSTOEDIT_321} != yes; then
+   echo '*** The 1st check is failed.                     ***'
    LIBS_BAKCUP=$LIBS
    LIBS="$LIBS ${LIBPSTOEDIT_EXTRA_LIBS}"
+   echo '*** This is the 2nd check                        ***'
    AM_PATH_PSTOEDIT(3.32.0,HAVE_LIBPSTOEDIT_320=yes)
    LIBS=${LIBS_BAKCUP}
 
    if test ${HAVE_LIBPSTOEDIT_320} = yes; then
+	echo '*** The 2nd check is passed.                     ***'
         HAVE_LIBPSTOEDIT=yes
 	AC_DEFINE(HAVE_LIBPSTOEDIT)
 	LIBPSTOEDIT_LIBS="${PSTOEDIT_LIBS} ${LIBPSTOEDIT_EXTRA_LIBS}"
 	LIBPSTOEDIT_CFLAGS="${PSTOEDIT_CFLAGS}"
+   else
+        echo '*** The 2nd check is failed.                     ***'
    fi
 else
+	echo '*** The 1st check is passed.                     ***'
 	HAVE_LIBPSTOEDIT=yes
 	AC_DEFINE(HAVE_LIBPSTOEDIT)
 	LIBPSTOEDIT_LIBS="${PSTOEDIT_LIBS} ${LIBPSTOEDIT_EXTRA_LIBS}"	
