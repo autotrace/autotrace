@@ -1,5 +1,11 @@
 2001-03-09  Masatake YAMATO  <yamato@redhat.com>
 
+	Applied a patch from Martin.
+	Message-ID: <3AA7F19A.C11E5BC2@gmx.net>.
+	* autotrace.dsp: Updated.
+
+2001-03-09  Masatake YAMATO  <yamato@redhat.com>
+
 	* configure.in: Added -lm to LIBSWF_LDFLAGS.
 
 	* autotrace-config.af(AF_DEF_LIBS): Added @LIBSWF_LDFLAGS@.
