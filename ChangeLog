@@ -1,3 +1,9 @@
+2003-06-12  Serge Vakulenko <vak@cronyx.ru>
+
+	* input-gf.[ch]: New files.
+
+	* output-ugs.[ch]: New files.
+
 2003-06-18  Masatake YAMATO  <yamato@redhat.com>
 
 	* output-*.[ch] (output_*_writer): added user_data
