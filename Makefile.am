@@ -1,4 +1,6 @@
-EXTRA_DIST=swf.h output-swf.c output-swf.h  
+EXTRA_DIST=swf.h output-swf.c output-swf.h  \
+input-magick.h input-magick.c
+
 AUTOMAKE_OPTIONS = foreign no-dependencies
 
 bin_PROGRAMS=autotrace
