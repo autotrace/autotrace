@@ -1,7 +1,5 @@
 2000-10-03  Masatake YAMATO  <yamato@redhat.com>
 
-	* Makefile.am (INCLUDES): Added -Wall.
-
 	* output-emf.c (OutputEmf): Set return type to void.
 
 	* output.c: Added emf as a new output format.
