@@ -62,15 +62,20 @@ CVS tag for version X.Y: RELEASE_X_Y.
 CVS tag for version X.YpreN: PRERELEASE_X_Y_N. 
 Branch for version X.Y: TOWARD_version X.Y.
 
-* Tool for debugging output
+* Tools for debugging output
 
-   eps: ghostscript
+   eps: ghostscript, Illustrator, CorelDraw
    sk:  sketch
-   emf: CorelDraw, Illustrator, StarOffice, OpenOffice 
+   emf: CorelDraw, Illustrator, StarOffice, OpenOffice
         and Microsoft Office.
-   svg: sodipodi
-   ai: Illustrator
-   pdf: ghostscript, xpdf, acrobat
+   svg: sodipodi, CorelDraw, Illustrator, Adobe SVGViewer
+   ai: Illustrator, CorelDraw
+   pdf: ghostscript, xpdf, acrobat, Illustrator
+   fig: xfig
+   er: Elastic Reality
+   dxf: AutoCAD, VoloView
+   epd: pstoepd, txt2pdf, epd2svg
+   mif: FrameMaker
 
 * Web page
 

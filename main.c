@@ -44,7 +44,7 @@ static at_bool dumping_bitmap = false;
 /* Should adjacent corners be removed?  */
 static at_bool remove_adj_corners;
 
-/* image dpi used in mif backend. */
+/* image dpi used in emf backend. */
 static int dpi = AT_DEFAULT_DPI;
 
 /* Report tracing status in real time (--report-progress) */
@@ -198,7 +198,7 @@ corner-threshold <angle-in-degrees>: if a pixel, its predecessor(s),\n\
 despeckle-level <unsigned>: 0..20; default is no despeckling.\n\
 despeckle-tightness <real>: 0.0..8.0; default is 2.0.\n\
 dpi <unsigned>: The dots per inch value in the input image, affects scaling\n\
-  of emf output image\n"
+  of mif output image\n"
 #define USAGE2 "error-threshold <real>: subdivide fitted curves that are off by\n\
   more pixels than this; default is 2.0.\n\
 filter-iterations <unsigned>: smooth the curve this many times\n\

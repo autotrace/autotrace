@@ -1,5 +1,16 @@
 2002-03-28  Martin Weber <martweb@gmx.net>
 
+	* HACKING (Tools for debugging output): Updated.
+
+	* README: Updated.
+
+	* output.c (output_formats): Unify dxf output entry.
+
+	* main.c (USAGE1): dpi is used in mif output,
+	not emf.
+
+2002-03-28  Martin Weber <martweb@gmx.net>
+
 	* output-emf.c: rewritten with Allen Barnett.
 	
 2002-03-28  Masatake YAMATO  <yamato@redhat.com>
