@@ -336,20 +336,19 @@ at_color_free(at_color_type * color)
   free(color);
 }
 
-#define make_string(x) "x"
 const char *
 at_version (at_bool long_format)
 {
   if (long_format)
-    return "AutoTrace version " make_string(AUTOTRACE_VERSION);
+    return "AutoTrace version " AUTOTRACE_VERSION;
   else
-    return make_string(AUTOTRACE_VERSION);
+    return AUTOTRACE_VERSION;
 }
 
 const char * 
 at_home_site (void)
 {
-  return make_string(AUTOTRACE_WEB);
+  return AUTOTRACE_WEB;
 }
-#undef make_string
+
 

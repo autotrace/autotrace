@@ -1,5 +1,14 @@
 2002-06-30  Masatake YAMATO  <yamato@redhat.com>
 
+	* autotrace.c: Remove make_string.
+
+	* configure.in: Put double quotes arount  version and url.
+
+	* input-magick.c (magick_load_image): Don't use msg_data
+	as a condition. Use msg_func instead. Use exception.reason
+	instead of exception.description.
+	Initialize image.
+	
 	* autotrace.c (make_string): Put '"' around
 	an arg.
 

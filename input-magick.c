@@ -36,7 +36,7 @@ at_bitmap_type magick_load_image(at_string filename,
 				 at_msg_func msg_func, 
 				 at_address msg_data)
 {
-  Image *image;
+  Image *image = NULL;
   ImageInfo *image_info;
   ImageType image_type;
   unsigned int i,j,point,np,runcount;
@@ -57,13 +57,13 @@ at_bitmap_type magick_load_image(at_string filename,
   if (image == (Image *) NULL) {
 #if (MagickLibVersion <= 0x0525)
     /* MagickError(exception.severity,exception.message,exception.qualifier); */
-    if (msg_data)
+    if (msg_func)
       msg_func (exception.qualifier, AT_MSG_FATAL, msg_data);
     goto cleanup;
 #else
     /* MagickError(exception.severity,exception.reason,exception.description); */
-    if (msg_data)
-      msg_func (exception.description, AT_MSG_FATAL, msg_data);
+    if (msg_func)
+      msg_func (exception.reason, AT_MSG_FATAL, msg_data);
     goto cleanup;
 #endif
   }
