@@ -6,8 +6,8 @@
 #include "types.h"
 #include "atou.h"
 
-const unsigned atou (string s);
+unsigned atou (string s);
 
 #endif /* not ATOU_H */
 
-/* version 0.17 */
+/* version 0.26 */

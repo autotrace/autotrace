@@ -32,6 +32,9 @@ Copyright (C) 2000 Wolfgang Glunz, Martin Weber
 #define OUT2(s, e1, e2)							\
   fprintf (ps_file, s, e1, e2)
 
+#define OUT3(s, e1, e2, e3)						\
+  fprintf (ps_file, s, e1, e2, e3)
+
 #define OUT4(s, e1, e2, e3, e4)						\
   fprintf (ps_file, s, e1, e2, e3, e4)
 
@@ -47,7 +50,7 @@ Copyright (C) 2000 Wolfgang Glunz, Martin Weber
    should be a constant string.  */
 #define OUT_COMMAND2(first, second, op)					\
   do									\
-	{                                          \
+	{								\
       OUT_STRING (" ");							\
       OUT_REAL (first);							\
       OUT_REAL (second);						\
@@ -69,7 +72,7 @@ Copyright (C) 2000 Wolfgang Glunz, Martin Weber
       OUT_STRING (" ");							\
       OUT_REAL (fifth);							\
       OUT_REAL (sixth);							\
-      OUT_STRING (" " op "\n");					\
+      OUT_STRING (" " op "\n");						\
     }									\
    while (0)
 
@@ -105,7 +108,6 @@ OUT_LINE (" 10.0 setmiterlimit");
 OUT_LINE (" 0 setlinejoin");
 OUT_LINE (" [ ] 0.0 setdash");
 OUT_LINE (" 1.0 setlinewidth");
-OUT_LINE (" 0.0 0.0 0.0 setrgbcolor");
 
   return 0;
 }
@@ -118,16 +120,23 @@ out_splines (FILE * ps_file, spline_list_array_type shape)
 {
   unsigned this_list;
 
-  OUT_LINE ("% filledpath");
-  OUT_LINE ("newpath");
-
   for (this_list = 0; this_list < SPLINE_LIST_ARRAY_LENGTH (shape);
        this_list++)
     {
       unsigned this_spline;
+      color_type last_color;
+
       spline_list_type list = SPLINE_LIST_ARRAY_ELT (shape, this_list);
       spline_type first = SPLINE_LIST_ELT (list, 0);
 
+      if (this_list == 0 || !COLOR_EQUAL(list.color, last_color))
+        {
+          OUT3 ("%f %f %f setrgbcolor\n", (real)list.color.r/255.0,
+	    (real)list.color.g/255.0,(real)list.color.b/255.0);
+	}
+
+      OUT_LINE ("% filledpath");
+      OUT_LINE ("newpath");
       OUT_COMMAND2 (START_POINT (first).x, START_POINT (first).y, "moveto");
 
       for (this_spline = 0; this_spline < SPLINE_LIST_LENGTH (list);
@@ -144,8 +153,9 @@ out_splines (FILE * ps_file, spline_list_array_type shape)
                           "curveto");
         }
       OUT_LINE (" closepath");
+      OUT_LINE ("fill");
+      last_color = list.color;
     }
-	OUT_LINE ("fill");
 }
 
 
@@ -167,4 +177,3 @@ int output_p2e_writer(FILE* ps_file, string name,
 
     return 0;
 }
-/* version 0.26 */

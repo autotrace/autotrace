@@ -9,12 +9,6 @@
 
 #define MAXNUMCOLORS 256
 
-typedef struct {
-    int             red;
-    int             green;
-    int             blue;
-} Color;
-
 #if 0
 #define R_SCALE
 #define G_SCALE
@@ -33,16 +27,6 @@ typedef struct {
 #define G_SHIFT  	(BITS_IN_SAMPLE - PRECISION_G)
 #define B_SHIFT  	(BITS_IN_SAMPLE - PRECISION_B)
 
-typedef unsigned long ColorFreq;
-typedef ColorFreq *Histogram;
-
-typedef struct {
-    int             desired_number_of_colors;	/*  Number of colors we will allow               */
-    int             actual_number_of_colors;	/*  Number of colors actually needed             */
-    Color           cmap[256];	/*  colormap created by quantization             */
-    Histogram       histogram;	/*  holds the histogram                          */
-} QuantizeObj;
-
 typedef struct {
     /* The bounds of the box (inclusive); expressed as histogram indexes */
     int             Rmin, Rmax;
@@ -52,9 +36,9 @@ typedef struct {
     int             volume;
     /* The number of nonzero histogram cells within this box */
     long            colorcount;
-} box          , *boxptr;
+} box, *boxptr;
 
-static void     zero_histogram_rgb(Histogram       histogram)
+static void zero_histogram_rgb(Histogram histogram)
 {
     int             r, g, b;
     for (r = 0; r < HIST_R_ELEMS; r++)
@@ -63,19 +47,27 @@ static void     zero_histogram_rgb(Histogram       histogram)
 		histogram[r * MR + g * MG + b] = 0;
 }
 
-static void     generate_histogram_rgb(histogram, src, width, height)
-Histogram       histogram;
-unsigned char  *src;
-long            width;
-long            height;
+static void generate_histogram_rgb(Histogram histogram,
+  unsigned char *src, long width, long height, color_type *ignoreColor) 
 {
-    int             num_elems;
-    ColorFreq      *col;
+    int num_elems;
+    ColorFreq *col;
 
     num_elems = width * height;
     zero_histogram_rgb(histogram);
 
-    while (num_elems--) {
+    while (num_elems--)  
+      { 
+        /* If we have an ignorecolor, skip it. */ 
+    	if (ignoreColor) 
+    	  { 
+    	    if ((src[0] == ignoreColor->r)&&(src[1] == ignoreColor->g)&&(src[2] == ignoreColor->b))
+	      { 
+	        src += 3; 
+     	        continue; 
+     	      } 
+    	  } 
+    		 
 	col = &histogram[(src[0] >> R_SHIFT) * MR +
 			 (src[1] >> G_SHIFT) * MG +
 			 (src[2] >> B_SHIFT)];
@@ -84,10 +76,7 @@ long            height;
     }
 }
 
-static          boxptr
-                find_biggest_color_pop (boxlist, numboxes)
-boxptr          boxlist;
-int             numboxes;
+static boxptr find_biggest_color_pop (boxptr boxlist, int numboxes) 
 /* Find the splittable box with the largest color population */
 /* Returns 0 if no splittable boxes remain */
 {
@@ -107,10 +96,7 @@ int             numboxes;
 }
 
 
-static          boxptr
-                find_biggest_volume (boxlist, numboxes)
-boxptr          boxlist;
-int             numboxes;
+static boxptr find_biggest_volume (boxptr boxlist, int numboxes) 
 /* Find the splittable box with the largest (scaled) volume */
 /* Returns 0 if no splittable boxes remain */
 {
@@ -130,9 +116,7 @@ int             numboxes;
 }
 
 
-static void     update_box_rgb(histogram, boxp)
-Histogram       histogram;
-boxptr          boxp;
+static void update_box_rgb(Histogram histogram, boxptr boxp) 
 /* Shrink the min/max bounds of a box to enclose only nonzero elements, */
 /* and recompute its volume and population */
 {
@@ -224,9 +208,9 @@ boxptr          boxp;
      * we have to shift back to JSAMPLE units to get consistent distances;
      * after which, we scale according to the selected distance scale factors.
      */
-    dist0 = ((Rmax - Rmin) << R_SHIFT) R_SCALE;
-    dist1 = ((Gmax - Gmin) << G_SHIFT) G_SCALE;
-    dist2 = ((Bmax - Bmin) << B_SHIFT) B_SCALE;
+    dist0 = Rmax - Rmin;
+    dist1 = Gmax - Gmin;
+    dist2 = Bmax - Bmin;
     boxp->volume = dist0 * dist0 + dist1 * dist1 + dist2 * dist2;
 
     /* Now scan remaining volume of box and compute population */
@@ -244,18 +228,15 @@ boxptr          boxp;
 }
 
 
-static int      median_cut_rgb (histogram, boxlist, numboxes, desired_colors)
-Histogram       histogram;
-boxptr          boxlist;
-int             numboxes;
-int             desired_colors;
+static int median_cut_rgb (Histogram histogram, boxptr boxlist, int numboxes,
+  int desired_colors) 
 /* Repeatedly select and split the largest box until we have enough boxes */
 {
     int             n, lb;
     int             R, G, B, cmax;
     boxptr          b1, b2;
 
-    while (numboxes < desired_colors) {
+    while (numboxes * 11 < desired_colors << 3) {
 	/* Select box to split.
 	 * Current algorithm: by population for first half, then by volume.
 	 */
@@ -279,9 +260,9 @@ int             desired_colors;
 	 * Current algorithm: longest scaled axis.
 	 * See notes in update_box about scaling distances.
 	 */
-	R = ((b1->Rmax - b1->Rmin) << R_SHIFT) R_SCALE;
-	G = ((b1->Gmax - b1->Gmin) << G_SHIFT) G_SCALE;
-	B = ((b1->Bmax - b1->Bmin) << B_SHIFT) B_SCALE;
+	R = b1->Rmax - b1->Rmin;
+	G = b1->Gmax - b1->Gmin;
+	B = b1->Bmax - b1->Bmin;
 	/* We want to break any ties in favor of green, then red, blue last.
 	 */
 	cmax = G;
@@ -325,11 +306,8 @@ int             desired_colors;
 }
 
 
-static void     compute_color_rgb(quantobj, histogram, boxp, icolor)
-QuantizeObj    *quantobj;
-Histogram       histogram;
-boxptr          boxp;
-int             icolor;
+static void compute_color_rgb(QuantizeObj *quantobj, Histogram histogram,
+  boxptr boxp, int icolor) 
 /* Compute representative color for a box, put it in colormap[icolor] */
 {
     /* Current algorithm: mean weighted by pixels (not colors) */
@@ -339,11 +317,11 @@ int             icolor;
     int             Rmin, Rmax;
     int             Gmin, Gmax;
     int             Bmin, Bmax;
-    long            count;
-    long            total = 0;
-    long            Rtotal = 0;
-    long            Gtotal = 0;
-    long            Btotal = 0;
+    unsigned long   count;
+    unsigned long   total = 0;
+    unsigned long   Rtotal = 0;
+    unsigned long   Gtotal = 0;
+    unsigned long   Btotal = 0;
 
     Rmin = boxp->Rmin;
     Rmax = boxp->Rmax;
@@ -365,15 +343,14 @@ int             icolor;
 	    }
 	}
 
-    quantobj->cmap[icolor].red = (Rtotal + (total >> 1)) / total;
-    quantobj->cmap[icolor].green = (Gtotal + (total >> 1)) / total;
-    quantobj->cmap[icolor].blue = (Btotal + (total >> 1)) / total;
+    quantobj->cmap[icolor].r = (unsigned char) ((Rtotal + (total >> 1)) / total);
+    quantobj->cmap[icolor].g = (unsigned char) ((Gtotal + (total >> 1)) / total);
+    quantobj->cmap[icolor].b = (unsigned char) ((Btotal + (total >> 1)) / total);
+    quantobj->freq[icolor] = total; 
 }
 
 
-static void     select_colors_rgb(quantobj, histogram)
-QuantizeObj    *quantobj;
-Histogram       histogram;
+static void select_colors_rgb(QuantizeObj *quantobj, Histogram histogram) 
 /* Master routine for color selection */
 {
     boxptr          boxlist;
@@ -480,12 +457,8 @@ Histogram       histogram;
  * inner-loop variables.
  */
 
-static int      find_nearby_colors(quantobj, minR, minG, minB, colorlist)
-QuantizeObj    *quantobj;
-int             minR;
-int             minG;
-int             minB;
-int             colorlist[];
+static int find_nearby_colors(QuantizeObj *quantobj, int minR, int minG,
+  int minB, int *colorlist) 
 /* Locate the colormap entries close enough to an update box to be candidates
  * for the nearest entry to some cell(s) in the update box.  The update box
  * is specified by the center coordinates of its first cell.  The number of
@@ -527,7 +500,7 @@ int             colorlist[];
 
     for (i = 0; i < numcolors; i++) {
 	/* We compute the squared-R-distance term, then add in the other two. */
-	x = quantobj->cmap[i].red;
+	x = quantobj->cmap[i].r;
 	if (x < minR) {
 	    tdist = (x - minR) R_SCALE;
 	    min_dist = tdist * tdist;
@@ -550,7 +523,7 @@ int             colorlist[];
 	    }
 	}
 
-	x = quantobj->cmap[i].green;
+	x = quantobj->cmap[i].g;
 	if (x < minG) {
 	    tdist = (x - minG) G_SCALE;
 	    min_dist += tdist * tdist;
@@ -572,7 +545,7 @@ int             colorlist[];
 	    }
 	}
 
-	x = quantobj->cmap[i].blue;
+	x = quantobj->cmap[i].b;
 	if (x < minB) {
 	    tdist = (x - minB) B_SCALE;
 	    min_dist += tdist * tdist;
@@ -612,14 +585,8 @@ int             colorlist[];
 }
 
 
-static void     find_best_colors(quantobj, minR, minG, minB, numcolors, colorlist, bestcolor)
-QuantizeObj    *quantobj;
-int             minR;
-int             minG;
-int             minB;
-int             numcolors;
-int             colorlist[];
-int             bestcolor[];
+static void find_best_colors(QuantizeObj *quantobj, int minR, int minG,
+  int minB, int numcolors, int *colorlist,int *bestcolor) 
 /* Find the closest colormap entry for each cell in the update box,
   given the list of candidate colors prepared by find_nearby_colors.
   Return the indexes of the closest entries in the bestcolor[] array.
@@ -658,11 +625,11 @@ int             bestcolor[];
     for (i = 0; i < numcolors; i++) {
 	icolor = colorlist[i];
 	/* Compute (square of) distance from minR/G/B to this color */
-	inR = (minR - quantobj->cmap[icolor].red) R_SCALE;
+	inR = (minR - quantobj->cmap[icolor].r) R_SCALE;
 	dist0 = inR * inR;
-	inG = (minG - quantobj->cmap[icolor].green) G_SCALE;
+	inG = (minG - quantobj->cmap[icolor].g) G_SCALE;
 	dist0 += inG * inG;
-	inB = (minB - quantobj->cmap[icolor].blue) B_SCALE;
+	inB = (minB - quantobj->cmap[icolor].b) B_SCALE;
 	dist0 += inB * inB;
 	/* Form the initial difference increments */
 	inR = inR * (2 * STEP_R) + STEP_R * STEP_R;
@@ -697,12 +664,8 @@ int             bestcolor[];
     }
 }
 
-static void     fill_inverse_cmap_rgb(quantobj, histogram, R, G, B)
-QuantizeObj    *quantobj;
-Histogram       histogram;
-int             R;
-int             G;
-int             B;
+static void fill_inverse_cmap_rgb(QuantizeObj *quantobj, Histogram histogram,
+  int R, int G, int B) 
 /* Fill the inverse-colormap entries in the update box that contains
  histogram cell R/G/B.  (Only that one cell MUST be filled, but
  we can fill as many others as we wish.) */
@@ -755,38 +718,54 @@ int             B;
 }
 
 /*  This is pass 1  */
-static void     median_cut_pass1_rgb(quantobj, src, width, height)
-QuantizeObj    *quantobj;
-unsigned char  *src;
-long            width;
-long            height;
+static void median_cut_pass1_rgb(QuantizeObj *quantobj, unsigned char *src,
+  long width, long height, color_type *ignoreColor) 
 {
-    generate_histogram_rgb(quantobj->histogram, src, width, height);
+    generate_histogram_rgb(quantobj->histogram, src, width, height, ignoreColor); 
     select_colors_rgb(quantobj, quantobj->histogram);
 }
 
 
 /* Map some rows of pixels to the output colormapped representation. */
-static void     median_cut_pass2_rgb(quantobj, src, dest, width, height)
-QuantizeObj    *quantobj;
-unsigned char  *src;
-unsigned char  *dest;
-long            width;
-long            height;
-/* This version performs no dithering */
+static void median_cut_pass2_rgb(QuantizeObj *quantobj, unsigned char *src,
+  unsigned char	*dest,long width,long height, color_type *bgColor) 
+ /* This version performs no dithering */
 {
     Histogram       histogram = quantobj->histogram;
     ColorFreq      *cachep;
     int             R, G, B;
+    int             origR, origG, origB; 
     int             row, col;
 
     zero_histogram_rgb(histogram);
     for (row = 0; row < height; row++) {
       for (col = 0; col < width; col++) {
-	    /* get pixel value and index into the cache */
-        R = (*src++) >> R_SHIFT;
-        G = (*src++) >> G_SHIFT;
-        B = (*src++) >> B_SHIFT;
+	/* get pixel value and index into the cache */
+        origR = (*src++); 
+        origG = (*src++); 
+        origB = (*src++); 
+ 
+	/* Leave BGColor unchanged */ 
+	if (bgColor && origR == bgColor->r && origG == bgColor->g && origB == bgColor->b) 
+	  { 
+            (*dest++) = origR; 
+            (*dest++) = origG; 
+            (*dest++) = origB; 
+            continue; 
+	  } 
+ 
+	if (origR > 253 && origG > 253 && origB > 253) 
+	  { 
+            (*dest++) = 255; 
+            (*dest++) = 255; 
+            (*dest++) = 255; 
+            continue; 
+	  } 
+ 
+	/* get pixel value and index into the cache */ 
+        R = origR >> R_SHIFT; 
+        G = origG >> G_SHIFT; 
+        B = origB >> B_SHIFT; 
         cachep = &histogram[R * MR + G * MG + B];
         /* If we have not seen this color before, find nearest colormap entry
            and update the cache */
@@ -794,9 +773,9 @@ long            height;
           fill_inverse_cmap_rgb(quantobj, histogram, R, G, B);
 		}
           /* Now emit the colormap index for this cell */
-          (*dest++) = quantobj->cmap[*cachep - 1].red;
-          (*dest++) = quantobj->cmap[*cachep - 1].green;
-          (*dest++) = quantobj->cmap[*cachep - 1].blue;
+          (*dest++) = quantobj->cmap[*cachep - 1].r;
+          (*dest++) = quantobj->cmap[*cachep - 1].g;
+          (*dest++) = quantobj->cmap[*cachep - 1].b;
         }
 
     }
@@ -820,15 +799,37 @@ static QuantizeObj *initialize_median_cut(int num_colors)
 }
 
 
-void quantize(unsigned char *src,unsigned char *dest,int width, int height,long ncolors)
+void quantize(unsigned char *src, unsigned char *dest, int width, int height,
+  long ncolors, color_type *bgColor, QuantizeObj **iQuant) 
 {
-    QuantizeObj    *quantobj;
-
-    quantobj = initialize_median_cut(ncolors);
-    median_cut_pass1_rgb  (quantobj, src, width, height);
-    median_cut_pass2_rgb (quantobj, src, dest, width, height);
-    free (quantobj->histogram);
-    free (quantobj);
+    QuantizeObj *quantobj;
+ 
+    /* If a pointer was sent in, let's use it. */ 
+    if (iQuant) 
+      { 
+	if (*iQuant == NULL) 
+	  { 
+    	    quantobj = initialize_median_cut(ncolors); 
+	    median_cut_pass1_rgb  (quantobj, src, width, height, bgColor); 
+	    *iQuant = quantobj; 
+	   } 
+	else 
+	    quantobj = *iQuant; 
+      } 
+    else 
+      {
+        quantobj = initialize_median_cut(ncolors);
+	median_cut_pass1_rgb  (quantobj, src, width, height, bgColor); 
+      } 
+		 
+			 
+    median_cut_pass2_rgb (quantobj, src, dest, width, height, bgColor); 
+    	 
+    if (iQuant == NULL) 
+      { 
+        free (quantobj->histogram);
+        free (quantobj);
+      }
 }
 
-/* version 0.24 */
+/* version 0.26 */

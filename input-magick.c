@@ -1,4 +1,5 @@
 #include <stdio.h>
+#include <stdlib.h>
 #include <sys/types.h>
 #include <magick/api.h>
 #include "input-magick.h"
@@ -9,7 +10,7 @@ bitmap_type magick_load_image(string filename)
   Image *image;
   ImageInfo *image_info;
   ImageType image_type;
-  int i,j,point,x,y,np,runcount;
+  unsigned int i,j,point,np,runcount;
   bitmap_type bitmap;
 #if MagickLibVersion < 0x500
   RunlengthPacket* pixel;
@@ -17,8 +18,11 @@ bitmap_type magick_load_image(string filename)
   PixelPacket p;
   PixelPacket *pixel=&p;
   ExceptionInfo exception;
-
+#endif
+#if MagickLibVersion < 0x521
   MagickIncarnate("");
+#endif
+#if MagickLibVersion < 0x500
   GetExceptionInfo(&exception);
 #endif
   image_info=CloneImageInfo((ImageInfo *) NULL);

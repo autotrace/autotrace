@@ -16,6 +16,9 @@ typedef struct
    (-align-threshold)  */
   real align_threshold;
 
+/* Background color, the color of the background that should be ignored */
+  color_type *bgColor;
+
 /* To how many colors the bitmap is reduced */
   unsigned color_count;
 
@@ -78,7 +81,7 @@ typedef struct
   real line_threshold;
 
 /* Should adjacent corners be removed?  */
-  boolean remove_adj_corners;
+  bool remove_adj_corners;
 
 /* If reparameterization doesn't improve the fit by this much percent,
    stop doing it.  (-reparameterize-improve)  */

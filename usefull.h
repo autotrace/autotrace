@@ -25,8 +25,6 @@
 #define MAX_EQUALS(var, expr) if ((expr) > (var)) (var) = (expr)
 #define MIN_EQUALS(var, expr) if ((expr) < (var)) (var) = (expr)
 
-#define STREQ(s1, s2) (strcmp (s1, s2) == 0)
-
 #endif /* not USEFULL_H */
 
-/* version 0.17 */
+/* version 0.25 */

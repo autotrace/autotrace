@@ -128,7 +128,7 @@ int ColorLookUp(UI32 colref, UI32 *table, int len)
 
 /* endianess independent IO functions */
 
-static boolean write32(FILE *fdes, UI32 data)
+static bool write32(FILE *fdes, UI32 data)
 {
   int count = 0;
   UI8 outch;
@@ -148,7 +148,7 @@ static boolean write32(FILE *fdes, UI32 data)
   return (count == sizeof(UI32)) ? TRUE : FALSE;
 }
 
-static boolean write16(FILE *fdes, UI16 data)
+static bool write16(FILE *fdes, UI16 data)
 {
   int count = 0;
   UI8 outch;

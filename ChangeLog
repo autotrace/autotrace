@@ -1,3 +1,34 @@
+2000-11-11  Masatake YAMATO  <yamato@redhat.com>
+
+	* Makefile.am (autotrace_LDADD): Added LIBPNG_LDFLAGS
+	to autotrace_LDADD.
+
+2000-11-10 Martin Weber <martweb@gmx.net>
+	Removed warning in pxl-outline.c
+2000-11-06 Martin Weber <martweb@gmx.net>
+	Fixed some warnings with gcc on AIX in xmem.h
+2000-11-04 Martin Weber <martweb@gmx.net>
+	Removed warning for input-magick.c
+	Improved input-p2e.c
+2000-11-03 Martin Weber <martweb@gmx.net>
+	Fixed a bug in input-bmp.c
+2000-11-02 Martin Weber <martweb@gmx.net>
+	pxl-outline.c completely rewritten
+	removed edge.c
+2000-10-30 Martin Weber <martweb@gmx.net>
+	Removed problems with nonvalid filenames.
+	Fixed some compiler warnings.
+2000-10-22 Martin Weber <martweb@gmx.net>
+	Made code more portable
+2000-10-22 Dan Mills <dmills@demon.co.uk>
+	Added thinning
+2000-10-20 Martin Weber <martweb@gmx.net>
+	Some cosmetic changes
+	updates for a bug in pxl-outline.c
+	replaced boolean by bool
+	better quantization
+	fixed tga import for gray images
+	...
 2000-10-11  Enrico Persiani <e.persiani@bo.nettuno.it>
 
 	* output-emf.c: 

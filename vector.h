@@ -24,13 +24,13 @@ extern real_coordinate_type vector_to_point (const vector_type);
 /* Definitions for these common operations can be found in any decent
    linear algebra book, and most calculus books.  */
 
-extern const real magnitude (const vector_type);
+extern real magnitude (const vector_type);
 extern vector_type normalize (const vector_type);
 
 extern vector_type Vadd (const vector_type, const vector_type);
-extern const real Vdot (const vector_type, const vector_type);
+extern real Vdot (const vector_type, const vector_type);
 extern vector_type Vmult_scalar (const vector_type, const real);
-extern const real Vangle (const vector_type in, const vector_type out);
+extern real Vangle (const vector_type in, const vector_type out);
 
 /* These operations could have been named `P..._vector' just as well as
    V..._point, so we may as well allow both names.  */
@@ -72,8 +72,8 @@ extern coordinate_type IPadd
 extern coordinate_type IPmult_scalar (const coordinate_type, const int);
 extern real_coordinate_type IPmult_real
   (const coordinate_type, const real);
-extern const boolean IPequal (const coordinate_type, const coordinate_type);
+extern bool IPequal (const coordinate_type, const coordinate_type);
 
 #endif /* not VECTOR_H */
 
-/* version 0.17 */
+/* version 0.26 */

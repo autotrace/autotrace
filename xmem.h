@@ -17,7 +17,8 @@ do												\
     new_mem = (address) malloc (size);								\
 												\
     if (new_mem == NULL)									\
-      FATAL3 ("malloc: request for %u bytes failed in %s line %d", (size), __FILE__, __LINE__);	\
+      FATAL3 ("malloc: request for %u bytes failed in %s line %d",				\
+        (size), __FILE__, (unsigned) __LINE__);							\
   } while (0)
 
 
@@ -27,7 +28,8 @@ do												\
     new_mem = (address) calloc (size, 1);							\
 												\
     if (new_mem == NULL)									\
-      FATAL3 ("calloc: request for %u bytes failed in %s line %d", (size), __FILE__, __LINE__);	\
+      FATAL3 ("calloc: request for %u bytes failed in %s line %d",				\
+        (size), __FILE__, (unsigned) __LINE__);							\
   } while (0)
 
 
@@ -43,7 +45,7 @@ do 												\
         new_mem = (address) realloc (old_ptr, size);						\
 	if (new_mem == NULL)									\
           FATAL4 ("realloc: request for %lx to be %u bytes failed in %s line %d",		\
-            (unsigned long) (old_ptr), (size), __FILE__, __LINE__);				\
+            (unsigned long) (old_ptr), (size), __FILE__, (unsigned) __LINE__);			\
       }												\
        												\
     old_ptr = new_mem;										\
@@ -58,7 +60,8 @@ do												\
     (address&)(new_mem) = (address) malloc (size);						\
 												\
     if ((address&)(new_mem) == NULL)								\
-      FATAL3 ("malloc: request for %u bytes failed in %s line %d", (size), __FILE__, __LINE__);	\
+      FATAL3 ("malloc: request for %u bytes failed in %s line %d",				\
+              (size), __FILE__, (unsigned) __LINE__);						\
   } while (0) 
 
  
@@ -82,7 +85,7 @@ do 												\
         (address&) new_mem = (address) realloc ((old_ptr), (size));				\
         if (new_mem == NULL)									\
           FATAL4 ("realloc: request for %lx to be %u bytes failed in %s line %d",		\
-                  (unsigned long) (old_ptr), (size), __FILE__, __LINE__);			\
+                  (unsigned long) (old_ptr), (size), __FILE__, (unsigned) __LINE__);		\
       }												\
 												\
     (address&)old_ptr = new_mem;								\
@@ -90,4 +93,3 @@ do 												\
 #endif
 
 #endif /* not XMEM_H */
-

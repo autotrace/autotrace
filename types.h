@@ -3,8 +3,11 @@
 #ifndef TYPES_H
 #define TYPES_H
 
+#ifndef __cplusplus
 /* Booleans.  */
-typedef enum { false = 0, true = 1 } boolean;
+#ifndef bool
+typedef enum { false = 0, true = 1 } bool;
+#endif
 
 /* The X11 library defines `FALSE' and `TRUE', and so we only want to
    define them if necessary.  */
@@ -12,6 +15,7 @@ typedef enum { false = 0, true = 1 } boolean;
 #define FALSE false
 #define TRUE true
 #endif /* FALSE */
+#endif
 
 /* The usual null-terminated string.  */
 typedef char *string;
@@ -54,4 +58,4 @@ typedef struct
 
 #endif /* not TYPES_H */
 
-/* version 0.24 */
+/* version 0.25 */

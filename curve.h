@@ -28,7 +28,7 @@ struct curve
 {
   point_type *point_list;
   unsigned length;
-  boolean cyclic;
+  bool cyclic;
   vector_type *start_tangent;
   vector_type *end_tangent;
   struct curve *previous;
@@ -58,9 +58,9 @@ typedef struct curve *curve_type;
   ? CURVE_CYCLIC (c) ? ((n) + 1) % CURVE_LENGTH (c) : CURVE_LENGTH (c)	\
   : (n) + 1)
 #define CURVE_PREV(c, n)						\
-  ((int) (n) - 1 < 0							\
-  ? CURVE_CYCLIC (c) ? CURVE_LENGTH (c) + (int) (n) - 1 : -1		\
-  : (int) (n) - 1)
+  ((signed int) (n) - 1 < 0							\
+  ? CURVE_CYCLIC (c) ? (signed int) CURVE_LENGTH (c) + (signed int) (n) - 1 : -1\
+  : (signed int) (n) - 1)
 
 /* The tangents at the endpoints are computed using the neighboring curves.  */
 #define CURVE_START_TANGENT(c) ((c)->start_tangent)
@@ -86,7 +86,7 @@ extern void append_point (curve_type c, real_coordinate_type p);
 
 /* Write some or all, respectively, of the curve C in human-readable
    form to the log file, if logging is enabled.  */
-extern void log_curve (curve_type c, boolean print_t);
+extern void log_curve (curve_type c, bool print_t);
 extern void log_entire_curve (curve_type c);
 
 /* Display the curve C online, if displaying is enabled.  */
@@ -97,7 +97,7 @@ typedef struct
 {
   curve_type *data;
   unsigned length;
-  boolean clockwise;
+  bool clockwise;
 } curve_list_type;
 
 /* Number of curves in the list.  */
@@ -137,4 +137,4 @@ extern void append_curve_list (curve_list_array_type *, curve_list_type);
 
 #endif /* not CURVE_H */
 
-/* version 0.24 */
+/* version 0.26 */

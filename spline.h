@@ -50,7 +50,7 @@ typedef struct
 {
   spline_type *data;
   unsigned length;
-  boolean clockwise;
+  bool clockwise;
   color_type color;
 } spline_list_type;
 
@@ -119,4 +119,4 @@ extern void free_spline_list_array (spline_list_array_type *);
 
 #endif /* not SPLINE_H */
 
-/* version 0.24 */
+/* version 0.25 */

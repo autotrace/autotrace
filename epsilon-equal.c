@@ -8,7 +8,7 @@
    larger or smaller than its true value.  When it matters, we need to
    compare with some tolerance, REAL_EPSILON, defined in kbase.h.  */
 
-const boolean
+bool
 epsilon_equal (real v1, real v2)
 {
   return
@@ -17,4 +17,4 @@ epsilon_equal (real v1, real v2)
 }
 
 
-/* version 0.17 */
+/* version 0.26 */

@@ -13,7 +13,9 @@
 #endif /* HAVE_MAGICK */
 
 #include "find-suffix.h"
-#include "usefull.h"
+#include <string.h>
+
+#define STREQ(s1, s2) (strcmp (s1, s2) == 0)
 
 struct input_format_entry {
   input_read reader;

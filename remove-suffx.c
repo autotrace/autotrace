@@ -26,7 +26,7 @@ remove_suffix (string s)
 {
   string suffix = find_suffix (s);
 
-  return suffix == NULL ? s : substring (s, 0, suffix - 2 - s);
+  return suffix == NULL ? s : suffix - 2 - s < 0 ? NULL : substring (s, 0, suffix - 2 - s);
 }
 
 /* version 0.17 */

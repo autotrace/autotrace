@@ -342,7 +342,7 @@ _getopt_internal (int argc, char *const *argv, const char *optstring,
       int exact = 0;
       int ambig = 0;
       const struct option *pfound = NULL;
-      int indfound;
+      int indfound=0;
 
       while (*s && *s != '=')
 	s++;

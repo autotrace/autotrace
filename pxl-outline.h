@@ -13,7 +13,7 @@ typedef struct
 {
   coordinate_type *data;
   unsigned length;
-  boolean clockwise;
+  bool clockwise;
   color_type color;
 } pixel_outline_type;
 
@@ -49,21 +49,21 @@ typedef struct
 
 #ifdef _EXPORTING
 /* Find all pixels on the outline in the character C.  */
-extern pixel_outline_list_type __declspec(dllexport) __stdcall find_outline_pixels (bitmap_type c);
+extern pixel_outline_list_type __declspec(dllexport) __stdcall find_outline_pixels (bitmap_type);
 
 /* Free the memory in the list.  */
 extern void __declspec(dllexport) __stdcall free_pixel_outline_list (pixel_outline_list_type *);
 
 #elif _IMPORTING
 /* Find all pixels on the outline in the character C.  */
-extern pixel_outline_list_type __declspec(dllimport) __stdcall find_outline_pixels (bitmap_type c);
+extern pixel_outline_list_type __declspec(dllimport) __stdcall find_outline_pixels (bitmap_type);
 
 /* Free the memory in the list.  */
 extern void __declspec(dllimport) __stdcall free_pixel_outline_list (pixel_outline_list_type *);
 
 #else
 /* Find all pixels on the outline in the character C.  */
-extern pixel_outline_list_type find_outline_pixels (bitmap_type c);
+extern pixel_outline_list_type find_outline_pixels (bitmap_type);
 
 /* Free the memory in the list.  */
 extern void free_pixel_outline_list (pixel_outline_list_type *);
@@ -71,5 +71,3 @@ extern void free_pixel_outline_list (pixel_outline_list_type *);
 #endif
 
 #endif /* not PXL_OUTLINE_H */
-
-/* version 0.24 */

@@ -16,8 +16,6 @@
 #define BitSet(byte, bit)  (((byte) & (bit)) == (bit))
 
 #define ReadOK(file,buffer,len)  (fread(buffer, len, 1, file) != 0)
-#define Write(file,buffer,len)   fwrite(buffer, len, 1, file)
-#define WriteOK(file,buffer,len) (Write(buffer, len, file) != 0)
 
 struct Bitmap_File_Head_Struct
 {
@@ -55,20 +53,6 @@ static unsigned char        *ReadImage     (FILE *,
 				   int,
 				   int,
 				   unsigned char[256][3],
-				   int,
-				   int,
-				   int,
-				   int);
-static void         WriteColorMap (FILE *,
-				   int *,
-				   int *,
-				   int *,
-				   int);
-static void         WriteImage    (FILE *,
-				   unsigned char *,
-				   int,
-				   int,
-				   int,
 				   int,
 				   int,
 				   int,
@@ -343,8 +327,6 @@ ReadImage (FILE   *fd,
 		  {
 		    temp = image + (ypos * rowstride) + (xpos * channels);
 		    *temp=( v & ( ((1<<bpp)-1) << (8-(i*bpp)) ) ) >> (8-(i*bpp));
-		    if (grey)
-		      *temp = cmap[*temp][0];
 		  }
 		if (xpos == width)
 		  {
@@ -380,8 +362,6 @@ ReadImage (FILE   *fd,
 			  {
 			    temp = image + (ypos * rowstride) + (xpos * channels);
 			    *temp = (buffer[1] & (((1<<bpp)-1) << (8 - (i * bpp)))) >> (8 - (i * bpp));
-			    if (grey)
-			      *temp = cmap[*temp][0];
 			  }
 		      }
 		  }
@@ -397,8 +377,6 @@ ReadImage (FILE   *fd,
 			  {
 			    temp = image + (ypos * rowstride) + (xpos * channels);
 			    *temp = (v & (((1<<bpp)-1) << (8-(i*bpp)))) >> (8-(i*bpp));
-			    if (grey)
-			      *temp = cmap[*temp][0];
 			    i++;
 			    xpos++;
 			  }

@@ -32,9 +32,9 @@ out_splines (FILE * file, spline_list_array_type shape)
 	fprintf(file, " 72\n%d\n", 0);  			/* no of knots */
 	fprintf(file, " 73\n%d\n", SPLINE_LIST_LENGTH (list));  /* no of control points */
 	fprintf(file, " 74\n%d\n", SPLINE_LIST_LENGTH (list));  /* no of fit points */
-	fprintf(file, " 42\n%d\n", 0.0000001);        		/* knot tolerance */
-	fprintf(file, " 43\n%d\n", 0.0000001);        		/* control-point tolerance */
-	fprintf(file, " 44\n%d\n", 0.0000000001);     		/* fit tolerance */
+	fprintf(file, " 42\n%g\n", 0.0000001);        		/* knot tolerance */
+	fprintf(file, " 43\n%g\n", 0.0000001);        		/* control-point tolerance */
+	fprintf(file, " 44\n%g\n", 0.0000000001);     		/* fit tolerance */
 
 	fprintf(file, " 10\n%g\n 20\n%g\n 30\n0.0\n",
 		START_POINT(first).x, START_POINT(first).y);
@@ -81,4 +81,5 @@ int output_dxf_writer(FILE* file, string name,
     return 0;
 }
 
-/* version 0.22 */
+/* version 0.26 */
+

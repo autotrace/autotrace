@@ -8,7 +8,7 @@
 
 
 /* See main.c for explanations of these globals.  */
-extern boolean trace_scanlines;
+extern bool trace_scanlines;
 extern image_header_type image_header;
 extern string input_name;
 

@@ -226,7 +226,7 @@ rle_fread (unsigned char *buf,
           /* Read in the buffer. */
           if (fread (p, bytes, 1, fp) != 1)
             {
-		  				return j / datasize;
+	       return j / datasize;
             }
         }
 
@@ -480,6 +480,16 @@ ReadImage (FILE              *fp,
         }
     }
 
+   if (itype == GRAY)
+      for (j = bsize/3 - 1; j >= 0; j -= 1)
+        {
+          /* Find the alpha for this index. */
+          image.bitmap[3*j] = image.bitmap[j];
+          image.bitmap[3*j+1] = image.bitmap[j];
+          image.bitmap[3*j+2] = image.bitmap[j];
+        }
+
+
   if (pelbytes >= 3)
     {
       /* Rearrange the colors from BGR to RGB. */
@@ -547,7 +557,7 @@ ReadImage (FILE              *fp,
                *temp3++ = cmap[3*index+0];
                *temp3++ = cmap[3*index+1];
                *temp3++ = cmap[3*index+2];
-		    }
+	    }
         }
       free (temp);
       free (cmap);

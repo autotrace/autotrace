@@ -22,7 +22,7 @@
 #include <float.h>
 #endif
 #include <string.h>
-
+#include <assert.h>
 
 
 
@@ -42,7 +42,7 @@ typedef struct index_list
 static void append_index (index_list_type *, unsigned);
 static void free_index_list (index_list_type *);
 static index_list_type new_index_list (void);
-static void remove_adjacent_corners (index_list_type *, unsigned, boolean);
+static void remove_adjacent_corners (index_list_type *, unsigned, bool);
 static void align (spline_list_type *, fitting_opts_type *);
 static void change_bad_lines (spline_list_type *,
   fitting_opts_type *);
@@ -57,8 +57,8 @@ static void find_vectors
 static index_list_type find_corners (pixel_outline_type,
   fitting_opts_type *);
 static real find_error (curve_type, spline_type, unsigned *);
-static vector_type find_half_tangent (curve_type, boolean start, unsigned *, unsigned);
-static void find_tangent (curve_type, boolean, boolean, unsigned);
+static vector_type find_half_tangent (curve_type, bool start, unsigned *, unsigned);
+static void find_tangent (curve_type, bool, bool, unsigned);
 static spline_type fit_one_spline (curve_type);
 static spline_list_type *fit_curve (curve_type,
   fitting_opts_type *);
@@ -67,17 +67,17 @@ static spline_list_type fit_curve_list (curve_list_type,
 static spline_list_type *fit_with_least_squares (curve_type,
   fitting_opts_type *);
 static spline_list_type *fit_with_line (curve_type);
-static void remove_knee_points (curve_type, boolean);
-static boolean reparameterize (curve_type, spline_type);
+static void remove_knee_points (curve_type, bool);
+static bool reparameterize (curve_type, spline_type);
 static void set_initial_parameter_values (curve_type);
-static boolean spline_linear_enough (spline_type *, curve_type,
+static bool spline_linear_enough (spline_type *, curve_type,
   fitting_opts_type *);
 static curve_list_array_type split_at_corners (
   pixel_outline_list_type, fitting_opts_type *);
-static boolean test_subdivision_point (curve_type, unsigned,
+static bool test_subdivision_point (curve_type, unsigned,
   vector_type *, fitting_opts_type *);
 static coordinate_type real_to_int_coord (real_coordinate_type);
-static const real distance (real_coordinate_type, real_coordinate_type);
+static real distance (real_coordinate_type, real_coordinate_type);
 
 /* Get a new set of fitting options */
 #ifdef _EXPORTING
@@ -90,7 +90,10 @@ fitting_opts_type new_fitting_opts (void)
   fitting_opts_type fitting_opts;
 /* If two endpoints are closer than this, they are made to be equal.
    (-align-threshold)  */
-  fitting_opts.align_threshold = 0.5;
+  fitting_opts.align_threshold = (real) 0.5;
+
+/* Background color, the color of the background that should be ignored */
+  fitting_opts.bgColor = NULL;
 
 /* To how many colors the bitmap is reduced */
   fitting_opts.color_count = 0;
@@ -99,7 +102,7 @@ fitting_opts_type new_fitting_opts (void)
    is smaller than this, it's a corner, even if it's within
    `corner_surround' pixels of a point with a smaller angle.
    (-corner-always-threshold)  */
-  fitting_opts.corner_always_threshold = 60.0;
+  fitting_opts.corner_always_threshold = (real) 60.0;
 
 /* Number of points to consider when determining if a point is a corner
    or not.  (-corner-surround)  */
@@ -108,12 +111,12 @@ fitting_opts_type new_fitting_opts (void)
 /* If a point, its predecessors, and its successors define an angle
     smaller than this, it's a corner.  Should be in range 0..180.
    (-corner-threshold)  */
-  fitting_opts.corner_threshold = 100.0;
+  fitting_opts.corner_threshold = (real) 100.0;
 
 /* Amount of error at which a fitted spline is unacceptable.  If any
    pixel is further away than this from the fitted curve, we try again.
    (-error-threshold) */
-  fitting_opts.error_threshold = .8;
+  fitting_opts.error_threshold = (real) .8;
 
 /* A second number of adjacent points to consider when filtering.
    (-filter-alternative-surround)  */
@@ -122,7 +125,7 @@ fitting_opts_type new_fitting_opts (void)
 /* If the angles between the vectors produced by filter_surround and
    filter_alternative_surround points differ by more than this, use
    the one from filter_alternative_surround.  (-filter-epsilon)  */
-  fitting_opts.filter_epsilon = 10.0;
+  fitting_opts.filter_epsilon = (real) 10.0;
 
 /* Number of times to smooth original data points.  Increasing this
    number dramatically---to 50 or so---can produce vastly better
@@ -132,7 +135,7 @@ fitting_opts_type new_fitting_opts (void)
 
 /* To produce the new point, use the old point plus this times the
    neighbors.  (-filter-percent)  */
-  fitting_opts.filter_percent = .33;
+  fitting_opts.filter_percent = (real) .33;
 
 /* Number of adjacent points to consider if `filter_surround' points
    defines a straight line.  (-filter-secondary-surround)  */
@@ -146,19 +149,19 @@ fitting_opts_type new_fitting_opts (void)
    straight line, even if it would otherwise be changed back to a curve.
    This is weighted by the square of the curve length, to make shorter
    curves more likely to be reverted.  (-line-reversion-threshold)  */
-  fitting_opts.line_reversion_threshold = .01;
+  fitting_opts.line_reversion_threshold = (real) .01;
 
 /* How many pixels (on the average) a spline can diverge from the line
    determined by its endpoints before it is changed to a straight line.
    (-line-threshold) */
-  fitting_opts.line_threshold = 1.0;
+  fitting_opts.line_threshold = (real) 1.0;
 
 /* Should adjacent corners be removed?  */
   fitting_opts.remove_adj_corners = false;
 
 /* If reparameterization doesn't improve the fit by this much percent,
    stop doing it.  (-reparameterize-improve)  */
-  fitting_opts.reparameterize_improvement = .10;
+  fitting_opts.reparameterize_improvement = (real) .10;
 
 /* Amount of error at which it is pointless to reparameterize.  This
    happens, for example, when we are trying to fit the outline of the
@@ -166,11 +169,11 @@ fitting_opts_type new_fitting_opts (void)
    enough for the Newton-Raphson iteration to improve it.  It may be
    that it would be better to detect the cases where we didn't find any
    corners.  (-reparameterize-threshold)  */
-  fitting_opts.reparameterize_threshold = 30.0;
+  fitting_opts.reparameterize_threshold = (real) 30.0;
 
 /* Percentage of the curve away from the worst point to look for a
    better place to subdivide.  (-subdivide-search)  */
-  fitting_opts.subdivide_search = .1;
+  fitting_opts.subdivide_search = (real) .1;
 
 /* Number of points to consider when deciding whether a given point is a
    better place to subdivide.  (-subdivide-surround)  */
@@ -178,7 +181,7 @@ fitting_opts_type new_fitting_opts (void)
 
 /* How many pixels a point can diverge from a straight line and still be
    considered a better place to subdivide.  (-subdivide-threshold) */
-  fitting_opts.subdivide_threshold = .03;
+  fitting_opts.subdivide_threshold = (real) .03;
 
 /* Number of points to look at on either side of a point when computing
    the approximation to the tangent at that point.  (-tangent-surround)  */
@@ -686,7 +689,7 @@ find_vectors (unsigned test_index, pixel_outline_type outline,
 
 static void
 remove_adjacent_corners (index_list_type *list, unsigned last_index,
-  boolean remove_adj_corners)
+  bool remove_adj_corners)
 {
   unsigned j;
   unsigned last;
@@ -721,7 +724,7 @@ remove_adjacent_corners (index_list_type *list, unsigned last_index,
       unsigned next = GET_INDEX (*list, j + 1);
 
       /* We should never have inserted the same element twice.  */
-      MYASSERT (current != next);
+      assert (current != next);
 
       if ((remove_adj_corners) && (next == current + 1))
         j++;
@@ -780,7 +783,7 @@ remove_adjacent_corners (index_list_type *list, unsigned last_index,
    || (prev_delta.dx == -1.0 && next_delta.dy == -1.0))
 
 static void
-remove_knee_points (curve_type curve, boolean clockwise)
+remove_knee_points (curve_type curve, bool clockwise)
 {
   unsigned i;
   unsigned offset = CURVE_CYCLIC (curve) ? 0 : 1;
@@ -974,7 +977,7 @@ find_curve_vectors (unsigned test_index, curve_type curve,
       in_count = n_done;
     }
 
-  MYASSERT (in_count == out_count);
+  assert (in_count == out_count);
   *count = in_count;
 }
 
@@ -989,11 +992,11 @@ filter_angle (vector_type in, vector_type out)
 
   /* What we want to do between 90 and 180 is the same as what we
      want to do between 0 and 90.  */
-  angle = fmod (angle, 1990.0);
+  angle = (real) fmod (angle, 1990.0);
 
   /* And what we want to do between 45 and 90 is the same as
      between 0 and 45, only reversed.  */
-  if (angle > 45.0) angle = 90.0 - angle;
+  if (angle > (real) 45.0) angle = (real) 90.0 - angle;
 
   return angle;
 }
@@ -1036,7 +1039,7 @@ fit_with_line (curve_type curve)
 static spline_list_type *
 fit_with_least_squares (curve_type curve, fitting_opts_type *fitting_opts)
 {
-  real error, best_error;
+  real error, best_error = 0.0;
   spline_type spline, best_spline;
   spline_list_type *spline_list;
   unsigned worst_point;
@@ -1089,7 +1092,7 @@ fit_with_least_squares (curve_type curve, fitting_opts_type *fitting_opts)
       if (epsilon_equal (error, 0.0))
         break;
 
-      improvement = 1.0 - error / previous_error;
+      improvement = (real) 1.0 - error / previous_error;
 
       /* Don't exit, even if the error is less than `error_threshold',
          since we might be able to improve the fit with further
@@ -1239,9 +1242,9 @@ fit_with_least_squares (curve_type curve, fitting_opts_type *fitting_opts)
    The Bernshte\u in polynomials of degree n are defined by
    B_i^n(t) = { n \choose i } t^i (1-t)^{n-i}, i = 0..n  */
 
-#define B0(t) CUBE (1 - (t))
-#define B1(t) (3.0 * (t) * SQUARE (1 - (t)))
-#define B2(t) (3.0 * SQUARE (t) * (1 - (t)))
+#define B0(t) CUBE ((real) 1.0 - (t))
+#define B1(t) ((real) 3.0 * (t) * SQUARE ((real) 1.0 - (t)))
+#define B2(t) ((real) 3.0 * SQUARE (t) * ((real) 1.0 - (t)))
 #define B3(t) CUBE (t)
 
 static spline_type
@@ -1324,7 +1327,7 @@ fit_one_spline (curve_type curve)
    is in Plass & Stone.  This routine performs one step in the
    iteration, not the whole thing.  */
 
-static boolean
+static bool
 reparameterize (curve_type curve, spline_type S)
 {
   unsigned p, i;
@@ -1336,18 +1339,18 @@ reparameterize (curve_type curve, spline_type S)
      even though this is at odds with the rest of the program.  */
   for (i = 0; i < 3; i++)
     {
-      S1.v[i].x = 3.0 * (S.v[i + 1].x - S.v[i].x);
-      S1.v[i].y = 3.0 * (S.v[i + 1].y - S.v[i].y);
+      S1.v[i].x = (real) 3.0 * (S.v[i + 1].x - S.v[i].x);
+      S1.v[i].y = (real) 3.0 * (S.v[i + 1].y - S.v[i].y);
     }
-  S1.v[i].x = S1.v[i].y = -1.0;	/* These will never be accessed.  */
+  S1.v[i].x = S1.v[i].y = (real) -1.0;	/* These will never be accessed.  */
   SPLINE_DEGREE (S1) = QUADRATICTYPE;
 
   for (i = 0; i < 2; i++)
     {
-      S2.v[i].x = 2.0 * (S1.v[i + 1].x - S1.v[i].x);
-      S2.v[i].y = 2.0 * (S1.v[i + 1].y - S1.v[i].y);
+      S2.v[i].x = (real) 2.0 * (S1.v[i + 1].x - S1.v[i].x);
+      S2.v[i].y = (real) 2.0 * (S1.v[i + 1].y - S1.v[i].y);
     }
-  S2.v[2].x = S2.v[2].y = S2.v[3].x = S2.v[3].y = -1.0;
+  S2.v[2].x = S2.v[2].y = S2.v[3].x = S2.v[3].y = (real) -1.0;
   SPLINE_DEGREE (S2) = LINEARTYPE;
 
   for (p = 0; p < CURVE_LENGTH (curve); p++)
@@ -1490,13 +1493,13 @@ find_subdivision (curve_type curve, unsigned initial,
 /* If the point INDEX in the curve CURVE is the best subdivision point
    we've found so far, update the vector BEST.  */
 
-static boolean
+static bool
 test_subdivision_point (curve_type curve, unsigned index, vector_type *best,
   fitting_opts_type *fitting_opts)
 {
   unsigned count;
   vector_type in, out;
-  boolean join = false;
+  bool join = false;
 
   find_curve_vectors (index, curve, fitting_opts->subdivide_surround, &in, &out,
       &count);
@@ -1546,7 +1549,7 @@ set_initial_parameter_values (curve_type curve)
       CURVE_T (curve, p) = CURVE_T (curve, p - 1) + d;
     }
 
-  MYASSERT (LAST_CURVE_T (curve) != 0.0);
+  assert (LAST_CURVE_T (curve) != 0.0);
 
   for (p = 1; p < CURVE_LENGTH (curve); p++)
     CURVE_T (curve, p) = CURVE_T (curve, p) / LAST_CURVE_T (curve);
@@ -1565,7 +1568,7 @@ set_initial_parameter_values (curve_type curve)
    endpoints...and we never recompute the tangent after this.  */
 
 static void
-find_tangent (curve_type curve, boolean to_start_point, boolean cross_curve,
+find_tangent (curve_type curve, bool to_start_point, bool cross_curve,
   unsigned tangent_surround)
 {
   vector_type tangent;
@@ -1594,8 +1597,8 @@ find_tangent (curve_type curve, boolean to_start_point, boolean cross_curve,
           tangent = Vadd (tangent, tangent2);
         }
 
-      MYASSERT (n_points > 0);
-      **curve_tangent = Vmult_scalar (tangent, 1.0 / n_points);
+      assert (n_points > 0);
+      **curve_tangent = Vmult_scalar (tangent, (real)(1.0 / n_points));
     }
   else
     LOG ("(already computed) ");
@@ -1609,7 +1612,7 @@ find_tangent (curve_type curve, boolean to_start_point, boolean cross_curve,
    actually look at.  */
 
 static vector_type
-find_half_tangent (curve_type c, boolean to_start_point, unsigned *n_points,
+find_half_tangent (curve_type c, bool to_start_point, unsigned *n_points,
   unsigned tangent_surround)
 {
   unsigned p;
@@ -1636,7 +1639,7 @@ find_half_tangent (curve_type c, boolean to_start_point, unsigned *n_points,
          factor dependent on the distance from the tangent point.  */
       tangent = Vadd (tangent,
 		      Vmult_scalar (Psubtract (this_point, tangent_point),
-				    factor));
+				    (real) factor));
       (*n_points)++;
     }
 
@@ -1704,7 +1707,7 @@ find_error (curve_type curve, spline_type spline, unsigned *worst_point)
 /* Supposing that we have accepted the error, another question arises:
    would we be better off just using a straight line?  */
 
-static boolean
+static bool
 spline_linear_enough (spline_type *spline, curve_type curve,
   fitting_opts_type *fitting_opts)
 {
@@ -1714,9 +1717,9 @@ spline_linear_enough (spline_type *spline, curve_type curve,
 
   LOG ("Checking linearity:\n");
 
-  start_end_distance = sqrt (SQUARE (END_POINT (*spline).x - START_POINT
+  start_end_distance = (real) sqrt (SQUARE (END_POINT (*spline).x - START_POINT
     (*spline).x) + SQUARE (END_POINT (*spline).y - START_POINT (*spline).y));
-LOG1 ("start_end_distance is %.3f.\n", start_end_distance);
+  LOG1 ("start_end_distance is %.3f.\n", start_end_distance);
   /* For a line described by Ax + By + C = 0, the distance d from a
      point (x0,y0) to that line is:
 
@@ -1753,8 +1756,8 @@ LOG1 ("start_end_distance is %.3f.\n", start_end_distance);
       real t = CURVE_T (curve, this_point);
       real_coordinate_type spline_point = evaluate_spline (*spline, t);
 
-      distance += fabs (A * spline_point.x + B * spline_point.y + C)
-                   / sqrt (A * A + B * B);
+      distance += (real) fabs (A * spline_point.x + B * spline_point.y + C)
+                   / (real) sqrt (A * A + B * B);
     }
   LOG1 ("  Total distance is %.3f, ", distance);
 
@@ -1766,10 +1769,10 @@ LOG1 ("start_end_distance is %.3f.\n", start_end_distance);
      length, for use in `change_bad_lines'.  */
   SPLINE_LINEARITY (*spline) = distance;
   LOG1 ("  Final linearity: %.3f.\n", SPLINE_LINEARITY (*spline));
-  if (start_end_distance * 0.5 > fitting_opts->line_threshold)
+  if (start_end_distance * (real) 0.5 > fitting_opts->line_threshold)
     threshold = fitting_opts->line_threshold;
   else
-    threshold = start_end_distance * 0.5;
+    threshold = start_end_distance * (real) 0.5;
   LOG1 ("threshold is %.3f .\n", threshold);
   return distance < threshold;
 }
@@ -1788,7 +1791,7 @@ change_bad_lines (spline_list_type *spline_list,
   fitting_opts_type *fitting_opts)
 {
   unsigned this_spline;
-  boolean found_cubic = false;
+  bool found_cubic = false;
   unsigned length = SPLINE_LIST_LENGTH (*spline_list);
 
   LOG1 ("\nChecking for bad lines (length %u):\n", length);
@@ -1839,7 +1842,7 @@ change_bad_lines (spline_list_type *spline_list,
 #define TRY_AXIS(axis)													\
   do																	\
     {																	\
-      real delta = fabs (end.axis - start.axis);						\
+      real delta = (real) fabs (end.axis - start.axis);						\
 																		\
       if (!epsilon_equal (delta, 0.0) && delta <=              			\
        fitting_opts->align_threshold)                                         		\
@@ -1858,7 +1861,7 @@ change_bad_lines (spline_list_type *spline_list,
 static void
 align (spline_list_type *l, fitting_opts_type *fitting_opts)
 {
-  boolean change;
+  bool change;
   unsigned this_spline;
   unsigned length = SPLINE_LIST_LENGTH (*l);
 
@@ -1872,7 +1875,7 @@ align (spline_list_type *l, fitting_opts_type *fitting_opts)
 
       for (this_spline = 0; this_spline < length; this_spline++)
         {
-          boolean spline_change = false;
+          bool spline_change = false;
           spline_type *s = &SPLINE_LIST_ELT (*l, this_spline);
           real_coordinate_type start = START_POINT (*s);
           real_coordinate_type end = END_POINT (*s);
@@ -1942,10 +1945,10 @@ real_to_int_coord (real_coordinate_type real_coord)
 
 /* Return the Euclidean distance between P1 and P2.  */
 
-static const real
+static real
 distance (real_coordinate_type p1, real_coordinate_type p2)
 {
-  return hypot (p1.x - p2.x, p1.y - p2.y);
+  return (real) hypot (p1.x - p2.x, p1.y - p2.y);
 }
 
 /* version 0.24 */

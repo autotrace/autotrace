@@ -122,12 +122,12 @@ static void
 out_splines (FILE * ps_file, spline_list_array_type shape)
 {
   unsigned this_list;
-  color_type last_color;
 
   for (this_list = 0; this_list < SPLINE_LIST_ARRAY_LENGTH (shape);
        this_list++)
     {
       unsigned this_spline;
+      color_type last_color;
       int c, m, y, k;
 
       spline_list_type list = SPLINE_LIST_ARRAY_ELT (shape, this_list);
@@ -136,22 +136,22 @@ out_splines (FILE * ps_file, spline_list_array_type shape)
       if (this_list == 0 || !COLOR_EQUAL(list.color, last_color))
         {
 	  if (this_list > 0)
-	      OUT_LINE ("*U");	      
-	  c = k = 255 - list.color.r;
-	  m = 255 - list.color.g;
-	  if (m < k)
-	      k = m;
-	  y = 255 - list.color.b;
-	  if (y < k)
-	      k = y;
-	  c -= k;
-	  m -= k;
-	  y -= k;
-	  /* symbol k is used for CorelDraw 3/4 compatibility */
-	  OUT4 ("%f %f %f %f k\n", (double) c/255.0,
-		(double) m/255.0,(double) y/255.0, (double) k/255.0);
-	  OUT_LINE ("*u");
-        }
+	    OUT_LINE("*U");
+          c = k = 255 - list.color.r;
+          m = 255 - list.color.g;
+          if (m < k)
+            k = m;
+          y = 255 - list.color.b;
+          if (y < k)
+          k = y;
+          c -= k;
+          m -= k;
+          y -= k;
+          /* symbol k is used for CorelDraw 3/4 compatibility */
+          OUT4 ("%f %f %f %f k\n", (double) c/255.0,
+	    (double) m/255.0,(double) y/255.0, (double) k/255.0);
+	  OUT_LINE("*u");    
+	}    
       OUT_COMMAND2 (START_POINT (first).x, START_POINT (first).y, "m");
 
       for (this_spline = 0; this_spline < SPLINE_LIST_LENGTH (list);
@@ -170,8 +170,8 @@ out_splines (FILE * ps_file, spline_list_array_type shape)
       OUT_LINE ("f");
       last_color = list.color;
     }
-  if (SPLINE_LIST_ARRAY_LENGTH (shape) > 0)
-      OUT_LINE ("*U");
+  if (SPLINE_LIST_ARRAY_LENGTH(shape) > 0)
+    OUT_LINE("*U");
 }
 
 
@@ -206,4 +206,4 @@ now (void)
   return time_string;
 }
 
-/* version 0.24a */
+/* version 0.26 */

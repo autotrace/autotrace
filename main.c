@@ -19,56 +19,68 @@
 #include "xmem.h"
 #include "atou.h"
 #include "quantize.h"
+#include "thin-image.h" 
 #include <string.h>
+#include <assert.h>
 
 /* General information about the image.  Set by the input routines.  */
 image_header_type image_header;
 
 /* Pointers to functions based on input format.  (-input-format)  */
-bitmap_type (*load_image) (string) = NULL;
+bitmap_type (*load_image) (char *) = NULL;
 
 /* Return NAME with any leading path stripped off.  This returns a
    pointer into NAME.  For example, `basename ("/foo/bar.baz")'
    returns "bar.baz".  */
-static string at_basename (string name);
+static char * at_basename (char * name);
 
 /* The suffix for the image file.  
 static string input_extension; */
 
 /* The name of the file we're going to write.  (-output-file) */
-static string output_name = "";
+static char * output_name = (char *)"";
 
 /* The output function. (-output-format) */
 static output_write output_writer = NULL;
 
 /* Whether to print version information */
-static boolean printed_version;
+static bool printed_version;
 
 /* Whether to write a log file */
-static boolean logging = false;
+static bool logging = false;
+
+/* Do we want to thin the image? */ 
+static bool thin = false; 
 
 /* Options how to fit */
 static fitting_opts_type fitting_opts;
 
-static void set_input_format (string);
-static int set_input_format_by_suffix (string);
+static void set_input_format (char *);
+static int set_input_format_by_suffix (char *);
 
-static string read_command_line (int, string []);
+static char * read_command_line (int, char * []);
 
 /* Read the string S as a percentage, i.e., a number between 0 and 100.  */
-static real get_percent (string);
+static real get_percent (char *);
+
+static unsigned int hctoi (char c);
 
 #define DEFAULT_FORMAT "eps"
 
+#define STREQ(s1, s2) (strcmp ((char*)s1, (char*)s2) == 0)
+#define STRTOLOWER(str)					\
+while (*str != '\0') {char *c = (str); while (*c != '\0') {*c = tolower (*c); c++;} break;}
+
 
 int
-main (int argc, string argv[])
+main (int argc, char * argv[])
 {
-  string input_name, input_rootname, logfile_name;
+  char * input_name, * input_rootname, * logfile_name=NULL;
   pixel_outline_list_type pixels;
   spline_list_array_type splines;
   bitmap_type bitmap;
   FILE *output_file;
+  QuantizeObj *myQuant = NULL; /* curently not used */
 
   fitting_opts = new_fitting_opts ();
 
@@ -77,27 +89,35 @@ main (int argc, string argv[])
   if (STREQ (output_name, input_name))
     FATAL("Input and output file may not be the same\n");
 
-  input_rootname = remove_suffix (at_basename (input_name));
+  if ((input_rootname = remove_suffix (at_basename (input_name))) == NULL)
+	FATAL1 ("Not a valid inputname %s\n", input_name);
 
   if (logging)
     log_file = xfopen (logfile_name = extend_filename (input_rootname, "log"), "w");
 
-  free (input_rootname);
+  if (input_rootname != input_name)
+    free (input_rootname);
   if (logging)
 	free (logfile_name);
 
   set_input_format (input_name);
 
   /* Open the main input file.  */
-  bitmap = (*load_image) (input_name);
+  if (load_image != NULL)
+    bitmap = (*load_image) (input_name);
+  else
+	FATAL ("Unsupported inputformat\n"); 
 
   image_header.width = DIMENSIONS_WIDTH (bitmap.dimensions);
   image_header.height = DIMENSIONS_HEIGHT (bitmap.dimensions);
 
   if (fitting_opts.color_count > 0 && BITMAP_PLANES(bitmap)== 3)
     quantize (bitmap.bitmap, bitmap.bitmap, DIMENSIONS_WIDTH (bitmap.dimensions),
-      DIMENSIONS_HEIGHT (bitmap.dimensions), fitting_opts.color_count);
+      DIMENSIONS_HEIGHT (bitmap.dimensions), fitting_opts.color_count,
+      fitting_opts.bgColor, &myQuant);
 
+  if (thin) thin_image (&bitmap); 
+ 
   pixels = find_outline_pixels (bitmap);
 
   {
@@ -130,6 +150,9 @@ main (int argc, string argv[])
   
   free (BITMAP_BITS (bitmap));
 
+  if (fitting_opts.bgColor != NULL)
+    free (fitting_opts.bgColor);
+
   return 0;
 }
 
@@ -137,7 +160,7 @@ main (int argc, string argv[])
 /* Reading the options.  */
 
 /* This is defined in version.c.  */
-extern string version_string;
+extern char * version_string;
 
 
 #define USAGE1 "Options:\
@@ -145,6 +168,9 @@ extern string version_string;
   GETOPT_USAGE								\
 "align-threshold <real>: if either coordinate of the endpoints on a\n\
   spline is closer than this, make them the same; default is .5.\n\
+background-color <hexadezimal>: the color of the background that\n\
+  should be ignored, for example FFFFFF;\n\
+  default is no background color.\n\
 color-count <unsigned>: number of colors a color bitmap is reduced to,\n\
   it does not work on grayscale, allowed are 1..256;\n\
   default is 0, that means not color reduction is done.\n\
@@ -198,18 +224,20 @@ subdivide-threshold <real>: if a point is this close or closer to a\n\
   straight line, subdivide there; default is .03.\n\
 tangent-surround <unsigned>: number of points on either side of a\n\
   point to consider when computing the tangent at that point; default is 3.\n\
+thin: thin all the lines in the image prior to fitting.\n\
 version: print the version number of this program.\n\
 "
 
 /* We return the name of the image to process.  */
 
-static string
-read_command_line (int argc, string argv[])
+static char *
+read_command_line (int argc, char * argv[])
 {
   int g;   /* `getopt' return code.  */
   int option_index;
   struct option long_options[]
     = { { "align-threshold",		1, 0, 0 },
+	{ "background-color",		1, 0, 0 },
         { "color-count",                1, 0, 0 },
         { "corner-always-threshold",    1, 0, 0 },
         { "corner-surround",            1, 0, 0 },
@@ -239,6 +267,7 @@ read_command_line (int argc, string argv[])
         { "subdivide-surround",		1, 0, 0 },
         { "subdivide-threshold",	1, 0, 0 },
         { "tangent-surround",           1, 0, 0 },
+        { "thin",                       0, (int*) &thin,1},
         { "version",                    0, (int *) &printed_version, 1 },
         { 0, 0, 0, 0 } };
 
@@ -253,31 +282,40 @@ read_command_line (int argc, string argv[])
       if (g == '?')
         exit (1);  /* Unknown option.  */
 
-      MYASSERT (g == 0); /* We have no short option names.  */
+      assert (g == 0); /* We have no short option names.  */
 
       if (ARGUMENT_IS ("align-threshold"))
-        fitting_opts.align_threshold = atof (optarg);
+        fitting_opts.align_threshold = (real) atof (optarg);
 
+      else if (ARGUMENT_IS ("background-color"))
+        {
+           if (strlen (optarg) != 6)
+               FATAL ("background-color be six chars long");
+           XMALLOC (fitting_opts.bgColor, sizeof (fitting_opts.bgColor));
+           fitting_opts.bgColor->r = hctoi (optarg[1]) * 16 + hctoi (optarg[0]);
+           fitting_opts.bgColor->g = hctoi (optarg[3]) * 16 + hctoi (optarg[2]);
+           fitting_opts.bgColor->b = hctoi (optarg[5]) * 16 + hctoi (optarg[4]);
+ 	}
       else if (ARGUMENT_IS ("color-count"))
         fitting_opts.color_count = atou (optarg);
 
       else if (ARGUMENT_IS ("corner-always-threshold"))
-        fitting_opts.corner_always_threshold = atof (optarg);
+        fitting_opts.corner_always_threshold = (real) atof (optarg);
 
       else if (ARGUMENT_IS ("corner-surround"))
         fitting_opts.corner_surround = atou (optarg);
 
       else if (ARGUMENT_IS ("corner-threshold"))
-        fitting_opts.corner_threshold = atou (optarg);
+        fitting_opts.corner_threshold = (real) atof (optarg);
 
       else if (ARGUMENT_IS ("error-threshold"))
-        fitting_opts.error_threshold = atof (optarg);
+        fitting_opts.error_threshold = (real) atof (optarg);
 
       else if (ARGUMENT_IS ("filter-alternative-surround"))
         fitting_opts.filter_alternative_surround = atou (optarg);
 
       else if (ARGUMENT_IS ("filter-epsilon"))
-        fitting_opts.filter_epsilon = atof (optarg);
+        fitting_opts.filter_epsilon = (real) atof (optarg);
 
       else if (ARGUMENT_IS ("filter-iterations"))
         fitting_opts.filter_iteration_count = atou (optarg);
@@ -303,10 +341,10 @@ read_command_line (int argc, string argv[])
         }
 
       else if (ARGUMENT_IS ("line-reversion-threshold"))
-        fitting_opts.line_reversion_threshold = atof (optarg);
+        fitting_opts.line_reversion_threshold = (real) atof (optarg);
 
       else if (ARGUMENT_IS ("line-threshold"))
-        fitting_opts.line_threshold = atof (optarg);
+        fitting_opts.line_threshold = (real) atof (optarg);
 
       else if (ARGUMENT_IS ("list-output-formats"))
         {
@@ -337,7 +375,7 @@ read_command_line (int argc, string argv[])
         fitting_opts.reparameterize_improvement = get_percent (optarg);
 
       else if (ARGUMENT_IS ("reparameterize-threshold"))
-        fitting_opts.reparameterize_threshold = atof (optarg);
+        fitting_opts.reparameterize_threshold = (real) atof (optarg);
 
       else if (ARGUMENT_IS ("subdivide-search"))
         fitting_opts.subdivide_search = get_percent (optarg);
@@ -346,7 +384,7 @@ read_command_line (int argc, string argv[])
         fitting_opts.subdivide_surround = atou (optarg);
 
       else if (ARGUMENT_IS ("subdivide-threshold"))
-        fitting_opts.subdivide_threshold = atof (optarg);
+        fitting_opts.subdivide_threshold = (real) atof (optarg);
 
       else if (ARGUMENT_IS ("tangent-surround"))
         fitting_opts.tangent_surround = atou (optarg);
@@ -362,13 +400,13 @@ read_command_line (int argc, string argv[])
 
 
 static void
-set_input_format (string filename)
+set_input_format (char * filename)
 {
   load_image = input_get_handler (filename);
 }
 
 static int
-set_input_format_by_suffix (string suffix)
+set_input_format_by_suffix (char * suffix)
 {
   load_image = input_get_handler_by_suffix (suffix);
   return load_image?1:0;
@@ -378,24 +416,81 @@ set_input_format_by_suffix (string suffix)
    pointer into NAME.  For example, `basename ("/foo/bar.baz")'
    returns "bar.baz".  */
 
-static string
-at_basename (string name)
+static char *
+at_basename (char * name)
 {
-  string base = strrchr (name, '/');
+#ifdef WIN32
+  char * base = strrchr (name, '\\');
+#else
+  char * base = strrchr (name, '/');
+#endif
   return base ? base + 1 : name;
 }
 
 
 /* Read the string S as a percentage, i.e., a number between 0 and 100.  */
 
-static real get_percent(string s)
+static real get_percent(char * s)
 {
   unsigned temp;
   temp = atou (s);
   if (temp > 100)
     FATAL1 ("get_percent: The argument %u should be atmost 100, since \
 it's a percentage", temp);
-  return (temp / 100.0);
+  return (real) ((real) temp / 100.0);
+}
+
+
+/* Convert hex char to integer */
+
+static unsigned int hctoi (char c)
+{
+  if (c == '0')
+    return (0);
+  else if (c == '1')
+    return (1);
+  else if (c == '2')
+    return (2);
+  else if (c == '3')
+    return (3);
+  else if (c == '4')
+    return (4);
+  else if (c == '5')
+    return (5);
+  else if (c == '6')
+    return (6);
+  else if (c == '7')
+    return (7);
+  else if (c == '8')
+    return (8);
+  else if (c == '9')
+    return (9);
+  else if (c == 'a')
+    return (10);
+  else if (c == 'A')
+    return (10);
+  else if (c == 'b')
+    return (11);
+  else if (c == 'B')
+    return (11);
+  else if (c == 'c')
+    return (12);
+  else if (c == 'C')
+    return (12);
+  else if (c == 'd')
+    return (13);
+  else if (c == 'D')
+    return (13);
+  else if (c == 'e')
+    return (14);
+  else if (c == 'E')
+    return (14);
+  else if (c == 'f')
+    return (15);
+  else if (c == 'F')
+    return (15);
+  else
+    FATAL ("No hex values");
 }
 
 /* version 0.24a */

@@ -81,15 +81,6 @@ static void   pnm_load_rawpbm          (PNMScanner *scan,
 					PNMInfo    *info,
 					unsigned char  *pixel_rgn);
 
-static void   pnmsaverow_ascii         (PNMRowInfo *ri,
-					unsigned char     *data);
-static void   pnmsaverow_raw           (PNMRowInfo *ri,
-					unsigned char     *data);
-static void   pnmsaverow_ascii_indexed (PNMRowInfo *ri,
-					unsigned char     *data);
-static void   pnmsaverow_raw_indexed   (PNMRowInfo *ri,
-					unsigned char     *data);
-
 static void   pnmscanner_destroy       (PNMScanner *s);
 static void   pnmscanner_createbuffer  (PNMScanner *s,
 					unsigned int bufsize);
@@ -125,17 +116,6 @@ static struct struct_pnm_types
   {  0 , 0, 0,   0, NULL}
 };
 
-static PNMSaveVals psvals =
-{
-  TRUE     /* raw? or ascii */
-};
-
-static PNMSaveInterface psint =
-{
-  FALSE     /* run */
-};
-
-
 bitmap_type pnm_load_image (string filename)
 {
   char buf[BUFLEN];		/* buffer for random things like scanning */
@@ -167,7 +147,7 @@ bitmap_type pnm_load_image (string filename)
   scan = pnmscanner_create(fd);
 
   /* Get magic number */
-  pnmscanner_gettoken (scan, buf, BUFLEN);
+  pnmscanner_gettoken (scan, (unsigned char *)buf, BUFLEN); 
   if (pnmscanner_eof(scan))
     FATAL ("pnm filter: premature end of file\n");
   if (buf[0] != 'P' || buf[2])
@@ -185,14 +165,14 @@ bitmap_type pnm_load_image (string filename)
   if (!pnminfo->loader)
       FATAL ("pnm filter: file not in a supported format\n");
 
-  pnmscanner_gettoken(scan, buf, BUFLEN);
+  pnmscanner_gettoken(scan, (unsigned char *)buf, BUFLEN); 
   if (pnmscanner_eof(scan))
     FATAL ("pnm filter: premature end of file\n");
   pnminfo->xres = isdigit(*buf)?atoi(buf):0;
   if (pnminfo->xres<=0)
     FATAL ("pnm filter: invalid xres while loading\n");
 
-  pnmscanner_gettoken(scan, buf, BUFLEN);
+  pnmscanner_gettoken(scan, (unsigned char *)buf, BUFLEN); 
   if (pnmscanner_eof(scan))
     FATAL ("pnm filter: premature end of file\n");
   pnminfo->yres = isdigit(*buf)?atoi(buf):0;
@@ -201,7 +181,7 @@ bitmap_type pnm_load_image (string filename)
 
   if (pnminfo->np != 0)		/* pbm's don't have a maxval field */
     {
-      pnmscanner_gettoken(scan, buf, BUFLEN);
+      pnmscanner_gettoken(scan, (unsigned char *)buf, BUFLEN);
       if (pnmscanner_eof(scan))
         FATAL ("pnm filter: premature end of file\n");
 
@@ -215,8 +195,8 @@ bitmap_type pnm_load_image (string filename)
   DIMENSIONS_HEIGHT (BITMAP_DIMENSIONS (bitmap)) = pnminfo->yres;
 
   BITMAP_PLANES (bitmap) = (pnminfo->np)?(pnminfo->np):1;
-  BITMAP_BITS (bitmap) = malloc (pnminfo->yres * pnminfo->xres
-    * BITMAP_PLANES (bitmap));
+  BITMAP_BITS (bitmap) = (unsigned char *) malloc (pnminfo->yres *
+    pnminfo->xres * BITMAP_PLANES (bitmap));
   pnminfo->loader (scan, pnminfo, BITMAP_BITS (bitmap));
 
   /* Destroy the scanner */
@@ -262,9 +242,9 @@ pnm_load_ascii (PNMScanner *scan,
 		if (pnmscanner_eof(scan))
           FATAL ("pnm filter: premature end of file\n");
 		if (info->np)
-		  pnmscanner_gettoken(scan, buf, BUFLEN);
+		  pnmscanner_gettoken(scan, (unsigned char *)buf, BUFLEN);
 		else
-		  pnmscanner_getsmalltoken(scan, buf);
+		  pnmscanner_getsmalltoken(scan, (unsigned char *)buf);
 		switch (info->maxval)
 		  {
 		  case 255:
@@ -331,7 +311,7 @@ pnm_load_rawpbm (PNMScanner *scan,
 
   fd = pnmscanner_fd(scan);
   rowlen = (unsigned int)ceil((double)(info->xres)/8.0);
-  buf = malloc(rowlen*sizeof(unsigned char));
+  buf = (unsigned char *)malloc(rowlen*sizeof(unsigned char));
 
       start = 0;
       end = info->yres;
@@ -394,7 +374,7 @@ static void
 pnmscanner_createbuffer (PNMScanner *s,
 			 unsigned int bufsize)
 {
-  s->inbuf = malloc(sizeof(char)*bufsize);
+  s->inbuf = (char *)malloc(sizeof(char)*bufsize);
   s->inbufsize = bufsize;
   s->inbufpos = 0;
   s->inbufvalidsize = fread(s->inbuf, 1, bufsize, s->fd);
@@ -490,4 +470,4 @@ pnmscanner_eatwhitespace (PNMScanner *s)
     }
 }
 
-/* version 0.24 */
+/* version 0.26 */

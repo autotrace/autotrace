@@ -1,17 +1,20 @@
 /* vector.c: vector/point operations. */
 
-#include "usefull.h"
 #include "vector.h"
 #include "message.h"
 #include "epsilon-equal.h"
 #include <math.h>
 #include <errno.h>
+#include <assert.h>
 
-static const real acos_d (real);
+static real acos_d (real);
 
 #ifndef M_PI
 #define M_PI 3.14159265
 #endif
+
+#define SIGN(x) ((x) > 0 ? 1 : (x) < 0 ? -1 : 0)
+#define ROUND(x) ((int) ((int) (x) + .5 * SIGN (x)))
 
 /* Given the point COORD, return the corresponding vector.  */
 
@@ -41,10 +44,10 @@ vector_to_point (const vector_type v)
 }
 
 
-const real
+real
 magnitude (const vector_type v)
 {
-  return hypot (v.dx, v.dy);
+  return (real) hypot (v.dx, v.dy);
 }
 
 
@@ -54,7 +57,7 @@ normalize (const vector_type v)
   vector_type new_v;
   real m = magnitude (v);
 
-  MYASSERT (m > 0.0);
+  assert (m > 0.0);
 
   new_v.dx = v.dx / m;
   new_v.dy = v.dy / m;
@@ -75,7 +78,7 @@ Vadd (const vector_type v1, const vector_type v2)
 }
 
 
-const real
+real
 Vdot (const vector_type v1, const vector_type v2)
 {
   return v1.dx * v2.dx + v1.dy * v2.dy;
@@ -97,7 +100,7 @@ Vmult_scalar (const vector_type v, const real r)
 /* Given the IN_VECTOR and OUT_VECTOR, return the angle between them in
    degrees, in the range zero to 180.  */
 
-const real
+real
 Vangle (const vector_type in_vector, const vector_type out_vector)
 {
   vector_type v1 = normalize (in_vector);
@@ -145,8 +148,8 @@ Vabs (const vector_type v)
 {
   vector_type new_v;
 
-  new_v.dx = fabs (v.dx);
-  new_v.dy = fabs (v.dy);
+  new_v.dx = (real) fabs (v.dx);
+  new_v.dy = (real) fabs (v.dy);
   return new_v;
 }
 
@@ -189,7 +192,7 @@ Psubtract (const real_coordinate_type c1, const real_coordinate_type c2)
 }
 
 
-
+
 /* Operations on integer points.  */
 
 vector_type
@@ -252,13 +255,13 @@ IPmult_real (const coordinate_type c, const real r)
 }
 
 
-const boolean
+bool
 IPequal (const coordinate_type c1, const coordinate_type c2)
 {
   return ((c1.x == c2.x) && (c1.y == c2.y));
 }
 
-static const real
+static real
 acos_d (real v)
 {
   real a;
@@ -269,11 +272,11 @@ acos_d (real v)
     v = -1.0;
 
   errno = 0;
-  a = acos (v);
+  a = (real) acos (v);
   if (errno == ERANGE || errno == EDOM)
     FATAL_PERROR ("acosd");
 
-  return a * 180.0 / M_PI;
+  return a * (real) 180.0 / (real) M_PI;
 }
 
-/* version 0.24 */
+/* version 0.26 */

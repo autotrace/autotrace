@@ -5,7 +5,7 @@
 #include "spline.h"
 #include "vector.h"
 #include "xmem.h"
-
+#include <assert.h>
 
 /* Print a spline in human-readable form.  */
 
@@ -38,45 +38,18 @@ evaluate_spline (spline_type s, real t)
 {
   spline_type V[4];    /* We need degree+1 splines, but assert degree <= 3.  */
   signed i, j;
-  real one_minus_t = 1.0 - t;
+  real one_minus_t = (real) 1.0 - t;
   polynomial_degree degree = SPLINE_DEGREE (s);
 
   for (i = 0; i <= degree; i++)
-    {
-      /* V[0].v[i] = s.v[i];
-
-	 Peter Cucka 
-	 <pcucka at anim.dreamworks.com> 
-	 wrote:
-
-	 I think I've traced this problem back
-	 to evaluate_spline() in spline.c (and
-	 to a possible bug in the IRIX
-	 compiler, since the problem shows up
-	 only when optimization level 2 or high
-	 er (-O2) is enabled).
-	 
-	 I've modified evaluate_spline() as
-	 follows, and now AutoTrace (v0.24a)
-	 compiles and runs fine (and quickly!) 
-	 using the MIPSpro compiler (v7.2.1.3m
-	 under IRIX 6.5).  (Also attached is a
-	 Makefile suitable for use with
-	 pmake/smake.) */
-      V[0].v[i].x = s.v[i].x;
-      V[0].v[i].y = s.v[i].y;
-    }
+    V[0].v[i] = s.v[i];
 
   for (j = 1; j <= degree; j++)
     for (i = 0; i <= degree - j; i++)
       {
         real_coordinate_type t1 = Pmult_scalar (V[j - 1].v[i], one_minus_t);
         real_coordinate_type t2 = Pmult_scalar (V[j - 1].v[i + 1], t);
-	/* V[j].v[i] = Padd (t1, t2); 
-	   To avoid MIPSpro compiler's bug */
-	real_coordinate_type temp = Padd (t1, t2);
-        V[j].v[i].x = temp.x;
-        V[j].v[i].y = temp.y;
+        V[j].v[i] = Padd (t1, t2);
       }
 
   return V[degree].v[0];
@@ -131,7 +104,7 @@ free_spline_list (spline_list_type spline_list)
 void
 append_spline (spline_list_type *l, spline_type s)
 {
-  MYASSERT (l != NULL);
+  assert (l != NULL);
 
   SPLINE_LIST_LENGTH (*l)++;
   XREALLOC (SPLINE_LIST_DATA (*l), SPLINE_LIST_LENGTH (*l) * sizeof (spline_type));
@@ -148,7 +121,7 @@ concat_spline_lists (spline_list_type *s1, spline_list_type s2)
   unsigned this_spline;
   unsigned new_length;
 
-  MYASSERT (s1 != NULL);
+  assert (s1 != NULL);
 
   new_length = SPLINE_LIST_LENGTH (*s1) + SPLINE_LIST_LENGTH (s2);
 
@@ -208,4 +181,4 @@ append_spline_list (spline_list_array_type *l, spline_list_type s)
   LAST_SPLINE_LIST_ARRAY_ELT (*l) = s;
 }
 
-/* version 0.24 */
+/* version 0.25 */

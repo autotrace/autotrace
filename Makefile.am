@@ -60,8 +60,6 @@ autotrace_SOURCES=$(input_src) ${output_src}	\
 		substring.h 			\
 		curve.h 			\
 		image-header.h    		\
-		edge.c 				\
-		edge.h 				\
 		types.h 			\
 		epsilon-equal.c 		\
 		usefull.h 			\
@@ -89,8 +87,10 @@ autotrace_SOURCES=$(input_src) ${output_src}	\
 		pxl-outline.h 			\
 		median.c 			\
 		median.h 			\
-		quantize.h 
+	        quantize.h                      \
+	        thin-image.c                    \
+	        thin-image.h                     
 
 
 INCLUDES = $(MAGICK_CFLAGS) -Wall
-autotrace_LDADD=	$(MAGICK_LDFLAGS) -lm
+autotrace_LDADD=	$(MAGICK_LDFLAGS) $(LIBPNG_LDFLAGS) -lm

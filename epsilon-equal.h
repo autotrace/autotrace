@@ -11,9 +11,9 @@
    here is smaller than can be represented in either a `fix_word' or a
    `scaled_num', so more precision than this will be lost when we
    output, anyway.  */
-extern const boolean epsilon_equal (real v1, real v2);
+extern bool epsilon_equal (real v1, real v2);
 #define REAL_EPSILON 0.00001
 
 #endif /* not EPSILON_EQUAL_H */
 
-/* version 0.17 */
+/* version 0.25 */

@@ -3,7 +3,7 @@
 #include "message.h"
 #include "atou.h"
 
-const unsigned
+unsigned
 atou (string s)
 {
   int i = atoi (s);
@@ -14,4 +14,4 @@ atou (string s)
   return (unsigned) i;
 }
 
-/* version 0.24 */
+/* version 0.26 */

@@ -1,6 +1,5 @@
 /* curve.c: operations on the lists of pixels and lists of curves. */
 
-#include "usefull.h"
 #include "logreport.h"
 #include "curve.h"
 #include "xmem.h"
@@ -89,13 +88,13 @@ append_point (curve_type curve, real_coordinate_type coord)
   while (0)
 
 void
-log_curve (curve_type curve, boolean print_t)
+log_curve (curve_type curve, bool print_t)
 {
   unsigned this_point;
 
   if (!log_file) return;
 
-  LOG1 ("curve id = %lx:\n", (unsigned long) curve);
+  LOG1 ("curve id = %x:\n", (unsigned) curve);
   LOG1 ("  length = %u.\n", CURVE_LENGTH (curve));
   if (CURVE_CYCLIC (curve))
     LOG ("  cyclic.\n");
@@ -156,7 +155,7 @@ log_entire_curve (curve_type curve)
 
   if (!log_file) return;
 
-  LOG1 ("curve id = %lx:\n", (unsigned long) curve);
+  LOG1 ("curve id = %x:\n", (unsigned) curve);
   LOG1 ("  length = %u.\n", CURVE_LENGTH (curve));
   if (CURVE_CYCLIC (curve))
     LOG ("  cyclic.\n");
@@ -280,4 +279,4 @@ int_to_real_coord (coordinate_type int_coord)
   return real_coord;
 }
 
-/* version 0.24 */
+/* version 0.26 */
