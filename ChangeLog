@@ -1,3 +1,10 @@
+2002-04-03  Masatake YAMATO  <yamato@redhat.com>
+
+	* configure.in: Version 0.30.
+
+	* exception.c (at_exception_new): Fix wrong 
+	parameter declaration.
+
 2002-04-03  Martin Weber <martweb@gmx.net>
 
 	* exception.h (at_exception_new): Fix wrong 

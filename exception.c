@@ -2,7 +2,7 @@
 
 at_exception
 at_exception_new(at_msg_func client_func,
-		 at_address * client_data)
+		 at_address client_data)
 {
   at_exception e = {false, client_func, client_data};
   return e;
