@@ -18,9 +18,9 @@ AM_INIT_AUTOMAKE(autotrace, $AUTOTRACE_VERSION, no-define)
 #
 # version setting up for libtool
 #
-LT_CURRENT=1
+LT_CURRENT=2
 LT_REVISION=0
-LT_AGE=1
+LT_AGE=0
 dnl AC_SUBST(LT_RELEASE)
 AC_SUBST(LT_CURRENT)
 AC_SUBST(LT_REVISION)
@@ -283,7 +283,7 @@ if test "x${LIBLD_LDFLAGS}" != x; then
    LIBPSTOEDIT_EXTRA_LIBS="${LIBPSTOEDIT_EXTRA_LIBS} ${LIBLD_LDFLAGS}"
 fi
 
-AC_MSG_NOTICE([Checking pstoedit existence TWICE])
+echo '*** Checking pstoedit existence TWICE ***'
 AM_PATH_PSTOEDIT(3.32.1,HAVE_LIBPSTOEDIT_321=yes)
 if test ${HAVE_LIBPSTOEDIT_321} != yes; then
    LIBS_BAKCUP=$LIBS
@@ -306,10 +306,10 @@ fi
 
 if test ${HAVE_LIBPSTOEDIT} = yes; then
 	AC_CHECK_FUNCS([mkstemp])
-	AC_MSG_NOTICE([pstoedit output functions are enabled.])
-	AC_MSG_NOTICE([However, this is experimental functions in autotrace.])
-	AC_MSG_NOTICE([If you get an error about pstoedit in building time,])
-	AC_MSG_NOTICE([you can run configure with --without-pstoedit option.])
+	echo '*** pstoedit output functions are enabled.'
+	echo '*** However, this is experimental functions in autotrace.'
+	echo '*** If you get an error about pstoedit in building time,'
+	echo '*** you can run configure with --without-pstoedit option.'
 else
 	AC_MSG_WARN([
 *** Cannot find libpstoedit. ***

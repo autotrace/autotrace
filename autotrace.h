@@ -34,6 +34,7 @@ extern "C" {
 #include "types.h"
 
 typedef struct _at_fitting_opts_type at_fitting_opts_type;
+typedef struct _at_input_opts_type at_input_opts_type;
 typedef struct _at_bitmap_type at_bitmap_type;
 typedef struct _at_color_type at_color_type;
 typedef enum _at_polynomial_degree at_polynomial_degree;
@@ -182,6 +183,11 @@ struct _at_fitting_opts_type
   at_bool centerline;
 };
 
+struct _at_input_opts_type
+{
+  at_color_type *background_color;
+};
+
 struct _at_bitmap_type
 {
   unsigned short height;
@@ -204,6 +210,7 @@ void (* at_msg_func) (at_string msg, at_msg_type msg_type, at_address client_dat
  */
 typedef 
 at_bitmap_type (*at_input_read_func)   (at_string name,
+					at_input_opts_type * opts,
 					at_msg_func msg_func, 
 					at_address msg_data);
 
@@ -234,7 +241,7 @@ typedef at_bool          (*  at_testcancel_func) (at_address client_data);
  * ===================================================================== */
 
 /* --------------------------------------------------------------------- *
- * Option related
+ * Fitting option related
  *
  * TODO: internal data access, copy
  * --------------------------------------------------------------------- */
@@ -242,6 +249,14 @@ at_fitting_opts_type * at_fitting_opts_new(void);
 at_fitting_opts_type * at_fitting_opts_copy (at_fitting_opts_type * original); 
 void at_fitting_opts_free(at_fitting_opts_type * opts);
 #define at_fitting_opts_doc(opt) at_doc__##opt 
+
+/* --------------------------------------------------------------------- *
+ * Input option related
+ *
+ * TODO: internal data access, copy
+ * --------------------------------------------------------------------- */
+at_input_opts_type * at_input_opts_new(void);
+void at_input_opts_free(at_input_opts_type * opts);
 
 /* --------------------------------------------------------------------- *
  * Bitmap related 
@@ -261,6 +276,7 @@ void at_fitting_opts_free(at_fitting_opts_type * opts);
    data are no longer needed. */
 at_bitmap_type * at_bitmap_read (at_input_read_func input_reader,
 				 at_string filename,
+				 at_input_opts_type * opts,
 				 at_msg_func msg_func, at_address msg_data);
 at_bitmap_type * at_bitmap_new(unsigned short width,
 			       unsigned short height,
@@ -356,6 +372,7 @@ void            at_color_free  (at_color_type * color);
  * --------------------------------------------------------------------- */
 at_input_read_func at_input_get_handler (at_string filename);
 at_input_read_func at_input_get_handler_by_suffix (at_string suffix);
+
 char ** at_input_list_new (void);
 void at_input_list_free(char ** list);
 

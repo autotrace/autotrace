@@ -17,14 +17,15 @@
    Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111-1307
    USA. */
 
-/* $Id: input-png.h,v 1.5 2002/04/16 04:55:49 masata-y Exp $ */
+/* $Id: input-png.h,v 1.6 2002/09/29 11:13:12 masata-y Exp $ */
 
 #ifndef INPUT_PNG_H
 #define INPUT_PNG_H
 
 #include "input.h"
 
-at_bitmap_type png_load_image(at_string filename, 
+at_bitmap_type png_load_image(at_string filename,
+			      at_input_opts_type * opts,
 			      at_msg_func msg_func, 
 			      at_address msg_data);
 

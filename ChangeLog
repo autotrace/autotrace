@@ -1,3 +1,25 @@
+2002-09-29  Masatake YAMATO  <yamato@redhat.com>
+
+	* configure.in: update library version.
+	LC_CURRENT=2, LT_REVISION=0, LT_AGE=0.
+
+	* main.c (main): Use new input opts.
+
+	* autotrace.h (at_input_read_func): added a new 
+	argrument.
+	(at_bitmap_read): added the new argrument.
+
+	* input-*.[ch] (*_load_image): added the new argrument.
+
+	* input-png.c (read_png): Use background in the input option
+	if the option is given. Otherwise, use white.
+	
+	* autotrace.c (at_input_opts_new, at_input_opts_free): 
+	New functions.
+
+	* autotrace.h (struct _at_input_opts_type): New 
+	data type.
+
 2002-09-29  Martin Weber <martweb@gmx.net>
 
 	* pxl-outline.c: I introduced a bug in pxl-outline.c. 

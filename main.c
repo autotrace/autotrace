@@ -74,6 +74,7 @@ int
 main (int argc, char * argv[])
 {
   at_fitting_opts_type * fitting_opts;
+  at_input_opts_type * input_opts;
   char * input_name, * input_rootname;
   char * logfile_name = NULL, * dumpfile_name = NULL;
   at_splines_type * splines;
@@ -133,7 +134,16 @@ main (int argc, char * argv[])
 
   /* Open the main input file.  */
   if (input_reader != NULL)
-    bitmap = at_bitmap_read(input_reader, input_name, exception_handler, NULL);
+    {
+      input_opts = at_input_opts_new ();
+      if (fitting_opts->background_color)
+	input_opts->background_color = at_color_copy(fitting_opts->background_color);
+      
+      bitmap = at_bitmap_read(input_reader, input_name, input_opts, 
+			      exception_handler, NULL);
+      
+      at_input_opts_free(input_opts);
+    }
   else
     FATAL ("Unsupported inputformat");
 

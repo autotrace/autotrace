@@ -123,6 +123,7 @@ static struct struct_pnm_types
 };
 
 at_bitmap_type pnm_load_image (at_string filename,
+			       at_input_opts_type * opts,
 			       at_msg_func msg_func, 
 			       at_address msg_data)
 {

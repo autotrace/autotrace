@@ -32,8 +32,8 @@
 #include <png.h>
 #include "input-png.h"
 
-static volatile char rcsid[]="$Id: input-png.c,v 1.12 2002/09/28 10:27:28 masata-y Exp $";
-static png_bytep * read_png(png_structp png_ptr, png_infop info_ptr);
+static volatile char rcsid[]="$Id: input-png.c,v 1.13 2002/09/29 11:13:12 masata-y Exp $";
+static png_bytep * read_png(png_structp png_ptr, png_infop info_ptr, at_input_opts_type * opts);
 
 /* for pre-1.0.6 versions of libpng */
 #ifndef png_jmpbuf
@@ -91,7 +91,7 @@ static int init_structs(png_structp *png, png_infop *info,
 	    goto cleanup;					\
 	  } } while (0)
 
-static int load_image(at_bitmap_type *image, FILE *stream, at_exception * exp) 
+static int load_image(at_bitmap_type *image, FILE *stream, at_input_opts_type * opts, at_exception * exp) 
 {
 	png_structp png;
 	png_infop info, end_info;
@@ -106,7 +106,7 @@ static int load_image(at_bitmap_type *image, FILE *stream, at_exception * exp)
 	png_init_io(png, stream);
 	CHECK_ERROR();
 	
-	rows = read_png(png, info);
+	rows = read_png(png, info, opts);
 
 	width = (unsigned short)png_get_image_width(png, info);
 	height = (unsigned short)png_get_image_height(png, info);
@@ -126,7 +126,7 @@ static int load_image(at_bitmap_type *image, FILE *stream, at_exception * exp)
 	return result;
 }
 
-at_bitmap_type png_load_image(at_string filename, 
+at_bitmap_type png_load_image(at_string filename, at_input_opts_type * opts,
 			      at_msg_func msg_func, at_address msg_data) {
 	FILE *stream;
 	at_bitmap_type image = at_bitmap_init(0, 0, 0, 1);
@@ -140,19 +140,18 @@ at_bitmap_type png_load_image(at_string filename,
 	    return image;
 	  }
 
-	load_image(&image, stream, &exp);
+	load_image(&image, stream, opts, &exp);
 	fclose(stream);
 
 	return image;
 }
 
 static png_bytep *
-read_png(png_structp png_ptr, png_infop info_ptr)
+read_png(png_structp png_ptr, png_infop info_ptr, at_input_opts_type * opts)
 {
 	int row;
 	png_color_16p original_bg;
 	png_color_16  my_bg;
-
 
 	png_read_info(png_ptr, info_ptr);
 
@@ -164,9 +163,20 @@ read_png(png_structp png_ptr, png_infop info_ptr)
 		png_set_expand(png_ptr);
 
 	if (png_get_bKGD(png_ptr, info_ptr, &original_bg)) {
-		/* Fill transparent region with black */
+		/* Fill transparent region with ... */
 		my_bg.index = 0;
-		my_bg.red = my_bg.green = my_bg.blue = my_bg.gray = 0xFFFF;
+
+		if (opts && opts->background_color) {
+			my_bg.red   = 256 * opts->background_color->r;
+			my_bg.green = 256 * opts->background_color->g;
+			my_bg.blue  = 256 * opts->background_color->b;
+			my_bg.gray  = (opts->background_color->r
+				       + opts->background_color->g
+				       + opts->background_color->b) / 3;
+		} else
+			  /* else, use white */
+			  my_bg.red = my_bg.green = my_bg.blue = my_bg.gray = 0xFFFF;
+		
 		png_set_background(png_ptr, &my_bg,
 				   PNG_BACKGROUND_GAMMA_FILE, 1, 1.0);
 	} else

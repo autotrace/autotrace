@@ -23,6 +23,7 @@
 #include "input.h"
 
 at_bitmap_type tga_load_image (at_string filename,
+			       at_input_opts_type * opts,
 			       at_msg_func msg_func, 
 			       at_address msg_data);
 

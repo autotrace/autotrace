@@ -68,14 +68,32 @@ at_fitting_opts_free(at_fitting_opts_type * opts)
   free(opts);
 }
 
+at_input_opts_type *
+at_input_opts_new(void)
+{
+  at_input_opts_type * opts;
+  XMALLOC(opts, sizeof(at_input_opts_type));
+  opts->background_color = NULL;
+  return opts;
+}
+
+void
+at_input_opts_free(at_input_opts_type * opts)
+{
+  if (opts->background_color != NULL)
+    free (opts->background_color);
+  free(opts);
+}
+
 at_bitmap_type *
 at_bitmap_read (at_input_read_func input_reader,
 		at_string filename,
+		at_input_opts_type * opts,
 		at_msg_func msg_func, at_address msg_data)
 {
   at_bitmap_type * bitmap;
   XMALLOC(bitmap, sizeof(at_bitmap_type)); 
-  *bitmap = (*input_reader) (filename, msg_func, msg_data);
+  *bitmap = (*input_reader) (filename, opts, msg_func, msg_data);
   return bitmap;
 }
 
