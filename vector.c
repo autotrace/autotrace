@@ -273,7 +273,10 @@ IPmult_real (const at_coord c, const at_real r)
 at_bool
 IPequal (const at_coord c1, const at_coord c2)
 {
-  return ((c1.x == c2.x) && (c1.y == c2.y));
+  if ((c1.x == c2.x) && (c1.y == c2.y))
+    return true;
+  else
+    return false;
 }
 
 static at_real

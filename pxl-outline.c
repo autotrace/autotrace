@@ -301,7 +301,12 @@ find_centerline_pixels(bitmap_type bitmap, color_type bg_color,
 	    if (edge != NO_EDGE)
 	    {
 		pixel_outline_type outline;
-		at_bool clockwise = (at_bool)(edge == BOTTOM);
+            at_bool clockwise;
+
+            if (edge == BOTTOM)
+              clockwise = true;
+            else
+              clockwise = false;
 
 		outline = find_one_centerline(bitmap, edge, row, col, &marked);
 
@@ -503,9 +508,11 @@ is_unmarked_outline_edge (unsigned short row, unsigned short col,
 	                    edge_type edge, bitmap_type character,
                             bitmap_type marked, color_type color, at_exception * exp)
 {
-  return
-    (at_bool)(!is_marked_edge (edge, row, col, marked)
-	&& is_outline_edge (edge, character, row, col, color, exp));
+  if (!is_marked_edge (edge, row, col, marked)
+	&& is_outline_edge (edge, character, row, col, color, exp))
+    return true;
+  else
+    return false;
 }
 
 
@@ -555,18 +562,26 @@ is_outline_edge (edge_type edge, bitmap_type character,
   switch (edge)
   {
     case LEFT:
-      return (at_bool)(col == 0 || !COLOR_EQUAL (GET_COLOR (character, row, col - 1), color));
+      if (col == 0 || !COLOR_EQUAL (GET_COLOR (character, row, col - 1), color))
+        return true;
+      break;
 
     case TOP:
-      return (at_bool)(row == 0 || !COLOR_EQUAL (GET_COLOR (character, row - 1, col), color));
+      if (row == 0 || !COLOR_EQUAL (GET_COLOR (character, row - 1, col), color))
+        return true;
+      break;
 
     case RIGHT:
-      return (at_bool)(col == BITMAP_WIDTH (character) - 1
-	    || !COLOR_EQUAL(GET_COLOR (character, row, col + 1), color));
+      if (col == BITMAP_WIDTH (character) - 1
+	    || !COLOR_EQUAL(GET_COLOR (character, row, col + 1), color))
+        return true;
+      break;
 
     case BOTTOM:
-      return (at_bool)(row == BITMAP_HEIGHT (character) - 1
-	    || !COLOR_EQUAL(GET_COLOR (character, row + 1, col), color));
+      if (row == BITMAP_HEIGHT (character) - 1
+	    || !COLOR_EQUAL(GET_COLOR (character, row + 1, col), color))
+        return true;
+      break;
 
     case NO_EDGE:
     default:
@@ -624,7 +639,10 @@ static at_bool
 is_marked_pixel(unsigned short row, unsigned short col, bitmap_type marked)
 {
     unsigned mark = (1 << NUM_EDGES) - 1;
-    return (at_bool)((*BITMAP_PIXEL(marked, row, col) & mark) == mark);
+    if ((*BITMAP_PIXEL(marked, row, col) & mark) == mark)
+      return true;
+    else
+      return false;
 }
 
 
@@ -719,7 +737,10 @@ is_open_junction(unsigned short row, unsigned short col, bitmap_type character,
     bitmap_type marked)
 {
     unsigned n = num_neighbors(row, col, character);
-    return (at_bool)(n > 2 && (n - num_marked_neighbors(row, col, marked) > 1));
+    if (n > 2 && (n - num_marked_neighbors(row, col, marked) > 1))
+      return true;
+    else
+      return false;
 }
 
 
@@ -728,8 +749,10 @@ is_open_junction(unsigned short row, unsigned short col, bitmap_type character,
 static at_bool
 is_marked_edge (edge_type edge, unsigned short row, unsigned short col, bitmap_type marked)
 {
-  return
-    (at_bool)(edge == NO_EDGE ? false : (*BITMAP_PIXEL (marked, row, col) & (1 << edge)) != 0);
+  if (edge == NO_EDGE ? false : (*BITMAP_PIXEL (marked, row, col) & (1 << edge)) != 0)
+    return true;
+  else
+    return false;
 }
 
 static at_coord NextPoint(bitmap_type bitmap, edge_type *edge, unsigned short *row, unsigned short *col,

@@ -15,8 +15,10 @@
 at_bool
 epsilon_equal (at_real v1, at_real v2)
 {
-  return
-    v1 == v2		       /* Usually they'll be exactly equal, anyway.  */
-    || fabs (v1 - v2) <= REAL_EPSILON;
+  if (v1 == v2		       /* Usually they'll be exactly equal, anyway.  */
+    || fabs (v1 - v2) <= REAL_EPSILON)
+    return true;
+  else
+    return false;
 }
 

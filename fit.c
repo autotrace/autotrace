@@ -1515,7 +1515,10 @@ spline_linear_enough (spline_type *spline, curve_type curve,
   else
     threshold = start_end_dist * (at_real) 0.5;
   LOG1 ("threshold is %.3f .\n", threshold);
-  return dist < threshold;
+  if (dist < threshold)
+    return true;
+  else
+    return false;
 }
 
 /* Unfortunately, we cannot tell in isolation whether a given spline

@@ -323,5 +323,8 @@ output_is_static_member (struct output_format_entry * entries,
 static at_bool
 streq (const char * a, const char * b)
 {
-  return !strcmp(a, b);
+  if (!strcmp(a, b))
+    return true;
+  else
+    return false;
 }

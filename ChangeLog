@@ -1,3 +1,18 @@
+2002-09-20  Martin Weber <martweb@gmx.net>
+
+	* vector.c: Now also works with C compilers that do not define true and false in the
+	standard way,
+
+	* pxl-outline.c: Ditto.
+
+	* output.c: Ditto.
+
+	* fit.c: Ditto.
+
+	* epsilon-equal.c: Ditto.
+
+	Message-ID: <8293.1032936123@www49.gmx.net>.
+
 2002-09-25  Masatake YAMATO  <yamato@redhat.com>
 
 	* configure.in: use pstoedit.m4 instead of pkg-config. 
