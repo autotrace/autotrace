@@ -1,5 +1,22 @@
 2002-03-06  Martin Weber <martweb@gmx.net>
 
+	* curve.c: Corrected copyright notice
+
+	* fit.c: Likewise.
+
+	Message-ID: <3C84F316.2DB5B7A1@gmx.net>.
+
+2002-03-06  Martin Weber <martweb@gmx.net>
+
+	* autotrace.vcproj: Linking with certain ImageMagick 
+	versions didn't work correctly.
+	
+	* autotrace.dsp: Likewise.
+
+	Message-ID: <3C84F0C1.4C989134@gmx.net>.
+	
+2002-03-06  Martin Weber <martweb@gmx.net>
+
 	* fit.c (filter): fixed a bug in the filtering routine.
 	avoid to use epsilon_equal.
 
