@@ -249,7 +249,7 @@ free_curve_list_array (curve_list_array_type *curve_list_array,
   for (this_list = 0; this_list < CURVE_LIST_ARRAY_LENGTH (*curve_list_array);
        this_list++) {
     if (notify_progress)
-      notify_progress(((real)this_list)/(CURVE_LIST_ARRAY_LENGTH (*curve_list_array)*3.0)+0.666 ,
+      notify_progress(((real)this_list)/(CURVE_LIST_ARRAY_LENGTH (*curve_list_array)*(real)3.0)+(real)0.666 ,
 		      client_data);
     free_curve_list (&CURVE_LIST_ARRAY_ELT (*curve_list_array, this_list));
   }

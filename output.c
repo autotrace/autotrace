@@ -15,6 +15,7 @@
 #include "output-swf.h"
 #endif /* HAVE_LIBSWF */
 #include "output-emf.h"
+#include "output-dxf.h"
 
 struct output_format_entry {
     const char * name;
@@ -35,6 +36,7 @@ static struct output_format_entry output_formats[] = {
 #endif /* HAVE_LIBSWF */
     {"emf",     "Enhanced Metafile format",     output_emf_writer},
     {"er",      "Elastic Reality Shape file",   output_er_writer},
+    {"dxf",     "DXF format",   output_dxf_writer},
     {NULL,	NULL}
 };
 

@@ -179,7 +179,7 @@ fitted_splines (pixel_outline_list_type pixel_outline_list,
       curve_list_type curves = CURVE_LIST_ARRAY_ELT (curve_array, this_list);
 
       if (notify_progress)
-	notify_progress((((real)this_list)/((real)CURVE_LIST_ARRAY_LENGTH (curve_array)*3.0) + 0.333),
+	notify_progress((((real)this_list)/((real)CURVE_LIST_ARRAY_LENGTH (curve_array)*(real)3.0) + (real)0.333),
 			client_data);
       LOG1 ("\nFitting curve list #%u:\n", this_list);
 

@@ -1,3 +1,10 @@
+2001-10-14  Martin Weber  <martweb@gmx.net>
+
+	* output-dxf.h: changed wrong define constant
+	* curve.c, pxl-outline.c, fit.c: removed warning in 
+	notify_progress for Visual C++
+	* output.c: added output_dxf_writer
+
 2001-10-28  Masatake YAMATO  <yamato@redhat.com>
 
 	* Makefile.am (output_src): Added output-dxf.[ch].

@@ -112,7 +112,7 @@ find_outline_pixels (bitmap_type bitmap, color_type *bg_color,
         edge_type edge;
 
 	if (notify_progress)
-	  notify_progress((real)(row * BITMAP_WIDTH(bitmap) + col) / ((real) max_progress * 3.0),
+	  notify_progress((real)(row * BITMAP_WIDTH(bitmap) + col) / ((real) max_progress * (real)3.0),
 			  client_data);
 
         color = GET_COLOR (bitmap, row, col);
@@ -232,7 +232,7 @@ find_centerline_pixels(bitmap_type bitmap, color_type bg_color,
 	    edge_type edge;
 
 	    if (notify_progress)
-	      notify_progress((real)(row * BITMAP_WIDTH(bitmap) + col) / ((real) max_progress * 3.0),
+	      notify_progress((real)(row * BITMAP_WIDTH(bitmap) + col) / ((real) max_progress * (real)3.0),
 			      client_data);
 
 	    if (COLOR_EQUAL(GET_COLOR(bitmap, row, col), bg_color)) continue;
