@@ -13,10 +13,13 @@ and autofig.
 
 * Autofig
 
-Autofig generate autotrace-config.in from autotrace-config.am.
-You can get autogen from
-http://gnomecd.copyleft.no/sources/unstable/snapshots/?N=D
+Autofig generate autotrace-config.in from autotrace-config.af.
+You can get autofig from:
 
+ftp://ftp.gyve.org/pub/misc/autofig-SNAP.tar.gz 
+
+You can get the LATEST version of autofig.
+http://cvs.gnome.org/bonsai/rview.cgi?cvsroot=/cvs/gnome&dir=autofig
 
 * Library
 

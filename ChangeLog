@@ -1,5 +1,9 @@
 2001-02-23  Masatake YAMATO  <yamato@redhat.com>
 
+	* HACKING (Autofig): Updated.
+
+	* autogen.sh: Check whether autofig is existed or not.
+
 	Applied patches from Martin.
 	-- I removed some compiler warnings in color.h 
 	and pxl-outline.c. Also I have a new autotrace.dsp.
