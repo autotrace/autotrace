@@ -41,3 +41,8 @@ autotrace.m4 has only '>=' version checking. It doesn't have == or >
 version checking. (In other hand, PKG_CHECK_MODULES has such version
 checking.) I don't want to extend autotrace.m4 anymore.  It will cause
 bugs. (Masatake YAMATO<yamato@redhat.com>)
+
+Q3. Does autotrace could be built on MacOSX? (Many)
+A3. Yes. I tested on sourceforge's compilefarm.
+    libtool shows a strange warning but autotrace could
+    be built and run. (Masatake YAMATO<yamato@redhat.com>)
