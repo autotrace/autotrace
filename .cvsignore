@@ -6,10 +6,11 @@
 *.patch
 *.png
 *.rej
-*.tar.gz
+*.gz
 .deps
 .gdbinit
 .libs
+*.zip
 Makefile
 Makefile.am.norpm
 Makefile.in
@@ -17,8 +18,10 @@ Makefile.pm
 PM
 a.out
 aclocal.m4
+autom4te-2.53.cache
 autom4te.cache
 autopack.cache
+autoscan.log
 autotrace
 autotrace-config
 autotrace-config.in
@@ -27,6 +30,7 @@ autotrace.pc
 autotrace.spec
 autotrace.xcf
 config.cache
+config.guess
 config.h
 config.h.in
 config.log
@@ -45,8 +49,13 @@ macros
 missing
 mkinstalldirs
 newerror
+output-test.sh
 port
 release
 rpm.log
-stamp-h
-stamp-h.in
+stamp-*
+*.eps
+*.log
+*.out
+*.ps
+m4

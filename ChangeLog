@@ -1,5 +1,7 @@
 2003-01-23  Masatake YAMATO  <yamato@redhat.com>
 
+	* configure.in: Added the dummy 2nd arg to AC_DEFINE.
+
 	* Makefile.am (SUBDIRS): Added m4. intl is removed.
 
 	* acconfig.h: use AUTOTRACE_VERSION instead of VERSION.
