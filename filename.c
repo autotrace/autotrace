@@ -1,4 +1,4 @@
-/* Function manipulate file names
+/* filename.c: Function manipulate file names
    Was: find-suffix, extend-fname, make-suffix, remove-suffx  
    substring, concat3 */
 

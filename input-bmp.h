@@ -5,7 +5,7 @@
 
 #include "bitmap.h"
 
-bitmap_type ReadBMP (string filename);
+bitmap_type bmp_load_image (string filename);
 
 #endif /* not INPUT_BMP_H */
 

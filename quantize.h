@@ -1,4 +1,4 @@
-/* Quantize a high color bitmap */
+/* quantize.h: Quantize a high color bitmap */
 
 #include "bitmap.h"
 #include "color.h"

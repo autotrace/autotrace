@@ -1,7 +1,8 @@
+/* xfopen.c: fopen and fclose with error checking. */
+
 #include "xstd.h"
 #include <errno.h>
 
-/* xfopen.c: fopen and fclose with error checking. */
 FILE *
 xfopen (string filename, string mode)
 {

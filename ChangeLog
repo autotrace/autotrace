@@ -1,26 +1,29 @@
+2001-03-21  Masatake YAMATO  <yamato@redhat.com>
+
+	* output-fig.c (get_fig_colour): Added static keyword.
+	(fig_col_init): Likewise.
+
+	* output-emf.c: Added static keyword to all variable
+	and functions except output_emf_writer.
+
+	* input-bmp.[ch] (bmp_load_image): Renamed ReadBMP.
+
+	* input-tga.[ch] (tga_load_image): Renamed ReadTGA.
+
+2001-03-21  Martin Weber <martweb@gmx.net>
+
+	Message-ID: <3AB7AD7B.CA58CE8A@gmx.net>.
+	* README: Updated.
+	
 2001-03-16  Peter Cucka <pcucka@anim.dreamworks.com>
 
-	* fit.c: 
-	* output-er.c: See following discussion. 
-
-	=============================================
 	Message-ID: <3AB26304.182F7AB2@anim.dreamworks.com>:
-	Martin Weber wrote:
-	> 
-	> I found a bug in centerline tracing. If I have a centerline consisting of a
-	> list of cubic splines, a line of the length 0 is added after the last cubic
-	> spline. This should be removed. Perhaps you can find the problem in fit.c. 
+	* fit.c: Fixed a bug that, in centerline mode, caused a zero-length
+	line segment to be added to the end of every open curve.
 
-	Martin,
+	* output-er.c: Modified out_splines() to correctly output open
+ 	curves, taking into account the above changes to fit.c.
 
-	Thanks for tracking that down.  The problem was that I was appending a
-	corner for both ends of an open curve, when I should, evidently, have
-	only been appending one corner.  I've attached a corrected version of
-	fit.c, and also of output-er.c.
-
-	Peter
-	=============================================
-	
 2001-03-20  Masatake YAMATO  <yamato@redhat.com>
 
 	* configure.in: Check ImageMagick version is higher 

@@ -6,8 +6,8 @@
 
 static real bezpnt(real, real, real, real, real);
 static void out_fig_splines(FILE *, spline_list_array_type, int, int, int, int);
-int get_fig_colour(color_type);
-int fig_col_init();
+static int get_fig_colour(color_type);
+static int fig_col_init();
 
 /* colour information */
 #define fig_col_hash(col_typ)  ( col_typ.r & 255 ) + ( col_typ.g & 161 ) + ( col_typ.b & 127 )
@@ -30,7 +30,7 @@ static float glob_min_x, glob_max_x, glob_min_y, glob_max_y;
 static float loc_min_x, loc_max_x, loc_min_y, loc_max_y;
 static int glo_bbox_flag=0,loc_bbox_flag=0,fig_depth;
 
-void fig_new_depth()
+static void fig_new_depth()
 {
 	if (glo_bbox_flag == 0) {
 		glob_max_y = loc_max_y ; glob_min_y = loc_min_y ;
@@ -57,7 +57,7 @@ void fig_new_depth()
 	loc_bbox_flag = 0;
 }
 
-void fig_addtobbox(float x, float y)
+static void fig_addtobbox(float x, float y)
 {
 	if (loc_bbox_flag == 0) {
 	    loc_max_y = y ; loc_min_y = y ;
@@ -294,7 +294,7 @@ int output_fig_writer(FILE* file, string name,
 	if alternate is 0, set next unused fig number
 */
 
-int fig_col_init()
+static int fig_col_init()
 {
     int i;
 

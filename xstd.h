@@ -1,4 +1,4 @@
-/* Wrappers for functions in C standard library 
+/* xstd.h: Wrappers for functions in C standard library 
  Was: xmem, xfile */
 
 /* These call the corresponding function in the standard library, and

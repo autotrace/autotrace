@@ -1,3 +1,4 @@
+/* thin-image.c: */
 #include <stdlib.h>
 #include <stdio.h>
 #include "thin-image.h"

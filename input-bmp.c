@@ -1,4 +1,4 @@
-/* input-bmp.c	reads any bitmap I could get for testing */
+/* input-bmp.c:	reads any bitmap I could get for testing */
 
 #include <stdio.h>
 #include <stdlib.h>
@@ -59,7 +59,7 @@ static unsigned char        *ReadImage     (FILE *,
 				   int);
 
 bitmap_type
-ReadBMP (string filename)
+bmp_load_image (string filename)
 {
   FILE *fd;
   unsigned char buffer[64];

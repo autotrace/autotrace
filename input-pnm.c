@@ -1,4 +1,4 @@
-/*
+/* input-pnm.c:
  * The pnm reading and writing code was written from scratch by Erik Nygren
  * (nygren@mit.edu) based on the specifications in the man pages and
  * does not contain any code from the netpbm or pbmplus distributions.

@@ -1,4 +1,4 @@
-/* Function manipulate file names
+/* filename.h: Function manipulate file names
    Was: find-suffix, extend-fname, make-suffix, remove-suffix  */
 
 /* remove-suffx.h: declarations for shared routines.

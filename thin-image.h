@@ -1,3 +1,4 @@
+/* thin-image.h: */
 #ifndef THIN_INC
 #define THIN_INC
 

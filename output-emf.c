@@ -1,3 +1,4 @@
+/* output-emf.c: */
 /*
 **  Notes:
 **
@@ -74,14 +75,14 @@ typedef struct
 
 /* globals */
 
-EMFColorList *color_list = NULL;  /* Color list */
-UI32 *color_table = NULL;         /* Color table */
-char *editor;                     /* Editor description string */
-float scale;
+static EMFColorList *color_list = NULL;  /* Color list */
+static UI32 *color_table = NULL;         /* Color table */
+static char *editor;                     /* Editor description string */
+static float scale;
 
 /* color list & table functions */
 
-int SearchColor(EMFColorList *head, UI32 colref)
+static int SearchColor(EMFColorList *head, UI32 colref)
 {
   while(head != NULL)
   {
@@ -92,7 +93,7 @@ int SearchColor(EMFColorList *head, UI32 colref)
   return 0;
 }
 
-void AddColor(EMFColorList **head, UI32 colref)
+static void AddColor(EMFColorList **head, UI32 colref)
 {
   EMFColorList *temp;
   
@@ -103,7 +104,7 @@ void AddColor(EMFColorList **head, UI32 colref)
   *head = temp;
 }
 
-void ColorListToColorTable(EMFColorList **head, UI32 **table, int len)
+static void ColorListToColorTable(EMFColorList **head, UI32 **table, int len)
 {
   EMFColorList *temp;
   int i = 0;
@@ -120,7 +121,7 @@ void ColorListToColorTable(EMFColorList **head, UI32 **table, int len)
   }
 }
 
-int ColorLookUp(UI32 colref, UI32 *table, int len)
+static int ColorLookUp(UI32 colref, UI32 *table, int len)
 {
   int i;
   
@@ -170,7 +171,7 @@ static bool write16(FILE *fdes, UI16 data)
 
 /* EMF record-type function definitions */
 
-int WriteMoveTo(FILE* fdes, real_coordinate_type *pt)
+static int WriteMoveTo(FILE* fdes, real_coordinate_type *pt)
 {
   int recsize = sizeof(UI32) * 4;
   
@@ -184,7 +185,7 @@ int WriteMoveTo(FILE* fdes, real_coordinate_type *pt)
   return recsize;
 }
 
-int WriteLineTo(FILE* fdes, spline_type *spl)
+static int WriteLineTo(FILE* fdes, spline_type *spl)
 {
   int recsize = sizeof(UI32) * 4;
   
@@ -224,7 +225,7 @@ int WritePolyLineTo(FILE* fdes, spline_type *spl, int nlines)
   return recsize;
 } */
 
-int MyWritePolyLineTo(FILE* fdes, spline_type *spl, int nlines)
+static int MyWritePolyLineTo(FILE* fdes, spline_type *spl, int nlines)
 {
   int i;
   int recsize = nlines * WriteLineTo(NULL, NULL);
@@ -270,7 +271,7 @@ int WritePolyBezierTo(FILE *fdes, spline_type *spl, int ncurves)
   return recsize;
 } */
 
-int WritePolyBezierTo16(FILE *fdes, spline_type *spl, int ncurves)
+static int WritePolyBezierTo16(FILE *fdes, spline_type *spl, int ncurves)
 {
   int i;
   int recsize = sizeof(UI32) * 7 + sizeof(UI16) * ncurves * 6;
@@ -299,7 +300,7 @@ int WritePolyBezierTo16(FILE *fdes, spline_type *spl, int ncurves)
 }
 
 
-int WriteSetPolyFillMode(FILE *fdes)
+static int WriteSetPolyFillMode(FILE *fdes)
 {
   int recsize = sizeof(UI32) * 3;
   
@@ -312,7 +313,7 @@ int WriteSetPolyFillMode(FILE *fdes)
   return recsize;
 }
 
-int WriteBeginPath(FILE *fdes)
+static int WriteBeginPath(FILE *fdes)
 {
   int recsize = sizeof(UI32) * 2;
   
@@ -324,7 +325,7 @@ int WriteBeginPath(FILE *fdes)
   return recsize;
 }
 
-int WriteEndPath(FILE *fdes)
+static int WriteEndPath(FILE *fdes)
 {
   int recsize = sizeof(UI32) * 2;
   
@@ -336,7 +337,7 @@ int WriteEndPath(FILE *fdes)
   return recsize;
 }
 
-int WriteFillPath(FILE *fdes)
+static int WriteFillPath(FILE *fdes)
 {
   int recsize = sizeof(UI32) * 6;
   
@@ -352,7 +353,7 @@ int WriteFillPath(FILE *fdes)
   return recsize;
 }
 
-int WriteStrokePath(FILE *fdes)
+static int WriteStrokePath(FILE *fdes)
 {
   int recsize = sizeof(UI32) * 6;
   
@@ -368,7 +369,7 @@ int WriteStrokePath(FILE *fdes)
   return recsize;
 }
 
-int WriteSetWorldTransform(FILE *fdes, UI32 height)
+static int WriteSetWorldTransform(FILE *fdes, UI32 height)
 {
   int recsize = sizeof(UI32) * 8;
   float fHeight;
@@ -398,7 +399,7 @@ int WriteSetWorldTransform(FILE *fdes, UI32 height)
   return recsize;
 }
 
-int WriteCreateSolidPen(FILE *fdes, int hndNum, UI32 colref)
+static int WriteCreateSolidPen(FILE *fdes, int hndNum, UI32 colref)
 {
   int recsize = sizeof(UI32) * 7;
   
@@ -415,7 +416,7 @@ int WriteCreateSolidPen(FILE *fdes, int hndNum, UI32 colref)
   return recsize;
 }
 
-int WriteCreateSolidBrush(FILE *fdes, int hndNum, UI32 colref)
+static int WriteCreateSolidBrush(FILE *fdes, int hndNum, UI32 colref)
 {
   int recsize = sizeof(UI32) * 6;
   
@@ -432,7 +433,7 @@ int WriteCreateSolidBrush(FILE *fdes, int hndNum, UI32 colref)
   return recsize;
 }
 
-int WriteSelectObject(FILE *fdes, int hndNum)
+static int WriteSelectObject(FILE *fdes, int hndNum)
 {
   int recsize = sizeof(UI32) * 3;
   
@@ -445,7 +446,7 @@ int WriteSelectObject(FILE *fdes, int hndNum)
   return recsize;
 }
 
-int WriteEndOfMetafile(FILE *fdes)
+static int WriteEndOfMetafile(FILE *fdes)
 {
   int recsize = sizeof(UI32) * 5;
   
@@ -461,7 +462,7 @@ int WriteEndOfMetafile(FILE *fdes)
   return recsize;
 }
 
-int WriteHeader(FILE *fdes, string name, int width, int height, int fsize, int nrec, int nhand)
+static int WriteHeader(FILE *fdes, string name, int width, int height, int fsize, int nrec, int nhand)
 {
   int i, desclen, recsize;
 
@@ -528,7 +529,7 @@ int WriteHeader(FILE *fdes, string name, int width, int height, int fsize, int n
 
 /* EMF stats collector */
 
-void GetEmfStats(EMFStats *stats, string name, spline_list_array_type shape)
+static void GetEmfStats(EMFStats *stats, string name, spline_list_array_type shape)
 {
   unsigned int i, j;
   int ncolors = 0;
@@ -629,7 +630,7 @@ void GetEmfStats(EMFStats *stats, string name, spline_list_array_type shape)
 
 /* EMF output */
 
-void OutputEmf(FILE* fdes, EMFStats *stats, string name, int width, int height, spline_list_array_type shape)
+static void OutputEmf(FILE* fdes, EMFStats *stats, string name, int width, int height, spline_list_array_type shape)
 {
   unsigned int i, j;
   int color_index;

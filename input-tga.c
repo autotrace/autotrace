@@ -98,7 +98,7 @@ static bitmap_type ReadImage (FILE *fp,
                          struct tga_header *hdr,
                          char *filename);
 bitmap_type
-ReadTGA (string filename)
+tga_load_image (string filename)
 {
   FILE *fp;
   struct tga_header hdr;

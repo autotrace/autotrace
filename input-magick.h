@@ -1,4 +1,4 @@
-/* input-pnm.h: import pnm and pbm files. */
+/* input-magick.h: import files via image magick */
 
 #ifndef INPUT_MAGICK_H
 #define INPUT_MAGICK_H

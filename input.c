@@ -34,12 +34,12 @@ static struct input_format_entry input_formats[] = {
 #if HAVE_MAGICK
   { magick_load_image, "", "magick" },
 #endif /* HAVE_MAGICK */
-  { ReadTGA,          "", "tga" },
+  { tga_load_image,   "", "tga" },
   { pnm_load_image,   "", "pbm" },
   { pnm_load_image,   "", "pnm" },
   { pnm_load_image,   "", "pgm" },
   { pnm_load_image,   "", "ppm" },
-  { ReadBMP, "", "bmp" },
+  { bmp_load_image,   "", "bmp" },
   {NULL, NULL, NULL}
 };
 
