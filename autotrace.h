@@ -99,8 +99,8 @@ struct _at_spline_list_array_type
 };
 
 /* Fitting option.
-   With using at_doc macro, the description of each option could
-   be get. e.g. at_doc(bgColor) */
+   With using at_fitting_opts_doc macro, the description of 
+   each option could be get. e.g. at_fitting_opts_doc(bgColor) */
 struct _at_fitting_opts_type
 {
 #define at_doc__bgColor							\
@@ -168,7 +168,7 @@ struct _at_fitting_opts_type
 
 #define at_doc__despeckle_level						\
 "despeckle-level <unsigned>: 0..20; default is no despeckling. "
-  int despeckle_level;
+  unsigned despeckle_level;
 
 #define at_doc__despeckle_tightness				\
 "despeckle-tightness <real>: 0.0..8.0; default is 2.0. "

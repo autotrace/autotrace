@@ -1,3 +1,9 @@
+2002-02-14  Masatake YAMATO  <yamato@redhat.com>
+
+	* autotrace.h (struct _at_fitting_opts_type::despeckle_level): 
+	made "unsigned".
+	(struct _at_fitting_opts_type): Corrected wrong comments.
+
 2001-12-24  Martin Weber <martweb@gmx.net>
 
 	* vector.c (magnitude): replaced hypot.
