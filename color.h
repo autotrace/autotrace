@@ -24,24 +24,24 @@
 #include <glib.h>
 #include <glib-object.h>
 
-typedef struct _at_color_type        at_color_type;
-struct _at_color_type
+typedef struct _at_color        at_color;
+struct _at_color
 {
   guint8 r;
   guint8 g;
   guint8 b;
 };
 
-at_color_type *  at_color_new   (guint8 r, 
+at_color *  at_color_new   (guint8 r, 
 				 guint8 g,
 				 guint8 b);
-at_color_type *  at_color_parse (const gchar * string, GError ** err);
-at_color_type *  at_color_copy  (const at_color_type * original);
-gboolean         at_color_equal (const at_color_type * c1, const at_color_type * c2);
-void             at_color_set   (at_color_type * c1, guint8 r, guint8 g, guint8 b);
+at_color *  at_color_parse (const gchar * string, GError ** err);
+at_color *  at_color_copy  (const at_color * original);
+gboolean         at_color_equal (const at_color * c1, const at_color * c2);
+void             at_color_set   (at_color * c1, guint8 r, guint8 g, guint8 b);
 /* RGB to grayscale */
-unsigned char    at_color_luminance (const at_color_type * color);
-void             at_color_free  (at_color_type * color);
+unsigned char    at_color_luminance (const at_color * color);
+void             at_color_free  (at_color * color);
 
 GType at_color_get_type (void);
 #define AT_TYPE_COLOR (at_color_get_type ())

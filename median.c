@@ -70,7 +70,7 @@ static void zero_histogram_rgb(Histogram histogram)
 }
 
 static void generate_histogram_rgb(Histogram histogram, bitmap_type *image,
-    const at_color_type *ignoreColor) 
+    const at_color *ignoreColor) 
 {
     unsigned char *src = image->bitmap;
     int num_elems;
@@ -739,7 +739,7 @@ static void fill_inverse_cmap_rgb(QuantizeObj *quantobj, Histogram histogram,
 
 /*  This is pass 1  */
 static void median_cut_pass1_rgb(QuantizeObj *quantobj, bitmap_type *image,
-  const at_color_type *ignoreColor) 
+  const at_color *ignoreColor) 
 {
     generate_histogram_rgb(quantobj->histogram, image, ignoreColor); 
     select_colors_rgb(quantobj, quantobj->histogram);
@@ -748,7 +748,7 @@ static void median_cut_pass1_rgb(QuantizeObj *quantobj, bitmap_type *image,
 
 /* Map some rows of pixels to the output colormapped representation. */
 static void median_cut_pass2_rgb(QuantizeObj *quantobj, bitmap_type *image,
-  const at_color_type *bgColor) 
+  const at_color *bgColor) 
  /* This version performs no dithering */
 {
     Histogram       histogram = quantobj->histogram;
@@ -760,7 +760,7 @@ static void median_cut_pass2_rgb(QuantizeObj *quantobj, bitmap_type *image,
     int             width = BITMAP_WIDTH(*image);
     int             height = BITMAP_HEIGHT(*image);
     unsigned char   *src, *dest;
-    at_color_type      bg_color = { 0xff, 0xff, 0xff };
+    at_color      bg_color = { 0xff, 0xff, 0xff };
 
     zero_histogram_rgb(histogram);
 
@@ -861,7 +861,7 @@ static QuantizeObj *initialize_median_cut(int num_colors)
 }
 
 
-void quantize(bitmap_type *image, long ncolors, const at_color_type *bgColor,
+void quantize(bitmap_type *image, long ncolors, const at_color *bgColor,
 	      QuantizeObj **iQuant, at_exception_type * exp)
 {
     QuantizeObj *quantobj;

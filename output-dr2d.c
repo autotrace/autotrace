@@ -63,8 +63,8 @@ static struct Chunk * BuildCMAP(spline_list_array_type);
 static struct Chunk * BuildLAYR(void);
 static struct Chunk * BuildDASH(void);
 static struct Chunk * BuildBBOX(spline_list_type, int);
-static struct Chunk * BuildATTR(at_color_type, int, struct Chunk *);
-static int GetCMAPEntry(at_color_type, struct Chunk *);
+static struct Chunk * BuildATTR(at_color, int, struct Chunk *);
+static int GetCMAPEntry(at_color, struct Chunk *);
 static int CountSplines(spline_list_type);
 static int SizeFloat(float, char *);
 static void ShortAsBytes(int, unsigned char *);
@@ -107,7 +107,7 @@ static struct Chunk * BuildCMAP(spline_list_array_type shape) {
 	this_list_length = SPLINE_LIST_ARRAY_LENGTH(shape);
 	for (this_list = 0; this_list < this_list_length; this_list++) {
 		spline_list_type list = SPLINE_LIST_ARRAY_ELT(shape, this_list);
-        at_color_type curr_color = curr_color = (list.clockwise && shape.background_color != NULL)? *(shape.background_color) : list.color;
+        at_color curr_color = curr_color = (list.clockwise && shape.background_color != NULL)? *(shape.background_color) : list.color;
 
 		Red = curr_color.r;
 		Green = curr_color.g;
@@ -138,7 +138,7 @@ static struct Chunk * BuildCMAP(spline_list_array_type shape) {
 	return CMAPChunk;
 }
 
-static int GetCMAPEntry(at_color_type colour, struct Chunk * CMAPChunk) {
+static int GetCMAPEntry(at_color colour, struct Chunk * CMAPChunk) {
 	int WalkCol, ListSize;
 	unsigned char Red, Green, Blue;
 	unsigned char * IndexCol;
@@ -223,7 +223,7 @@ static struct Chunk * BuildBBOX(spline_list_type list, int height) {
 	return BBOXChunk;
 }
 
-static struct Chunk * BuildATTR(at_color_type colour, int StrokeOrFill, struct Chunk * CMAPChunk) {
+static struct Chunk * BuildATTR(at_color colour, int StrokeOrFill, struct Chunk * CMAPChunk) {
 	struct Chunk * ATTRChunk;
 	unsigned char * ATTRData;
 	int ColourIndex;
@@ -399,7 +399,7 @@ static struct Chunk ** GeneratexPLY(struct Chunk * CMAP, spline_list_array_type 
 	for (this_list = 0; this_list < this_list_length; this_list++) {
 		spline_list_type list = SPLINE_LIST_ARRAY_ELT(shape, this_list);
 		spline_type first = SPLINE_LIST_ELT(list, 0);
-        at_color_type curr_color = curr_color = (list.clockwise && shape.background_color != NULL)? *(shape.background_color) : list.color;
+        at_color curr_color = curr_color = (list.clockwise && shape.background_color != NULL)? *(shape.background_color) : list.color;
 
 		StrokeOrFill = (shape.centerline || list.open);
 		this_spline_length = SPLINE_LIST_LENGTH(list);

@@ -1,3 +1,7 @@
+2003-08-06  Masatake YAMATO  <yamato@redhat.com>
+
+	* *.[ch] (*): at_color_type -> at_color.
+
 2003-08-05  Masatake YAMATO  <yamato@redhat.com>
 
 	* curve.c (log_curve): Use %lx.

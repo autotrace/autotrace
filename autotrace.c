@@ -230,7 +230,7 @@ at_bitmap_get_planes (const at_bitmap_type * bitmap)
 void
 at_bitmap_get_color (const at_bitmap_type * bitmap,
 		     unsigned int row, unsigned int col,
-		     at_color_type * color)
+		     at_color * color)
 {
   unsigned char *p;
   g_return_if_fail (color);
@@ -246,9 +246,9 @@ at_bitmap_get_color (const at_bitmap_type * bitmap,
 gboolean
 at_bitmap_equal_color(const at_bitmap_type * bitmap,
 		      unsigned int row, unsigned int col,
-		      at_color_type * color)
+		      at_color * color)
 {
-  at_color_type c;
+  at_color c;
   
   g_return_val_if_fail (bitmap, FALSE);
   g_return_val_if_fail (color, FALSE);
@@ -338,7 +338,7 @@ at_splines_new_full (at_bitmap_type * bitmap,
      the execution is canceled; use CANCEL_THEN_CLEANUP_PIXELS. */
   if (opts->centerline)
     {
-      at_color_type background_color = { 0xff, 0xff, 0xff };
+      at_color background_color = { 0xff, 0xff, 0xff };
       if (opts->background_color) 
         background_color = *opts->background_color;
 

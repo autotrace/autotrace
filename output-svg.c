@@ -30,7 +30,7 @@ out_splines (FILE * file, spline_list_array_type shape, int height)
 {
   unsigned this_list;
   spline_list_type list;
-  at_color_type last_color = {0,0,0};
+  at_color last_color = {0,0,0};
 
   for (this_list = 0; this_list < SPLINE_LIST_ARRAY_LENGTH (shape);
     this_list++)

@@ -46,7 +46,7 @@
 static gfloat bezpnt(gfloat, gfloat, gfloat, gfloat, gfloat);
 static void out_fig_splines(FILE *, spline_list_array_type, int, int, int, int,
 			    at_exception_type *);
-static int get_fig_colour(at_color_type, at_exception_type *);
+static int get_fig_colour(at_color, at_exception_type *);
 static void fig_col_init(void);
 
 /* colour information */
@@ -58,7 +58,7 @@ static struct {
 }       fig_hash[544];
 
 static struct {
-        at_color_type c;
+        at_color c;
         int alternate;
 }       fig_colour_map[544];
 
@@ -150,7 +150,7 @@ static void out_fig_splines(FILE * file, spline_list_array_type shape,
 	 this_list++)
     {
 	spline_list_type list = SPLINE_LIST_ARRAY_ELT (shape, this_list);
-	at_color_type curr_color = (list.clockwise && shape.background_color != NULL) ? *(shape.background_color) : list.color;
+	at_color curr_color = (list.clockwise && shape.background_color != NULL) ? *(shape.background_color) : list.color;
 	spline_colours[this_list] = get_fig_colour(curr_color, exp);
     }
     /* Output colours */
@@ -400,7 +400,7 @@ static void fig_col_init(void)
  * If unknown, create a new colour index and return that.
  */
 
-static int get_fig_colour(at_color_type this_colour, at_exception_type * exp)
+static int get_fig_colour(at_color this_colour, at_exception_type * exp)
 {
     int hash,i,this_ind;
 

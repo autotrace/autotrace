@@ -33,7 +33,7 @@
 
 typedef struct {
   char *tag;
-  at_color_type c;
+  at_color c;
 } ColorT;
 
 typedef struct {
@@ -111,7 +111,7 @@ int output_mif_writer(FILE* ps_file, gchar* name,
   int i;
   ColorT col_tbl[256];
   int n_ctbl = 0;
-  at_color_type curr_color = {0,0,0};
+  at_color curr_color = {0,0,0};
 
 
   cbox.llx = llx;

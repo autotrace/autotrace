@@ -200,13 +200,13 @@ free_distance_map(distance_map_type *dist)
 #if 0
 void
 medial_axis(bitmap_type *bitmap, distance_map_type *dist,
-    const at_color_type *bg_color)
+    const at_color *bg_color)
 {
     unsigned x, y, test;
     unsigned w, h;
     unsigned char *b;
     float **d, f;
-    at_color_type bg;
+    at_color bg;
 
     assert(bitmap != NULL);
 

@@ -14,7 +14,7 @@ typedef struct
   at_coord *data;
   unsigned length;
   gboolean clockwise;
-  at_color_type color;
+  at_color color;
   gboolean open;
 } pixel_outline_type;
 
@@ -50,14 +50,14 @@ typedef struct
 
 /* Find all pixels on the outline in the character C.  */
 extern pixel_outline_list_type
-find_outline_pixels (bitmap_type, at_color_type *bg_color, 
+find_outline_pixels (bitmap_type, at_color *bg_color, 
 		     at_progress_func notify_progress, gpointer progress_data,
 		     at_testcancel_func test_cancel, gpointer testcancel_data,
 		     at_exception_type * exp);
 
 /* Find all pixels on the center line of the character C.  */
 extern pixel_outline_list_type
-find_centerline_pixels (bitmap_type, at_color_type bg_color, 
+find_centerline_pixels (bitmap_type, at_color bg_color, 
 			at_progress_func notify_progress, gpointer progress_data,
 			at_testcancel_func test_cancel, gpointer testcancel_data,
 			at_exception_type * exp);

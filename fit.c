@@ -190,7 +190,7 @@ fitted_splines (pixel_outline_list_type pixel_outline_list,
 
       memcpy (&(curve_list_splines.color),
         &(O_LIST_OUTLINE(pixel_outline_list, this_list).color),
-        sizeof (at_color_type));
+        sizeof (at_color));
       append_spline_list (&char_splines, curve_list_splines);
     }
  cleanup:

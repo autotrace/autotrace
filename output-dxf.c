@@ -636,11 +636,11 @@ static void out_splines (FILE * dxf_file, spline_list_array_type shape)
        this_list++)
     {
       unsigned this_spline;
-      at_color_type last_color = {0,0,0};
+      at_color last_color = {0,0,0};
 
       spline_list_type list = SPLINE_LIST_ARRAY_ELT (shape, this_list);
       spline_type first = SPLINE_LIST_ELT (list, 0);
-      at_color_type curr_color = curr_color = (list.clockwise && shape.background_color != NULL)? *(shape.background_color) : list.color;
+      at_color curr_color = curr_color = (list.clockwise && shape.background_color != NULL)? *(shape.background_color) : list.color;
 
       if (this_list == 0 || !at_color_equal(&curr_color, &last_color))
         {
@@ -777,14 +777,14 @@ void output_layer(FILE *dxf_file,
   int i, idx;
   char layerlist[256];
   unsigned this_list;
-  at_color_type last_color = {0,0,0};
+  at_color last_color = {0,0,0};
   
   memset(layerlist, 0, sizeof(layerlist));  
   for (this_list = 0; this_list < SPLINE_LIST_ARRAY_LENGTH (shape);
        this_list++)
     {
       spline_list_type list = SPLINE_LIST_ARRAY_ELT (shape, this_list);
-      at_color_type curr_color = (list.clockwise && shape.background_color != NULL) ? *(shape.background_color) : list.color;
+      at_color curr_color = (list.clockwise && shape.background_color != NULL) ? *(shape.background_color) : list.color;
 
       if (&this_list == 0 || !at_color_equal(&curr_color, &last_color))
         {

@@ -150,7 +150,7 @@ out_splines (FILE * ps_file, spline_list_array_type shape)
   unsigned this_list;
   unsigned int pathnr = 1;
   spline_list_type list;
-  at_color_type last_color = {0,0,0};
+  at_color last_color = {0,0,0};
 
   OUT_LINE (" 612 792 setPageSize");
   OUT_LINE (" 0 setlinecap");

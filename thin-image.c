@@ -103,10 +103,10 @@ static        unsigned char   todelete[512] = {
               0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 
               1, 0, 1, 1, 1, 0, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1}; 
 
-static at_color_type background = { 0xff, 0xff, 0xff };
+static at_color background = { 0xff, 0xff, 0xff };
 
 
-void thin_image(bitmap_type *image, const at_color_type *bg, at_exception_type * exp)
+void thin_image(bitmap_type *image, const at_color *bg, at_exception_type * exp)
 { 
     /* This is nasty as we need to call thin once for each  
      * colour in the image the way I do this is to keep a second  

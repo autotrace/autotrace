@@ -81,7 +81,7 @@ struct _at_spline_list_type
   at_spline_type *data;
   unsigned length;
   gboolean clockwise;
-  at_color_type color;
+  at_color color;
   gboolean open;
 };
 
@@ -97,7 +97,7 @@ struct _at_spline_list_array_type
   
   /* the values for following members are inherited from 
      at_fitting_opts_type */
-  at_color_type * background_color;
+  at_color * background_color;
   gboolean centerline;
   gboolean preserve_width;
   gfloat width_weight_factor;
@@ -113,7 +113,7 @@ struct _at_fitting_opts_type
 N_("background-color <hexadezimal>: the color of the background that "	\
 "should be ignored, for example FFFFFF; "				\
 "default is no background color.")
-  at_color_type *background_color;
+  at_color *background_color;
 
 #define at_doc__charcode							\
 N_("charcode <unsigned>: code of character to load from GF file, "	\
@@ -205,7 +205,7 @@ N_("width-weight-factor <real>: weight factor for fitting the linewidth.")
 
 struct _at_input_opts_type
 {
-  at_color_type *background_color;
+  at_color *background_color;
   unsigned charcode;		/* Character code used only in GF input.*/
 };
 
@@ -330,10 +330,10 @@ unsigned short at_bitmap_get_height (const at_bitmap_type * bitmap);
 unsigned short at_bitmap_get_planes (const at_bitmap_type * bitmap);
 void at_bitmap_get_color (const at_bitmap_type * bitmap,
 			  unsigned int row, unsigned int col,
-			  at_color_type * color);
+			  at_color * color);
 gboolean at_bitmap_equal_color(const at_bitmap_type * bitmap,
 			       unsigned int row, unsigned int col,
-			       at_color_type * color);
+			       at_color * color);
 void at_bitmap_free (at_bitmap_type * bitmap);
 
 

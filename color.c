@@ -34,20 +34,20 @@
 
 static unsigned int hctoi (char c, GError **err);
 
-at_color_type * 
+at_color * 
 at_color_new (unsigned char r, 
 	      unsigned char g,
 	      unsigned char b)
 {
-  at_color_type * color;
-  color = g_new(at_color_type, 1);
+  at_color * color;
+  color = g_new(at_color, 1);
   color->r = r;
   color->g = g;
   color->b = b;
   return color;
 }
 
-at_color_type *
+at_color *
 at_color_parse (const gchar * string, GError ** err)
 {
   GError * local_err = NULL;
@@ -82,8 +82,8 @@ at_color_parse (const gchar * string, GError ** err)
 		       (unsigned char)(16 * c[4] + c[5]));
 }
 
-at_color_type *
-at_color_copy (const at_color_type * original)
+at_color *
+at_color_copy (const at_color * original)
 {
   if (original == NULL)
     return NULL;
@@ -93,7 +93,7 @@ at_color_copy (const at_color_type * original)
 }
 
 gboolean
-at_color_equal (const at_color_type * c1, const at_color_type * c2)
+at_color_equal (const at_color * c1, const at_color * c2)
 {
   if (c1 == c2 || ((c1->r == c2->r) && (c1->g == c2->g) && (c1->b == c2->b)))
 	return TRUE;
@@ -102,7 +102,7 @@ at_color_equal (const at_color_type * c1, const at_color_type * c2)
 }
 
 void
-at_color_set   (at_color_type * c, 
+at_color_set   (at_color * c, 
 		unsigned char r, unsigned char g, unsigned char b)
 {
   g_return_if_fail (c);
@@ -112,13 +112,13 @@ at_color_set   (at_color_type * c,
 }
 
 unsigned char
-at_color_luminance (const at_color_type * color)
+at_color_luminance (const at_color * color)
 {
   return ((unsigned char)((color->r) * 0.30 + (color->g) * 0.59 + (color->b) * 0.11 + 0.5));
 }
 
 void 
-at_color_free(at_color_type * color)
+at_color_free(at_color * color)
 {
   g_free(color);
 }
