@@ -1,5 +1,7 @@
 2000-11-14  Masatake YAMATO  <yamato@redhat.com>
 
+	* Makefile.am (autotrace_SOURCES): Remove main.h.
+	
 	* main.c(input_reader): Renamed from load_image.
 	Use type input_read.
 	(input_extension): Removed unused variable

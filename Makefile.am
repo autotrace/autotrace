@@ -40,7 +40,6 @@ autotrace_SOURCES=$(input_src) ${output_src}	\
 		remove-suffx.c			\
 		atou.h 				\
 		fit.h  				\
-		main.h 				\
 		remove-suffx.h 			\
 		bitmap.c 			\
 		make-suffix.c 			\
