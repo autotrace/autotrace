@@ -32,7 +32,7 @@
 #include <png.h>
 #include "input-png.h"
 
-static volatile char rcsid[]="$Id: input-png.c,v 1.14 2002/09/29 12:41:50 masata-y Exp $";
+static volatile char rcsid[]="$Id: input-png.c,v 1.15 2002/10/02 23:58:47 masata-y Exp $";
 static png_bytep * read_png(png_structp png_ptr, png_infop info_ptr, at_input_opts_type * opts);
 
 /* for pre-1.0.6 versions of libpng */
@@ -42,17 +42,17 @@ static png_bytep * read_png(png_structp png_ptr, png_infop info_ptr, at_input_op
 
 static void handle_warning(png_structp png, const at_string message) {
         LOG1("PNG warning: %s", message);
-	at_exception_warning((at_exception *)png->error_ptr,
+	at_exception_warning((at_exception_type *)png->error_ptr,
 			     message);
-	/* at_exception_fatal((at_exception *)at_png->error_ptr,
+	/* at_exception_fatal((at_exception_type *)at_png->error_ptr,
 	   "PNG warning"); */
 }
 
 static void handle_error(png_structp png, const at_string message) {
 	LOG1("PNG error: %s", message);
-	at_exception_fatal((at_exception *)png->error_ptr,
+	at_exception_fatal((at_exception_type *)png->error_ptr,
 			   message);
-	/* at_exception_fatal((at_exception *)at_png->error_ptr,
+	/* at_exception_fatal((at_exception_type *)at_png->error_ptr,
 	   "PNG error"); */
 	
 }
@@ -66,7 +66,7 @@ static void finalize_structs(png_structp png, png_infop info,
 }
 
 static int init_structs(png_structp *png, png_infop *info,
-                        png_infop *end_info, at_exception * exp)
+                        png_infop *end_info, at_exception_type * exp)
 {
 	*png = NULL;
 	*info = *end_info = NULL;
@@ -91,7 +91,7 @@ static int init_structs(png_structp *png, png_infop *info,
 	    goto cleanup;					\
 	  } } while (0)
 
-static int load_image(at_bitmap_type *image, FILE *stream, at_input_opts_type * opts, at_exception * exp) 
+static int load_image(at_bitmap_type *image, FILE *stream, at_input_opts_type * opts, at_exception_type * exp) 
 {
 	png_structp png;
 	png_infop info, end_info;
@@ -130,7 +130,7 @@ at_bitmap_type png_load_image(at_string filename, at_input_opts_type * opts,
 			      at_msg_func msg_func, at_address msg_data) {
 	FILE *stream;
 	at_bitmap_type image = at_bitmap_init(0, 0, 0, 1);
-	at_exception exp = at_exception_new(msg_func, msg_data);
+	at_exception_type exp = at_exception_new(msg_func, msg_data);
 
 	stream = fopen(filename, "rb");
 	if (!stream)

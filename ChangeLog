@@ -1,10 +1,21 @@
+2002-10-03  Masatake YAMATO  <yamato@redhat.com>
+
+	* README: Updated.
+
+2002-10-03  Martin Weber <martweb@gmx.net>
+
+	* autotrace.dsp: Updated.
+
 2002-10-02  Masatake YAMATO  <yamato@redhat.com>
+
+	* exception.h: renamed a type at_exception to at_exception_type.
+
+	* * (*): used at_exception_type.
 
 	* autotrace.h (at_doc__preserve_width::width_factor): 
 	new member.
 	(struct _at_spline_list_array_type): Likewise.
 	(_, N_): New dummy macro for gettext.
-	
 
 2002-09-29  Masatake YAMATO  <yamato@redhat.com>
 

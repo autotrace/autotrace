@@ -107,7 +107,7 @@ static struct
 
 static at_bitmap_type ReadImage (FILE *fp,
 				 struct tga_header *hdr,
-				 at_exception * exp);
+				 at_exception_type * exp);
 at_bitmap_type
 tga_load_image (at_string filename,
 		at_input_opts_type * opts,
@@ -118,7 +118,7 @@ tga_load_image (at_string filename,
   struct tga_header hdr;
 
   at_bitmap_type image = at_bitmap_init(0, 0, 0, 1);
-  at_exception exp = at_exception_new(msg_func, msg_data);
+  at_exception_type exp = at_exception_new(msg_func, msg_data);
 
   fp = fopen (filename, "rb");
   if (!fp)
@@ -273,7 +273,7 @@ return nelems;
 static at_bitmap_type
 ReadImage (FILE              *fp, 
            struct tga_header *hdr,
-	   at_exception * exp)
+	   at_exception_type * exp)
 {
   at_bitmap_type image = at_bitmap_init(0, 0, 0, 1);
   unsigned char *buffer;

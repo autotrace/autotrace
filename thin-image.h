@@ -31,6 +31,6 @@
 #include "color.h"
 #include "exception.h"
 
-void  thin_image      (bitmap_type *image, const color_type *bg_color, at_exception * exp);
+void  thin_image      (bitmap_type *image, const color_type *bg_color, at_exception_type * exp);
 
 #endif /* not THIN_IMAGE_H */

@@ -778,7 +778,7 @@ void
 despeckle (/* in/out */ bitmap_type *bitmap,
            /* in */     int          level,
            /* in */     at_real      tightness,
-	   at_exception * excep)
+	   at_exception_type * excep)
 {
   int i;
   int planes;

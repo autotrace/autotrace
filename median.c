@@ -862,7 +862,7 @@ static QuantizeObj *initialize_median_cut(int num_colors)
 
 
 void quantize(bitmap_type *image, long ncolors, const color_type *bgColor,
-	      QuantizeObj **iQuant, at_exception * exp)
+	      QuantizeObj **iQuant, at_exception_type * exp)
 {
     QuantizeObj *quantobj;
     unsigned int spp = BITMAP_PLANES(*image);

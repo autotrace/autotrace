@@ -45,8 +45,8 @@
 
 static at_real bezpnt(at_real, at_real, at_real, at_real, at_real);
 static void out_fig_splines(FILE *, spline_list_array_type, int, int, int, int,
-			    at_exception *);
-static int get_fig_colour(color_type, at_exception *);
+			    at_exception_type *);
+static int get_fig_colour(color_type, at_exception_type *);
 static void fig_col_init(void);
 
 /* colour information */
@@ -127,7 +127,7 @@ static at_real bezpnt(at_real t, at_real z1, at_real z2, at_real z3, at_real z4)
 
 static void out_fig_splines(FILE * file, spline_list_array_type shape,
 			    int llx, int lly, int urx, int ury,
-			    at_exception * exp)
+			    at_exception_type * exp)
 {
     unsigned this_list;
 /*    int fig_colour, fig_depth, i; */
@@ -329,7 +329,7 @@ int output_fig_writer(FILE* file, at_string name,
 		      at_msg_func msg_func, 
 		      at_address msg_data)
 {
-  at_exception exp = at_exception_new(msg_func, msg_data);
+  at_exception_type exp = at_exception_new(msg_func, msg_data);
 /*	Output header	*/
     fprintf(file,"#FIG 3.2\nLandscape\nCenter\nInches\nLetter\n100.00\nSingle\n-2\n1200 2\n");
 
@@ -399,7 +399,7 @@ static void fig_col_init(void)
  * If unknown, create a new colour index and return that.
  */
 
-static int get_fig_colour(color_type this_colour, at_exception * exp)
+static int get_fig_colour(color_type this_colour, at_exception_type * exp)
 {
     int hash,i,this_ind;
 

@@ -20,7 +20,7 @@ extern spline_list_array_type __declspec(dllexport) __stdcall
   fitted_splines (pixel_outline_list_type, fitting_opts_type *,
           distance_map_type *,
           unsigned short width, unsigned short height,
-		  at_exception * exception,
+		  at_exception_type * exception,
 		  at_progress_func, at_address,
 		  at_testcancel_func, at_address);
 
@@ -35,7 +35,7 @@ extern spline_list_array_type __declspec(dllimport) __stdcall
   fitted_splines (pixel_outline_list_type, fitting_opts_type *,
           distance_map_type *,
 		  unsigned short width, unsigned short height,
-		  at_exception * exception,
+		  at_exception_type * exception,
 		  at_progress_func, at_address,
 		  at_testcancel_func, at_address);
 
@@ -50,7 +50,7 @@ extern spline_list_array_type fitted_splines
   (pixel_outline_list_type, fitting_opts_type *, 
    distance_map_type *,
    unsigned short width, unsigned short height,
-   at_exception * exception,
+   at_exception_type * exception,
    at_progress_func, at_address,
    at_testcancel_func, at_address);   
 

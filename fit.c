@@ -68,7 +68,7 @@ static void append_index (index_list_type *, unsigned);
 static void free_index_list (index_list_type *);
 static index_list_type new_index_list (void);
 static void remove_adjacent_corners (index_list_type *, unsigned, at_bool,
-				     at_exception * exception);
+				     at_exception_type * exception);
 static void change_bad_lines (spline_list_type *,
   fitting_opts_type *);
 static void filter (curve_type, fitting_opts_type *);
@@ -76,22 +76,22 @@ static void find_vectors
   (unsigned, pixel_outline_type, vector_type *, vector_type *, unsigned);
 static index_list_type find_corners (pixel_outline_type,
 				     fitting_opts_type *,
-				     at_exception * exception);
+				     at_exception_type * exception);
 static at_real find_error (curve_type, spline_type, unsigned *,
-			   at_exception * exception);
+			   at_exception_type * exception);
 static vector_type find_half_tangent (curve_type, at_bool start, unsigned *, unsigned);
 static void find_tangent (curve_type, at_bool, at_bool, unsigned);
 static spline_type fit_one_spline (curve_type,
-				   at_exception * exception);
+				   at_exception_type * exception);
 static spline_list_type *fit_curve (curve_type,
   fitting_opts_type *,
-  at_exception * exception);
+  at_exception_type * exception);
 static spline_list_type fit_curve_list (curve_list_type,
  fitting_opts_type *, distance_map_type *,
- at_exception * exception);
+ at_exception_type * exception);
 static spline_list_type *fit_with_least_squares (curve_type,
  fitting_opts_type *,
- at_exception * exception);						 
+ at_exception_type * exception);						 
 static spline_list_type *fit_with_line (curve_type);
 static void remove_knee_points (curve_type, at_bool);
 static void set_initial_parameter_values (curve_type);
@@ -99,7 +99,7 @@ static at_bool spline_linear_enough (spline_type *, curve_type,
   fitting_opts_type *);
 static curve_list_array_type split_at_corners (pixel_outline_list_type, 
 					       fitting_opts_type *,
-					       at_exception * exception);
+					       at_exception_type * exception);
 static at_coord real_to_int_coord (at_real_coord);
 static at_real distance (at_real_coord, at_real_coord);
 
@@ -142,7 +142,7 @@ __declspec(dllexport) spline_list_array_type
 __stdcall fitted_splines (pixel_outline_list_type pixel_outline_list,
   fitting_opts_type *fitting_opts, distance_map_type *,
   unsigned short width, unsigned short height,
-  at_exception * exception,
+  at_exception_type * exception,
   progress_func notify_progress, 
   address progress_data,
   testcancel_func test_cancel,
@@ -152,7 +152,7 @@ spline_list_array_type
 fitted_splines (pixel_outline_list_type pixel_outline_list,
   fitting_opts_type *fitting_opts, distance_map_type *dist,
   unsigned short width, unsigned short height,
-  at_exception * exception,
+  at_exception_type * exception,
   at_progress_func notify_progress, 
   at_address progress_data,
   at_testcancel_func test_cancel,
@@ -222,7 +222,7 @@ fitted_splines (pixel_outline_list_type pixel_outline_list,
 static spline_list_type
 fit_curve_list (curve_list_type curve_list,
 		fitting_opts_type *fitting_opts, distance_map_type *dist,
-		at_exception * exception)
+		at_exception_type * exception)
 {
   curve_type curve;
   unsigned this_curve, this_spline;
@@ -379,7 +379,7 @@ fit_curve_list (curve_list_type curve_list,
 
 static spline_list_type *
 fit_curve (curve_type curve, fitting_opts_type *fitting_opts,
-	   at_exception *exception)
+	   at_exception_type *exception)
 {
   spline_list_type *fittedsplines;
 
@@ -426,7 +426,7 @@ fit_curve (curve_type curve, fitting_opts_type *fitting_opts,
 
 static curve_list_array_type
 split_at_corners (pixel_outline_list_type pixel_list, fitting_opts_type *fitting_opts,
-		  at_exception * exception)
+		  at_exception_type * exception)
 {
   unsigned this_pixel_o;
   curve_list_array_type curve_array = new_curve_list_array ();
@@ -569,7 +569,7 @@ split_at_corners (pixel_outline_list_type pixel_list, fitting_opts_type *fitting
 static index_list_type
 find_corners (pixel_outline_type pixel_outline,
 	      fitting_opts_type *fitting_opts,
-	      at_exception * exception)
+	      at_exception_type * exception)
 {
   unsigned p, start_p, end_p;
   index_list_type corner_list = new_index_list ();
@@ -745,7 +745,7 @@ find_vectors (unsigned test_index, pixel_outline_type outline,
 static void
 remove_adjacent_corners (index_list_type *list, unsigned last_index,
 			 at_bool remove_adj_corners,
-			 at_exception * exception)
+			 at_exception_type * exception)
 			 
 {
   unsigned j;
@@ -1029,7 +1029,7 @@ fit_with_line (curve_type curve)
 
 static spline_list_type *
 fit_with_least_squares (curve_type curve, fitting_opts_type *fitting_opts,
-			at_exception * exception)
+			at_exception_type * exception)
 			
 {
   at_real error = 0, best_error = FLT_MAX;
@@ -1237,7 +1237,7 @@ fit_with_least_squares (curve_type curve, fitting_opts_type *fitting_opts,
 
 static spline_type
 fit_one_spline (curve_type curve, 
-		at_exception * exception)
+		at_exception_type * exception)
 {
   /* Since our arrays are zero-based, the `C0' and `C1' here correspond
      to `C1' and `C2' in the paper.  */
@@ -1451,7 +1451,7 @@ find_half_tangent (curve_type c, at_bool to_start_point, unsigned *n_points,
 
 static at_real
 find_error (curve_type curve, spline_type spline, unsigned *worst_point,
-	    at_exception * exception)
+	    at_exception_type * exception)
 {
   unsigned this_point;
   at_real total_error = 0.0;

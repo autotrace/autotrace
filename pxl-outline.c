@@ -57,7 +57,7 @@ typedef enum
   ((dir) == WEST ? -1 : (dir) == EAST ? +1 : 0)
 
 static pixel_outline_type find_one_outline (bitmap_type, edge_type, unsigned short,
-  unsigned short, bitmap_type *, at_bool, at_bool, at_exception *);
+  unsigned short, bitmap_type *, at_bool, at_bool, at_exception_type *);
 static pixel_outline_type find_one_centerline (bitmap_type, edge_type,
  unsigned short, unsigned short, bitmap_type *);
 static void append_pixel_outline (pixel_outline_list_type *,
@@ -68,12 +68,12 @@ static void concat_pixel_outline (pixel_outline_type *,
 static void append_outline_pixel (pixel_outline_type *, at_coord);
 static at_bool is_marked_edge (edge_type, unsigned short, unsigned short, bitmap_type);
 static at_bool is_outline_edge (edge_type, bitmap_type, unsigned short, unsigned short,
-				color_type, at_exception * exp);
+				color_type, at_exception_type * exp);
 static edge_type next_edge (edge_type);
 static at_bool is_unmarked_outline_edge (unsigned short, unsigned short, edge_type,
-  bitmap_type, bitmap_type, color_type, at_exception * exp);
+  bitmap_type, bitmap_type, color_type, at_exception_type * exp);
 static edge_type next_unmarked_outline_edge (unsigned short, unsigned short,
-  edge_type, bitmap_type, bitmap_type, at_exception * exp);
+  edge_type, bitmap_type, bitmap_type, at_exception_type * exp);
 
 static void mark_edge (edge_type e, unsigned short, unsigned short, bitmap_type *);
 static edge_type opposite_edge(edge_type);
@@ -85,7 +85,7 @@ static at_bool is_open_junction(unsigned short, unsigned short,
   bitmap_type, bitmap_type);
 
 static at_coord NextPoint(bitmap_type, edge_type *, unsigned short *, unsigned short *, 
-  color_type, at_bool, bitmap_type, at_exception * );
+  color_type, at_bool, bitmap_type, at_exception_type * );
 
 #define CHECK_FATAL() if (at_exception_got_fatal(exp)) goto cleanup;
 
@@ -97,13 +97,13 @@ __declspec(dllexport) pixel_outline_list_type
 __stdcall find_outline_pixels (bitmap_type bitmap, color_type *bg_color,
 			       at_progress_func notify_progress, address progress_data,
 			       testcancel_func test_cancel, address testcancel_data,
-			       at_exception * exp)
+			       at_exception_type * exp)
 #else
      pixel_outline_list_type
 find_outline_pixels (bitmap_type bitmap, color_type *bg_color,
 		     at_progress_func notify_progress, at_address progress_data,
 		     at_testcancel_func test_cancel, at_address testcancel_data,
-		     at_exception * exp)
+		     at_exception_type * exp)
 		     
 #endif
 {
@@ -148,7 +148,8 @@ find_outline_pixels (bitmap_type bitmap, color_type *bg_color,
 
 	      LOG1 (" [%u].\n", O_LENGTH (outline));
 	    }
-	  CHECK_FATAL ();
+	  else
+	    CHECK_FATAL ();
 	  
 	  /* A valid edge can be BOTTOM for an inside outline.
 	     Inside outlines are traced clockwise */
@@ -187,12 +188,15 @@ find_outline_pixels (bitmap_type bitmap, color_type *bg_color,
               }
           }
 	  if (test_cancel && test_cancel(testcancel_data))
-	    goto cleanup;
+	    {
+	      if (O_LIST_LENGTH (outline_list) != 0)
+		free_pixel_outline_list(&outline_list);
+	      goto cleanup;
+	    }
 	}
     }
  cleanup:
   free_bitmap (&marked);
-
   flush_log_output ();
 
   return outline_list;
@@ -207,7 +211,7 @@ static pixel_outline_type
 find_one_outline (bitmap_type bitmap, edge_type original_edge,
 		  unsigned short original_row, unsigned short original_col,
 		  bitmap_type *marked, at_bool clockwise, at_bool ignore,
-		  at_exception * exp)
+		  at_exception_type * exp)
 {
   pixel_outline_type outline;
   unsigned short row = original_row, col = original_col;
@@ -246,13 +250,13 @@ __declspec(dllexport) pixel_outline_list_type
 __stdcall find_centerline_pixels (bitmap_type bitmap, color_type bg_color,
 				  at_progress_func notify_progress, address progress_data,
 				  at_testcancel_func test_cancel, address testcancel_data,
-				  at_exception * exp)
+				  at_exception_type * exp)
 #else
 pixel_outline_list_type
 find_centerline_pixels(bitmap_type bitmap, color_type bg_color,
 		       at_progress_func notify_progress, at_address progress_data,
 		       at_testcancel_func test_cancel, at_address testcancel_data,
-		       at_exception * exp)
+		       at_exception_type * exp)
 #endif
 {
     pixel_outline_list_type outline_list;
@@ -321,7 +325,9 @@ if (O_LENGTH(outline) > 1)
 	    }
 	}
 	if (test_cancel && test_cancel(testcancel_data))
-	  goto cleanup;
+	  {
+	    goto cleanup;
+	  }
     }
  cleanup:
     free_bitmap(&marked);
@@ -487,7 +493,7 @@ append_outline_pixel (pixel_outline_type *o, at_coord c)
 static at_bool
 is_unmarked_outline_edge (unsigned short row, unsigned short col,
 	                    edge_type edge, bitmap_type character,
-                            bitmap_type marked, color_type color, at_exception * exp)
+                            bitmap_type marked, color_type color, at_exception_type * exp)
 {
   return
     (at_bool)(!is_marked_edge (edge, row, col, marked)
@@ -504,7 +510,7 @@ static edge_type
 next_unmarked_outline_edge (unsigned short row, unsigned short col,
 	                    edge_type starting_edge, bitmap_type character,
                             bitmap_type marked,
-			    at_exception * exp)
+			    at_exception_type * exp)
 {
   color_type color;
   edge_type edge = starting_edge;
@@ -532,7 +538,7 @@ next_unmarked_outline_edge (unsigned short row, unsigned short col,
 static at_bool
 is_outline_edge (edge_type edge, bitmap_type character,
 		 unsigned short row, unsigned short col, color_type color,
-		 at_exception * exp)
+		 at_exception_type * exp)
 {
   /* If this pixel isn't of the same color, it's not part of the outline. */
   if (!COLOR_EQUAL (GET_COLOR (character, row, col), color))
@@ -720,7 +726,7 @@ is_marked_edge (edge_type edge, unsigned short row, unsigned short col, bitmap_t
 
 static at_coord NextPoint(bitmap_type bitmap, edge_type *edge, unsigned short *row, unsigned short *col,
 			  color_type color, at_bool clockwise, bitmap_type marked,
-			  at_exception * exp)
+			  at_exception_type * exp)
 {
   at_coord pos = {0, 0};
 

@@ -25,7 +25,7 @@ typedef struct
 /* Allocate and compute a new distance map. */
 extern distance_map_type new_distance_map(bitmap_type,
     unsigned char target_value, at_bool padded,
-					  at_exception * exp);
+					  at_exception_type * exp);
 
 /* Free the dynamically-allocated storage associated with a distance map. */
 extern void free_distance_map(distance_map_type*);

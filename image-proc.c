@@ -31,7 +31,7 @@ static void check(int v1, int v2, int v3, struct etyp *t);
    every non-target point to the nearest target point. */
 
 distance_map_type
-new_distance_map(bitmap_type bitmap, unsigned char target_value, at_bool padded, at_exception * exp)
+new_distance_map(bitmap_type bitmap, unsigned char target_value, at_bool padded, at_exception_type * exp)
 {
     signed x, y;
     float d, min;

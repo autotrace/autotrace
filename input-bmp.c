@@ -71,7 +71,7 @@ static int         ReadColorMap  (FILE *,
 				   int,
 				   int,
 				   int *,
-				  at_exception *);
+				  at_exception_type *);
 static unsigned char        *ReadImage     (FILE *,
 				   int,
 				   int,
@@ -93,7 +93,7 @@ bmp_load_image (at_string filename,
   unsigned char ColorMap[256][3];
   at_bitmap_type image = at_bitmap_init(0, 0, 0, 1);
   unsigned char * image_storage;
-  at_exception exp = at_exception_new(msg_func, msg_data);
+  at_exception_type exp = at_exception_new(msg_func, msg_data);
   
   fd = fopen (filename, "rb");
 
@@ -260,7 +260,7 @@ ReadColorMap (FILE   *fd,
 	      int    number,
 	      int    size,
 	      int   *grey,
-	      at_exception * exp)
+	      at_exception_type * exp)
 {
   int i;
   unsigned char rgb[4];

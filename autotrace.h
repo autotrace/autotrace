@@ -221,8 +221,8 @@ struct _at_bitmap_type
 
 enum _at_msg_type
 {
-  AT_MSG_FATAL,
-  AT_MSG_WARNING
+  AT_MSG_FATAL = 1,
+  AT_MSG_WARNING,
 };
 
 typedef

@@ -59,7 +59,7 @@ typedef struct _PNMInfo
   int       asciibody;		/* 1 if ascii body, 0 if raw body */
   /* Routine to use to load the pnm body */
   void    (* loader) (PNMScanner *, struct _PNMInfo *, unsigned char *, 
-		      at_exception * excep);
+		      at_exception_type * excep);
 } PNMInfo;
 
 #define BUFLEN 512		/* The input buffer size for data returned
@@ -76,15 +76,15 @@ typedef struct _PNMInfo
 static void   pnm_load_ascii           (PNMScanner *scan,
 					PNMInfo    *info,
 					unsigned char  *pixel_rgn,
-					at_exception * excep);
+					at_exception_type * excep);
 static void   pnm_load_raw             (PNMScanner *scan,
 					PNMInfo    *info,
 					unsigned char  *pixel_rgn,
-					at_exception * excep);
+					at_exception_type * excep);
 static void   pnm_load_rawpbm          (PNMScanner *scan,
 					PNMInfo    *info,
 					unsigned char  *pixel_rgn,
-					at_exception * excep);
+					at_exception_type * excep);
 
 static void   pnmscanner_destroy       (PNMScanner *s);
 static void   pnmscanner_createbuffer  (PNMScanner *s,
@@ -110,7 +110,7 @@ static struct struct_pnm_types
   int    asciibody;
   int    maxval;
   void (* loader) (PNMScanner *, struct _PNMInfo *, unsigned char *pixel_rgn,
-		   at_exception * excep);
+		   at_exception_type * excep);
 } pnm_types[] =
 {
   { '1', 0, 1,   1, pnm_load_ascii },  /* ASCII PBM */
@@ -133,7 +133,7 @@ at_bitmap_type pnm_load_image (at_string filename,
   int ctr;
   FILE* fd;
   at_bitmap_type bitmap = at_bitmap_init(NULL, 0, 0, 0);
-  at_exception excep = at_exception_new(msg_func, msg_data);
+  at_exception_type excep = at_exception_new(msg_func, msg_data);
 
   /* open the file */
   fd = fopen (filename, "rb");
@@ -259,7 +259,7 @@ static void
 pnm_load_ascii (PNMScanner *scan,
 		PNMInfo    *info,
 		unsigned char *data,
-		at_exception * excep)
+		at_exception_type * excep)
 {
   unsigned char *d;
   unsigned int x;
@@ -316,7 +316,7 @@ static void
 pnm_load_raw (PNMScanner *scan,
 	      PNMInfo    *info,
 	      unsigned char  *data,
-	      at_exception * excep)
+	      at_exception_type * excep)
 {
   unsigned char *d;
   unsigned int   x, i;
@@ -354,7 +354,7 @@ static void
 pnm_load_rawpbm (PNMScanner *scan,
 		 PNMInfo    *info,
 		 unsigned char  *data,
-		 at_exception * excep)
+		 at_exception_type * excep)
 {
   unsigned char *buf;
   unsigned char  curbyte;

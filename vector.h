@@ -30,7 +30,7 @@ extern vector_type normalize (const vector_type);
 extern vector_type Vadd (const vector_type, const vector_type);
 extern at_real Vdot (const vector_type, const vector_type);
 extern vector_type Vmult_scalar (const vector_type, const at_real);
-extern at_real Vangle (const vector_type in, const vector_type out, at_exception * exp);
+extern at_real Vangle (const vector_type in, const vector_type out, at_exception_type * exp);
 
 /* These operations could have been named `P..._vector' just as well as
    V..._point, so we may as well allow both names.  */

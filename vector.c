@@ -12,7 +12,7 @@
 #include <assert.h>
 #include <string.h>
 
-static at_real acos_d (at_real, at_exception * excep);
+static at_real acos_d (at_real, at_exception_type * excep);
 
 #ifndef M_PI
 #define M_PI 3.14159265
@@ -121,7 +121,7 @@ Vmult_scalar (const vector_type v, const at_real r)
 at_real
 Vangle (const vector_type in_vector, 
 	const vector_type out_vector,
-	at_exception * exp)
+	at_exception_type * exp)
 {
   vector_type v1 = normalize (in_vector);
   vector_type v2 = normalize (out_vector);
@@ -292,7 +292,7 @@ IPequal (const at_coord c1, const at_coord c2)
 }
 
 static at_real
-acos_d (at_real v, at_exception * excep)
+acos_d (at_real v, at_exception_type * excep)
 {
   at_real a;
 

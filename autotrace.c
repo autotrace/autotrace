@@ -241,18 +241,19 @@ at_splines_new_full (at_bitmap_type * bitmap,
   at_splines_type * splines = NULL;
   pixel_outline_list_type pixels;
   QuantizeObj *myQuant = NULL; /* curently not used */
-  at_exception exp     = at_exception_new(msg_func, msg_data);
+  at_exception_type exp     = at_exception_new(msg_func, msg_data);
   distance_map_type dist_map, *dist = NULL;
 
 #define CANCELP (test_cancel && test_cancel(testcancel_data))
-#define FATALP (at_exception_got_fatal(&exp))
-#define FREE_SPLINE do {if (splines) {at_splines_free(splines); splines = NULL;}} while(0)
+#define FATALP  (at_exception_got_fatal(&exp))
+#define FREE_SPLINE() do {if (splines) {at_splines_free(splines); splines = NULL;}} while(0)
+
 #define CANCEL_THEN_CLEANUP_DIST() if (CANCELP) goto cleanup_dist;
-#define CANCEL_THEN_CLEANUP_PIXELS() if (CANCELP) {FREE_SPLINE; goto cleanup_pixels;}
+#define CANCEL_THEN_CLEANUP_PIXELS() if (CANCELP) {FREE_SPLINE(); goto cleanup_pixels;}
 
 #define FATAL_THEN_RETURN() if (FATALP) return splines;
 #define FATAL_THEN_CLEANUP_DIST() if (FATALP) goto cleanup_dist;
-#define FATAL_THEN_CLEANUP_PIXELS() if (FATALP) {FREE_SPLINE; goto cleanup_pixels;}
+#define FATAL_THEN_CLEANUP_PIXELS() if (FATALP) {FREE_SPLINE(); goto cleanup_pixels;}
   
   if (opts->despeckle_level > 0)
     {
