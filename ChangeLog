@@ -1,3 +1,12 @@
+2001-09-18  Martin Weber  <martweb@gmx.net>
+
+	* output-eps.c: fixed a small bug in the initialisation of last_color
+	Suggested by "Wolfgang Glunz" <wolfgang.glunz@icn.siemens.de>.
+
+	* output-p2e.c: fixed a small bug in the initialisation of last_color,
+	adopted to pstoedit 3.30
+	Suggested by "Wolfgang Glunz" <wolfgang.glunz@icn.siemens.de>.
+
 2001-09-15  Masatake YAMATO  <yamato@redhat.com>
 
 	* autotrace.c (at_home_site): Update the homepage of 
