@@ -1,9 +1,9 @@
 What's new in AutoTrace 0.31.1?
 - fixed compile time error appeared when an user 
-  specifies --without-pstoedit optoin(Ralf Stubner).
+  specifies --without-pstoedit option(Ralf Stubner).
 - fixed a bug related to centerline tracing(Martin).
 - fixed bugs in dr2d output and dxf output(Martin).
-- changed the name of tracing option stricture 
+- changed the name of tracing option structure
   field(width_weight_factor)(Masatake). This means 
   source compatibility is broken.
 
