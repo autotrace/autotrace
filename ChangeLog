@@ -1,3 +1,9 @@
+2001-12-23  Martin Weber <martweb@gmx.net>
+
+	* README: updated.
+
+	* NEWS: updated.
+
 2001-12-24  Masatake YAMATO  <yamato@redhat.com>
 
 	* fit.[ch] (fitted_splines): Pass width and height.

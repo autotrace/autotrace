@@ -302,6 +302,7 @@ at_input_read_func at_input_get_handler (at_string filename);
 at_input_read_func at_input_get_handler_by_suffix (at_string suffix);
 char ** at_input_list_new (void);
 void at_input_list_free(char ** list);
+
 /* at_input_shortlist
    return value: Do free by yourself */
 char * at_input_shortlist (void); 

@@ -1,3 +1,10 @@
+What's new in AutoTrace 0.29?
+- Small bugfix for binary output
+- code rearrangements
+- CGM and MIF export
+- fixes the lowercase/uppercase problems
+- fix for swf export
+
 What's new in AutoTrace 0.28?
 - Several bugfixes
 - Progress bar
@@ -7,7 +14,7 @@ What's new in AutoTrace 0.28?
 - DXF, EPD and PDF export
 - Despeckling filter
 
-What's new in AutoTrace 0.27
+What's new in AutoTrace 0.27?
 - Parts of the code were rearranged
 - Fixed a bug in color quantization
 - Centerline support
