@@ -95,7 +95,7 @@ input_list (void)
   InitializeMagick("");
 #endif
   GetExceptionInfo(&exception);
-#if (MagickLibVersion < 0x0538)
+#if (MagickLibVersion < 0x0534)
   magickinfo = info = GetMagickInfo(NULL);
 #else
   magickinfo = info = GetMagickInfo("", &exception);
@@ -180,7 +180,7 @@ input_shortlist (void)
   InitializeMagick("");
 #endif
   GetExceptionInfo(&exception);
-#if (MagickLibVersion < 0x0538)
+#if (MagickLibVersion < 0x0534)
   magickinfo = info = GetMagickInfo(NULL);
 #else
   magickinfo = info = GetMagickInfo(NULL, &exception);

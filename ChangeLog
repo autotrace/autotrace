@@ -1,3 +1,8 @@
+2001-12-08  Martin Weber <martweb@gmx.net>
+
+	* input.c (input_list): Fix a bug for magicklib support.
+	"MagickLibVersion < 0x0538" => "MagickLibVersion < 0x0534".
+
 2001-12-08  Masatake YAMATO  <yamato@redhat.com>
 
 	* configure.in: Version 0.28.
