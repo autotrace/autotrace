@@ -123,29 +123,29 @@ static int output_pdf_header(FILE* pdf_file, at_string name,
 {
   OUT_LINE ("%PDF-1.2");
   OUT_LINE ("1 0 obj");
-  OUT_LINE ("<< /Type /Catalog");
-  OUT_LINE ("/Outlines 2 0 R");
-  OUT_LINE ("/Pages 3 0 R");
-  OUT_LINE (">>");
+  OUT_LINE ("   << /Type /Catalog");
+  OUT_LINE ("      /Outlines 2 0 R");
+  OUT_LINE ("      /Pages 3 0 R");
+  OUT_LINE ("   >>");
   OUT_LINE ("endobj");
   OUT_LINE ("2 0 obj");
-  OUT_LINE ("<< /Type /Outlines");
-  OUT_LINE ("/Count 0");
-  OUT_LINE (">>");
+  OUT_LINE ("   << /Type /Outlines");
+  OUT_LINE ("      /Count 0");
+  OUT_LINE ("   >>");
   OUT_LINE ("endobj");
   OUT_LINE ("3 0 obj");
-  OUT_LINE ("<< /Type /Pages");
-  OUT_LINE ("/Kids [4 0 R]");
-  OUT_LINE ("/Count 1");
-  OUT_LINE (">>");
+  OUT_LINE ("   << /Type /Pages");
+  OUT_LINE ("      /Kids [4 0 R]");
+  OUT_LINE ("      /Count 1");
+  OUT_LINE ("   >>");
   OUT_LINE ("endobj");
   OUT_LINE ("4 0 obj");
-  OUT_LINE ("<< /Type /Page");
-  OUT_LINE ("/Parent 3 0 R");
-  OUT4     ("/MediaBox [%d %d %d %d]\n", llx, lly, urx, ury);
-  OUT_LINE ("/Contents 5 0 R");
-  OUT_LINE ("/Resources << /ProcSet 6 0 R >>");
-  OUT_LINE (">>");
+  OUT_LINE ("   << /Type /Page");
+  OUT_LINE ("      /Parent 3 0 R");
+  OUT4     ("      /MediaBox [%d %d %d %d]\n", llx, lly, urx, ury);
+  OUT_LINE ("      /Contents 5 0 R");
+  OUT_LINE ("      /Resources << /ProcSet 6 0 R >>");
+  OUT_LINE ("   >>");
   OUT_LINE ("endobj");
 
   return 0;
@@ -155,27 +155,41 @@ static int output_pdf_header(FILE* pdf_file, at_string name,
 /* This should be called after the others in this file. It writes some
    last informations. */
 
-static int output_pdf_tailor(FILE* pdf_file, int length)
+static int output_pdf_tailor(FILE* pdf_file, int length,
+  int llx, int lly, int urx, int ury)
 {
   char temp[40];
+  int tmp;
 
   OUT_LINE ("6 0 obj");
-  OUT_LINE ("[/PDF]");
+  OUT_LINE ("   [/PDF]");
   OUT_LINE ("endobj");
   OUT_LINE ("xref");
   OUT_LINE ("0 7");
   OUT_LINE ("0000000000 65535 f");
   OUT_LINE ("0000000009 00000 n");
-  OUT_LINE ("0000000074 00000 n");
-  OUT_LINE ("0000000120 00000 n");
-  OUT_LINE ("0000000179 00000 n");
-  OUT_LINE ("0000000300 00000 n");
+  OUT_LINE ("0000000092 00000 n");
+  OUT_LINE ("0000000150 00000 n");
+  OUT_LINE ("0000000225 00000 n");
+  sprintf(temp, "%d", llx);
+  tmp = 366;
+  tmp += (strlen (temp));
+  sprintf(temp, "%d", lly);
+  tmp += (strlen (temp));
+  sprintf(temp, "%d", urx);
+  tmp += (strlen (temp));
+  sprintf(temp, "%d", ury);
+  tmp += (strlen (temp));
+  OUT1     ("%010d 00000 n\n", tmp);
   sprintf(temp, "%d", length);
-  OUT1     ("%010d 00000 n\n", 347 + length + strlen(temp));
+  tmp += 50 + length + strlen(temp);
+  OUT1     ("%010d 00000 n\n", tmp);
   OUT_LINE ("trailer");
-  OUT_LINE ("<< /Size 7");
-  OUT_LINE ("/Root 1 0 R");
-  OUT_LINE (">>");
+  OUT_LINE ("   << /Size 7");
+  OUT_LINE ("      /Root 1 0 R");
+  OUT_LINE ("   >>");
+  OUT_LINE ("startxref");
+  OUT1 ("%d\n", tmp + 25);
   OUT_LINE ("%%EOF");
 
   return 0;
@@ -230,7 +244,7 @@ out_splines (FILE *pdf_file, spline_list_array_type shape, int *length)
     }
 
   OUT_LINE ("5 0 obj");
-  OUT1 ("<< /Length %d >>\n", *length);
+  OUT1 ("   << /Length %d >>\n", *length);
   OUT_LINE ("stream");
 
   last_color.r = 0;
@@ -286,7 +300,7 @@ int output_pdf_writer(FILE* pdf_file, at_string name,
 		      at_address msg_data)
 {
     int result;
-    int length = 0;
+	int length = 0;
 
     result = output_pdf_header(pdf_file, name, llx, lly, urx, ury);
     if (result != 0)
@@ -294,7 +308,7 @@ int output_pdf_writer(FILE* pdf_file, at_string name,
 
     out_splines(pdf_file, shape, &length);
 
-	output_pdf_tailor(pdf_file, length);
+pp	output_pdf_tailor(pdf_file, length, llx, lly, urx, ury);
 
     return 0;
 }

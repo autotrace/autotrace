@@ -1,3 +1,9 @@
+2002-03-011  Martin Weber <martweb@gmx.net>
+
+	* output-pdf.c: Fix a bug in xref table generator.
+
+	Message-ID: <3C88FA48.F3DC2CF5@gmx.net>.
+
 2002-03-08  Masatake YAMATO  <yamato@redhat.com>
 
 	* autotrace.spec.in: copyed from
