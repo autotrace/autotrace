@@ -166,8 +166,18 @@ main (int argc, char * argv[])
   /* Dump loaded bitmap if needed */
   if (dumping_bitmap)
     {
-      dumpfile_name = extend_filename (input_rootname, "bitmap");
+      if (at_bitmap_get_planes (bitmap) == 1)
+        dumpfile_name = extend_filename (input_rootname, "dump.pgm");
+	  else
+        dumpfile_name = extend_filename (input_rootname, "dump.ppm");
       dump_file   = xfopen (dumpfile_name, "wb");
+      if (at_bitmap_get_planes (bitmap) == 1)
+        fprintf(dump_file, "%s\n", "P5");
+	  else
+        fprintf(dump_file, "%s\n", "P6");
+      fprintf(dump_file, "%s\n", "# Created by AutoTrace");
+      fprintf(dump_file, "%d %d\n", at_bitmap_get_width (bitmap) , at_bitmap_get_height (bitmap));
+      fprintf(dump_file, "%d\n", 255);
       dump(bitmap, dump_file);
       fclose(dump_file);
     }
@@ -244,7 +254,7 @@ tangent-surround <unsigned>: number of points on either side of a\n\
   point to consider when computing the tangent at that point; default is 3.\n\
 report-progress: report tracing status in real time.\n\
 debug-arch: print the type of cpu.\n\
-debug-bitmap: dump loaded bitmap to <input_name>.bitmap.\n\
+debug-bitmap: dump loaded bitmap to <input_name>.bitmap.ppm or pgm.\n\
 version: print the version number of this program.\n\
 width-weight-factor <real>: weight factor for fitting the linewidth.\n\
 "
@@ -561,7 +571,6 @@ dump (at_bitmap_type * bitmap, FILE * fp)
   width  = at_bitmap_get_width (bitmap);
   height = at_bitmap_get_height (bitmap);
   np 	 = at_bitmap_get_planes (bitmap);
-  fprintf(fp, "w=%u, h=%u, np=%u\n", width, height, np);
 
   fwrite(AT_BITMAP_BITS(*bitmap), 
 	 sizeof(unsigned char),
