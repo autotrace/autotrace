@@ -1,3 +1,8 @@
+2002-09-25  Masatake YAMATO  <yamato@redhat.com>
+
+	* configure.in: use pstoedit.m4 instead of pkg-config. 
+	showed more message about pstoedit.
+	
 2002-09-21  Masatake YAMATO  <yamato@redhat.com>
 
 	* configure.in: added -dl to LIBPSTOEDIT_LIBS.

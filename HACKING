@@ -21,6 +21,14 @@
   ./config.guess --version
   GNU config.guess (2001-04-20)
 
+* AM_PATH_PSTOEDIT
+
+AM_PATH_PSTOEDIT is m4 macro defined in pstoedit.m4.
+pstoedit.m4 will be in pstoedit-3.33. However, it is not 
+released now(Wed Sep 25 04:43:36 2002). You can get pstoedit.m4
+from http://autotrace.sourceforge.net/tools/.
+(You need pstoedit.m4 if you want to build autotrace from CVS sources.)
+
 * How to release
 
   (0) Update NEWS file
