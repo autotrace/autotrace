@@ -1,4 +1,4 @@
-/* autotrace -- convert bitmaps to splines. */
+/* main.c: main driver for autotrace -- convert bitmaps to splines. */
 
 #include "autotrace.h"
 #include "input.h"
@@ -41,7 +41,7 @@ static bool logging = false;
 static bool remove_adj_corners;
 
 /* Thin all the lines in the image prior to fitting. */
-static bool thin;
+static bool thin = false;
 
 static char * read_command_line (int, char * [], at_fitting_opts_type *);
 
@@ -142,12 +142,10 @@ main (int argc, char * argv[])
 
 /* Reading the options.  */
 
-#define USAGE1 "Options:\
+#define USAGE "Options:\
 <input_name> should be a filename, " INPUT_SUFFIX_LIST ".\n"\
   GETOPT_USAGE								\
-"align-threshold <real>: if either coordinate of the endpoints on a\n\
-  spline is closer than this, make them the same; default is .5.\n\
-background-color <hexadezimal>: the color of the background that\n\
+"background-color <hexadezimal>: the color of the background that\n\
   should be ignored, for example FFFFFF;\n\
   default is no background color.\n\
 centerline: trace a character's centerline, rather than its outline.\n\
@@ -165,20 +163,11 @@ corner-threshold <angle-in-degrees>: if a pixel, its predecessor(s),\n\
   corner; default is 100.\n\
 error-threshold <real>: subdivide fitted curves that are off by\n\
   more pixels than this; default is 2.0.\n\
-filter-alternative-surround <unsigned>: another choice for\n\
-  filter-surround; default is 1.\n\
-filter-epsilon <real>: if the angles using filter-surround and\n\
-  filter-alternative-surround points differ by more than this, use the\n\
-  latter; default is 10.0.\n\
 filter-iterations <unsigned>: smooth the curve this many times\n\
   before fitting; default is 4.\n\
-filter-percent <percent>: when filtering, use the old point plus this\n\
-  much of neighbors to determine the new point; default is 33.\n\
-filter-surround <unsigned>: number of pixels on either side of a point\n\
-  to consider when filtering that point; default is 2.\n\
 input-format: " INPUT_SUFFIX_LIST ". \n\
-help: print this message.\n"
-#define USAGE2 "line-reversion-threshold <real>: if a spline is closer to a straight\n\
+help: print this message.\n\
+line-reversion-threshold <real>: if a spline is closer to a straight\n\
   line than this, weighted by the square of the curve length, keep it a\n\
   straight line even if it is a list with curves; default is .01.\n\
 line-threshold <real>: if the spline is not more than this far away\n\
@@ -191,17 +180,6 @@ output-file <filename>: write to <filename>\n\
 output-format <format>: use format <format> for the output file\n"\
 "  " OUTPUT_SUFFIX_LIST " can be used.\n\
 remove-adjacent-corners: remove corners that are adjacent.\n\
-reparameterize-improve <percent>: if reparameterization\n\
-  doesn't improve the fit by this much, as a percentage, stop; default\n\
-  is 10.\n\
-reparameterize-threshold <real>: if an initial fit is off by more\n\
-  pixels than this, don't bother to reparameterize; default is 30.\n\
-subdivide-search <percent>: percentage of the curve from the initial\n\
-  guess for a subdivision point to look for a better one; default is 10.\n\
-subdivide-surround <unsigned>: number of points on either side of a\n\
-  point to consider when looking for a subdivision point; default is 4.\n\
-subdivide-threshold <real>: if a point is this close or closer to a\n\
-  straight line, subdivide there; default is .03.\n\
 tangent-surround <unsigned>: number of points on either side of a\n\
   point to consider when computing the tangent at that point; default is 3.\n\
 thin: thin all the lines in the image prior to fitting.\n\
@@ -225,12 +203,7 @@ read_command_line (int argc, char * argv[],
         { "corner-surround",            1, 0, 0 },
         { "corner-threshold",           1, 0, 0 },
         { "error-threshold",            1, 0, 0 },
-        { "filter-alternative-surround",1, 0, 0 },
-        { "filter-epsilon",		1, 0, 0 },
         { "filter-iterations",          1, 0, 0 },
-        { "filter-percent",		1, 0, 0 },
-        { "filter-secondary-surround",  1, 0, 0 },
-        { "filter-surround",            1, 0, 0 },
         { "help",                       0, 0, 0 },
         { "input-format",		1, 0, 0 },
         { "line-reversion-threshold",	1, 0, 0 },
@@ -242,11 +215,6 @@ read_command_line (int argc, char * argv[],
         { "output-format",		1, 0, 0 },
         { "range",                      1, 0, 0 },
         { "remove-adjacent-corners",     0, (int *) &remove_adj_corners, 1 },
-        { "reparameterize-improve",     1, 0, 0 },
-        { "reparameterize-threshold",   1, 0, 0 },
-        { "subdivide-search",		1, 0, 0 },
-        { "subdivide-surround",		1, 0, 0 },
-        { "subdivide-threshold",	1, 0, 0 },
         { "tangent-surround",           1, 0, 0 },
         { "thin",                       0, (int *) &thin, 1},
         { "version",                    0, (int *) &printed_version, 1 },
@@ -265,17 +233,14 @@ read_command_line (int argc, char * argv[],
 
       assert (g == 0); /* We have no short option names.  */
 
-      if (ARGUMENT_IS ("align-threshold"))
-        fitting_opts->align_threshold = (real) atof (optarg);
-
-      else if (ARGUMENT_IS ("background-color"))
+      if (ARGUMENT_IS ("background-color"))
         {
            if (strlen (optarg) != 6)
                FATAL ("background-color be six chars long");
 	       fitting_opts->bgColor = at_color_new(hctoi (optarg[0]) * 16 + hctoi (optarg[1]),
 				       hctoi (optarg[2]) * 16 + hctoi (optarg[3]),
 				       hctoi (optarg[4]) * 16 + hctoi (optarg[5]));
- 	}
+	    }
       else if (ARGUMENT_IS ("color-count"))
         fitting_opts->color_count = atou (optarg);
 
@@ -291,27 +256,14 @@ read_command_line (int argc, char * argv[],
       else if (ARGUMENT_IS ("error-threshold"))
         fitting_opts->error_threshold = (real) atof (optarg);
 
-      else if (ARGUMENT_IS ("filter-alternative-surround"))
-        fitting_opts->filter_alternative_surround = atou (optarg);
-
-      else if (ARGUMENT_IS ("filter-epsilon"))
-        fitting_opts->filter_epsilon = (real) atof (optarg);
-
       else if (ARGUMENT_IS ("filter-iterations"))
         fitting_opts->filter_iteration_count = atou (optarg);
-
-      else if (ARGUMENT_IS ("filter-percent"))
-        fitting_opts->filter_percent = get_percent (optarg);
-
-      else if (ARGUMENT_IS ("filter-surround"))
-        fitting_opts->filter_surround = atou (optarg);
 
       else if (ARGUMENT_IS ("help"))
         {
           fprintf (stderr, "Usage: %s [options] <input_name>.\n", argv[0]);
-          fprintf (stderr, USAGE1);
-	  fprintf (stderr, USAGE2);
-	  fprintf (stderr, 
+          fprintf (stderr, USAGE);
+	      fprintf (stderr, 
 		   "\nYou can get the source code of autotrace from \n%s\n",
 		   at_home_site());
           exit (0);
@@ -324,11 +276,11 @@ read_command_line (int argc, char * argv[],
 	      FATAL1 ("Output format %s not supported\n", optarg);
         }
 
-      else if (ARGUMENT_IS ("line-reversion-threshold"))
-        fitting_opts->line_reversion_threshold = (real) atof (optarg);
-
       else if (ARGUMENT_IS ("line-threshold"))
         fitting_opts->line_threshold = (real) atof (optarg);
+
+      else if (ARGUMENT_IS ("line-reversion-threshold"))
+        fitting_opts->line_reversion_threshold = (real) atof (optarg);
 
       else if (ARGUMENT_IS ("list-output-formats"))
         {
@@ -355,21 +307,6 @@ read_command_line (int argc, char * argv[],
 	      }
         }
 
-      else if (ARGUMENT_IS ("reparameterize-improve"))
-        fitting_opts->reparameterize_improvement = get_percent (optarg);
-
-      else if (ARGUMENT_IS ("reparameterize-threshold"))
-        fitting_opts->reparameterize_threshold = (real) atof (optarg);
-
-      else if (ARGUMENT_IS ("subdivide-search"))
-        fitting_opts->subdivide_search = get_percent (optarg);
-
-      else if (ARGUMENT_IS ("subdivide-surround"))
-        fitting_opts->subdivide_surround = atou (optarg);
-
-      else if (ARGUMENT_IS ("subdivide-threshold"))
-        fitting_opts->subdivide_threshold = (real) atof (optarg);
-
       else if (ARGUMENT_IS ("tangent-surround"))
         fitting_opts->tangent_surround = atou (optarg);
 
@@ -379,7 +316,6 @@ read_command_line (int argc, char * argv[],
       /* Else it was just a flag; getopt has already done the assignment.  */
     }
   FINISH_COMMAND_LINE ();
-
 }
 
 /* Return NAME with any leading path stripped off.  This returns a

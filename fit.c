@@ -45,15 +45,12 @@ static void append_index (index_list_type *, unsigned);
 static void free_index_list (index_list_type *);
 static index_list_type new_index_list (void);
 static void remove_adjacent_corners (index_list_type *, unsigned, bool);
-static void align (spline_list_type *, fitting_opts_type *);
 static void change_bad_lines (spline_list_type *,
   fitting_opts_type *);
 static void filter (curve_type, fitting_opts_type *);
 static real filter_angle (vector_type, vector_type);
 static void find_curve_vectors
   (unsigned, curve_type, unsigned, vector_type *, vector_type *, unsigned *);
-static unsigned find_subdivision (curve_type, unsigned initial,
-  fitting_opts_type *);
 static void find_vectors
   (unsigned, pixel_outline_type, vector_type *, vector_type *, unsigned);
 static index_list_type find_corners (pixel_outline_type,
@@ -70,7 +67,6 @@ static spline_list_type *fit_with_least_squares (curve_type,
   fitting_opts_type *);
 static spline_list_type *fit_with_line (curve_type);
 static void remove_knee_points (curve_type, bool);
-static bool reparameterize (curve_type, spline_type);
 static void set_initial_parameter_values (curve_type);
 static bool spline_linear_enough (spline_type *, curve_type,
   fitting_opts_type *);
@@ -90,9 +86,6 @@ fitting_opts_type new_fitting_opts (void)
 #endif
 {
   fitting_opts_type fitting_opts;
-/* If two endpoints are closer than this, they are made to be equal.
-   (-align-threshold)  */
-  fitting_opts.align_threshold = (real) 0.5;
 
 /* Background color, the color of the background that should be ignored */
   fitting_opts.bgColor = NULL;
@@ -120,32 +113,11 @@ fitting_opts_type new_fitting_opts (void)
    (-error-threshold) */
   fitting_opts.error_threshold = (real) .8;
 
-/* A second number of adjacent points to consider when filtering.
-   (-filter-alternative-surround)  */
-  fitting_opts.filter_alternative_surround = 1;
-
-/* If the angles between the vectors produced by filter_surround and
-   filter_alternative_surround points differ by more than this, use
-   the one from filter_alternative_surround.  (-filter-epsilon)  */
-  fitting_opts.filter_epsilon = (real) 10.0;
-
 /* Number of times to smooth original data points.  Increasing this
    number dramatically---to 50 or so---can produce vastly better
    results.  But if any points that ``should'' be corners aren't found,
    the curve goes to hell around that point.  (-filter-iterations)  */
   fitting_opts.filter_iteration_count = 4;
-
-/* To produce the new point, use the old point plus this times the
-   neighbors.  (-filter-percent)  */
-  fitting_opts.filter_percent = (real) .33;
-
-/* Number of adjacent points to consider if `filter_surround' points
-   defines a straight line.  (-filter-secondary-surround)  */
-  fitting_opts.filter_secondary_surround = 3;
-
-/* Number of adjacent points to consider when filtering.
-  (-filter-surround)  */
-  fitting_opts.filter_surround = 2;
 
 /* If a spline is closer to a straight line than this, it remains a
    straight line, even if it would otherwise be changed back to a curve.
@@ -160,30 +132,6 @@ fitting_opts_type new_fitting_opts (void)
 
 /* Should adjacent corners be removed?  */
   fitting_opts.remove_adj_corners = false;
-
-/* If reparameterization doesn't improve the fit by this much percent,
-   stop doing it.  (-reparameterize-improve)  */
-  fitting_opts.reparameterize_improvement = (real) .10;
-
-/* Amount of error at which it is pointless to reparameterize.  This
-   happens, for example, when we are trying to fit the outline of the
-   outside of an `O' with a single spline.  The initial fit is not good
-   enough for the Newton-Raphson iteration to improve it.  It may be
-   that it would be better to detect the cases where we didn't find any
-   corners.  (-reparameterize-threshold)  */
-  fitting_opts.reparameterize_threshold = (real) 30.0;
-
-/* Percentage of the curve away from the worst point to look for a
-   better place to subdivide.  (-subdivide-search)  */
-  fitting_opts.subdivide_search = (real) .1;
-
-/* Number of points to consider when deciding whether a given point is a
-   better place to subdivide.  (-subdivide-surround)  */
-  fitting_opts.subdivide_surround = 4;
-
-/* How many pixels a point can diverge from a straight line and still be
-   considered a better place to subdivide.  (-subdivide-threshold) */
-  fitting_opts.subdivide_threshold = (real) .03;
 
 /* Number of points to look at on either side of a point when computing
    the approximation to the tangent at that point.  (-tangent-surround)  */
@@ -347,11 +295,6 @@ fit_curve_list (curve_list_type curve_list,
                                                    this_spline));
         }
     }
-
-  /* We do this for each outline's spline list because when a point
-     is changed, it needs to be changed in both segments in which it
-     appears---and the segments might be in different curves.  */
-  align (&curve_list_splines, fitting_opts);
 
   return curve_list_splines;
 }
@@ -861,19 +804,6 @@ remove_knee_points (curve_type curve, bool clockwise)
 /* Smooth the curve by adding in neighboring points.  Do this
    `filter_iteration_count' times.  But don't change the corners.  */
 
-
-/* We sometimes need to change the information about the filtered point.
-   This macro assigns to the relevant variables.  */
-#define FILTER_ASSIGN(new)												\
-  do																	\
-    {																	\
-      in = in_##new;													\
-      out = out_##new;													\
-      count = new##_count;												\
-      angle = angle_##new;												\
-    }																	\
-  while (0)
-
 static void
 filter (curve_type curve, fitting_opts_type *fitting_opts)
 {
@@ -890,69 +820,75 @@ filter (curve_type curve, fitting_opts_type *fitting_opts)
       return;
     }
 
-  if (fitting_opts->filter_surround > 0
-   && fitting_opts->filter_alternative_surround > 0)
-    for (iteration = 0; iteration < fitting_opts->filter_iteration_count;
-     iteration++)
-      {
-        curve_type new_curve = copy_most_of_curve (curve);
+  for (iteration = 0; iteration < fitting_opts->filter_iteration_count;
+   iteration++)
+    {
+      curve_type new_curve = copy_most_of_curve (curve);
 
-        /* Keep the first point on the curve.  */
-        if (offset)
-          append_point (new_curve, CURVE_POINT (curve, 0));
+	  /* Keep the first point on the curve.  */
+      if (offset)
+        append_point (new_curve, CURVE_POINT (curve, 0));
 
-        for (this_point = offset; this_point < CURVE_LENGTH (curve) - offset;
-             this_point++)
-          {
-            real angle, angle_alt;
-            vector_type in, in_alt, out, out_alt, sum;
-            unsigned count, alt_count;
-            real_coordinate_type new_point;
+      for (this_point = offset; this_point < CURVE_LENGTH (curve) - offset;
+           this_point++)
+        {
+          vector_type in, out, sum;
+          real_coordinate_type new_point;
 
-            /* Find the angle using the usual number of surrounding points
-             on the curve. */
-            find_curve_vectors (this_point, curve, fitting_opts->filter_surround,
-                                  &in, &out, &count);
-            angle = filter_angle (in, out);
+		 /* Calculate the vectors in and out, computed by looking at n points
+		  on either side of this_point. Experimental it was found that 2 is
+		  optimal. */
 
-            /* Find the angle using the alternative (presumably smaller)
-               number.  */
-            find_curve_vectors (this_point, curve,
-	        fitting_opts->filter_alternative_surround, &in_alt, &out_alt, &alt_count);
-            angle_alt = filter_angle (in_alt, out_alt);
+		  signed int prev, prevprev; /* have to be signed */
+		  unsigned int next, nextnext;
+		  real_coordinate_type candidate = CURVE_POINT (curve, this_point);
 
-            /* If the alternate angle is enough larger than the usual one
-               and neither of the components of the sum are zero, use it.
-               (We don't use absolute value here, since if the alternate
-               angle is smaller, we don't particularly care, since that
-               means the curve is pretty flat around the current point,
-               anyway.)  This helps keep small features from disappearing
-               into the surrounding curve.  */
-            sum = Vadd (in_alt, out_alt);
-            if (angle_alt - angle >= fitting_opts->filter_epsilon
-                && sum.dx != 0 && sum.dy != 0)
-              FILTER_ASSIGN (alt);
+		  prev = CURVE_PREV (curve, this_point);
+		  prevprev = CURVE_PREV (curve, prev);
+		  next = CURVE_NEXT (curve, this_point);
+		  nextnext = CURVE_NEXT (curve, next);
 
-            /* Start with the old point.  */
-            new_point = CURVE_POINT (curve, this_point);
-            sum = Vadd (in, out);
-            new_point.x += sum.dx * fitting_opts->filter_percent / count;
-            new_point.y += sum.dy * fitting_opts->filter_percent / count;
+		  /* Add up the differences from p of the `surround' points
+		     before p.  */
+		  in.dx = 0.0;
+		  in.dy = 0.0;
 
-            /* Put the newly computed point into a separate curve, so it
-               doesn't affect future computation (on this iteration).  */
-            append_point (new_curve, new_point);
-          }
+		  in = Vadd (in, Psubtract (CURVE_POINT (curve, prev), candidate));
+		  if (prevprev >= 0)
+		    in = Vadd (in, Psubtract (CURVE_POINT (curve, prevprev), candidate));
 
-        /* Just as with the first point, we have to keep the last point.  */
-        if (offset)
-          append_point (new_curve, LAST_CURVE_POINT (curve));
 
-        /* Set the original curve to the newly filtered one, and go again.  */
-        free_curve (curve);
-        *curve = *new_curve;
-	free (new_curve);
-      }
+		  /* And the points after p.  Don't use more points after p than we
+		     ended up with before it.  */
+		  out.dx = 0.0;
+		  out.dy = 0.0;
+
+		  out = Vadd (out, Psubtract (CURVE_POINT (curve, next), candidate));
+		  if (nextnext < CURVE_LENGTH (curve))
+		    out = Vadd (out, Psubtract (CURVE_POINT (curve, nextnext), candidate));
+
+
+		  /* Start with the old point.  */
+		  new_point = candidate;
+		  sum = Vadd (in, out);
+		  /* Experimental we have found that division by six is optimal */
+		  new_point.x += sum.dx / 6;
+		  new_point.y += sum.dy / 6;
+
+          /* Put the newly computed point into a separate curve, so it
+             doesn't affect future computation (on this iteration).  */
+          append_point (new_curve, new_point);
+        }
+
+      /* Just as with the first point, we have to keep the last point.  */
+      if (offset)
+        append_point (new_curve, LAST_CURVE_POINT (curve));
+
+      /* Set the original curve to the newly filtered one, and go again.  */
+      free_curve (curve);
+      *curve = *new_curve;
+	  free (new_curve);
+    }
 
   log_curve (curve, false);
 }
@@ -1061,20 +997,18 @@ fit_with_line (curve_type curve)
 
 
 /* The least squares method is well described in Schneider's thesis.
-   Briefly, we try to fit the entire curve with one spline.  If that fails,
-   we try reparameterizing, i.e., finding new, and supposedly better,
-   t values.  If that still fails, we subdivide the curve.  */
+   Briefly, we try to fit the entire curve with one spline. If that
+   fails, we subdivide the curve.  */
 
 static spline_list_type *
 fit_with_least_squares (curve_type curve, fitting_opts_type *fitting_opts)
 {
-  real error, best_error = 0.0;
+  real error, best_error = FLT_MAX;
   spline_type spline, best_spline;
   spline_list_type *spline_list;
   unsigned worst_point;
   unsigned iteration = 0;
   real previous_error = FLT_MAX;
-  real improvement = FLT_MAX;
 
   LOG ("\nFitting with least squares:\n");
 
@@ -1094,13 +1028,16 @@ fit_with_least_squares (curve_type curve, fitting_opts_type *fitting_opts)
 
   set_initial_parameter_values (curve);
 
-  /* Now we loop, reparameterizing and/or subdividing, until CURVE has
+  /* Now we loop, subdividing, until CURVE has
      been fit.  */
   while (true)
     {
-      LOG ("  fitted to spline:\n");
-
       spline = fit_one_spline (curve);
+
+	  if (SPLINE_DEGREE(spline) == LINEARTYPE)
+        LOG ("  fitted to line:\n");
+	  else
+        LOG ("  fitted to spline:\n");
 
       if (log_file)
         {
@@ -1108,40 +1045,23 @@ fit_with_least_squares (curve_type curve, fitting_opts_type *fitting_opts)
           print_spline (log_file, spline);
         }
 
+	  if (SPLINE_DEGREE(spline) == LINEARTYPE)
+		break;
+
       error = find_error (curve, spline, &worst_point);
-      if (error > previous_error)
-        LOG ("Reparameterization made it worse.\n");
-        /* Just fall through; we will subdivide.  */
-      else
+	  if (error <= previous_error)
         {
           best_error = error;
           best_spline = spline;
         }
+      break;
+    }
 
-      if (epsilon_equal (error, 0.0))
-        break;
-
-      improvement = (real) 1.0 - error / previous_error;
-
-      /* Don't exit, even if the error is less than `error_threshold',
-         since we might be able to improve the fit with further
-         reparameterization.  If the reparameterization made it worse,
-         we will exit here, since `improvement' will be negative.  */
-      if (improvement < fitting_opts->reparameterize_improvement
-          || error > fitting_opts->reparameterize_threshold)
-	break;
-
-      iteration++;
-      LOG3 ("Reparameterization #%u (error was %.3f, a %u%% improvement):\n",
-            iteration, error, ((unsigned) (improvement * 100.0)));
-
-      /* The reparameterization might fail, if the initial fit was
-         better than `reparameterize_threshold', yet worse than the
-         Newton-Raphson algorithm could handle.  */
-      if (!reparameterize (curve, spline))
-	break;
-
-      previous_error = error;
+  if (SPLINE_DEGREE(spline) == LINEARTYPE)
+    {
+      spline_list = init_spline_list (spline);
+      LOG1 ("Accepted error of %.3f.\n", error);
+	  return (spline_list);
     }
 
   /* Go back to the best fit.  */
@@ -1150,7 +1070,7 @@ fit_with_least_squares (curve_type curve, fitting_opts_type *fitting_opts)
 
   if (error < fitting_opts->error_threshold)
     {
-      /* The points were fitted with a (possibly reparameterized)
+      /* The points were fitted with a
          spline.  We end up here whenever a fit is accepted.  We have
          one more job: see if the ``curve'' that was fit should really
          be a straight line. */
@@ -1182,8 +1102,7 @@ fit_with_least_squares (curve_type curve, fitting_opts_type *fitting_opts)
       LOG3 ("  Original point: (%.3f,%.3f), #%u.\n",
             CURVE_POINT (curve, worst_point).x,
             CURVE_POINT (curve, worst_point).y, worst_point);
-      subdivision_index = find_subdivision (curve, worst_point,
-	    fitting_opts);
+      subdivision_index = worst_point;
       LOG3 ("  Final point: (%.3f,%.3f), #%u.\n",
             CURVE_POINT (curve, subdivision_index).x,
             CURVE_POINT (curve, subdivision_index).y, subdivision_index);
@@ -1230,9 +1149,9 @@ fit_with_least_squares (curve_type curve, fitting_opts_type *fitting_opts)
       else
         {
           concat_spline_lists (spline_list, *left_spline_list);
-	  free_spline_list (*left_spline_list);
- 	  free (left_spline_list);
-	}
+	      free_spline_list (*left_spline_list);
+ 	      free (left_spline_list);
+	    }
 
       if (right_spline_list == NULL)
         {
@@ -1250,7 +1169,7 @@ fit_with_least_squares (curve_type curve, fitting_opts_type *fitting_opts)
 	  free (CURVE_END_TANGENT (left_curve));
 	free (left_curve);
 	free (right_curve);
-    }
+  }
 
   return spline_list;
 }
@@ -1348,210 +1267,6 @@ fit_one_spline (curve_type curve)
   SPLINE_DEGREE (spline) = CUBICTYPE;
 
   return spline;
-}
-
-
-/* Find closer-to-optimal t values for the given x,y's and control
-   points, using Newton-Raphson iteration.  A good description of this
-   is in Plass & Stone.  This routine performs one step in the
-   iteration, not the whole thing.  */
-
-static bool
-reparameterize (curve_type curve, spline_type S)
-{
-  unsigned p, i;
-  spline_type S1, S2;		/* S' and S''.  */
-
-  /* Find the first and second derivatives of S.  To make
-     `evaluate_spline' work, we fill the beginning points (i.e., the first
-     two for a linear spline and the first three for a quadratic one),
-     even though this is at odds with the rest of the program.  */
-  for (i = 0; i < 3; i++)
-    {
-      S1.v[i].x = (real) 3.0 * (S.v[i + 1].x - S.v[i].x);
-      S1.v[i].y = (real) 3.0 * (S.v[i + 1].y - S.v[i].y);
-    }
-  S1.v[i].x = S1.v[i].y = (real) -1.0;	/* These will never be accessed.  */
-  SPLINE_DEGREE (S1) = QUADRATICTYPE;
-
-  for (i = 0; i < 2; i++)
-    {
-      S2.v[i].x = (real) 2.0 * (S1.v[i + 1].x - S1.v[i].x);
-      S2.v[i].y = (real) 2.0 * (S1.v[i + 1].y - S1.v[i].y);
-    }
-  S2.v[2].x = S2.v[2].y = S2.v[3].x = S2.v[3].y = (real) -1.0;
-  SPLINE_DEGREE (S2) = LINEARTYPE;
-
-  for (p = 0; p < CURVE_LENGTH (curve); p++)
-    {
-      real new_distance, old_distance;
-      real_coordinate_type new_point;
-      real_coordinate_type point = CURVE_POINT (curve, p);
-      real t = CURVE_T (curve, p);
-
-      /* Find the points at this t on S, S', and S''.  */
-      real_coordinate_type S_t = evaluate_spline (S, t);
-      real_coordinate_type S1_t = evaluate_spline (S1, t);
-      real_coordinate_type S2_t = evaluate_spline (S2, t);
-
-      /* The step size, f(t)/f'(t).  */
-      real numerator;
-      real denominator;
-      /* The differences in x and y (Q1(t) on p.62 of Schneider's thesis).  */
-      real_coordinate_type d;
-      d.x = S_t.x - point.x;
-      d.y = S_t.y - point.y;
-      numerator = d.x * S1_t.x + d.y * S1_t.y;
-      denominator = (SQUARE (S1_t.x) + d.x * S2_t.x
-			  + SQUARE (S1_t.y) + d.y * S2_t.y);
-
-      /* We compute the distances only to be able to check that we
-         really are moving closer.  I don't know how this condition can
-         be reliably checked for in advance, but I know what it means in
-         practice: the original fit was not good enough for the
-         Newton-Raphson iteration to converge.  Therefore, we need to
-         abort the reparameterization, and subdivide.  */
-      old_distance = distance (S_t, point);
-      CURVE_T (curve, p) -= numerator / denominator;
-      new_point = evaluate_spline (S, CURVE_T (curve, p));
-      new_distance = distance (new_point, point);
-
-      if (new_distance > old_distance)
-	{
-	  LOG3 ("  Stopped reparameterizing; %.3f > %.3f at point %u.\n",
-		new_distance, old_distance, p);
-	  return false;
-	}
-
-      /* The t value might be negative or > 1, if the choice of control
-         points wasn't so great.  We have no difficulty in evaluating
-         a spline at a t outside the range zero to one, though, so it
-         doesn't matter.  (Although it is a little unconventional.)  */
-    }
-  LOG ("  reparameterized curve:\n   ");
-  log_curve (curve, true);
-
-  return true;
-}
-
-
-/* This routine finds the best place to subdivide the curve CURVE,
-   somewhere near to the point whose index is INITIAL.  Originally,
-   curves were always subdivided at the point of worst error, which is
-   intuitively appealing, but doesn't always give the best results.  For
-   example, at the end of a serif that tapers into the stem, the best
-   subdivision point is at the point where they join, even if the worst
-   point is a little ways into the serif.
-
-   We return the index of the point at which to subdivide.  */
-
-static unsigned
-find_subdivision (curve_type curve, unsigned initial,
-  fitting_opts_type *fitting_opts)
-{
-  unsigned i, n_done;
-  int best_point = -1;
-  unsigned search = (unsigned) (fitting_opts->subdivide_search * (real) CURVE_LENGTH (curve));
-  vector_type best;
-  best.dx = FLT_MAX;
-  best.dy = FLT_MAX;
-
-  LOG1 ("  Number of points to search: %u.\n", search);
-
-  /* We don't want to find the first (or last) point in the curve.  */
-  for (i = initial, n_done = 0; i > 0 && n_done < search;
-       i = CURVE_PREV (curve, i), n_done++)
-    {
-      if (test_subdivision_point (curve, i, &best, fitting_opts))
-        {
-          best_point = i;
-          LOG3 ("    Better point: (%.3f,%.3f), #%u.\n",
-               CURVE_POINT (curve, i).x, CURVE_POINT (curve, i).y, i);
-        }
-    }
-
-  /* If we found a good one, let's take it.  */
-  if (best_point != -1)
-    return best_point;
-
-  for (i = CURVE_NEXT (curve, initial), n_done = 0;
-       i < CURVE_LENGTH (curve) - 1 && n_done < search;
-       i = CURVE_NEXT (curve, i), n_done++)
-    {
-      if (test_subdivision_point (curve, i, &best, fitting_opts))
-        {
-          best_point = i;
-          LOG3 ("    Better point at (%.3f,%.3f), #%u.\n",
-               CURVE_POINT (curve, i).x, CURVE_POINT (curve, i).y, i);
-        }
-    }
-
-  /* If we didn't find any better point, return the original.  */
-  return best_point == -1 ? initial : best_point;
-}
-
-
-/* Here are some macros that decide whether or not we're at a
-   ``join point'', as described above.  */
-#define ONLY_ONE_LESS(v)												\
-  (((v).dx < fitting_opts->subdivide_threshold && (v).dy >  			\
-   fitting_opts->subdivide_threshold) || ((v).dy <          			\
-   fitting_opts->subdivide_threshold && (v).dx              			\
-    > fitting_opts->subdivide_threshold))
-
-#define BOTH_GREATER(v)													\
-  ((v).dx > fitting_opts->subdivide_threshold && (v).dy >   			\
-   fitting_opts->subdivide_threshold)
-
-/* We assume that the vectors V1 and V2 are nonnegative.  */
-#define JOIN(v1, v2)													\
-    ((ONLY_ONE_LESS (v1) && BOTH_GREATER (v2))							\
-     || (ONLY_ONE_LESS (v2) && BOTH_GREATER (v1)))
-
-/* If the component D of the vector V is smaller than the best so far,
-   update the best point.  */
-#define UPDATE_BEST(v, d)												\
-  do																	\
-    {																	\
-      if ((v).d < fitting_opts->subdivide_threshold && (v).d < best->d)\
-        best->d = (v).d;												\
-    }																	\
-  while (0)
-
-
-/* If the point INDEX in the curve CURVE is the best subdivision point
-   we've found so far, update the vector BEST.  */
-
-static bool
-test_subdivision_point (curve_type curve, unsigned index, vector_type *best,
-  fitting_opts_type *fitting_opts)
-{
-  unsigned count;
-  vector_type in, out;
-  bool join = false;
-
-  find_curve_vectors (index, curve, fitting_opts->subdivide_surround, &in, &out,
-      &count);
-
-  /* We don't want to subdivide at points which are very close to the
-     endpoints, so if the vectors aren't computed from as many points as
-     we asked for, don't bother checking this point.  */
-  if (count == fitting_opts->subdivide_surround)
-    {
-      in = Vabs (in);
-      out = Vabs (out);
-
-      join = JOIN (in, out);
-      if (join)
-        {
-          UPDATE_BEST (in, dx);
-          UPDATE_BEST (in, dy);
-          UPDATE_BEST (out, dx);
-          UPDATE_BEST (out, dy);
-        }
-    }
-
-  return join;
 }
 
 
@@ -1858,60 +1573,6 @@ change_bad_lines (spline_list_type *spline_list,
       }
     else
       LOG ("  No lines.\n");
-}
-
-
-/* When we have finished fitting an entire pixel outline to a spline
-   list L, we go through L to ensure that any endpoints that are ``close
-   enough'' (i.e., within `align_threshold') to being the same really
-   are the same.  */
-
-/* This macro adjusts the AXIS axis on the starting and ending points on
-   a particular spline if necessary.  */
-#define TRY_AXIS(axis)													\
-  do																	\
-    {																	\
-      real delta = (real) fabs (end.axis - start.axis);						\
-																		\
-      if (!epsilon_equal (delta, 0.0) && delta <=              			\
-       fitting_opts->align_threshold)                                         		\
-        {																\
-          spline_type *next = &NEXT_SPLINE_LIST_ELT (*l, this_spline);	\
-          spline_type *prev = &PREV_SPLINE_LIST_ELT (*l, this_spline);	\
-																		\
-          START_POINT (*s).axis = END_POINT (*s).axis					\
-            = END_POINT (*prev).axis = START_POINT (*next).axis			\
-            = (start.axis + end.axis) / 2;								\
-          spline_change = true;											\
-        }																\
-    }																	\
-  while (0)
-
-static void
-align (spline_list_type *l, fitting_opts_type *fitting_opts)
-{
-  unsigned this_spline, sp_start, sp_end;
-  unsigned length = SPLINE_LIST_LENGTH (*l);
-
-  LOG1 ("\nAligning spline list (length %u):\n", length);
-
-  sp_start = 0; sp_end = length;
-  if (l->open) { sp_start = 1; sp_end = (length > 1 ? length - 1 : 0); }
-  LOG ("  ");
-
-  for (this_spline = sp_start; this_spline < sp_end; this_spline++)
-    {
-      bool spline_change = false;
-      spline_type *s = &SPLINE_LIST_ELT (*l, this_spline);
-      real_coordinate_type start = START_POINT (*s);
-      real_coordinate_type end = END_POINT (*s);
-
-      TRY_AXIS (x);
-      TRY_AXIS (y);
-      if (spline_change)
-        LOG1 ("%u ", this_spline);
-    }
-  LOG ("\n");
 }
 
 

@@ -1,5 +1,23 @@
 2001-03-07  Masatake YAMATO  <yamato@redhat.com>
 
+	Applied a patch from Martin.
+	Message-ID: <3AA15F77.44F4ECAF@gmx.net>.
+
+	* autotrace.h: Improved fitting speed, reduced number of
+	fitting parameters.
+
+	* fit.c: Likewise.
+
+	* main.c: Likewise.
+
+ 	Applied a patch from Martin.
+	Message-ID: <3AA129B5.FE736C40@gmx.net>.
+	
+	* main.c: Replaced static bool thin; by static bool thin = false;
+	in main.c otherwise there is no initialization.
+	
+2001-03-07  Masatake YAMATO  <yamato@redhat.com>
+
 	* types.h (struct): Remove dimensions_type.
 	(DIMENSIONS_HEIGHT): Likewise.
 	(DIMENSIONS_WIDTH): Likewise.
