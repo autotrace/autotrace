@@ -1,3 +1,11 @@
+2003-01-30  Masatake YAMATO  <yamato@redhat.com>
+
+	* Makefile.am (INCLUDES): Added GLIB2_CFLAGS.
+	(autotrace_LDADD): Added GLIB2_LIBS and POPT_LIBS.
+
+	* configure.in: Added scripts to check popt and its sanity.
+	Added scripts to check glib2.
+
 2003-01-24  Martin Weber <martweb@gmx.net>
 
 	*** libautotrace API is a bit changed ***

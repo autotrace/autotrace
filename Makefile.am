@@ -127,7 +127,7 @@ autotrace_SOURCES=\
 		getopt1.c			\
 		strgicmp.h
 
-INCLUDES = $(MAGICK_CFLAGS) $(LIBPSTOEDIT_CFLAGS)
+INCLUDES = $(MAGICK_CFLAGS) $(LIBPSTOEDIT_CFLAGS) $(GLIB2_CFLAGS) 
 AM_CPPFLAGS = -DLOCALEDIR=\""$(datadir)/locale"\" 
 
 autotrace_LDADD =				\
@@ -136,6 +136,8 @@ autotrace_LDADD =				\
 		$(LIBPNG_LDFLAGS)		\
 		$(LIBSWF_LDFLAGS)		\
 		$(LIBPSTOEDIT_LIBS)		\
+		$(GLIB2_LIBS)			\
+		$(POPT_LIBS)			\
 		$(INTLLIBS)			\
 		-lm
 

@@ -352,7 +352,7 @@ read_command_line (int argc, char * argv[],
       else if (ARGUMENT_IS ("noise-removal"))
         fitting_opts->noise_removal = (at_real) atof (optarg);
 
-	  else if (ARGUMENT_IS ("dpi"))
+      else if (ARGUMENT_IS ("dpi"))
         output_opts->dpi = atou (optarg);
 
       else if (ARGUMENT_IS ("error-threshold"))

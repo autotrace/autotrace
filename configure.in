@@ -346,6 +346,77 @@ AC_SUBST(LIBPSTOEDIT_LIBS)
 AM_CONDITIONAL(HAVE_LIBPSTOEDIT, test x$HAVE_LIBPSTOEDIT = xyes)
 
 dnl
+dnl GLib2
+dnl
+
+dnl Copied from soidpodi's configure.in
+dnl AC_PATH_PROG(PKG_CONFIG, pkg-config, no)
+dnl if test "x$PKG_CONFIG" = "xno"; then
+dnl 	AC_MSG_ERROR(You have to install pkg-config to compile sodipodi.)
+dnl fi
+GLIB2_CFLAGS=
+GLIB2_LIBS=
+PKG_CHECK_MODULES(GLIB2, glib-2.0 >= 2.0  gmodule-2.0 >= 2.0 gthread-2.0 >= 2.0, glib_ok=yes, glib_ok=no)
+if test "x${glib_ok}" != "xyes"; then
+   AC_MSG_WARN([cannot find glib-2.0])
+else
+   :
+fi
+AC_SUBST(GLIB2_CFLAGS)
+AC_SUBST(GLIB2_LIBS)
+
+dnl
+dnl Popt sanity check
+dnl
+POPT_LIBS=
+popt_ok=
+AC_CHECK_HEADER(popt.h, popt_ok=yes, popt_ok=no)
+if test "x$popt_ok" != "xyes"; then
+   AC_MSG_WARN([cannot find popt.h])
+fi
+
+popt_ok=
+AC_CHECK_LIB(popt, poptGetNextOpt, popt_ok=yes, popt_ok=no)
+if test "x$popt_ok" != "xyes"; then
+   AC_MSG_WARN([cannot find libpopt])
+fi
+
+popt_ok=
+BEFORE_POPT_LIBS=${LIBS}
+LIBS="${LIBS} -lpopt"
+AC_MSG_CHECKING([for popt float support])
+AC_TRY_RUN([#include <popt.h>
+#ifndef POPT_TABLEEND
+#define POPT_TABLEEND { NULL, '\0', 0, 0, 0, NULL, NULL }
+#endif /* Not def: POPT_TABLEEND */
+int
+main(int argc, char ** argv)
+{
+  float value = 1.0;
+  const int x_argc = 2;
+  const char * x_argv [] = {"floattest", "--real=0.000"};
+  struct poptOption popt_table [] = {
+    { "real", 'r', POPT_ARG_FLOAT, &value, 0, "Test float value", "value"},
+    POPT_TABLEEND
+  };
+  poptContext popt_ctx = poptGetContext("floattest", x_argc, x_argv, popt_table, 0);
+  while (poptGetNextOpt(popt_ctx) != -1) ;
+  poptFreeContext (popt_ctx);
+  exit ((int)value);
+}], popt_ok=yes, popt_ok=no)
+LIBS=${BEFORE_POPT_LIBS}
+
+if test "x$popt_ok" != "xyes"; then
+      	AC_MSG_RESULT([no])
+	AC_MSG_WARN([popts' float arg support is broken.])
+else
+	LIBS=${BEFORE_POPT_LIBS}
+	AC_MSG_RESULT([yes])
+	POPT_LIBS=-lpopt
+fi
+AC_SUBST(POPT_LIBS)
+
+dnl
 dnl Vender's cc(not gcc)
 dnl
 dnl if test "x$CC" = xcc ; then
