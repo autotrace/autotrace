@@ -15,6 +15,7 @@
 .deps
 .gdbinit
 .libs
+.makepp_log
 Makefile
 Makefile.am.norpm
 Makefile.in
@@ -61,4 +62,5 @@ output-test.sh
 port
 release
 rpm.log
+semantic.cache
 stamp-*
