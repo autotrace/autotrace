@@ -1,5 +1,7 @@
 2002-05-01  Masatake YAMATO  <yamato@redhat.com>
 
+	* configure.in: Version 0.30.1.
+
 	* autotrace.1: Updated.
 
 	* HACKING: Updated.
