@@ -1,3 +1,7 @@
+2002-10-10  Masatake YAMATO  <yamato@redhat.com>
+
+	* main.c (USAGE2): added <real> to width-factor.
+
 2002-10-09  Masatake YAMATO  <yamato@redhat.com>
 
 	* FAQ: Fix a typo. Suggested by Martin.

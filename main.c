@@ -231,7 +231,7 @@ report-progress: report tracing status in real time.\n\
 debug-arch: print the type of cpu.\n\
 debug-bitmap: dump loaded bitmap to <input_name>.bitmap.\n\
 version: print the version number of this program.\n\
-width-factor: weight factor for fitting the linewidth.\n\
+width-factor <real>: weight factor for fitting the linewidth.\n\
 "
 
 /* We return the name of the image to process.  */
