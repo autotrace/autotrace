@@ -14,6 +14,11 @@
 #include "xmem.h"
 #include <math.h>
 #ifndef FLT_MAX
+#include <limits.h>
+#include <float.h>
+#endif
+#ifndef FLT_MIN
+#include <limits.h>
 #include <float.h>
 #endif
 #include <string.h>
@@ -1187,8 +1192,8 @@ fit_with_least_squares (curve_type curve, fitting_opts_type *fitting_opts)
       if (left_spline_list == NULL)
         {
           WARNING ("could not fit left spline list");
-          LOG1 ("Could not fit spline to left curve (%x).\n",
-                (unsigned) left_curve);
+          LOG1 ("Could not fit spline to left curve (%lx).\n",
+                (unsigned long) left_curve);
         }
       else
         {
@@ -1200,8 +1205,8 @@ fit_with_least_squares (curve_type curve, fitting_opts_type *fitting_opts)
       if (right_spline_list == NULL)
         {
           WARNING ("could not fit right spline list");
-          LOG1 ("Could not fit spline to right curve (%x).\n",
-                (unsigned) right_curve);
+          LOG1 ("Could not fit spline to right curve (%lx).\n",
+                (unsigned long) right_curve);
         }
       else
         {

@@ -1,4 +1,5 @@
 EXTRA_DIST=swf.h output-swf.c output-swf.h  
+AUTOMAKE_OPTIONS = foreign no-dependencies
 
 bin_PROGRAMS=autotrace
 

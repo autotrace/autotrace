@@ -41,8 +41,8 @@ do 																		\
       {																	\
         new_mem = (address) realloc (old_ptr, size);					\
         if (new_mem == NULL)											\
-          FATAL4 ("realloc: request for %x to be %u bytes failed in %s line %d",		\
-                  (unsigned) (old_ptr), (size), __FILE__, __LINE__);						\
+          FATAL4 ("realloc: request for %lx to be %u bytes failed in %s line %d",		\
+                  (unsigned long) (old_ptr), (size), __FILE__, __LINE__);						\
       }																	\
 																		\
     old_ptr = new_mem;													\

@@ -1,7 +1,12 @@
 configure
 Makefile.in
+Makefile
 aclocal.m4
 missing
 mkinstalldirs
 install-sh
-
+.deps
+autotrace
+config.cache
+config.log
+config.status

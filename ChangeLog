@@ -1,0 +1,18 @@
+2000-09-26  Masatake YAMATO  <yamato@redhat.com>
+
+	* fit.c: Include both limits.h and float.h.
+	(fit_with_least_squares): Use %lx instead of %x.
+	Cast left_curve to unsigned long.
+	(fit_with_least_squares): Likewise.
+
+	* curve.c (log_curve): Likewise.
+	(log_entire_curve): Likewise.
+
+ 	* xmem.h (XREALLOC): Likewise.
+		
+	* .cvsignore: Added .deps, autotrace, config.cache, config.log,
+	config.status and Makefile.
+	
+
+	* Makefile.am (AUTOMAKE_OPTIONS): Added AUTOMAKE_OPTIONS.
+
