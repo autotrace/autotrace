@@ -19,7 +19,7 @@
 
 /* This should be used for outputting a string S on a line by itself.  */
 #define OUT_LINE(s)							\
-  fprintf (ps_file, "%s\n", s)
+  fprintf (dxf_file, "%s\n", s)
 
 
 /**************************************************************************************
@@ -350,7 +350,7 @@ int bspline_to_lines(xypnt_head_rec *vtx_list          /*  */,
 /******************************************************************************
 * This function outputs the DXF code which produces the polylines 
 */
-static void out_splines (FILE * ps_file, spline_list_array_type shape)
+static void out_splines (FILE * dxf_file, spline_list_array_type shape)
 {
   unsigned this_list;
   double startx, starty;
@@ -388,10 +388,10 @@ static void out_splines (FILE * ps_file, spline_list_array_type shape)
            {
             /* must begin new polyline */
              new_layer = 0;
-             fprintf(ps_file, "  0\nSEQEND\n  8\n%s\n", layerstr);
-             fprintf(ps_file, "  0\nPOLYLINE\n  8\n%s\n  66\n1\n  10\n%f\n  20\n%f\n",
+             fprintf(dxf_file, "  0\nSEQEND\n  8\n%s\n", layerstr);
+             fprintf(dxf_file, "  0\nPOLYLINE\n  8\n%s\n  66\n1\n  10\n%f\n  20\n%f\n",
                      layerstr, startx, starty);
-             fprintf(ps_file, "  0\nVERTEX\n  8\n%s\n  10\n%f\n  20\n%f\n",
+             fprintf(dxf_file, "  0\nVERTEX\n  8\n%s\n  10\n%f\n  20\n%f\n",
                      layerstr, startx, starty);
              pnt_old.xp = ROUND(startx*RESOLUTION);
              pnt_old.yp = ROUND(starty*RESOLUTION);
@@ -399,9 +399,9 @@ static void out_splines (FILE * ps_file, spline_list_array_type shape)
         }   
       else
         {
-         fprintf(ps_file, "  0\nPOLYLINE\n  8\n%s\n  66\n1\n  10\n%f\n  20\n%f\n",
+         fprintf(dxf_file, "  0\nPOLYLINE\n  8\n%s\n  66\n1\n  10\n%f\n  20\n%f\n",
                  layerstr, startx, starty);
-         fprintf(ps_file, "  0\nVERTEX\n  8\n%s\n  10\n%f\n  20\n%f\n",
+         fprintf(dxf_file, "  0\nVERTEX\n  8\n%s\n  10\n%f\n  20\n%f\n",
                  layerstr, startx, starty);
          pnt_old.xp = ROUND(startx*RESOLUTION);
          pnt_old.yp = ROUND(starty*RESOLUTION);
@@ -418,13 +418,13 @@ static void out_splines (FILE * ps_file, spline_list_array_type shape)
                {
                 /* must begin new polyline */
                 new_layer = 0;
-                fprintf(ps_file, "  0\nSEQEND\n  8\n%s\n", layerstr);
-                fprintf(ps_file, "  0\nPOLYLINE\n  8\n%s\n  66\n1\n  10\n%f\n  20\n%f\n",
+                fprintf(dxf_file, "  0\nSEQEND\n  8\n%s\n", layerstr);
+                fprintf(dxf_file, "  0\nPOLYLINE\n  8\n%s\n  66\n1\n  10\n%f\n  20\n%f\n",
                         layerstr, startx, starty);
-                fprintf(ps_file, "  0\nVERTEX\n  8\n%s\n  10\n%f\n  20\n%f\n",
+                fprintf(dxf_file, "  0\nVERTEX\n  8\n%s\n  10\n%f\n  20\n%f\n",
                         layerstr, startx, starty);
                }
-             fprintf(ps_file, "  0\nVERTEX\n  8\n%s\n  10\n%f\n  20\n%f\n",
+             fprintf(dxf_file, "  0\nVERTEX\n  8\n%s\n  10\n%f\n  20\n%f\n",
                      layerstr, END_POINT(s).x, END_POINT (s).y);
 
              startx = END_POINT(s).x;
@@ -457,10 +457,10 @@ static void out_splines (FILE * ps_file, spline_list_array_type shape)
                {
                 /* must begin new polyline */
                 new_layer = 0;
-                fprintf(ps_file, "  0\nSEQEND\n  8\n%s\n", layerstr);
-                fprintf(ps_file, "  0\nPOLYLINE\n  8\n%s\n  66\n1\n  10\n%f\n  20\n%f\n",
+                fprintf(dxf_file, "  0\nSEQEND\n  8\n%s\n", layerstr);
+                fprintf(dxf_file, "  0\nPOLYLINE\n  8\n%s\n  66\n1\n  10\n%f\n  20\n%f\n",
                         layerstr, (double)pnt.xp/RESOLUTION, (double)pnt.yp/RESOLUTION);
-                fprintf(ps_file, "  0\nVERTEX\n  8\n%s\n  10\n%f\n  20\n%f\n",
+                fprintf(dxf_file, "  0\nVERTEX\n  8\n%s\n  10\n%f\n  20\n%f\n",
                         layerstr, (double)pnt.xp/RESOLUTION, (double)pnt.yp/RESOLUTION);
                }
              i = 0;
@@ -468,7 +468,7 @@ static void out_splines (FILE * ps_file, spline_list_array_type shape)
                 {
                  if (i)
                    {
-                    fprintf(ps_file, "  0\nVERTEX\n  8\n%s\n  10\n%f\n  20\n%f\n",
+                    fprintf(dxf_file, "  0\nVERTEX\n  8\n%s\n  10\n%f\n  20\n%f\n",
                            layerstr, (double)pnt.xp/RESOLUTION, (double)pnt.yp/RESOLUTION);
                    }
                  pnt1 = pnt;
@@ -492,7 +492,7 @@ static void out_splines (FILE * ps_file, spline_list_array_type shape)
       last_color = list.color;
     }
 
-  fprintf(ps_file, "  0\nSEQEND\n  8\n0\n");
+  fprintf(dxf_file, "  0\nSEQEND\n  8\n0\n");
 
 }
 
@@ -500,7 +500,7 @@ static void out_splines (FILE * ps_file, spline_list_array_type shape)
 /******************************************************************************
 * This function outputs a complete layer table for all 255 colors. 
 */
-void output_layer(FILE *ps_file)
+void output_layer(FILE *dxf_file)
 {
   int i;
   char str[20], str1[20];
@@ -554,19 +554,19 @@ void output_layer(FILE *ps_file)
 /******************************************************************************
 * DXF output function.
 */
-int output_dxf_writer(FILE* ps_file, string name,
+int output_dxf_writer(FILE* dxf_file, string name,
          		      int llx, int lly, int urx, int ury,
 		              spline_list_array_type shape)
 {
 
-  output_layer(ps_file);
+  output_layer(dxf_file);
 
   OUT_LINE ("  0");
   OUT_LINE ("SECTION");
   OUT_LINE ("  2");
   OUT_LINE ("ENTITIES");
 
-  out_splines(ps_file, shape);
+  out_splines(dxf_file, shape);
 
   OUT_LINE ("  0");
   OUT_LINE ("ENDSEC");

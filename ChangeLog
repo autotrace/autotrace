@@ -1,5 +1,13 @@
 2001-11-24  Martin Weber <martweb@gmx.net>
 
+        * despeckle.c: Almost Rewrote.
+
+	* output-dxf.c: "ps_file' -> "dxf_file".
+
+	(Message-ID: <3BFD5CBD.8AC681BB@gmx.net>).
+	
+2001-11-24  Martin Weber <martweb@gmx.net>
+
 	* output-epd.c: "ps_file"->"epd_file".
 	(output_epd_header): "%%"->"%".
 	(out_splines): swap "S"<->"f" in OUT_LINE.
