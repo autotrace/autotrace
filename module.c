@@ -36,17 +36,52 @@
 #include "input-png.h"
 #endif /* HAVE_LIBPNG */
 #if HAVE_MAGICK
-#include <sys/types.h> /* Needed for correct interpretation of magick/api.h */
-#include <magick/api.h>
 #include "input-magick.h"
+#else
+int install_input_magick_readers(void) {return 0;}
 #endif /* HAVE_MAGICK */
+
+#include "output-eps.h"
+#include "output-er.h"
+#include "output-p2e.h"
+#include "output-sk.h"
+#include "output-svg.h"
+#include "output-ugs.h"
+#include "output-fig.h"
+#ifdef HAVE_LIBSWF
+#include "output-swf.h"
+#endif /* HAVE_LIBSWF */
+#include "output-emf.h"
+#include "output-mif.h"
+#include "output-dxf.h"
+#include "output-epd.h"
+#include "output-pdf.h"
+#include "output-cgm.h"
+#include "output-dr2d.h"
+#if HAVE_LIBPSTOEDIT
+#include "output-pstoedit.h"
+#else 
+int install_output_pstoedit_writers(void) {return 0;}
+#endif /* HAVE_LIBPSTOEDIT */
+#include "output-pov.h"
+
+static int install_input_readers  (void);
+static int install_output_writers (void);
 
 int
 at_module_init (void)
-{     
+{ 
+  int r, w;
   /* TODO: Loading every thing in dynamic.
    For a while, these are staticly added. */
-  
+  r = install_input_readers ();
+  w = install_output_writers ();
+  return (int)(r << 2 | w);
+}
+
+static int
+install_input_readers (void)
+{
 #ifdef HAVE_LIBPNG  
   at_input_add_handler      ("PNG", "Portable network graphics",      input_png_reader);
 #endif
@@ -59,61 +94,35 @@ at_module_init (void)
   at_input_add_handler_full ("PPM", "Portable pixmap format",  input_pnm_reader, 0, "PPM", NULL);
 
   at_input_add_handler      ("GF",  "TeX raster font",         input_gf_reader);
-#if HAVE_MAGICK  
-
-#if (MagickLibVersion < 0x0534)
-#define AT_MAGICK_SET_INFO(X) X = GetMagickInfo(NULL)
-#else  /* (MagickLibVersion < 0x0534) */
-#define AT_MAGICK_SET_INFO(X)			\
-  do {						\
-    X = GetMagickInfo(NULL, &exception);	\
-    if (X && !X->next)				\
-      X = GetMagickInfo("*", &exception);	\
-  } while (0)
-#endif	/* (MagickLibVersion < 0x0534) */
-
-#if (MagickLibVersion < 0x0537)
-#define AT_MAGICK_SUFFIX_FIELD_NAME tag
-#else  /* (MagickLibVersion < 0x0537) */
-#define AT_MAGICK_SUFFIX_FIELD_NAME name
-#endif	/* (MagickLibVersion < 0x0537) */
-
-#if (MagickLibVersion < 0x0538)
-#define AT_MAGICK_INITIALIZER()     MagickIncarnate("")
-#else  /* (MagickLibVersion < 0x0538) */
-#define AT_MAGICK_INITIALIZER()     InitializeMagick("")
-#endif	/* (MagickLibVersion < 0x0538) */
 
 
-#if (MagickLibVersion < 0x0540)
-#define AT_MAGICK_INFO_TYPE_MODIFIER     const
-#else  /* (MagickLibVersion < 0x0540) */
-#define AT_MAGICK_INFO_TYPE_MODIFIER 
-#endif	/* (MagickLibVersion < 0x0540)*/
+  return ((0 << 1) || install_input_magick_readers ());
+}
 
-  {
-    ExceptionInfo exception;
+static int
+install_output_writers (void)
+{
+  at_output_add_handler("EPS", "Encapsulated PostScript",  output_eps_writer);
+  at_output_add_handler("AI",  "Adobe Illustrator",        output_eps_writer);
+  at_output_add_handler("P2E", "pstoedit frontend format", output_p2e_writer);
+  at_output_add_handler("SK",  "Sketch",                   output_sk_writer);
+  at_output_add_handler("SVG", "Scalable Vector Graphics", output_svg_writer);
+  at_output_add_handler("UGS", "Unicode glyph source",     output_ugs_writer);
+  at_output_add_handler("FIG", "XFIG 3.2",                 output_fig_writer);
 
-    AT_MAGICK_INFO_TYPE_MODIFIER MagickInfo *info, *magickinfo;
-    AT_MAGICK_INITIALIZER() ;
+#ifdef HAVE_LIBSWF
+  at_output_add_handler("SWF", "Shockwave Flash 3",        output_swf_writer);
+#endif /* HAVE_LIBSWF */    
+  
+  at_output_add_handler ("EMF",  "Enhanced Metafile format",     output_emf_writer);
+  at_output_add_handler ("MIF",  "FrameMaker MIF format",        output_mif_writer);
+  at_output_add_handler ("ER",   "Elastic Reality Shape file",   output_er_writer);
+  at_output_add_handler ("DXF",  "DXF format (without splines)", output_dxf12_writer);
+  at_output_add_handler ("EPD",  "EPD format",                   output_epd_writer);
+  at_output_add_handler ("PDF",  "PDF format",                   output_pdf_writer);
+  at_output_add_handler ("CGM",  "Computer Graphics Metafile",   output_cgm_writer);
+  at_output_add_handler ("DR2D", "IFF DR2D format",              output_dr2d_writer);
+  at_output_add_handler ("POV",  "Povray format",                output_pov_writer);
 
-    GetExceptionInfo(&exception);
-
-    AT_MAGICK_SET_INFO(info);
-    magickinfo = info;
-
-    while (info)
-      {
-	if (info->AT_MAGICK_SUFFIX_FIELD_NAME && info->description)
-	  at_input_add_handler_full(info->AT_MAGICK_SUFFIX_FIELD_NAME,
-				    info->description,
-				    input_magick_reader,
-				    0,
-				    info->AT_MAGICK_SUFFIX_FIELD_NAME,
-				    NULL);
-	info = info->next ;
-      }
-  }
-#endif
-  return 0;
+  return (0 << 1) || install_output_pstoedit_writers();
 }

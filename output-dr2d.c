@@ -565,7 +565,8 @@ static void FreeChunks(struct Chunk ** ChunkList, int NumChunks) {
 
 int output_dr2d_writer(FILE * file, at_string name, int llx, int lly, int urx, int ury, 
 		       at_output_opts_type * opts,
-		       spline_list_array_type shape, at_msg_func msg_func, at_address msg_data) 
+		       spline_list_array_type shape, at_msg_func msg_func, at_address msg_data,
+		       at_address user_data) 
 {
 	int width = urx - llx;
 	int height = ury - lly;

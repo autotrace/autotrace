@@ -41,10 +41,6 @@
 #include "thin-image.h"
 #include "despeckle.h"
 
-#if HAVE_LIBPSTOEDIT 
-#include "output-pstoedit.h"
-#endif /* HAVE_LIBPSTOEDIT */  
-
 #include <locale.h>
 
 #define AT_DEFAULT_DPI 72
@@ -359,7 +355,7 @@ at_splines_new_full (at_bitmap_type * bitmap,
 }
 
 void 
-at_splines_write (at_output_write_func output_writer,
+at_splines_write (at_spline_writer * writer,
 		  FILE * writeto,
 		  at_string file_name,
 		  at_output_opts_type * opts,
@@ -383,22 +379,10 @@ at_splines_write (at_output_write_func output_writer,
     }
 
   setlocale( LC_NUMERIC, "C" );
-#if HAVE_LIBPSTOEDIT 
-  if (output_pstoedit_is_writer(output_writer))
-    output_pstoedit_invoke_writer (output_writer, 
-				   writeto, file_name,
-				   llx, lly, urx, ury,
-				   opts,
-				   *splines,
-				   msg_func, msg_data);
-  else
-    (*output_writer) (writeto, file_name, llx, lly, urx, ury, opts, *splines,
-		      msg_func, msg_data);
-#else 
-  (*output_writer) (writeto, file_name, llx, lly, urx, ury, opts, *splines,
-		    msg_func, msg_data);
-#endif /* HAVE_LIBPSTOEDIT */  
-  setlocale( LC_NUMERIC, "" );
+  (*writer->func) (writeto, file_name, 
+		   llx, lly, urx, ury, opts, *splines,
+		   msg_func, msg_data,
+		   writer->data);
   if (new_opts)
     at_output_opts_free(opts);
 }
@@ -478,6 +462,7 @@ autotrace_init (void)
 
       /* Initialize subsystems */
       at_input_init ();
+      at_output_init ();
       at_module_init ();
 
       initialized = 1;

@@ -1,3 +1,41 @@
+2003-06-18  Masatake YAMATO  <yamato@redhat.com>
+
+	* output-*.[ch] (output_*_writer): added user_data
+	as an argument.
+	
+	* output-pstoedit.c: Rewrite.
+
+	* output.c: Rewrite(copied from input.c).
+
+	* autotrace.c (at_splines_write): don't call
+	pstoedit function directly here.
+	(autotrace_init): call at_output_init.
+
+	* autotrace.h(at_spline_writer): New data type.
+	(at_output_write_func): moved to output.h.
+	(at_splines_write): use at_splines_write instead
+	of at_output_write_func.
+
+	* input-magick.c (input_magick_reader): moved from 
+	module.c.
+
+	* input-magick.[ch] (install_input_magick_readers): New
+	function.
+	(input_magick_reader): make static.
+
+	* input.c: include input.h.
+
+	* main.c: use new type at_spline_writer.
+	(output_list_formats): Added const modifiers to list,
+	tmp, suffix and descr.
+
+	* module.c: image magick related functions are moved to
+	input-magick.c.
+	(install_output_writers): new function.
+
+	* private.h (struct _at_spline_writer): New datum type.
+	(at_output_init): New function.
+
 2003-06-15  Masatake YAMATO  <yamato@redhat.com>
 
 	* main.c (read_command_line): added new parameter, input_opts.

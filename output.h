@@ -23,10 +23,32 @@
 #include "autotrace.h"
 #include "types.h"
 #include "exception.h"
+#include <glib.h>
 
 #ifdef __cplusplus
 extern "C" {
 #endif /* __cplusplus */
+
+typedef 
+int (*at_output_func) (FILE*, at_string name,
+		       int llx, int lly, 
+		       int urx, int ury,
+		       at_output_opts_type * opts,
+		       at_splines_type shape,
+		       at_msg_func msg_func, 
+		       at_address msg_data,
+		       at_address user_data);
+
+extern int at_output_add_handler (const at_string suffix,
+				  const at_string description,
+				  at_output_func writer);
+
+extern int at_output_add_handler_full (const at_string suffix, 
+				       const at_string description,
+				       at_output_func writer,
+				       at_bool override,
+				       at_address user_data,
+				       GDestroyNotify user_data_destroy_func);
 
 /* Data struct hierarchy:
    spline_list_array (splines)
@@ -87,7 +109,7 @@ void at_spline_list_array_foreach (at_spline_list_array_type *,
 
 int   at_output_add_handler (at_string suffix, 
 			     at_string description, 
-			     at_output_write_func func);
+			     at_output_func func);
 
 #ifdef __cplusplus
 }

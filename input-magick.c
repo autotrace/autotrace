@@ -24,18 +24,29 @@
 #include "config.h"
 #endif /* Def: HAVE_CONFIG_H */
 
+#include "input.h"
+#include "input-magick.h"
+#include "bitmap.h"
+
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
 #include <sys/types.h> /* Needed for correct interpretation of magick/api.h */
 #include <magick/api.h>
-#include "input-magick.h"
-#include "bitmap.h"
 
-at_bitmap_type input_magick_reader(at_string filename,
-				   at_input_opts_type * opts,
-				   at_msg_func msg_func, 
-				   at_address msg_data)
+static at_bitmap_type input_magick_reader (at_string filename,
+					   at_input_opts_type * opts,
+					   at_msg_func msg_func, 
+					   at_address msg_data,
+					   at_address user_data);
+
+
+static at_bitmap_type
+input_magick_reader(at_string filename,
+		    at_input_opts_type * opts,
+		    at_msg_func msg_func, 
+		    at_address msg_data,
+		    at_address user_data)
 {
   Image *image = NULL;
   ImageInfo *image_info;
@@ -95,4 +106,63 @@ at_bitmap_type input_magick_reader(at_string filename,
  cleanup:
   DestroyImageInfo(image_info);  
   return(bitmap);
+}
+
+int
+install_input_magick_readers(void)
+{
+#if (MagickLibVersion < 0x0534)
+#define AT_MAGICK_SET_INFO(X) X = GetMagickInfo(NULL)
+#else  /* (MagickLibVersion < 0x0534) */
+#define AT_MAGICK_SET_INFO(X)			\
+  do {						\
+    X = GetMagickInfo(NULL, &exception);	\
+    if (X && !X->next)				\
+      X = GetMagickInfo("*", &exception);	\
+  } while (0)
+#endif	/* (MagickLibVersion < 0x0534) */
+
+#if (MagickLibVersion < 0x0537)
+#define AT_MAGICK_SUFFIX_FIELD_NAME tag
+#else  /* (MagickLibVersion < 0x0537) */
+#define AT_MAGICK_SUFFIX_FIELD_NAME name
+#endif	/* (MagickLibVersion < 0x0537) */
+
+#if (MagickLibVersion < 0x0538)
+#define AT_MAGICK_INITIALIZER()     MagickIncarnate("")
+#else  /* (MagickLibVersion < 0x0538) */
+#define AT_MAGICK_INITIALIZER()     InitializeMagick("")
+#endif	/* (MagickLibVersion < 0x0538) */
+
+
+#if (MagickLibVersion < 0x0540)
+#define AT_MAGICK_INFO_TYPE_MODIFIER     const
+#else  /* (MagickLibVersion < 0x0540) */
+#define AT_MAGICK_INFO_TYPE_MODIFIER 
+#endif	/* (MagickLibVersion < 0x0540)*/
+
+  {
+    ExceptionInfo exception;
+
+    AT_MAGICK_INFO_TYPE_MODIFIER MagickInfo *info, *magickinfo;
+    AT_MAGICK_INITIALIZER() ;
+
+    GetExceptionInfo(&exception);
+
+    AT_MAGICK_SET_INFO(info);
+    magickinfo = info;
+
+    while (info)
+      {
+	if (info->AT_MAGICK_SUFFIX_FIELD_NAME && info->description)
+	  at_input_add_handler_full(info->AT_MAGICK_SUFFIX_FIELD_NAME,
+				    info->description,
+				    input_magick_reader,
+				    0,
+				    info->AT_MAGICK_SUFFIX_FIELD_NAME,
+				    NULL);
+	info = info->next ;
+      }
+  }
+  return 0;
 }

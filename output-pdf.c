@@ -327,7 +327,8 @@ int output_pdf_writer(FILE* pdf_file, at_string name,
 		      at_output_opts_type * opts,
 		      spline_list_array_type shape,
 		      at_msg_func msg_func, 
-		      at_address msg_data)
+		      at_address msg_data,
+		      at_address user_data)
 {
     int result;
     size_t length = 0;

@@ -852,7 +852,8 @@ int output_dxf12_writer(FILE* dxf_file, at_string name,
 			at_output_opts_type * opts,
 			spline_list_array_type shape,
 			at_msg_func msg_func, 
-			at_address msg_data)
+			at_address msg_data,
+			at_address user_data)
 {
   OUT_LINE ("  0");
   OUT_LINE ("SECTION");

@@ -1,6 +1,7 @@
 /* output.c: interface for output handlers
 
    Copyright (C) 1999, 2000, 2001 Bernhard Herzog.
+   Copyright (C) 2003 Masatake YAMATO
 
    This library is free software; you can redistribute it and/or
    modify it under the terms of the GNU Lesser General Public License
@@ -17,272 +18,243 @@
    Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111-1307
    USA. */
 
+/* TODO: Unify output codes and input codes. */
+
 #ifdef HAVE_CONFIG_H
 #include "config.h"
 #endif /* Def: HAVE_CONFIG_H */
 
+#include "autotrace.h"
+#include "private.h"
 #include "output.h"
 #include "xstd.h"
 #include "filename.h"
 #include "strgicmp.h"
 #include <string.h>
+#include <glib.h>
 
-#include "output-eps.h"
-#include "output-er.h"
-#include "output-p2e.h"
-#include "output-sk.h"
-#include "output-svg.h"
-#include "output-ugs.h"
-#include "output-fig.h"
-#ifdef HAVE_LIBSWF
-#include "output-swf.h"
-#endif /* HAVE_LIBSWF */
-#include "output-emf.h"
-#include "output-mif.h"
-#include "output-dxf.h"
-#include "output-epd.h"
-#include "output-pdf.h"
-#include "output-cgm.h"
-#include "output-dr2d.h"
-#if HAVE_LIBPSTOEDIT
-#include "output-pstoedit.h"
-#endif /* HAVE_LIBPSTOEDIT */
-#include "output-pov.h"
-
-struct output_format_entry {
-    const char * name;
-    const char * descr;
-    at_output_write_func writer;
+typedef struct _at_output_format_entry at_output_format_entry;
+struct _at_output_format_entry {
+  at_spline_writer writer;
+  const char * descr;
+  GDestroyNotify user_data_destroy_func;
 };
 
-#define END   {NULL, NULL, NULL}
-static struct output_format_entry output_formats[] = {
-    {"eps",	"Encapsulated PostScript",	output_eps_writer},
-    {"ai",	"Adobe Illustrator",		output_eps_writer},
-    {"p2e",	"pstoedit frontend format",	output_p2e_writer},
-    {"sk",	"Sketch",			output_sk_writer},
-    {"svg",	"Scalable Vector Graphics",	output_svg_writer},
-    {"ugs",	"Unicode glyph source",		output_ugs_writer},
-    {"fig",     "XFIG 3.2",                     output_fig_writer},
-#ifdef HAVE_LIBSWF
-    {"swf",	"Shockwave Flash 3",		output_swf_writer},
-#endif /* HAVE_LIBSWF */
-    {"emf",     "Enhanced Metafile format",     output_emf_writer},
-    {"mif",     "FrameMaker MIF format",        output_mif_writer},
-    {"er",      "Elastic Reality Shape file",   output_er_writer},
-    {"dxf",     "DXF format (without splines)", output_dxf12_writer},
-    {"epd",     "EPD format",                   output_epd_writer},
-    {"pdf",     "PDF format",                   output_pdf_writer},
-    {"cgm",     "Computer Graphics Metafile",   output_cgm_writer},
-    {"dr2d",    "IFF DR2D format",              output_dr2d_writer},
-    {"pov",     "Povray format",                output_pov_writer},
-    END
-};
+static GHashTable * at_output_formats = NULL;
+static at_output_format_entry * at_output_format_new (const char * descr,
+						      at_output_func writer,
+						      gpointer user_data,
+						      GDestroyNotify user_data_destroy_func);
+static void at_output_format_free(at_output_format_entry * entry);
 
-#if HAVE_LIBPSTOEDIT
-static at_bool output_is_static_member (struct output_format_entry * entries,
-					struct DriverDescription_S* dd);
-#endif /* HAVE_LIBPSTOEDIT */
+/* 
+ * Helper functions 
+ */
+static void output_list_set (gpointer key, gpointer value, gpointer user_data);
+static void output_list_strlen (gpointer key, gpointer value, gpointer user_data);
+static void output_list_strcat (gpointer key, gpointer value, gpointer user_data);
 
-static at_bool streq (const char * a, const char * b);
+int
+at_output_init (void)
+{
+  if (at_output_formats)
+    return 1;
 
-at_output_write_func
-at_output_get_handler(at_string filename)
+  at_output_formats = g_hash_table_new_full (g_str_hash, 
+					     (GEqualFunc)g_str_equal,
+					     g_free,
+					     (GDestroyNotify)at_output_format_free);
+  if (!at_output_formats)
+    return 0;
+  return 1;
+}
+
+
+static at_output_format_entry *
+at_output_format_new(const gchar * descr,
+		     at_output_func writer,
+		     gpointer user_data,
+		     GDestroyNotify user_data_destroy_func)
+{
+  at_output_format_entry * entry;
+  entry = g_malloc (sizeof(at_output_format_entry));
+  if (entry)
+    {
+      entry->writer.func 	    = writer;
+      entry->writer.data            = user_data;
+      entry->descr     		    = g_strdup(descr);
+      entry->user_data_destroy_func = user_data_destroy_func;
+    }
+  return entry;
+}
+
+static void
+at_output_format_free(at_output_format_entry * entry)
+{
+  g_free((gpointer)entry->descr);
+  if (entry->user_data_destroy_func)
+    entry->user_data_destroy_func(entry->writer.data);
+  g_free(entry);
+  
+}
+
+int
+at_output_add_handler (const at_string suffix, 
+		       const at_string description,
+		       at_output_func writer)
+{
+  return at_output_add_handler_full (suffix, description, writer, 0,
+				     NULL, NULL);
+}
+
+int
+at_output_add_handler_full (const at_string suffix, 
+			    const at_string description,
+			    at_output_func writer,
+			    at_bool override,
+			    at_address user_data,
+			    GDestroyNotify user_data_destroy_func)
+{
+  gchar * gsuffix;
+  const gchar * gdescription;
+  at_output_format_entry * old_entry;
+  at_output_format_entry * new_entry;
+  
+  g_return_val_if_fail (suffix, 0);
+  g_return_val_if_fail (description, 0);
+  g_return_val_if_fail (writer, 0);
+  
+  gsuffix      = g_strdup((gchar *)suffix);
+  g_return_val_if_fail (gsuffix, 0);  
+  gsuffix = g_ascii_strdown(gsuffix, strlen(gsuffix));
+  
+  gdescription = (const gchar *)description;
+
+  old_entry        = g_hash_table_lookup (at_output_formats, gsuffix);
+  if (old_entry && !override)
+    {
+      g_free(gsuffix);
+      return 1;
+    }
+
+  new_entry = at_output_format_new(gdescription, writer,
+				  user_data, user_data_destroy_func);
+  g_return_val_if_fail (new_entry, 0);
+
+  g_hash_table_replace(at_output_formats, gsuffix, new_entry);
+  return 1;
+}
+
+at_spline_writer*
+at_output_get_handler (at_string filename)
 {
   char * ext = find_suffix (filename);
   if (ext == NULL)
-    ext = "";
-  
+     ext = "";
+
   return at_output_get_handler_by_suffix (ext);
 }
 
-at_output_write_func
-at_output_get_handler_by_suffix(at_string suffix)
+at_spline_writer *
+at_output_get_handler_by_suffix (at_string suffix)
 {
-  struct output_format_entry * format;
+  at_output_format_entry * format;
+  gchar * gsuffix;
 
   if (!suffix || suffix[0] == '\0')
     return NULL;
 
-  for (format = output_formats ; format->name; format++)
-    {
-      if (strgicmp (suffix, format->name))
-        {
-          return format->writer;
-        }
-    }
-#if HAVE_LIBPSTOEDIT
-  return output_pstoedit_get_writer(suffix);
-#else
-  return NULL;
-#endif /* HAVE_LIBPSTOEDIT */
+  gsuffix = g_strdup(suffix);
+  g_return_val_if_fail (gsuffix, NULL);
+  gsuffix = g_ascii_strdown(gsuffix, strlen(gsuffix));
+  format = g_hash_table_lookup (at_output_formats, gsuffix);
+  g_free(gsuffix);
+  
+  if (format)
+    return &(format->writer);
+  else
+    return NULL;
 }
 
-char **
+const char **
 at_output_list_new (void)
 {
-  char ** list;
-  int count_out = 0, count;
-  int i;
+  char ** list, **tmp;
+  gint format_count;
+  gint list_count;
 
-  struct output_format_entry * entry;
-#if HAVE_LIBPSTOEDIT
-  struct DriverDescription_S* driver_description;
-#endif /* HAVE_LIBPSTOEDIT */
-  
-  for (entry = output_formats; entry->name; entry++)
-    count_out++;
+  format_count 	   = g_hash_table_size(at_output_formats);
+  list_count   	   = 2 * format_count;
+  list 	       	   = g_new(gchar *, list_count + 1);
+  list[list_count] = NULL;
 
-  count = count_out;
-#if HAVE_LIBPSTOEDIT
- {
-   struct DriverDescription_S* dd_tmp;
-   pstoedit_checkversion(pstoeditdllversion);
-   driver_description = getPstoeditDriverInfo_plainC();
-   if (driver_description)
-     {
-       dd_tmp = driver_description;
-       while (dd_tmp->symbolicname)
-	 {
-	   if (!output_is_static_member(output_formats,
-					dd_tmp)
-	       && !output_pstoedit_is_unusable_writer(dd_tmp->suffix))
-	     {
-	       if (streq(dd_tmp->symbolicname, dd_tmp->suffix))
-		 count += 1;
-	       else
-		 count += 2;
-	     }
-	   dd_tmp++;
-	 }
-     }
- }
-#endif /* HAVE_LIBPSTOEDIT */  
-  
-  XMALLOC(list, sizeof(char*)*((2*count)+1));
-
-  entry = output_formats;
-  for (i = 0; i < count_out; i++)
-    {
-      list[2*i] = (char *)entry[i].name;
-      list[2*i+1] = (char *)entry[i].descr;
-    }
-#if HAVE_LIBPSTOEDIT
-  while (driver_description->symbolicname)
-    {
-      if (!output_is_static_member(output_formats,
-				   driver_description)
-	  && !output_pstoedit_is_unusable_writer(driver_description->suffix))
-	{
-	  list[2*i]   = driver_description->suffix;
-	  list[2*i+1] = driver_description->explanation;
-	  i++;
-	  if (!streq(driver_description->suffix,
-		     driver_description->symbolicname))
-	    {
-	      list[2*i]   = driver_description->symbolicname;
-	      list[2*i+1] = driver_description->explanation;
-	      i++;
-	    }
-	}
-      driver_description++;
-    }
-#endif /* HAVE_LIBPSTOEDIT */  
-  list[2*i] = NULL;
-  return list;
+  tmp 		   = list;
+  g_hash_table_foreach (at_output_formats, output_list_set, &tmp);
+  return (const char **)list;
 }
 
 void
-at_output_list_free(char ** list)
+at_output_list_free(const char ** list)
 {
-  free(list);
+  free((char **)list);
 }
 
 char *
 at_output_shortlist (void)
 {
-  char * list;
-  int count = 0;
-  size_t length = 0;
-  int i;
+  gint length = 0, count;
+  char * list, *tmp;
+  g_hash_table_foreach (at_output_formats, output_list_strlen, &length);
+  count = g_hash_table_size(at_output_formats);
 
-  struct output_format_entry * entry;
-#if HAVE_LIBPSTOEDIT
-  struct DriverDescription_S* driver_description;
-  struct DriverDescription_S* dd_tmp;
-#endif /* HAVE_LIBPSTOEDIT */
+  /* 2 for ", " */
+  length  += (2*count);	
+  list 	  = g_malloc(length + 1); 
+  list[0] = '\0';
 
-  for (entry = output_formats; entry->name; entry++)
-    {
-      count++;
-      length += strlen (entry->name) + 2;
-    }
+  tmp = list;
+  g_hash_table_foreach(at_output_formats, output_list_strcat, &tmp);
 
-#if HAVE_LIBPSTOEDIT
- {
-   pstoedit_checkversion(pstoeditdllversion);
-   driver_description = getPstoeditDriverInfo_plainC();
-   if (driver_description)
-     {
-       dd_tmp = driver_description;
-       while (dd_tmp->symbolicname)
-	 {
-	   if (!output_is_static_member(output_formats,
-					dd_tmp)
-	       && !output_pstoedit_is_unusable_writer(dd_tmp->suffix))
-	     {
-	       length += strlen (dd_tmp->suffix) + 2;
-	       if (!streq(dd_tmp->suffix, dd_tmp->symbolicname))
-		 length += strlen (dd_tmp->symbolicname) + 2;
-	     }
-	   dd_tmp++;
-	 }
-     }
- }
-#endif /* HAVE_LIBPSTOEDIT */  
-  
-  XMALLOC(list, sizeof (char) * (length + 1 + 2));
-
-  entry = output_formats;
-  strcpy (list, (char *) entry[0].name);
-  for (i = 1; i < count - 1; i++)
-    {
-      strcat (list, ", ");
-      strcat (list, (char *) entry[i].name);
-    }
-#if HAVE_LIBPSTOEDIT
-  dd_tmp = driver_description;
-  while (dd_tmp->symbolicname)
-    {
-
-      if (!output_is_static_member(output_formats,
-				   dd_tmp)
-	  && !output_pstoedit_is_unusable_writer(dd_tmp->suffix))
-	{
-	  strcat (list, ", ");
-	  strcat (list, dd_tmp->suffix);
-	  if (!streq(dd_tmp->suffix, 
-		     dd_tmp->symbolicname))
-	    {
-	      strcat (list, ", ");
-	      strcat (list, dd_tmp->symbolicname);
-	    }
-	}
-      dd_tmp++;
-    }
-  clearPstoeditDriverInfo_plainC(driver_description);
-#endif /* HAVE_LIBPSTOEDIT */
-  strcat (list, " or ");
-  strcat (list, (char *) entry[i].name);
+  /* remove final ", " */
+  g_return_val_if_fail (list[length - 2] == ',', NULL);
+  list[length - 2] = '\0';
   return list;
 }
 
-int
-at_output_add_handler (at_string suffix, 
-		       at_string description, 
-		       at_output_write_func func)
+static void 
+output_list_set (gpointer key, gpointer value, gpointer user_data)
 {
-  return 0;
+  at_output_format_entry * format = value;
+  const char *** list_ptr = user_data;
+  const char ** list = *list_ptr;
+  list[0] 	     = key;
+  list[1] 	     = format->descr;
+  *list_ptr 	     = &(list[2]); 
+}
+
+static void
+output_list_strlen (gpointer key, gpointer value, gpointer user_data)
+{
+  gint * length;
+  g_return_if_fail (key);
+  g_return_if_fail (user_data);
+
+  length  = user_data;
+  *length += strlen(key);
+}
+
+static void
+output_list_strcat (gpointer key, gpointer value, gpointer user_data)
+{
+  gchar ** list_ptr;
+  gchar *  list;
+  list_ptr = user_data;
+  list 	   = *list_ptr;
+  strcat (list, key);
+  strcat (list, ", ");
+  
+  /* 2 for ", " */
+  *list_ptr = list + strlen(key) + 2;
 }
 
 void
@@ -308,29 +280,4 @@ at_spline_list_array_foreach (at_spline_list_array_type *list_array,
     {
       func (list_array, AT_SPLINE_LIST_ARRAY_ELT(list_array, i), i, user_data);
     }
-}
-
-#if HAVE_LIBPSTOEDIT 
-static at_bool
-output_is_static_member (struct output_format_entry * entries,
-			 struct DriverDescription_S* dd)
-{
-  while (entries->name)
-    {
-      if (streq(dd->suffix, entries->name)
-	  || streq(dd->symbolicname, entries->name))
-	return true;
-      entries++;
-    }
-  return false;
-}
-#endif /* HAVE_LIBPSTOEDIT */
-
-static at_bool
-streq (const char * a, const char * b)
-{
-  if (!strcmp(a, b))
-    return true;
-  else
-    return false;
 }

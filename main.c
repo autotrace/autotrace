@@ -35,10 +35,11 @@ static at_bitmap_reader * input_reader = NULL;
 static char * get_basename (char * name);
 
 /* The name of the file we're going to write.  (-output-file) */
+
 static char * output_name = (char *)"";
 
 /* The output function. (-output-format) */
-static at_output_write_func output_writer = NULL;
+static at_spline_writer * output_writer = NULL;
 
 /* Whether to print version information */
 static at_bool printed_version;
@@ -542,11 +543,11 @@ input_list_formats(FILE * file)
 static void
 output_list_formats(FILE* file)
 {
-  char ** list = at_output_list_new ();
-  char ** tmp;
+  const char ** list = at_output_list_new ();
+  const char ** tmp;
 
-  char * suffix;
-  char * descr;
+  const char * suffix;
+  const char * descr;
   tmp = list;
   while (*list)
     {

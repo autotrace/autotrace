@@ -20,11 +20,6 @@
 #ifndef INPUT_MAGICK_H
 #define INPUT_MAGICK_H
 
-#include "input.h"
-
-at_bitmap_type input_magick_reader (at_string filename,
-				    at_input_opts_type * opts,
-				    at_msg_func msg_func, 
-				    at_address msg_data);
+int install_input_magick_readers(void);
 
 #endif /* not INPUT_MAGICK_H */

@@ -253,17 +253,8 @@ void autotrace_init (void);
 typedef struct _at_bitmap_reader at_bitmap_reader;
 struct _at_bitmap_reader;
 
-/* typedefs struct _at_spline_writer at_spline_writer;
-   struct at_spline_writer; */
-
-typedef 
-int            (*at_output_write_func) (FILE*, at_string name,
-					int llx, int lly, 
-					int urx, int ury,
-					at_output_opts_type * opts,
-					at_splines_type shape,
-					at_msg_func msg_func, 
-					at_address msg_data);
+typedef struct _at_spline_writer at_spline_writer;
+struct _at_spline_writer;
 
 /*
  * Progress handler typedefs
@@ -400,12 +391,12 @@ at_splines_type * at_splines_new_full (at_bitmap_type * bitmap,
 				       at_testcancel_func test_cancel,
 				       at_address testcancel_data);
 
-void at_splines_write(at_output_write_func output_writer,
-		  FILE * writeto,
-		  at_string file_name,
-		  at_output_opts_type * opts,
-		  at_splines_type * splines,
-		  at_msg_func msg_func, at_address msg_data);
+void at_splines_write(at_spline_writer * writer,
+		      FILE * writeto,
+		      at_string file_name,
+		      at_output_opts_type * opts,
+		      at_splines_type * splines,
+		      at_msg_func msg_func, at_address msg_data);
 
 void at_splines_free (at_splines_type * splines);
 
@@ -435,10 +426,10 @@ char * at_input_shortlist (void);
 /* --------------------------------------------------------------------- *
  * Output related
  * --------------------------------------------------------------------- */
-at_output_write_func at_output_get_handler (at_string filename);
-at_output_write_func at_output_get_handler_by_suffix (at_string suffix);
-char ** at_output_list_new (void);
-void at_output_list_free(char ** list);
+at_spline_writer * at_output_get_handler (at_string filename);
+at_spline_writer * at_output_get_handler_by_suffix (at_string suffix);
+const char ** at_output_list_new (void);
+void at_output_list_free(const char ** list);
 
 /* at_output_shortlist
    return value: Do free by yourself */

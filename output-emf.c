@@ -768,7 +768,10 @@ static void OutputEmf(FILE* fdes, EMFStats *stats, at_string name, int width, in
 int output_emf_writer(FILE* file, at_string name,
 		      int llx, int lly, int urx, int ury, 
 		      at_output_opts_type * opts,
-		      spline_list_array_type shape)
+		      spline_list_array_type shape,
+		      at_msg_func msg_func, 
+		      at_address msg_data,
+		      at_address user_data)
 {
   EMFStats stats;
 

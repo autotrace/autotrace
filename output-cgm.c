@@ -149,7 +149,8 @@ int output_cgm_writer(FILE* cgm_file, at_string name,
 		      at_output_opts_type * opts,
 		      spline_list_array_type shape,
 		      at_msg_func msg_func, 
-		      at_address msg_data)
+		      at_address msg_data,
+		      at_address user_data)
 {
   unsigned this_list;
   char *des;

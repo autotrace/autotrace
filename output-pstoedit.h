@@ -20,18 +20,6 @@
 #ifndef OUTPUT_PSTOEDIT_H
 #define OUTPUT_PSTOEDIT_H 
 
-#include <pstoedit/pstoedit.h>
-#include "output.h"
-
-at_output_write_func output_pstoedit_get_writer(const at_string);
-at_bool output_pstoedit_is_writer              (at_output_write_func writer);
-int     output_pstoedit_invoke_writer          (at_output_write_func writer,
-						FILE* file, at_string name,
-						int llx, int lly, int urx, int ury, 
-						at_output_opts_type * opts,
-						at_spline_list_array_type shape,
-						at_msg_func msg_func, 
-						at_address msg_data);
-at_bool output_pstoedit_is_unusable_writer(const at_string name);
+int install_output_pstoedit_writers (void);
 
 #endif /* Not def: OUTPUTPSTOEDIT_H */

@@ -145,7 +145,8 @@ int output_pov_writer(FILE* pov_file, at_string name,
 		      at_output_opts_type * opts,
 		      spline_list_array_type shape,
 		      at_msg_func msg_func, 
-		      at_address msg_data)
+		      at_address msg_data,
+		      at_address user_data)
 {
     if (shape.centerline == true)
       FATAL("Povray output currently not supported for centerline method");

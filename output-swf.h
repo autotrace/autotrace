@@ -29,6 +29,7 @@ int output_swf_writer(FILE* file, at_string name,
 		      at_output_opts_type * opts,
 		      at_spline_list_array_type shape,
 		      at_msg_func msg_func, 
-		      at_address msg_data);
+		      at_address msg_data,
+		      at_address user_data);
 
 #endif /* Not def: OUTPUTSWF_H */

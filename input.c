@@ -24,6 +24,7 @@
 
 #include "autotrace.h"
 #include "private.h"
+#include "input.h"
 #include "xstd.h"
 #include "filename.h"
 #include "strgicmp.h"
