@@ -1,8 +1,21 @@
+2002-11-07  Martin Weber <martweb@gmx.net>
+
+	* filename.c: Removed some 64 and 128 bit problems.
+	* input.c: ditto.
+	* output-cgm.c: ditto.
+	* output-emf.c: ditto.
+	* output-pdf.c: ditto.
+	* output.c: ditto.
+	* strgicmp.c: ditto.
+	* strgicmp.h: ditto.
+
+	Message-ID: <3DC96244.A37B85BB@gmx.net>.
+
 2002-11-07  Masatake YAMATO  <yamato@redhat.com>
 
 	* spline.[ch]: Removed unused ifdefs.
 
-2002-10-29  Martin Weber <martweb@gmx.net>
+2002-11-04  Martin Weber <martweb@gmx.net>
 
 	* fit.c: fix code broken by Masatake at 
 	2002-11-04.

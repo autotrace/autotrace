@@ -158,7 +158,7 @@ static int ColorLookUp(UI32 colref, UI32 *table, int len)
 
 static at_bool write32(FILE *fdes, UI32 data)
 {
-  int count = 0;
+  size_t count = 0;
   UI8 outch;
   
   outch = (UI8) (data & 0x0FF);
@@ -178,7 +178,7 @@ static at_bool write32(FILE *fdes, UI32 data)
 
 static at_bool write16(FILE *fdes, UI16 data)
 {
-  int count = 0;
+  size_t count = 0;
   UI8 outch;
   
   outch = (UI8) (data & 0x0FF);
@@ -487,7 +487,8 @@ static int WriteEndOfMetafile(FILE *fdes)
 
 static int WriteHeader(FILE *fdes, at_string name, int width, int height, int fsize, int nrec, int nhand)
 {
-  int i, desclen, recsize;
+  int i, recsize;
+  size_t desclen;
   const char * editor = at_version(true);
 
   desclen = (strlen(editor) + strlen(name) + 3);

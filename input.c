@@ -186,7 +186,7 @@ at_input_shortlist (void)
 {
   char * list;
   int count_int = 0;
-  int length = 0;
+  size_t length = 0;
   int i;
 #if HAVE_MAGICK
   ExceptionInfo exception;

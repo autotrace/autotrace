@@ -73,7 +73,7 @@ make_suffix (at_string s, at_string new_suffix)
     new_s = concat3 (s, ".", new_suffix);
   else
     {
-      unsigned long length_through_dot = old_suffix - s;
+      size_t length_through_dot = old_suffix - s;
 
       XMALLOC (new_s, length_through_dot + strlen (new_suffix) + 1);
       strncpy (new_s, s, length_through_dot);
@@ -97,8 +97,8 @@ substring (at_string source, const unsigned start, const unsigned limit)
 {
   at_string result;
   unsigned this_char;
-  unsigned length = strlen (source);
-  unsigned lim = limit;
+  size_t length = strlen (source);
+  size_t lim = limit;
 
   /* Upper bound out of range? */
   if (lim >= length)

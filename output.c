@@ -199,7 +199,7 @@ at_output_shortlist (void)
 {
   char * list;
   int count = 0;
-  int length = 0;
+  size_t length = 0;
   int i;
 
   struct output_format_entry * entry;

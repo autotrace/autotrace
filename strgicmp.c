@@ -23,7 +23,7 @@ at_bool strgicmp (const char *s1, const char *s2)
     return (false);
 }
 
-at_bool strgnicmp (const char *s1, const char *s2, long len)
+at_bool strgnicmp (const char *s1, const char *s2, size_t len)
 {
   long i = 0;
 

@@ -41,7 +41,7 @@ typedef unsigned char      UI8;
 
 static at_bool write16(FILE *fdes, UI16 data)
 {
-  int count = 0;
+  size_t count = 0;
   UI8 outch;
   
   outch = (UI8) ((data >> 8) & 0x0FF);
@@ -55,7 +55,7 @@ static at_bool write16(FILE *fdes, UI16 data)
 
 static at_bool write8(FILE *fdes, UI8 data)
 {
-  int count = 0;
+  size_t count = 0;
 
   count = fwrite(&data, 1, 1, fdes);
   

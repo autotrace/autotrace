@@ -176,11 +176,11 @@ static int output_pdf_header(FILE* pdf_file, at_string name,
 /* This should be called after the others in this file. It writes some
    last informations. */
 
-static int output_pdf_tailor(FILE* pdf_file, int length,
+static int output_pdf_tailor(FILE* pdf_file, size_t length,
   int llx, int lly, int urx, int ury)
 {
   char temp[40];
-  int tmp;
+  size_t tmp;
 
   OUT_LINE ("6 0 obj");
   OUT_LINE ("   [/PDF]");
@@ -221,7 +221,7 @@ static int output_pdf_tailor(FILE* pdf_file, int length,
    SHAPE. */
 
 static void
-out_splines (FILE *pdf_file, spline_list_array_type shape, int *length)
+out_splines (FILE *pdf_file, spline_list_array_type shape, size_t *length)
 {
   char temp[40];
   unsigned this_list;
@@ -330,7 +330,7 @@ int output_pdf_writer(FILE* pdf_file, at_string name,
 		      at_address msg_data)
 {
     int result;
-    int length = 0;
+    size_t length = 0;
 
 #ifdef _WINDOWS 
     if(pdf_file == stdout)
