@@ -1,4 +1,11 @@
-2001-09-18  Martin Weber  <martweb@gmx.net>
+2001-10-03 Jerritt Collord <collord@collord.net>
+
+	* output-sk.c (out_splines): Check `at_centerline'
+	before doing fputs("bC()\n", file).
+
+	(Logged by Masatake)
+	
+o2001-09-18  Martin Weber  <martweb@gmx.net>
 
 	* output-eps.c: fixed a small bug in the initialisation of last_color
 	Suggested by "Wolfgang Glunz" <wolfgang.glunz@icn.siemens.de>.

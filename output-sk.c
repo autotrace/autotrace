@@ -44,7 +44,8 @@ out_splines (FILE * file, spline_list_array_type shape)
 			END_POINT(s).x, END_POINT(s).y);
 	    }
         }
-	fputs("bC()\n", file);
+	if (!at_centerline)
+	  fputs("bC()\n", file);
     }
 }
 
