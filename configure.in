@@ -9,14 +9,29 @@ AC_PROG_CC
 AC_PROG_CPP
 AC_PROG_RANLIB
 
+HAVE_MAGICK=no
 AC_CHECK_PROG(MAGICK_CONFIG, Magick-config, Magick-config, "")
 if test "x$MAGICK_CONFIG" = "xMagick-config" ; then
-	MAGICK_CFLAGS="`Magick-config --cppflags`"
-	MAGICK_LDFLAGS="`Magick-config --ldflags` `Magick-config --libs`"
-	AC_SUBST(MAGICK_CFLAGS)
-	AC_SUBST(MAGICK_LDFLAGS)
-	AC_DEFINE(HAVE_MAGICK)
+	CPPFLAGS_BACKUP="$CPPFLAGS"
+	CPPFLAGS=`Magick-config --cppflags`
+	AC_CHECK_HEADER(magick/api.h,
+			magick_header_found=yes,
+			magick_header_found=no)
+	MAGICK_CFLAGS=${CPPFLAGS}
+	CPPFLAGS=${CPPFLAGS_BACKUP}
+
+	if test "x${magick_header_found}" = xyes ; then
+		MAGICK_LDFLAGS="`Magick-config --ldflags` `Magick-config --libs`"
+		AC_SUBST(MAGICK_CFLAGS)
+		AC_SUBST(MAGICK_LDFLAGS)
+		HAVE_MAGICK=yes
+		AC_DEFINE(HAVE_MAGICK)
+	else
+		MAGICK_CFLAGS=
+		AC_MSG_WARN([Magick-config is found but magick/api.h is not found in $MAGICK_CFLAGS])
+ 		AC_MSG_WARN([Check Magick-config.])
+	fi
 fi
-AM_CONDITIONAL(HAVE_MAGICK, test x$MAGICK_CONFIG = xMagick-config)
+AM_CONDITIONAL(HAVE_MAGICK, test x$HAVE_MAGIC = xyes)
 
 AC_OUTPUT(Makefile)

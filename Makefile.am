@@ -6,7 +6,7 @@ bin_PROGRAMS=autotrace
 if HAVE_MAGICK
 input_magick_src=input-magick.h input-magick.c
 else
-input_magick_src=""
+input_magick_src=
 endif
 
 input_src=input-pnm.c input-pnm.h \
@@ -50,7 +50,6 @@ autotrace_SOURCES=$(input_src) ${output_src}	\
 		curve.h 			\
 		image-header.h    		\
 		edge.c 				\
-		type.h 				\
 		edge.h 				\
 		types.h 			\
 		epsilon-equal.c 		\

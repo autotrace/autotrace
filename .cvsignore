@@ -10,3 +10,4 @@ autotrace
 config.cache
 config.log
 config.status
+*.tar.gz

@@ -1,3 +1,14 @@
+2000-09-29  Masatake YAMATO  <yamato@redhat.com>
+
+	* configure.in: Check magick/api.h.
+
+	* spline.c (evaluate_spline): Appleid a patch that avoid a bug
+	in MIPSpro compiler (from Peter Cucka <pcucka at anim.dreamworks.com>).
+
+	* Makefile.am (input_magick_src): Remove "". This causes an
+	error when "make dist" is invoked.
+	(autotrace_SOURCES): Remove type.h.
+
 2000-09-28  Masatake YAMATO  <yamato@redhat.com>
 
 	* main.c: Added tag file format support.
