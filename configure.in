@@ -105,7 +105,7 @@ if test $with_magick = yes ; then
 				AC_SUBST(MAGICK_CFLAGS)
 				AC_SUBST(MAGICK_LDFLAGS)
 				HAVE_MAGICK=yes
-				AC_DEFINE(HAVE_MAGICK,,[ImageMagick library is available or not])
+				AC_DEFINE(HAVE_MAGICK,1,[ImageMagick library is available or not])
 			fi
 		else
 			AC_MSG_WARN([*** Magick-config is found but magick/api.h is not found in $MAGICK_CFLAGS ***])
@@ -195,7 +195,7 @@ if test "x$HAVE_LIBPNG_STAGE1" = "xyes" ; then
 	if test "x$HAVE_LIBPNG" = "xyes" ; then
 		LIBPNG_LDFLAGS="-lpng -lz -lm"
 		AC_SUBST(LIBPNG_LDFLAGS)
-		AC_DEFINE(HAVE_LIBPNG,,[PNG library is available or not])
+		AC_DEFINE(HAVE_LIBPNG,1,[PNG library is available or not])
 	else
 	   AC_MSG_WARN([*** libpng exists but cannot find png_read_png in the libpng. ***])
 	   AC_MSG_WARN([*** libpng might be old.                                      ***])
@@ -222,7 +222,7 @@ if test "${swf_header_found}" = yes ; then
 	if test "$HAVE_LIBSWF" = "yes" ; then
 		LIBSWF_LDFLAGS="-lming -lm"
 		AC_SUBST(LIBSWF_LDFLAGS)
-		AC_DEFINE(HAVE_LIBSWF,,[SWF library is available or not])
+		AC_DEFINE(HAVE_LIBSWF,1,[SWF library is available or not])
 	else
  		AC_MSG_WARN([*** Cannot find libming.    ***])
 		AC_MSG_WARN([*** SWF output is disabled. ***])
@@ -310,7 +310,7 @@ if test ${HAVE_LIBPSTOEDIT_321} != yes; then
    if test ${HAVE_LIBPSTOEDIT_320} = yes; then
 	echo '*** The 2nd check is passed.                     ***'
         HAVE_LIBPSTOEDIT=yes
-	AC_DEFINE(HAVE_LIBPSTOEDIT,,[pstoedit library is available or not])
+	AC_DEFINE(HAVE_LIBPSTOEDIT,1,[pstoedit library is available or not])
 	LIBPSTOEDIT_LIBS="${PSTOEDIT_LIBS} ${LIBPSTOEDIT_EXTRA_LIBS}"
 	LIBPSTOEDIT_CFLAGS="${PSTOEDIT_CFLAGS}"
    else
@@ -319,7 +319,7 @@ if test ${HAVE_LIBPSTOEDIT_321} != yes; then
 else
 	echo '*** The 1st check is passed.                     ***'
 	HAVE_LIBPSTOEDIT=yes
-	AC_DEFINE(HAVE_LIBPSTOEDIT,,[pstoedit library is available or not])
+	AC_DEFINE(HAVE_LIBPSTOEDIT,1,[pstoedit library is available or not])
 	LIBPSTOEDIT_LIBS="${PSTOEDIT_LIBS} ${LIBPSTOEDIT_EXTRA_LIBS}"	
 	LIBPSTOEDIT_CFLAGS="${PSTOEDIT_CFLAGS}"
 fi
