@@ -1,5 +1,16 @@
 2001-03-07  Masatake YAMATO  <yamato@redhat.com>
 
+	* spline.h (LINEARTYPE): 
+	(QUADRATICTYPE): 
+	(CUBICTYPE): 
+	(PARALLELELLIPSETYPE): 
+	(ELLIPSETYPE): 
+	(CIRCLETYPE): Aliases for the members of 
+	_at_polynomial_degree.
+
+	* autotrace.h (_at_polynomial_degree): Added AT_ prefix
+	to enum symbols.
+
 	Applied a patch from Martin.
 	Message-ID: <3AA15F77.44F4ECAF@gmx.net>.
 

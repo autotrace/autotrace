@@ -9,6 +9,13 @@
 typedef at_polynomial_degree polynomial_degree;
 typedef at_spline_type spline_type;
 
+#define LINEARTYPE          AT_LINEARTYPE
+#define QUADRATICTYPE       AT_QUADRATICTYPE
+#define CUBICTYPE           AT_CUBICTYPE
+#define PARALLELELLIPSETYPE AT_PARALLELELLIPSETYPE
+#define ELLIPSETYPE         AT_ELLIPSETYPE
+#define CIRCLETYPE          AT_CIRCLETYPE
+
 #define START_POINT(spl)	((spl).v[0])
 #define CONTROL1(spl)		((spl).v[1])
 #define CONTROL2(spl)		((spl).v[2])

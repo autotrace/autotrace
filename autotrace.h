@@ -40,9 +40,14 @@ struct _at_color_type
 /* Third degree is the highest we deal with.  */
 enum _at_polynomial_degree
 {
-  LINEARTYPE = 1, QUADRATICTYPE = 2, CUBICTYPE = 3, PARALLELELLIPSETYPE = 4,
-  ELLIPSETYPE = 5, CIRCLETYPE = 6 /* not the real number of points to define a
-  circle but to distinguish between a cubic spline */
+  AT_LINEARTYPE = 1, 
+  AT_QUADRATICTYPE = 2, 
+  AT_CUBICTYPE = 3, 
+  AT_PARALLELELLIPSETYPE = 4,
+  AT_ELLIPSETYPE = 5, 
+  AT_CIRCLETYPE = 6 
+  /* not the real number of points to define a
+     circle but to distinguish between a cubic spline */
 };
 
 /* A Bezier spline can be represented as four points in the real plane:
