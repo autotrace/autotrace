@@ -156,11 +156,15 @@ fitting_opts_type new_fitting_opts (void)
 #ifdef _EXPORTING
 __declspec(dllexport) spline_list_array_type
 __stdcall fitted_splines (pixel_outline_list_type pixel_outline_list,
-  fitting_opts_type *fitting_opts)
+  fitting_opts_type *fitting_opts,
+  progress_func notify_progress, 
+  address client_data)
 #else
 spline_list_array_type
 fitted_splines (pixel_outline_list_type pixel_outline_list,
-  fitting_opts_type *fitting_opts)
+  fitting_opts_type *fitting_opts,
+  progress_func notify_progress, 
+  address client_data)
 #endif
 {
   unsigned this_list;
@@ -174,6 +178,9 @@ fitted_splines (pixel_outline_list_type pixel_outline_list,
       spline_list_type curve_list_splines;
       curve_list_type curves = CURVE_LIST_ARRAY_ELT (curve_array, this_list);
 
+      if (notify_progress)
+	notify_progress((((real)this_list)/((real)CURVE_LIST_ARRAY_LENGTH (curve_array)*3.0) + 0.333),
+			client_data);
       LOG1 ("\nFitting curve list #%u:\n", this_list);
 
       curve_list_splines = fit_curve_list (curves, fitting_opts);
@@ -185,7 +192,7 @@ fitted_splines (pixel_outline_list_type pixel_outline_list,
       append_spline_list (&char_splines, curve_list_splines);
     }
 
-  free_curve_list_array (&curve_array);
+  free_curve_list_array (&curve_array, notify_progress, client_data);
 
   for (this_list = 0; this_list < SPLINE_LIST_ARRAY_LENGTH (char_splines);
        this_list++)

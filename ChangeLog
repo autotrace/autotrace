@@ -1,5 +1,12 @@
 2001-10-13  Masatake YAMATO  <yamato@redhat.com>
 
+	* types.h (progress_func): New type.
+
+	* pxl-outline.c: Added progress notify callback.
+	* curve.[ch]: Likewise
+	* autotrace.[ch]: Likewise.
+	* fit.[ch]: Likewise.
+
 	* autotrace.c (at_splines_new): Invoke despeckle.
 
 	* autotrace.h (struct _at_fitting_opts_type): 

@@ -55,4 +55,8 @@ typedef struct
 #define PARALLEL_ELLIPSE 16
 #define ELLIPSE 32
 
+/* See autotrace.h::at_progress_func */
+typedef void           (* progress_func)    (real percentage,
+					     address client_data);
+
 #endif /* not TYPES_H */

@@ -186,6 +186,12 @@ int            (*at_output_write_func) (FILE*, string name,
 					at_splines_type shape);
 
 /*
+ * Progress handler typeders
+ * 0.0 <= percentage <= 1.0
+ */
+typedef progress_func at_progress_func;
+
+/*
  * Functions
  */
 
@@ -213,6 +219,11 @@ void at_input_list_free(char ** list);
 /* Spline related */
 at_splines_type * at_splines_new (at_bitmap_type * bitmap,
 				  at_fitting_opts_type * opts);
+at_splines_type * at_splines_new_with_progress (at_bitmap_type * bitmap,
+						at_fitting_opts_type * opts,
+						at_progress_func notify_progress,
+						address client_data);
+
 void at_splines_free (at_splines_type * splines);
 /* TODO internal data access */
 

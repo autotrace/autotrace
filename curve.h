@@ -133,7 +133,9 @@ typedef struct
 #define LAST_CURVE_LIST_ARRAY_ELT LAST_CURVE_LIST_ELT
 
 extern curve_list_array_type new_curve_list_array (void);
-extern void free_curve_list_array (curve_list_array_type *);
+extern void free_curve_list_array (curve_list_array_type *,
+				   progress_func, 
+				   address);
 extern void append_curve_list (curve_list_array_type *, curve_list_type);
 
 #endif /* not CURVE_H */

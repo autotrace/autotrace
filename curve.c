@@ -240,12 +240,17 @@ new_curve_list_array (void)
 /* Free a curve list array and all the curve lists it contains.  */
 
 void
-free_curve_list_array (curve_list_array_type *curve_list_array)
+free_curve_list_array (curve_list_array_type *curve_list_array,
+		       progress_func notify_progress, 
+		       address client_data)
 {
   unsigned this_list;
 
   for (this_list = 0; this_list < CURVE_LIST_ARRAY_LENGTH (*curve_list_array);
        this_list++) {
+    if (notify_progress)
+      notify_progress(((real)this_list)/(CURVE_LIST_ARRAY_LENGTH (*curve_list_array)*3.0)+0.666 ,
+		      client_data);
     free_curve_list (&CURVE_LIST_ARRAY_ELT (*curve_list_array, this_list));
   }
 

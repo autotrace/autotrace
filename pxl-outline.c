@@ -89,16 +89,19 @@ static coordinate_type NextPoint(bitmap_type, edge_type *, unsigned int *, unsig
 
 #ifdef _EXPORTING
 __declspec(dllexport) pixel_outline_list_type
-__stdcall find_outline_pixels (bitmap_type bitmap, color_type *bg_color)
+__stdcall find_outline_pixels (bitmap_type bitmap, color_type *bg_color,
+			       progress_func notify_progress, address client_data)
 #else
 pixel_outline_list_type
-find_outline_pixels (bitmap_type bitmap, color_type *bg_color)
+find_outline_pixels (bitmap_type bitmap, color_type *bg_color,
+		     progress_func notify_progress, address client_data)
 #endif
 {
   pixel_outline_list_type outline_list;
   unsigned row, col;
   bitmap_type marked = new_bitmap (BITMAP_WIDTH (bitmap), BITMAP_HEIGHT (bitmap));
   color_type color;
+  unsigned int max_progress = BITMAP_HEIGHT (bitmap) * BITMAP_WIDTH (bitmap);
 
   O_LIST_LENGTH (outline_list) = 0;
   outline_list.data = NULL;
@@ -107,6 +110,10 @@ find_outline_pixels (bitmap_type bitmap, color_type *bg_color)
     for (col = 0; col < BITMAP_WIDTH (bitmap); col++)
       {
         edge_type edge;
+
+	if (notify_progress)
+	  notify_progress((real)(row * BITMAP_WIDTH(bitmap) + col) / ((real) max_progress * 3.0),
+			  client_data);
 
         color = GET_COLOR (bitmap, row, col);
 	if (bg_color && COLOR_EQUAL(color, bg_color[0])) continue;
@@ -202,16 +209,19 @@ find_one_outline (bitmap_type bitmap, edge_type original_edge,
 
 #ifdef _EXPORTING
 __declspec(dllexport) pixel_outline_list_type
-__stdcall find_centerline_pixels (bitmap_type bitmap, color_type bg_color)
+__stdcall find_centerline_pixels (bitmap_type bitmap, color_type bg_color,
+				  progress_func notify_progress, address client_data)
 #else
 pixel_outline_list_type
-find_centerline_pixels(bitmap_type bitmap, color_type bg_color)
+find_centerline_pixels(bitmap_type bitmap, color_type bg_color,
+		       progress_func notify_progress, address client_data)
 #endif
 {
     pixel_outline_list_type outline_list;
     unsigned row, col;
     bitmap_type marked = new_bitmap(BITMAP_WIDTH(bitmap), BITMAP_HEIGHT (bitmap));
-
+    unsigned int max_progress = BITMAP_HEIGHT (bitmap) * BITMAP_WIDTH (bitmap);
+    
     O_LIST_LENGTH(outline_list) = 0;
     outline_list.data = NULL;
 
@@ -220,6 +230,10 @@ find_centerline_pixels(bitmap_type bitmap, color_type bg_color)
 	for (col = 0; col < BITMAP_WIDTH(bitmap); col++)
 	{
 	    edge_type edge;
+
+	    if (notify_progress)
+	      notify_progress((real)(row * BITMAP_WIDTH(bitmap) + col) / ((real) max_progress * 3.0),
+			      client_data);
 
 	    if (COLOR_EQUAL(GET_COLOR(bitmap, row, col), bg_color)) continue;
 

@@ -13,6 +13,7 @@
 
 #include <string.h>
 #include <assert.h>
+#include <math.h>
 
 /* Pointers to functions based on input format.  (-input-format)  */
 static at_input_read_func input_reader = NULL;
@@ -43,6 +44,10 @@ static bool remove_adj_corners;
 /* Thin all the lines in the image prior to fitting. */
 static bool thin = false;
 
+/* Report tracing status in real time (--report-progress) */
+static bool report_progress = false;
+static void dot_printer(real percentage, address client_data);
+
 static char * read_command_line (int, char * [], at_fitting_opts_type *);
 
 /* Read the string S as a percentage, i.e., a number between 0 and 100.  */
@@ -68,6 +73,8 @@ main (int argc, char * argv[])
   at_splines_type * splines;
   at_bitmap_type * bitmap;
   FILE *output_file;
+  at_progress_func progress_reporter = NULL;
+  real progress_stat = 0.0;
 
   fitting_opts = at_fitting_opts_new ();
 
@@ -76,6 +83,9 @@ main (int argc, char * argv[])
   at_centerline = centerline;	/* Dirty  */
   fitting_opts->remove_adj_corners = remove_adj_corners;
   fitting_opts->thin = thin;
+
+  if (report_progress)
+    progress_reporter = dot_printer;
 
   if (STREQ (output_name, input_name))
     FATAL("Input and output file may not be the same\n");
@@ -119,7 +129,8 @@ main (int argc, char * argv[])
   else
     FATAL ("Unsupported inputformat\n");
 
-  splines = at_splines_new(bitmap, fitting_opts);
+  splines = at_splines_new_with_progress(bitmap, fitting_opts,
+					 progress_reporter, &progress_stat);
 
   at_output_write (output_writer,
 		   output_file, 
@@ -185,6 +196,7 @@ remove-adjacent-corners: remove corners that are adjacent.\n\
 tangent-surround <unsigned>: number of points on either side of a\n\
   point to consider when computing the tangent at that point; default is 3.\n\
 thin: thin all the lines in the image prior to fitting.\n\
+report-progress: report tracing status in real time.\n\
 version: print the version number of this program.\n\
 "
 
@@ -219,6 +231,7 @@ read_command_line (int argc, char * argv[],
         { "remove-adjacent-corners",     0, (int *) &remove_adj_corners, 1 },
         { "tangent-surround",           1, 0, 0 },
         { "thin",                       0, (int *) &thin, 1},
+	{ "report-progress",            0, (int *) &report_progress, 1},
         { "version",                    0, (int *) &printed_version, 1 },
         { 0, 0, 0, 0 } };
 
@@ -443,4 +456,32 @@ void output_list_formats(FILE* file)
     }
   
   at_output_list_free(tmp);
+}
+
+static void
+dot_printer(real percentage, address client_data)
+{
+  real last = *(real *)client_data;
+  if (((percentage - last) >= 0.01 || percentage == 0.0)
+      && (percentage < 0.99))
+    {
+      putc ('.', stderr);
+      if ((((int)(ceil(100.0 * percentage))) % 33) == 0
+	  && percentage != 0.0)
+	{
+	  switch (((int)(ceil(100.0 * percentage))) / 33)
+	    {
+	    case 1:
+	      fputs (" [done] find pixels\n", stderr);
+	      break;
+	    case 2:
+	      fputs (" [done] fit splines\n", stderr);
+	      break;
+	    case 3:
+	      fputs (" [done] free pixels\n", stderr);
+	      break;
+	    }
+	}
+      *(real *)client_data = percentage;
+    }
 }

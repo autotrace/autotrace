@@ -98,9 +98,19 @@ at_bitmap_get_height (at_bitmap_type * bitmap)
 {
   return bitmap->height;
 }
+
 at_splines_type * 
 at_splines_new (at_bitmap_type * bitmap,
 		at_fitting_opts_type * opts)
+{
+  return at_splines_new_with_progress(bitmap, opts, NULL, NULL);
+}
+  
+at_splines_type * 
+at_splines_new_with_progress (at_bitmap_type * bitmap,
+			      at_fitting_opts_type * opts,
+			      at_progress_func notify_progress,
+			      address client_data)
 {
   image_header_type image_header;
   at_splines_type * splines;
@@ -126,13 +136,16 @@ at_splines_new (at_bitmap_type * bitmap,
     color_type bg_color = { 0xff, 0xff, 0xff };
     if (opts->bgColor) bg_color = *opts->bgColor;
 
-    pixels = find_centerline_pixels(*bitmap, bg_color);
+    pixels = find_centerline_pixels(*bitmap, bg_color, 
+				    notify_progress, client_data);
   }
   else
-    pixels = find_outline_pixels(*bitmap, opts->bgColor);
+    pixels = find_outline_pixels(*bitmap, opts->bgColor, 
+				 notify_progress, client_data);
 
   XMALLOC(splines, sizeof(at_splines_type)); 
-  *splines = fitted_splines (pixels, opts);
+  *splines = fitted_splines (pixels, opts,
+			     notify_progress, client_data);
   free_pixel_outline_list (&pixels);
   return splines;
 }
