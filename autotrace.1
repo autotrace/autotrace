@@ -1,9 +1,9 @@
-.TH AUTOTRACE 1 "24 December 2001"
+.TH AUTOTRACE 1 "10 October 2002"
 .SH NAME
-autotrace \- convert bit map image data to vector graphics
+autotrace \- converts bitmap image data into vector graphics
 .SH SYNOPSIS
 .B autotrace
-.RB [ \-background
+.RB [ \-background-color
 .IR " hexvalue" ]
 .RB [ \-centerline ]
 .RB [ \-color-count
@@ -18,6 +18,8 @@ autotrace \- convert bit map image data to vector graphics
 .IR " int" ]
 .RB [ \-despeckle-tightness
 .IR " real" ]
+.RB [ \-dpi
+.IR " int" ]
 .RB [ \-error-threshold
 .IR " real" ]
 .RB [ \-filter-iterations
@@ -36,11 +38,16 @@ autotrace \- convert bit map image data to vector graphics
 .IR " file" ]
 .RB [ \-output-format
 .IR " format" ]
+.RB [ \-preserve-width ]
 .RB [ \-remove-adjacent-corners ]
 .RB [ \-report-progress ]
+.RB [ \-debug-arch ]
+.RB [ \-debug-bitmap ]
 .RB [ \-tangent-surround
 .IR " int" ]
 .RB [ \-version ]
+.RB [ \-width-factor
+.IR " real" ]
 .I inputfile
 .SH DESCRIPTION
 The
@@ -51,7 +58,7 @@ specified on the command line,
 and as output produces a collection of splines approximating the original image,
 the converting the image from bitmap to vector format.
 It behaves in a manner similar to the commercial software known as
-StreamLine (from Adobe Systems, Inc.).
+*tream*ine or *orel*race.
 The result is sent to standard output unless the
 .B \-output-file
 option is active.
@@ -105,6 +112,10 @@ Employ the specified integer (range: 1-20) as the value for despeckling
 Employ the specified real number (range: 0.0-8.0) as the value for despeckle
 tightness (default: 2.0).
 .TP
+.BI \-dpi "int"
+The dots per inch value in the input image, affects scaling
+of mif output image.
+.TP 
 .BI \-error-threshold " real"
 Subdivide fitted curves that are offset by a number of pixels exceeding the
 specified real number (default: 2.0).
@@ -209,11 +220,20 @@ and depend upon the availability of other software (the
 .B \-list-output-formats
 command can be used to determine which are supported locally).
 .TP
+.B \-preserve-width
+Whether to preserve line width prior to thinning.
+.TP
 .B \-remove-adjacent-corners
 Remove adjacent corners.
 .TP
 .B \-report-progress
 Report tracing status in real time.
+.TP
+.B \-debug-arch
+Print the type of cpu.
+.TP
+.B \-debug-bitmap
+Dump loaded bitmap to <input_name>.bitmap.
 .TP
 .BI \-tangent-surround " int"
 Consider the specified number of points to either side of a point 
@@ -221,6 +241,9 @@ when computing the tangent at that point (default: 3).
 .TP
 .B \-version
 Print the version number of the program and exit.
+.TP
+.BI \-width-factor
+Weight factor for fitting the linewidth.
 .SH FILES
 .TP 2.2i
 /depot/bin/autotrace
