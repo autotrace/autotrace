@@ -11,7 +11,7 @@ typedef at_color_type color_type;
 /* RGB to grayscale */
 #define COLOR_LUMINANCE(c) ((unsigned char)(((c).r) * 0.30 + ((c).g) * 0.59 + ((c).b) * 0.11))
 
-#define COLOR_EQUAL(c1,c2) ((c1.r == c2.r) && (c1.g == c2.g) && (c1.b == c2.b))
+#define COLOR_EQUAL(c1,c2) (((c1).r == (c2).r) && ((c1).g == (c2).g) && ((c1).b == (c2).b))
 
 color_type GET_COLOR (at_bitmap_type, unsigned int, unsigned int);
 

@@ -119,12 +119,12 @@ find_outline_pixels (bitmap_type bitmap, color_type *bg_color,
 	    notify_progress((real)(row * BITMAP_WIDTH(bitmap) + col) / ((real) max_progress * (real)3.0),
 			    progress_data);
 
-	  color = GET_COLOR (bitmap, row, col);
-	  if (bg_color && COLOR_EQUAL(color, bg_color[0])) continue;
-
 	  /* A valid edge can be TOP for an outside outline.
 	     Outside outlines are traced counterclockwise */
-	  if (is_unmarked_outline_edge (row, col, edge = TOP, bitmap, marked, color))
+	  color = GET_COLOR (bitmap, row, col);
+	  if (!(bg_color && COLOR_EQUAL(color, *bg_color))
+	      && is_unmarked_outline_edge (row, col, edge = TOP,
+					   bitmap, marked, color))
 	    {
 	      pixel_outline_type outline;
 
@@ -141,27 +141,33 @@ find_outline_pixels (bitmap_type bitmap, color_type *bg_color,
 	  /* A valid edge can be BOTTOM for an inside outline.
 	     Inside outlines are traced clockwise */
 	  if (row!=0)
-	    {
-	      color = GET_COLOR (bitmap, row-1, col);
-	      if (!(bg_color && COLOR_EQUAL(color, bg_color[0]))
-		  && is_unmarked_outline_edge (row-1, col, edge = BOTTOM,
-					       bitmap, marked, color))
-		{
-		  pixel_outline_type outline;
+          {
+            color = GET_COLOR (bitmap, row-1, col);
+            if (!(bg_color && COLOR_EQUAL(color, *bg_color))
+	          && is_unmarked_outline_edge (row-1, col, edge = BOTTOM,
+		      bitmap, marked, color))
+              {
+                pixel_outline_type outline;
 
-		  /* This lines are for debugging only:
-		     LOG1 ("#%u: (clockwise)", O_LIST_LENGTH (outline_list));*/
+                /* This lines are for debugging only:*/
+                if (bg_color)
+                  {
+                    LOG1 ("#%u: (clockwise)", O_LIST_LENGTH (outline_list));
 
-		  outline = find_one_outline (bitmap, edge, row-1, col,
-					      &marked, true, true);
+                    outline = find_one_outline (bitmap, edge, row-1, col,
+                      &marked, true, false);
 
-		  /* This lines are for debugging only:
-		     O_CLOCKWISE (outline) = true;
-		     append_pixel_outline (&outline_list, outline);
+				    O_CLOCKWISE (outline) = true;
+                    append_pixel_outline (&outline_list, outline);
 
-		     LOG1 (" [%u].\n", O_LENGTH (outline));*/
-		}
-	    }
+                    LOG1 (" [%u].\n", O_LENGTH (outline));
+                  }
+                else
+                    outline = find_one_outline (bitmap, edge, row-1, col,
+                      &marked, true, true);
+
+              }
+          }
 	}
       if (test_cancel && test_cancel(testcancel_data))
 	goto cleanup;

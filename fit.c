@@ -852,6 +852,9 @@ filter (curve_type curve, fitting_opts_type *fitting_opts)
           unsigned int next, nextnext;
           real_coordinate_type candidate = CURVE_POINT (curve, this_point);
 
+          prev_new_point.x = FLT_MAX;
+          prev_new_point.y = FLT_MAX;
+
           prev = CURVE_PREV (curve, this_point);
           prevprev = CURVE_PREV (curve, prev);
           next = CURVE_NEXT (curve, this_point);
