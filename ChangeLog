@@ -1,4 +1,8 @@
-2003-07-02  Masatake YAMATO  <yamato@redhat.com>
+2003-07-04  Masatake YAMATO  <yamato@redhat.com>
+
+	* exception.h (struct _at_exception_type): Fix a typo.
+
+2003-07-02  Masatake YAMATO  <yamato@redhat.com>	
 
 	* Makefile.am(SUBDIRS): m4 is removed.
 	(ACLOCAL_AMFLAGS): removed.

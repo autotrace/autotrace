@@ -19,7 +19,7 @@ struct _at_exception_type
 {
   at_msg_type msg_type;
   at_msg_func client_func;
-  at_address * client_data;
+  at_address client_data;
 };
 
 at_exception_type at_exception_new(at_msg_func client_func,
