@@ -16,7 +16,7 @@ at_exception_got_fatal(at_exception * exception)
 
 void
 at_exception_fatal(at_exception * exception,
-		   at_string message)
+		   const at_string message)
 {
   if (!exception)
     return;
@@ -31,7 +31,7 @@ at_exception_fatal(at_exception * exception,
 
 void 
 at_exception_warning(at_exception * exception,
-		     at_string message)
+		     const at_string message)
 {
   if (!exception)
     return;

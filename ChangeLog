@@ -1,3 +1,16 @@
+2002-04-03  Martin Weber <martweb@gmx.net>
+
+	* exception.[ch] (at_exception_fatal, at_exception_warning): 
+	added "const" to the passig parameter.
+
+	* input-png.c (handle_warning, handle_error): Likewise.
+	(init_structs): Cast handle_error and handle_warning that
+	are passed to png_create_read_struct.
+	(load_image): make width, height and row unsigned short.
+	Casted values returned from png_get_image_width.
+
+	Message-ID: <3CAEC662.41EEE71A@gmx.net>.
+
 2002-04-03  Masatake YAMATO  <yamato@redhat.com>
 
 	* HACKING (Tag naming scheme): Updated.

@@ -28,14 +28,14 @@
 #include <png.h>
 #include "input-png.h"
 
-static volatile char rcsid[]="$Id: input-png.c,v 1.8 2002/01/14 17:27:33 masata-y Exp $";
+static volatile char rcsid[]="$Id: input-png.c,v 1.9 2002/04/08 14:11:30 masata-y Exp $";
 
 /* for pre-1.0.6 versions of libpng */
 #ifndef png_jmpbuf
 #	define png_jmpbuf(png_ptr) (png_ptr)->jmpbuf
 #endif
 
-static void handle_warning(png_structp png, const char *message) {
+static void handle_warning(png_structp png, const at_string message) {
         LOG1("PNG warning: %s", message);
 	at_exception_warning((at_exception *)png->error_ptr,
 			     message);
@@ -43,7 +43,7 @@ static void handle_warning(png_structp png, const char *message) {
 	   "PNG warning"); */
 }
 
-static void handle_error(png_structp png, const char *message) {
+static void handle_error(png_structp png, const at_string message) {
 	LOG1("PNG error: %s", message);
 	at_exception_fatal((at_exception *)png->error_ptr,
 			   message);
@@ -67,7 +67,7 @@ static int init_structs(png_structp *png, png_infop *info,
 	*info = *end_info = NULL;
 
 	*png = png_create_read_struct(PNG_LIBPNG_VER_STRING, exp,
-	                              handle_error, handle_warning);
+	                              (png_error_ptr)handle_error, (png_error_ptr)handle_warning);
 	
 	if (*png) {
 		*info = png_create_info_struct(*png);
@@ -90,7 +90,7 @@ static int load_image(at_bitmap_type *image, FILE *stream, at_exception * exp) {
 	png_structp png;
 	png_infop info, end_info;
 	png_bytep *rows;
-	unsigned long width, height, row;
+	unsigned short width, height, row;
 	int pixel_size;
 	int result = 1;
 	
@@ -108,8 +108,8 @@ static int load_image(at_bitmap_type *image, FILE *stream, at_exception * exp) {
 
 	rows = png_get_rows(png, info);
 
-	width = png_get_image_width(png, info);
-	height = png_get_image_height(png, info);
+	width = (unsigned short)png_get_image_width(png, info);
+	height = (unsigned short)png_get_image_height(png, info);
 	if ( png_get_color_type(png, info) == PNG_COLOR_TYPE_GRAY ) {
 		pixel_size = 1;
 	} else {
