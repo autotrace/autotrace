@@ -12,9 +12,6 @@
 /* The basic structure and macros to access it.  */
 typedef at_bitmap_type bitmap_type;
 
-/* The dimensions of the bitmap, in pixels.  */
-#define BITMAP_DIMENSIONS(b)  ((b).dimensions)
-
 /* The number of color planes of each pixel */
 #define BITMAP_PLANES(b)  ((b).np)
 
@@ -23,8 +20,8 @@ typedef at_bitmap_type bitmap_type;
 #define BITMAP_BITS(b)  ((b).bitmap)
 
 /* These are convenient abbreviations for geting inside the members.  */
-#define BITMAP_WIDTH(b)  DIMENSIONS_WIDTH (BITMAP_DIMENSIONS (b))
-#define BITMAP_HEIGHT(b)  DIMENSIONS_HEIGHT (BITMAP_DIMENSIONS (b))
+#define BITMAP_WIDTH(b)  ((b).width)
+#define BITMAP_HEIGHT(b)  ((b).height)
 
 /* This is the pixel at [ROW,COL].  */
 #define BITMAP_PIXEL(b, row, col)					\
@@ -36,11 +33,9 @@ typedef at_bitmap_type bitmap_type;
 
 /* Allocate storage for the bits, set them all to white, and return an
    initialized structure.  */
-extern bitmap_type new_bitmap (dimensions_type);
+extern bitmap_type new_bitmap (unsigned int, unsigned int);
 
 /* Free that storage.  */
 extern void free_bitmap (bitmap_type *);
 
 #endif /* not BITMAP_H */
-
-/* version 0.24 */

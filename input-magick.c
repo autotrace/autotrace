@@ -1,3 +1,5 @@
+/* input-magick.c: import files via image magick */
+
 #include <stdio.h>
 #include <stdlib.h>
 #include <sys/types.h>
@@ -47,9 +49,9 @@ bitmap_type magick_load_image(string filename)
     np=3;
 
   bitmap.np=np;
-  bitmap.dimensions.width=image->columns;
-  bitmap.dimensions.height=image->rows;
-  bitmap.bitmap=(unsigned char*)malloc(np*image->columns*image->rows);
+  BITMAP_WIDTH (bitmap)=image->columns;
+  BITMAP_HEIGHT (bitmap)=image->rows;
+  BITMAP_BITS (bitmap)=(unsigned char*)malloc(np*image->columns*image->rows);
 
 #if MagickLibVersion < 0x500
   pixel=image->pixels;

@@ -1,4 +1,5 @@
-/* autotrace.h */
+/* autotrace.h: Library interface */
+
 #ifndef AUTOTRACE_H
 #define AUTOTRACE_H
 
@@ -182,7 +183,8 @@ struct _at_fitting_opts_type
 
 struct _at_bitmap_type
 {
-  dimensions_type dimensions;
+  unsigned height;
+  unsigned width;
   unsigned char *bitmap;
   unsigned int np;
 };

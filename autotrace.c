@@ -1,3 +1,5 @@
+/* autotrace.c: Library interface. */
+
 #include "autotrace.h"
 
 #include "fit.h"
@@ -87,13 +89,13 @@ at_bitmap_free (at_bitmap_type * bitmap)
 unsigned short
 at_bitmap_get_width (at_bitmap_type * bitmap)
 {
-  return DIMENSIONS_WIDTH (bitmap->dimensions);
+  return bitmap->width;
 }
 
 unsigned short
 at_bitmap_get_height (at_bitmap_type * bitmap)
 {
-  return DIMENSIONS_HEIGHT (bitmap->dimensions);
+  return bitmap->height;
 }
 at_splines_type * 
 at_splines_new (at_bitmap_type * bitmap,

@@ -132,8 +132,8 @@ bitmap_type pnm_load_image (string filename)
     {
       FATAL("pnm filter: can't open file\n");
       BITMAP_BITS (bitmap) = NULL;
-      DIMENSIONS_WIDTH (bitmap.dimensions) = 0;
-      DIMENSIONS_HEIGHT (bitmap.dimensions) = 0;
+      BITMAP_WIDTH (bitmap) = 0;
+      BITMAP_HEIGHT (bitmap) = 0;
       BITMAP_PLANES (bitmap) = 0;
       return (bitmap);
     }
@@ -191,8 +191,8 @@ bitmap_type pnm_load_image (string filename)
         FATAL ("pnm filter: invalid maxval while loading\n");
     }
 
-  DIMENSIONS_WIDTH (BITMAP_DIMENSIONS (bitmap)) = pnminfo->xres;
-  DIMENSIONS_HEIGHT (BITMAP_DIMENSIONS (bitmap)) = pnminfo->yres;
+  BITMAP_WIDTH (bitmap) = pnminfo->xres;
+  BITMAP_HEIGHT (bitmap) = pnminfo->yres;
 
   BITMAP_PLANES (bitmap) = (pnminfo->np)?(pnminfo->np):1;
   BITMAP_BITS (bitmap) = (unsigned char *) malloc (pnminfo->yres *
@@ -469,5 +469,3 @@ pnmscanner_eatwhitespace (PNMScanner *s)
 	}
     }
 }
-
-/* version 0.26 */

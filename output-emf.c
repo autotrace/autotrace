@@ -146,7 +146,7 @@ static bool write32(FILE *fdes, UI32 data)
   outch = (UI8) ((data >> 24) & 0x0FF);
   count += fwrite(&outch, 1, 1, fdes);
   
-  return (count == sizeof(UI32)) ? TRUE : FALSE;
+  return (count == sizeof(UI32)) ? true : false;
 }
 
 static bool write16(FILE *fdes, UI16 data)
@@ -160,7 +160,7 @@ static bool write16(FILE *fdes, UI16 data)
   outch = (UI8) ((data >> 8) & 0x0FF);
   count += fwrite(&outch, 1, 1, fdes);
   
-  return (count == sizeof(UI16)) ? TRUE : FALSE;
+  return (count == sizeof(UI16)) ? true : false;
 }
 
 /* EMF record-type function definitions */

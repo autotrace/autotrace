@@ -6,12 +6,13 @@
 #include <string.h>
 
 bitmap_type
-new_bitmap (dimensions_type d)
+new_bitmap (unsigned int width, unsigned int height)
 {
   bitmap_type answer;
-  unsigned size = DIMENSIONS_WIDTH (d) * DIMENSIONS_HEIGHT (d);
+  unsigned size = width * height;
 
-  BITMAP_DIMENSIONS (answer) = d;
+  BITMAP_WIDTH (answer) = width;
+  BITMAP_HEIGHT (answer) = height;
   BITMAP_PLANES (answer) = 1;
   XCALLOC (BITMAP_BITS (answer), size);
 
@@ -29,5 +30,3 @@ free_bitmap (bitmap_type *b)
   if (BITMAP_BITS (*b) != NULL)
     free (BITMAP_BITS (*b));
 }
-
-/* version 0.24 */

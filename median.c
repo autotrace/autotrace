@@ -1,4 +1,4 @@
-/* Median cut - reducing a high color bitmap to certain number of colors */
+/* median.c: median cut - reducing a high color bitmap to certain number of colors */
 
 #include <stdio.h>
 #include <stdlib.h>
@@ -55,8 +55,8 @@ static void generate_histogram_rgb(Histogram histogram, bitmap_type *image,
     int num_elems;
     ColorFreq *col;
 
-    num_elems = DIMENSIONS_WIDTH(image->dimensions)
-	* DIMENSIONS_HEIGHT(image->dimensions);
+    num_elems = BITMAP_WIDTH(*image)
+	* BITMAP_HEIGHT(*image);
     zero_histogram_rgb(histogram);
 
     switch (BITMAP_PLANES(*image))
@@ -734,8 +734,8 @@ static void median_cut_pass2_rgb(QuantizeObj *quantobj, bitmap_type *image,
     int             origR, origG, origB; 
     int             row, col;
     int             spp = BITMAP_PLANES(*image);
-    int             width = DIMENSIONS_WIDTH(image->dimensions);
-    int             height = DIMENSIONS_HEIGHT(image->dimensions);
+    int             width = BITMAP_WIDTH(*image);
+    int             height = BITMAP_HEIGHT(*image);
     unsigned char   *src, *dest;
     color_type      bg_color = { 0xff, 0xff, 0xff };
 

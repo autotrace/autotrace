@@ -10,13 +10,6 @@ typedef enum { false = 0, true = 1 } bool;
 #endif
 #endif
 
-/* The X11 library defines `FALSE' and `TRUE', and so we only want to
-   define them if necessary.  */
-#ifndef FALSE
-#define FALSE false
-#define TRUE true
-#endif /* FALSE */
-
 /* The usual null-terminated string.  */
 typedef char *string;
 
@@ -25,15 +18,6 @@ typedef void *address;
 
 /* We use `real' for our floating-point variables.  */
 typedef float real;
-
-/* Dimensions of a rectangle.  */
-typedef struct
-{
-  unsigned height, width;
-} dimensions_type;
-
-#define DIMENSIONS_HEIGHT(d) ((d).height)
-#define DIMENSIONS_WIDTH(d) ((d).width)
 
 /* Cartesian points.  */
 typedef struct

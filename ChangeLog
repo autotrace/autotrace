@@ -1,5 +1,35 @@
 2001-03-07  Masatake YAMATO  <yamato@redhat.com>
 
+	* types.h (struct): Remove dimensions_type.
+	(DIMENSIONS_HEIGHT): Likewise.
+	(DIMENSIONS_WIDTH): Likewise.
+
+ 	Applied patches from Martin.
+	Message-ID: <3AA12454.6AF6FD69@gmx.net>.
+	
+	* autotrace.h (struct _at_bitmap_type): Remove dimensions_type.
+
+ 	* bitmap.c (new_bitmap): Likewise.
+
+	* bitmap.h: Likewise.
+
+ 	* median.c: Likewise.
+
+	* input-magick.c: Likewise.
+
+	* pxl-outline.c: Likewise.
+
+	* input-pnm.c: Likewise.
+
+	* autotrace.c: Likewise.
+
+	Applied patches from Martin.
+	Message-ID: <3AA11C68.9B494013@gmx.net>
+
+	* output-emf.c: Replaced TRUE and FALSE by true and false.
+
+	* types.h: Remove TRUE and FALSE.
+
 	Applied patches from Martin.
 	Message-ID: <3AA11A4B.BD319064@gmx.net>.
 	
