@@ -22,6 +22,8 @@ AM_CONFIG_HEADER(config.h)
 AC_PROG_CC
 AC_PROG_CPP
 AC_PROG_RANLIB
+AC_CANONICAL_HOST
+AC_CHECK_HEADERS(malloc.h)
 
 dnl
 dnl ImageMagick
@@ -147,12 +149,34 @@ else
 fi
 AM_CONDITIONAL(HAVE_LIBSWF, test x$HAVE_LIBSWF = xyes)
 
-AC_CHECK_HEADERS(malloc.h)
+dnl
+dnl Suppressing linker warning
+dnl 
+dnl On MacOS X(Darwin), getopt related symbols are defined 
+dnl in /usr/lib/libm.dylib. They are conflicted with symbols 
+dnl defined in getopt* of autotrace. To avoid warning-messages 
+dnl about this confliction, "-multiply_defined suppress" is 
+dnl passed to ld if autotrace is built on Darwin.
+dnl
+dnl BTW, Is getopt mathematical function?
+dnl 
+dnl libm.dylib on Darwin problem is reported by 
+dnl Martin Kerscher <kerscher@theorie.physik.uni-muenchen.de>
+dnl
+AC_MSG_CHECKING([whether the host is Darwin])
+case $host_os in
+     darwin) LDFLAGS="-Xlinker -multiply_defined -Xlinker suppress ${LDFLAGS}"
+     AC_MSG_RESULT([yes])
+     AC_MSG_WARN([* linker messages that warns symbols are multiply defined are suppressed *])
+     ;;
+     *)	
+     AC_MSG_RESULT([no])
+     ;;
+esac
 
 dnl
 dnl Vender's cc(not gcc)
 dnl
-dnl AC_CANONICAL_HOST
 dnl if test "x$CC" = xcc ; then
 dnl   case host in
 dnl 	mips-sgi-irix*)

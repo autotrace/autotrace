@@ -1,5 +1,9 @@
 2002-05-12  Masatake YAMATO  <yamato@redhat.com>
 
+	* configure.in: linker messages that warns symbols are multiply defined are 
+	suppressed when the host is Darwin.
+	Suggested by Martin Kerscher <kerscher@theorie.physik.uni-muenchen.de>.
+
 	* input.c (at_input_list_new): Pass NULL to GetMagickInfo
 	instead of empty string.
 
