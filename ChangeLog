@@ -1,3 +1,7 @@
+2001-12-23  Masatake YAMATO  <yamato@redhat.com>
+
+	* input-png.h: string->at_string.
+
 2001-12-23  Martin Weber <martweb@gmx.net>
 
         * (.*): Remove version num in comments.
