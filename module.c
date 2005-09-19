@@ -65,6 +65,7 @@ int install_output_pstoedit_writers(void) {return 0;}
 #endif /* HAVE_LIBPSTOEDIT */
 #include "output-pov.h"
 #include "output-plt.h"
+#include "output-ild.h"
 
 static int install_input_readers  (void);
 static int install_output_writers (void);
@@ -126,6 +127,7 @@ install_output_writers (void)
   at_output_add_handler ("POV",  "Povray format",                output_pov_writer);
   at_output_add_handler ("POV",  "Povray format",                output_pov_writer);
   at_output_add_handler ("PLT",  "HPGL format",                  output_plt_writer);
+  at_output_add_handler ("ILD",  "ILDA format",                  output_ild_writer);
 
   return (0 << 1) || install_output_pstoedit_writers();
 }
