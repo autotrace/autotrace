@@ -94,7 +94,11 @@ input_magick_reader(at_string filename,
 
   for(j=0,runcount=0,point=0;j<image->rows;j++)
     for(i=0;i<image->columns;i++) {
+#if (MagickLibVersion < 0x0645) || (MagickLibVersion >= 0x0649)
       p=GetOnePixel(image,i,j);
+#else
+      GetOnePixel(image,i,j,pixel);
+#endif
       AT_BITMAP_BITS(bitmap)[point++]=pixel->red; /* if gray: red=green=blue */
       if(np==3) {
         AT_BITMAP_BITS(bitmap)[point++]=pixel->green;
