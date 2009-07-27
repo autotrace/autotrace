@@ -4,7 +4,7 @@
 dnl AM_PATH_AUTOTRACE([MINIMUM-VERSION, [ACTION-IF-FOUND [, ACTION-IF-NOT-FOUND]])
 dnl Test to see if libautotrace is installed, and define AUTOTRACE_CFLAGS, LIBS
 dnl
-AC_DEFUN(AM_PATH_AUTOTRACE,
+AC_DEFUN([AM_PATH_AUTOTRACE],
 [dnl
 dnl Get the cflags and libraries from the autotrace-config script
 dnl
