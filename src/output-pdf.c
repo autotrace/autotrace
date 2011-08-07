@@ -179,16 +179,16 @@ static int output_pdf_tailor(FILE* pdf_file, size_t length,
   tmp += (strlen (temp));
   sprintf(temp, "%d", ury);
   tmp += (strlen (temp));
-  OUT     ("%010d 00000 n \n", tmp);
-  sprintf(temp, "%d", length);
+  OUT     ("%010zu 00000 n \n", tmp);
+  sprintf(temp, "%zu", length);
   tmp += 50 + length + strlen(temp);
-  OUT     ("%010d 00000 n \n", tmp);
+  OUT     ("%010zu 00000 n \n", tmp);
   OUT_LINE ("trailer");
   OUT_LINE ("   << /Size 7");
   OUT_LINE ("      /Root 1 0 R");
   OUT_LINE ("   >>");
   OUT_LINE ("startxref");
-  OUT ("%d\n", tmp + 25);
+  OUT ("%zu\n", tmp + 25);
   OUT_LINE ("%%EOF");
 
   return 0;
@@ -221,7 +221,8 @@ out_splines (FILE *pdf_file, spline_list_array_type shape, size_t *length)
           if (this_list > 0)
             {
               SOUT_LINE ((shape.centerline || list.open) ? "S" : "f");
-              SOUT_LINE("h");
+              /* In PDF a Stroke (S) or fill (f) causes an implicit closepath (h) -Paul Sladen */
+              /* SOUT_LINE("h"); */
             }
           SOUT ("%.3f %.3f %.3f %s\n", (double) list.color.r / 255.0,
             (double) list.color.g / 255.0, (double) list.color.b / 255.0,
@@ -248,7 +249,7 @@ out_splines (FILE *pdf_file, spline_list_array_type shape, size_t *length)
     SOUT_LINE ((shape.centerline || list.open) ? "S" : "f");
 
   OUT_LINE ("5 0 obj");
-  OUT ("   << /Length %d >>\n", *length);
+  OUT ("   << /Length %zu >>\n", *length);
   OUT_LINE ("stream");
 
   last_color.r = 0;
@@ -269,7 +270,8 @@ out_splines (FILE *pdf_file, spline_list_array_type shape, size_t *length)
           if (this_list > 0)
             {
               OUT_LINE ((shape.centerline || list.open) ? "S" : "f");
-              OUT_LINE("h");
+              /* In PDF a Stroke (S) or fill (f) causes an implicit closepath (h) -Paul Sladen */
+              /* OUT_LINE("h"); */
             }
           OUT ("%.3f %.3f %.3f %s\n", (double) list.color.r / 255.0,
             (double) list.color.g / 255.0, (double) list.color.b / 255.0,
