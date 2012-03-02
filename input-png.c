@@ -41,7 +41,7 @@ static png_bytep * read_png(png_structp png_ptr, png_infop info_ptr, at_input_op
 
 static void handle_warning(png_structp png, const gchar* message) {
         LOG1("PNG warning: %s", message);
-	at_exception_warning((at_exception_type *)png->error_ptr,
+	at_exception_warning((at_exception_type *)png_get_error_ptr(png),
 			     message);
 	/* at_exception_fatal((at_exception_type *)at_png->error_ptr,
 	   "PNG warning"); */
@@ -49,7 +49,7 @@ static void handle_warning(png_structp png, const gchar* message) {
 
 static void handle_error(png_structp png, const gchar* message) {
 	LOG1("PNG error: %s", message);
-	at_exception_fatal((at_exception_type *)png->error_ptr,
+	at_exception_fatal((at_exception_type *)png_get_error_ptr(png),
 			   message);
 	/* at_exception_fatal((at_exception_type *)at_png->error_ptr,
 	   "PNG error"); */
@@ -157,8 +157,8 @@ read_png(png_structp png_ptr, png_infop info_ptr, at_input_opts_type * opts)
 
 	png_set_strip_16(png_ptr);
 	png_set_packing(png_ptr);
-	if ((png_ptr->bit_depth < 8) ||
-	    (png_ptr->color_type == PNG_COLOR_TYPE_PALETTE) ||
+	if ((png_get_bit_depth(png_ptr, info_ptr) < 8) ||
+	    (png_get_color_type(png_ptr, info_ptr) == PNG_COLOR_TYPE_PALETTE) ||
 	    (png_get_valid(png_ptr, info_ptr, PNG_INFO_tRNS)))
 		png_set_expand(png_ptr);
 
@@ -181,20 +181,10 @@ read_png(png_structp png_ptr, png_infop info_ptr, at_input_opts_type * opts)
 				   PNG_BACKGROUND_GAMMA_FILE, 1, 1.0);
 	} else
 		png_set_strip_alpha(png_ptr);
+	png_set_interlace_handling(png_ptr);
 	png_read_update_info(png_ptr, info_ptr);
 
-
-	info_ptr->row_pointers = (png_bytepp)png_malloc(png_ptr,
-							info_ptr->height * sizeof(png_bytep));
-#ifdef PNG_FREE_ME_SUPPORTED
-	info_ptr->free_me |= PNG_FREE_ROWS;
-#endif
-	for (row = 0; row < (int)info_ptr->height; row++)
-		info_ptr->row_pointers[row] = (png_bytep)png_malloc(png_ptr,
-								    png_get_rowbytes(png_ptr, info_ptr));
-	
-	png_read_image(png_ptr, info_ptr->row_pointers);
-	info_ptr->valid |= PNG_INFO_IDAT;
+	png_read_png(png_ptr, info_ptr, PNG_TRANSFORM_IDENTITY, NULL);
 	png_read_end(png_ptr, info_ptr);
 	return png_get_rows(png_ptr, info_ptr);
 }
