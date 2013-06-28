@@ -167,7 +167,7 @@ input_bmp_reader (gchar* filename,
                                                         /* 36 */
       Maps = 4;
     }
-  else if (Bitmap_File_Head.biSize <= 64) /* Probably OS/2 2.x */
+  else if (Bitmap_File_Head.biSize >= 40 && Bitmap_File_Head.biSize <= 64) /* Probably OS/2 2.x */
     {
       if (!ReadOK (fd, buffer, Bitmap_File_Head.biSize - 4))
 	{
