@@ -16,7 +16,6 @@ EXTRA_DIST=$(man_MANS) \
 	   shape_cubic.c.diff \
 	   README.MING \
 	   autotrace.pc.in \
-	   autotrace.spec.in \
 	   TODO \
 	   HACKING \
 	   FAQ
@@ -154,11 +153,5 @@ autotrace_LDADD =				\
 
 pkgconfigdir = $(libdir)/pkgconfig
 pkgconfig_DATA= autotrace.pc
-
-dist-hook: autotrace.spec
-	cp autotrace.spec $(distdir)
-
-rpm: dist autotrace.spec
-	rpm -bb autotrace.spec
 
 # ACLOCAL_AMFLAGS = -I m4

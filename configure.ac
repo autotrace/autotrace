@@ -152,7 +152,7 @@ else
 fi
 
 dnl po/Makefile.in FIXME FIXME FIXME
-AC_OUTPUT([Makefile autotrace.pc autotrace.spec])
+AC_OUTPUT([Makefile autotrace.pc])
 
 echo "
 
