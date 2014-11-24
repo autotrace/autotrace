@@ -1,23 +1,26 @@
+AutoTrace
+=========
+
 AutoTrace is a utility for converting bitmap into vector graphics.
 
 Features
-========
+--------
 - tracing outline and midline
 - color reduction and despeckling
 - supports a lot of input and output format
 
 Licenses
-========
+--------
 The program can be used under the GNU General Public License.
 
-The input and output functions (input-*.[ch] and output-*.[ch])
+The input and output functions (`input-*.[ch]` and `output-*.[ch]`)
 can also be used under the GNU Lesser General Public License(LGPL).
 
 Some of code was partially derived from limn of GNU fontutils.
 However, almost all code is rewritten.
 
 Platforms
-=========
+---------
 The program was tested using GNU/Linux, HP UX, Solaris, Windows98,
 Windows NT, Windows 2000, MAC and OS/2 4.0. It compiles with GCC,
 Borland C++ Builder, Visual C++ and many other compilers.
@@ -27,32 +30,33 @@ least SP 5 otherwise you could get Memory access violations due to
 a bug in earlier versions.
 
 Requirements
-============
+------------
 AutoTrace can be compiled standalone, then it can import pnm, pbm,
-pgm, ppm, bmp and tga files. If you have installed libpng
-(http://www.libpng.org/pub/png/libpng.html) you can also read png
+pgm, ppm, bmp and tga files. If you have installed
+[libpng](http://www.libpng.org/pub/png/libpng.html) you can also read png
 files and with ImageMagick a very broad range of input formats is
 available.
 
 You will need at least libpng 1.0.6 and ImageMagick 5.2.1.  Most
 output formats like dxf, emf, eps, ai, er, fig, svg, epd, dr2d and sk
 are directly integrated in AutoTrace, but if you need swf export you
-need to install Ming (http://www.opaque.net/ming/). Also you can
-export to the p2e format. This format can be converted by pstoedit
-(www.pstoedit.net) to a large number of other formats. If you have
-installed the latest pstoedit(3.32 or newer), autotrace uses pstoedit
+need to install [Ming](http://www.opaque.net/ming/). Also you can
+export to the p2e format. This format can be converted by
+[pstoedit](www.pstoedit.net) to a large number of other formats. If you have
+installed the latest pstoedit (3.32 or newer), autotrace uses pstoedit
 directly. However, direct pstoedit support is not stable enough. 
 See INSTALL file for more detail.
 
 Installation
-============
-See the file INSTALL.
+------------
+See the file `INSTALL`.
 
 Usage
-=====
+-----
 Program comes from two parts: command and library.
 
 Here the options you can use in the command:
+
     Usage: autotrace.exe [options] <input_name>.
     Options:<input_name> should be a supported image.
       You can use `--' or `-' to start an option.
@@ -109,10 +113,11 @@ Here the options you can use in the command:
     width-weight-factor: weight factor for fitting the line width.
 
 The library is named libautotrace. About the usage of the library
-see autotrace.h.
+see `autotrace.h`.
 Here is a sample program that uses libautotrace.
 To compile, invoke following commands (on posix):
-gcc sample.c `pkg-config --libs autotrace` `pkg-config --cflags autotrace`
+
+    gcc sample.c `pkg-config --libs autotrace` `pkg-config --cflags autotrace`
 
     /* sample.c */
     #include <autotrace/autotrace.h>
@@ -133,25 +138,25 @@ gcc sample.c `pkg-config --libs autotrace` `pkg-config --cflags autotrace`
     }
 
 GUI Frontend
-============
+------------
 Frontline, a Gtk+/Gnome based GUI frontend, is under development.
 See http://autotrace.sourceforge.net/frontline
 
 autotrace mailing list is used to discuss frontline.  See next.
 
 More Information
-================
+----------------
 See http://autotrace.sourceforge.net
 
 There is a mailing list to discussion autotrace.
 See also http://groups.yahoo.com/group/autotrace/
 
 Contribution
-============
+------------
 Programmers wanted!!!
 
-See TODO and HACKING file and contact the author.
+See `TODO` and `HACKING` file and contact the author.
 
 Author
-======
+------
 Martin Weber (martweb@gmx.net)
