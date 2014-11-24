@@ -38,9 +38,7 @@ rm -rf %{buildroot}
 %{_bindir}/autotrace
 %{_libdir}/libautotrace.*
 %{_mandir}/man1/autotrace.1.*
-%{_bindir}/autotrace-config
 %{_includedir}/autotrace/
-%{_datadir}/aclocal/autotrace.m4
 %{_libdir}/pkgconfig/autotrace.pc
 
 %changelog

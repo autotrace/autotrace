@@ -112,7 +112,7 @@ The library is named libautotrace. About the usage of the library
 see autotrace.h.
 Here is a sample program that uses libautotrace.
 To compile, invoke following commands (on posix):
-gcc sample.c `./autotrace-config --libs` `./autotrace-config --cflags`
+gcc sample.c `pkg-config --libs autotrace` `pkg-config --cflags autotrace`
 
     /* sample.c */
     #include <autotrace/autotrace.h>

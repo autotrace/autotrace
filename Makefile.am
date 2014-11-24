@@ -152,9 +152,6 @@ autotrace_LDADD =				\
 		$(INTLLIBS)			\
 		-lm
 
-m4datadir = $(datadir)/aclocal
-m4data_DATA = autotrace.m4
-
 pkgconfigdir = $(libdir)/pkgconfig
 pkgconfig_DATA= autotrace.pc
 

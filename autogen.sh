@@ -12,8 +12,6 @@ ${srcdir}/tools-version.sh
   exit 1
 }
 
-autofig autotrace-config.af
-
 if (aclocal-1.5 --version)  < /dev/null > /dev/null 2>&1; then
     aclocal-1.5 $ACLOCAL_FLAGS
 else

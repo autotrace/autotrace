@@ -120,16 +120,6 @@ autotrace-0.27pre directory. The directory was checked in by
 my mistake(Masatake YAMATO). It is difficult to remove a 
 directory from a CVS repository.
 
-* Autofig
-
-Autofig generate autotrace-config.in from autotrace-config.af.
-You can get autofig from:
-
-http://autotrace.sourceforge.net/tools/
-
-You can get the LATEST version of autofig.
-http://cvs.gnome.org/bonsai/rview.cgi?cvsroot=/cvs/gnome&dir=autofig
-
 * Library
 
 See README
