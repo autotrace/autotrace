@@ -5,6 +5,7 @@
 AC_INIT([autotrace], [0.31.1])
 AC_CONFIG_SRCDIR([src/main.c])
 AM_INIT_AUTOMAKE([subdir-objects])
+AC_CONFIG_MACRO_DIR([m4])
 
 PACKAGE=autotrace
 #
@@ -49,12 +50,15 @@ dnl AC_PROG_RANLIB
 dnl AC_CANONICAL_HOST
 dnl AC_ARG_PROGRAM
 AM_SANITY_CHECK
+
 AC_PROG_INSTALL
 AC_CHECK_HEADERS(malloc.h)
 
-GETTEXT_PACKAGE=$PACKAGE
-AC_SUBST(GETTEXT_PACKAGE)
-AC_DEFINE_UNQUOTED(GETTEXT_PACKAGE,"$GETTEXT_PACKAGE",[Translation domain used])
+IT_PROG_INTLTOOL([0.50.1])
+AM_GNU_GETTEXT_VERSION([0.18])
+AM_GNU_GETTEXT([external])
+AC_SUBST([GETTEXT_PACKAGE], [$PACKAGE_NAME])
+AC_DEFINE_UNQUOTED([GETTEXT_PACKAGE], "$GETTEXT_PACKAGE", [Define to the gettext package name.])
 ALL_LINGUAS="ja de"
 AM_GLIB_GNU_GETTEXT
 
@@ -152,7 +156,7 @@ else
 fi
 
 dnl po/Makefile.in FIXME FIXME FIXME
-AC_OUTPUT([Makefile autotrace.pc])
+AC_OUTPUT([po/Makefile.in Makefile autotrace.pc])
 
 echo "
 

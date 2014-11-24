@@ -1,5 +1,4 @@
-# FIXME FIXME FIXME
-#SUBDIRS = po 
+SUBDIRS = po
 man_MANS = autotrace.1
 EXTRA_DIST=$(man_MANS) \
 	   src/output-swf.c \
