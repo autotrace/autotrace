@@ -13,11 +13,11 @@ EXTRA_DIST=$(man_MANS) \
 	   autotrace-config.in \
 	   autotrace.m4 \
 	   shape_cubic.c.diff \
-	   README.MING \
+	   doc/README.MING \
 	   autotrace.pc.in \
 	   TODO \
-	   HACKING \
-	   FAQ
+	   doc/HACKING \
+	   doc/FAQ
 
 AUTOMAKE_OPTIONS = foreign no-dependencies
 
