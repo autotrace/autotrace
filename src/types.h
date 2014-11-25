@@ -20,6 +20,7 @@
 #ifndef AT_TYPES_H
 #define AT_TYPES_H
 
+#include <stdint.h>
 #include <glib.h>
 
 #ifdef __cplusplus
