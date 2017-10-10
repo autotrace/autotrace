@@ -5,10 +5,7 @@ output-swf.c output-swf.h					\
 input-magick.h input-magick.c input-png.c input-png.h		\
 output-pstoedit.c output-pstoedit.h				\
 autotrace-config.af autotrace-config.in				\
-autotrace.dsp autotrace.dsw					\
 autotrace.m4 shape_cubic.c.diff README.MING			\
-libming.dsw libming.dsp						\
-autotrace.sln autotrace.vcproj libming.sln libming.vcproj	\
 autotrace.pc.in autotrace.spec.in TODO HACKING FAQ
 
 AUTOMAKE_OPTIONS = foreign no-dependencies
