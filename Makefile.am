@@ -1,4 +1,5 @@
-SUBDIRS = po
+# FIXME FIXME FIXME
+#SUBDIRS = po 
 man_MANS = autotrace.1
 EXTRA_DIST=$(man_MANS) \
 	   src/output-swf.c \
@@ -143,8 +144,7 @@ autotrace_SOURCES=\
 		src/getopt1.c			\
 		src/strgicmp.h
 
-INCLUDES = $(MAGICK_CFLAGS) $(LIBPSTOEDIT_CFLAGS) $(GLIB2_CFLAGS)
-AM_CPPFLAGS = -DLOCALEDIR=\""$(datadir)/locale"\"
+AM_CPPFLAGS = $(MAGICK_CFLAGS) $(LIBPSTOEDIT_CFLAGS) $(GLIB2_CFLAGS) -DLOCALEDIR=\""$(datadir)/locale"\"
 
 autotrace_LDADD =				\
 		libautotrace.la			\
@@ -162,13 +162,6 @@ m4data_DATA = autotrace.m4
 
 pkgconfigdir = $(libdir)/pkgconfig
 pkgconfig_DATA= autotrace.pc
-
-bin_SCRIPTS=autotrace-config
-BUILT_SOURCES=autotrace-config
-autotrace-config: autotrace-config.in
-
-autotrace-config.in: autotrace-config.af
-	autofig $<
 
 dist-hook: autotrace.spec
 	cp autotrace.spec $(distdir)
