@@ -139,9 +139,6 @@ autotrace_SOURCES=\
 		src/atou.h				\
 		src/main.c				\
 		src/cmdline.h			\
-		src/getopt.c			\
-		src/getopt.h			\
-		src/getopt1.c			\
 		src/strgicmp.h
 
 AM_CPPFLAGS = $(MAGICK_CFLAGS) $(LIBPSTOEDIT_CFLAGS) $(GLIB2_CFLAGS) -DLOCALEDIR=\""$(datadir)/locale"\"
