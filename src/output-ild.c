@@ -40,9 +40,8 @@
 #endif
 #define MAX(a,b)			( (a) > (b) ? (a) : (b) )
 
-#ifdef _WINDOWS
-#define M_PI 3.14159265358979323848f
-#endif
+#define _USE_MATH_DEFINES
+#include <math.h>
 
 #define ILDA_3D_DATA  0
 #define ILDA_2D_DATA  1

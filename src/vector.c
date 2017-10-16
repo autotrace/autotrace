@@ -14,9 +14,8 @@
 
 static gfloat acos_d (gfloat, at_exception_type * excep);
 
-#ifndef M_PI
-#define M_PI 3.14159265
-#endif
+#define _USE_MATH_DEFINES
+#include <math.h>
 
 #define SIGN(x) ((x) > 0 ? 1 : (x) < 0 ? -1 : 0)
 #define ROUND(x) ((int) ((int) (x) + .5 * SIGN (x)))
