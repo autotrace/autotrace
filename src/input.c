@@ -27,7 +27,6 @@
 #include "input.h"
 #include "xstd.h"
 #include "filename.h"
-#include "strgicmp.h"
 #include <string.h>
 #include <glib.h>
 
