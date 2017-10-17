@@ -149,7 +149,6 @@ at_bitmap input_png_reader(gchar* filename, at_input_opts_type * opts,
 static png_bytep *
 read_png(png_structp png_ptr, png_infop info_ptr, at_input_opts_type * opts)
 {
-	int row;
 	png_color_16p original_bg;
 	png_color_16  my_bg;
 

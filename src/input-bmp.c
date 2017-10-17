@@ -31,10 +31,6 @@
 #include "xstd.h"
 #include "input-bmp.h"
 
-
-#define MAXCOLORS       256
-#define Image		long
-
 #define BitSet(byte, bit)  (((byte) & (bit)) == (bit))
 
 #define ReadOK(file,buffer,len)  (fread(buffer, len, 1, file) != 0)

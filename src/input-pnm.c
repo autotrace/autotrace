@@ -68,8 +68,6 @@ typedef struct _PNMInfo
 				 * by the spec anyways so this shouldn't
 				 * be an issue. */
 
-#define SAVE_COMMENT_STRING "# CREATOR: The GIMP's PNM Filter Version 1.0\n"
-
 /* Declare some local functions.
  */
 
