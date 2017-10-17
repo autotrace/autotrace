@@ -21,22 +21,6 @@
 #include "config.h"
 #endif /* Def: HAVE_CONFIG_H */
 
-/* This module uses a temporary file to pass a file to libpstoedit
-   Which functions should I use to create tmpfile?
-   -------------------------------------------------------------------
-   Function || Security   | Availability
-   ---------++------------+-------------------------------------------
-   mktemp   || risky      | BSD 4.3
-   mkstemp  || no problem | BSD 4.3
-   tempnam  || risky      | SVID 2, BSD 4.3
-   tmpfile  || no problem | SVID 3, POSIX, BSD 4.3, ISO 9899, SUSv2
-   tmpnam   || risky      | SVID 2, POSIX, BSD 4.3, ISO 9899
-   -------------------------------------------------------------------
-   tmpfile returns file pointer, not file name
-
-   mkstemp is the best in the security aspect, however it is not portable.
-   (Read http://groups.yahoo.com/group/autotrace/message/369) */
-
 #include "private.h"
 #include "autotrace.h"
 #include "output-pstoedit.h"
@@ -49,9 +33,6 @@
 #include <stdlib.h>
 #include <string.h>
 #include <errno.h>
-
-#define BO_DEBUG 0
-#define TMPDIR "/tmp/"
 
 /* #define OUTPUT_PSTOEDIT_DEBUG */
 
@@ -66,7 +47,6 @@ static int output_pstoedit_writer (FILE* file, gchar* name,
 
 static gboolean unusable_writer_p(const gchar* name);
 
-static void remove_temporary_file (const gchar* tmpfile_name);
 static FILE * make_temporary_file(char *template, char * mode);
 
 /* This output routine uses two temporary files to keep the
@@ -86,8 +66,8 @@ output_pstoedit_writer (FILE* file, gchar* name,
 			gpointer user_data)
 {
   at_spline_writer *  p2e_writer = NULL;
-  char  tmpfile_name_p2e[] = TMPDIR "at-bo-" "XXXXXX";
-  char  tmpfile_name_pstoedit[] = TMPDIR "at-fo-" "XXXXXX";
+  char  tmpfile_name_p2e[] = "/tmp/at-bo-XXXXXX";
+  char  tmpfile_name_pstoedit[] = "/tmp/at-fo-XXXXXX";
   const gchar* symbolicname = (const gchar*)user_data;
   FILE * tmpfile;
   int result = 0;
@@ -149,9 +129,9 @@ output_pstoedit_writer (FILE* file, gchar* name,
   fclose(tmpfile);
 
  remove_tmp_pstoedit:
-  remove_temporary_file(tmpfile_name_pstoedit);
+  remove(tmpfile_name_pstoedit);
  remove_tmp_p2e:
-  remove_temporary_file(tmpfile_name_p2e);
+  remove(tmpfile_name_p2e);
   return result;
 }
 
@@ -177,31 +157,11 @@ unusable_writer_p(const gchar* suffix)
 static FILE *
 make_temporary_file(char *template, char * mode)
 {
-#ifdef HAVE_MKSTEMP
-  /* #warning "To make temporary file, mkstemp will be used." */
   int tmpfd;
   tmpfd = mkstemp(template);
   if (tmpfd < 0)
     return NULL;
   return fdopen(tmpfd, mode);
-#else
-  /* #warning "To make temporary file, tmpnam will be used." */
-  char * tmpname;
-  tmpname = tmpnam(template);
-  if (template == NULL)
-    return NULL;
-  return fopen(tmpname, mode);
-#endif  /* HAVE_MKSTEMP */
-}
-
-static void
-remove_temporary_file (const gchar* tmpfile_name)
-{
-#if BO_DEBUG == 0
-  remove (tmpfile_name);
-#else
-  fprintf(stderr, "tmp file name: %s\n", tmpfile_name);
-#endif /* Not BO_DEBUG == 0 */
 }
 
 int
