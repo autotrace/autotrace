@@ -41,21 +41,11 @@
 #define OUT_LINE(s)                                 \
   fprintf (epd_file, "%s\n", s)
 
-/* These output their arguments, preceded by the indentation.  */
-#define OUT1(s, e)                                  \
-  fprintf (epd_file, s, e)
-
-#define OUT2(s, e1, e2)                             \
-  fprintf (epd_file, s, e1, e2)
-
-#define OUT3(s, e1, e2, e3)                         \
-  fprintf (epd_file, s, e1, e2, e3)
-
-#define OUT4(s, e1, e2, e3, e4)                     \
-  fprintf (epd_file, s, e1, e2, e3, e4)
+/* This output their arguments, preceded by the indentation.  */
+#define OUT(...)                                \
+  fprintf (epd_file, __VA_ARGS__)
 
 /* These macros just output their arguments.  */
-#define OUT_STRING(s)	fprintf (epd_file, "%s", s)
 #define OUT_REAL(r)	fprintf (epd_file, r == (ROUND (r = ROUND((gfloat)6.0*r)/(gfloat)6.0))				\
                                   ? "%.0f " : "%.3f ", r)
 
@@ -66,7 +56,7 @@
     {                                               \
       OUT_REAL (first);                             \
       OUT_REAL (second);                            \
-      OUT_STRING (op "\n");                         \
+      OUT (op "\n");                         \
     }                                               \
   while (0)
 
@@ -77,13 +67,13 @@
     {                                               \
       OUT_REAL (first);                             \
       OUT_REAL (second);                            \
-      OUT_STRING (" ");                             \
+      OUT (" ");                             \
       OUT_REAL (third);                             \
       OUT_REAL (fourth);                            \
-      OUT_STRING (" ");                             \
+      OUT (" ");                             \
       OUT_REAL (fifth);                             \
       OUT_REAL (sixth);                             \
-      OUT_STRING (" " op " \n");                    \
+      OUT (" " op " \n");                    \
     }                                               \
   while (0)
 
@@ -96,10 +86,10 @@ static int output_epd_header(FILE* epd_file, gchar* name,
   gchar* time;
 
   OUT_LINE ("%EPD-1.0");
-  OUT1 ("%% Created by %s\n", at_version(TRUE));
-  OUT1 ("%% Title: %s\n", name);
-  OUT1 ("%% CreationDate: %s\n", time = at_time_string ());
-  OUT4 ("%%BBox(%d,%d,%d,%d)\n", llx, lly, urx, ury);
+  OUT ("%% Created by %s\n", at_version(TRUE));
+  OUT ("%% Title: %s\n", name);
+  OUT ("%% CreationDate: %s\n", time = at_time_string ());
+  OUT ("%%BBox(%d,%d,%d,%d)\n", llx, lly, urx, ury);
 
   g_free (time);
 
@@ -132,7 +122,7 @@ out_splines (FILE * epd_file, spline_list_array_type shape)
                 OUT_LINE ((shape.centerline || list.open) ? "S" : "f");
                 OUT_LINE("h");
               }
-          OUT4 ("%.3f %.3f %.3f %s\n", (double) list.color.r / 255.0,
+          OUT ("%.3f %.3f %.3f %s\n", (double) list.color.r / 255.0,
             (double) list.color.g / 255.0, (double) list.color.b / 255.0,
             (shape.centerline || list.open) ? "RG" : "rg");
           last_color = list.color;

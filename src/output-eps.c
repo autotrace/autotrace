@@ -41,23 +41,10 @@
   fprintf (ps_file, "%s\n", s)
 
 /* These output their arguments, preceded by the indentation.  */
-#define OUT1(s, e)							\
-  fprintf (ps_file, s, e)
-
-#define OUT2(s, e1, e2)							\
-  fprintf (ps_file, s, e1, e2)
-
-#define OUT3(s, e1, e2, e3)							\
-  fprintf (ps_file, s, e1, e2, e3)
-
-#define OUT4(s, e1, e2, e3, e4)						\
-  fprintf (ps_file, s, e1, e2, e3, e4)
-
-#define OUT5(s, e1, e2, e3, e4, e5)					\
-  fprintf (ps_file, s, e1, e2, e3, e4, e5)
+#define OUT(...)							\
+  fprintf (ps_file, __VA_ARGS__)
 
 /* These macros just output their arguments.  */
-#define OUT_STRING(s)	fprintf (ps_file, "%s", s)
 #define OUT_REAL(r)	fprintf (ps_file, r == (ROUND (r = ROUND((gfloat)6.0*r)/(gfloat)6.0))				\
                                   ? "%.0f " : "%.3f ", r)
 
@@ -68,7 +55,7 @@
     {									\
       OUT_REAL (first);							\
       OUT_REAL (second);						\
-      OUT_STRING (op "\n");						\
+      OUT (op "\n");						\
     }									\
   while (0)
 
@@ -79,13 +66,13 @@
     {									\
       OUT_REAL (first);							\
       OUT_REAL (second);						\
-      OUT_STRING (" ");							\
+      OUT (" ");							\
       OUT_REAL (third);							\
       OUT_REAL (fourth);						\
-      OUT_STRING (" ");							\
+      OUT (" ");							\
       OUT_REAL (fifth);							\
       OUT_REAL (sixth);							\
-      OUT_STRING (" " op " \n");						\
+      OUT (" " op " \n");						\
     }									\
   while (0)
 
@@ -98,10 +85,10 @@ static int output_eps_header(FILE* ps_file, gchar* name,
   gchar* time;
 
   OUT_LINE ("%!PS-Adobe-3.0 EPSF-3.0");
-  OUT1 ("%%%%Creator: Adobe Illustrator by %s\n", at_version(TRUE));
-  OUT1 ("%%%%Title: %s\n", name);
-  OUT1 ("%%%%CreationDate: %s\n", time = at_time_string ());
-  OUT4 ("%%%%BoundingBox: %d %d %d %d\n", llx, lly, urx, ury);
+  OUT ("%%%%Creator: Adobe Illustrator by %s\n", at_version(TRUE));
+  OUT ("%%%%Title: %s\n", name);
+  OUT ("%%%%CreationDate: %s\n", time = at_time_string ());
+  OUT ("%%%%BoundingBox: %d %d %d %d\n", llx, lly, urx, ury);
   OUT_LINE ("%%DocumentData: Clean7Bit");
   OUT_LINE ("%%EndComments");
 
@@ -171,7 +158,7 @@ out_splines (FILE * ps_file, spline_list_array_type shape)
           m -= k;
           y -= k;
           /* symbol k is used for CorelDraw 3/4 compatibility */
-          OUT5 ("%.3f %.3f %.3f %.3f %s\n", (double) c/255.0,
+          OUT ("%.3f %.3f %.3f %.3f %s\n", (double) c/255.0,
             (double) m/255.0,(double) y/255.0, (double) k/255.0,
             (shape.centerline || list.open) ? "K" : "k");
 	      OUT_LINE("*u");

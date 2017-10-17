@@ -148,7 +148,7 @@ void thin_image(at_bitmap *image, const at_color *bg, at_exception_type * exp)
 		if (!PIXEL_EQUAL(p, bg_color))
 		{
 		    /* we have a new colour in the image */
-		    LOG3("Thinning colour (%x, %x, %x)\n", p[0], p[1], p[2]);
+		    LOG("Thinning colour (%x, %x, %x)\n", p[0], p[1], p[2]);
 		    for (m = n - 1; m >= 0L; --m)
 		    {
 			if (PIXEL_EQUAL(ptr[m], p))
@@ -174,7 +174,7 @@ void thin_image(at_bitmap *image, const at_color *bg, at_exception_type * exp)
 		unsigned char c = ptr[n];
 		if (c != bg_color)
 		{
-		    LOG1 ("Thinning colour %x\n", c);
+		    LOG ("Thinning colour %x\n", c);
 		    for (m = n - 1; m >= 0L; --m)
 			if (ptr[m] == c) ptr[m] = bg_color;
 		    thin1(image, c);
@@ -185,7 +185,7 @@ void thin_image(at_bitmap *image, const at_color *bg, at_exception_type * exp)
 
 	default:
 	{
-	  LOG1 ("thin_image: %u-plane images are not supported", spp);
+	  LOG ("thin_image: %u-plane images are not supported", spp);
 	  at_exception_fatal(exp, "thin_image: wrong plane images are passed");
 	  goto cleanup;
 	}
@@ -278,7 +278,7 @@ void thin3(at_bitmap *image, Pixel colour)
             }
            }
           }
-          LOG2 ("ThinImage: pass %d, %d pixels deleted\n", pc, count);
+          LOG ("ThinImage: pass %d, %d pixels deleted\n", pc, count);
       }
       free (qb);
 }
@@ -362,7 +362,7 @@ void thin1(at_bitmap *image, unsigned char colour)
                   }
               }
           }
-          LOG2("thin1: pass %d, %d pixels deleted\n", pc, count);
+          LOG("thin1: pass %d, %d pixels deleted\n", pc, count);
       }
       free (qb);
 }

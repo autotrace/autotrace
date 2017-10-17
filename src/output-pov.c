@@ -39,14 +39,8 @@
   fprintf (pov_file, "%s\n", s)
 
 /* These output their arguments, preceded by the indentation.  */
-#define OUT1(s, e)									\
-  fprintf (pov_file, s, e)
-
-#define OUT3(s, e1, e2, e3)							\
-  fprintf (pov_file, s, e1, e2, e3)
-
-#define OUT8(s, e1, e2, e3, e4, e5, e6, e7, e8)		\
-  fprintf (pov_file, s, e1, e2, e3, e4, e5, e6, e7, e8)
+#define OUT(s, ...)									\
+  fprintf (pov_file, s, __VA_ARGS__)
 
 /* These macros just output their arguments.  */
 #define OUT_REAL(r)	fprintf (pov_file, r == (ROUND (r = ROUND((gfloat)6.0*r)/(gfloat)6.0))				\
@@ -89,7 +83,7 @@ out_splines (FILE * pov_file, spline_list_array_type shape)
 	    {
 			if (!at_color_equal(&list.color, &last_color))
 			  {
-		        OUT3 ("\n  pigment {rgb<%.3f, %.3f, %.3f>}\n", (double) last_color.r/255.0,
+		        OUT ("\n  pigment {rgb<%.3f, %.3f, %.3f>}\n", (double) last_color.r/255.0,
                   (double) last_color.g/255.0,(double) last_color.b/255.0);
 	            OUT_LINE ("  translate <0.0, 0.0, 0.0>");
                 OUT_LINE ("}");
@@ -102,9 +96,9 @@ out_splines (FILE * pov_file, spline_list_array_type shape)
 		{
           OUT_LINE ("prism {");
           OUT_LINE ("  bezier_spline");
-          OUT1 ("  %.1f\n", 0.0);
-          OUT1 ("  %.4f\n",0.0001);
-		  OUT1 ("  %d\n", number);
+          OUT ("  %.1f\n", 0.0);
+          OUT ("  %.4f\n",0.0001);
+		  OUT ("  %d\n", number);
 	      last_color = list.color;
 		}
 
@@ -116,13 +110,13 @@ out_splines (FILE * pov_file, spline_list_array_type shape)
 		  if (this_spline > 0) OUT_LINE (",");
 
 		  if (SPLINE_DEGREE (s) == LINEARTYPE)
-            OUT8 ("  <%.3f, %.3f>, <%.3f, %.3f>, <%.3f, %.3f>, <%.3f, %.3f>",
+            OUT ("  <%.3f, %.3f>, <%.3f, %.3f>, <%.3f, %.3f>, <%.3f, %.3f>",
 			  START_POINT (s).x, START_POINT (s).y,
 			  START_POINT (s).x, START_POINT (s).y,
               END_POINT (s).x, END_POINT (s).y,
               END_POINT (s).x, END_POINT (s).y);
           else
-            OUT8 ("  <%.3f, %.3f>, <%.3f, %.3f>, <%.3f, %.3f>, <%.3f, %.3f>",
+            OUT ("  <%.3f, %.3f>, <%.3f, %.3f>, <%.3f, %.3f>, <%.3f, %.3f>",
 			  START_POINT (s).x, START_POINT (s).y,
 			  CONTROL1 (s).x, CONTROL1 (s).y,
               CONTROL2 (s).x, CONTROL2 (s).y,
@@ -132,7 +126,7 @@ out_splines (FILE * pov_file, spline_list_array_type shape)
   if (SPLINE_LIST_ARRAY_LENGTH(shape) > 0)
 	{
 	  OUT_LINE ("");
-	  OUT3 ("  pigment {rgb<%.3f, %.3f, %.3f>}\n", (double) list.color.r/255.0,
+	  OUT ("  pigment {rgb<%.3f, %.3f, %.3f>}\n", (double) list.color.r/255.0,
         (double) list.color.g/255.0,(double) list.color.b/255.0);
 	  OUT_LINE ("  translate <0.0, 0.0, 0.0>");
       OUT_LINE ("}");

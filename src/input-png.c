@@ -40,7 +40,7 @@ static png_bytep * read_png(png_structp png_ptr, png_infop info_ptr, at_input_op
 #endif
 
 static void handle_warning(png_structp png, const gchar* message) {
-        LOG1("PNG warning: %s", message);
+        LOG("PNG warning: %s", message);
 	at_exception_warning((at_exception_type *)png_get_error_ptr(png),
 			     message);
 	/* at_exception_fatal((at_exception_type *)at_png->error_ptr,
@@ -48,7 +48,7 @@ static void handle_warning(png_structp png, const gchar* message) {
 }
 
 static void handle_error(png_structp png, const gchar* message) {
-	LOG1("PNG error: %s", message);
+	LOG("PNG error: %s", message);
 	at_exception_fatal((at_exception_type *)png_get_error_ptr(png),
 			   message);
 	/* at_exception_fatal((at_exception_type *)at_png->error_ptr,
@@ -135,7 +135,7 @@ at_bitmap input_png_reader(gchar* filename, at_input_opts_type * opts,
 	stream = fopen(filename, "rb");
 	if (!stream)
 	  {
-	    LOG1("Can't open \"%s\"\n", filename);
+	    LOG("Can't open \"%s\"\n", filename);
 	    at_exception_fatal(&exp, "Cannot open input png file");
 	    return image;
 	  }

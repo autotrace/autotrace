@@ -22,18 +22,8 @@ extern FILE *at_log_file;
 
 extern void flush_log_output (void);
 
-#define LOG(s)								\
-  do { if (log_file) fputs (s, log_file); } while (0)
-#define LOG1(s, e)							\
-  do { if (log_file) fprintf (log_file, s, e); } while (0)
-#define LOG2(s, e1, e2)							\
-  do { if (log_file) fprintf (log_file, s, e1, e2); } while (0)
-#define LOG3(s, e1, e2, e3)						\
-  do { if (log_file) fprintf (log_file, s, e1, e2, e3); } while (0)
-#define LOG4(s, e1, e2, e3, e4)						\
-  do { if (log_file) fprintf (log_file, s, e1, e2, e3, e4); } while (0)
-#define LOG5(s, e1, e2, e3, e4, e5)					\
-  do { if (log_file) fprintf (log_file, s, e1, e2, e3, e4, e5); } while (0)
+#define LOG(...)								\
+  do { if (log_file) fprintf (log_file, __VA_ARGS__); } while (0)
 
 #endif /* not LOGREPORT_H */
 

@@ -802,7 +802,7 @@ despeckle (/* in/out */            at_bitmap *bitmap,
     }
   else
     {
-      LOG1 ("despeckle: %u-plane images are not supported", planes);
+      LOG ("despeckle: %u-plane images are not supported", planes);
       at_exception_fatal(excep, "despeckle: wrong plane images are passed");
       return;
     }

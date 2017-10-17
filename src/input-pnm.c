@@ -162,7 +162,7 @@ at_bitmap input_pnm_reader (gchar* filename,
     }
   if (buf[0] != 'P' || buf[2])
     {
-      LOG1("pnm filter: %s is not a valid file\n", filename);
+      LOG("pnm filter: %s is not a valid file\n", filename);
       at_exception_fatal (&excep, "pnm filter: invalid file");
       goto cleanup;
     }

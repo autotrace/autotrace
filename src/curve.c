@@ -103,9 +103,9 @@ append_point (curve_type curve, at_real_coord coord)
 #define LOG_CURVE_POINT(c, p, print_t)					\
   do									\
     {									\
-      LOG2 ("(%.3f,%.3f)", CURVE_POINT (c, p).x, CURVE_POINT (c, p).y);	\
+      LOG ("(%.3f,%.3f)", CURVE_POINT (c, p).x, CURVE_POINT (c, p).y);	\
       if (print_t)							\
-        LOG1 ("/%.2f", CURVE_T (c, p));					\
+        LOG ("/%.2f", CURVE_T (c, p));					\
     }									\
   while (0)
 
@@ -116,15 +116,15 @@ log_curve (curve_type curve, gboolean print_t)
 
   if (!log_file) return;
 
-  LOG1 ("curve id = %lx:\n", (unsigned long) curve);
-  LOG1 ("  length = %u.\n", CURVE_LENGTH (curve));
+  LOG ("curve id = %lx:\n", (unsigned long) curve);
+  LOG ("  length = %u.\n", CURVE_LENGTH (curve));
   if (CURVE_CYCLIC (curve))
     LOG ("  cyclic.\n");
 
   /* It should suffice to check just one of the tangents for being null
      -- either they both should be, or neither should be.  */
   if (CURVE_START_TANGENT (curve) != NULL)
-    LOG4 ("  tangents = (%.3f,%.3f) & (%.3f,%.3f).\n",
+    LOG ("  tangents = (%.3f,%.3f) & (%.3f,%.3f).\n",
           CURVE_START_TANGENT (curve)->dx, CURVE_START_TANGENT (curve)->dy,
           CURVE_END_TANGENT (curve)->dx, CURVE_END_TANGENT (curve)->dy);
 
@@ -177,15 +177,15 @@ log_entire_curve (curve_type curve)
 
   if (!log_file) return;
 
-  LOG1 ("curve id = %lx:\n", (unsigned long) curve);
-  LOG1 ("  length = %u.\n", CURVE_LENGTH (curve));
+  LOG ("curve id = %lx:\n", (unsigned long) curve);
+  LOG ("  length = %u.\n", CURVE_LENGTH (curve));
   if (CURVE_CYCLIC (curve))
     LOG ("  cyclic.\n");
 
   /* It should suffice to check just one of the tangents for being null
      -- either they both should be, or neither should be.  */
   if (CURVE_START_TANGENT (curve) != NULL)
-    LOG4 ("  tangents = (%.3f,%.3f) & (%.3f,%.3f).\n",
+    LOG ("  tangents = (%.3f,%.3f) & (%.3f,%.3f).\n",
           CURVE_START_TANGENT (curve)->dx, CURVE_START_TANGENT (curve)->dy,
           CURVE_END_TANGENT (curve)->dx, CURVE_END_TANGENT (curve)->dy);
 

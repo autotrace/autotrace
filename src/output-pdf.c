@@ -40,20 +40,10 @@
   fprintf (pdf_file, "%s\n", s)
 
 /* These output their arguments, preceded by the indentation.  */
-#define OUT1(s, e)                                  \
-  fprintf (pdf_file, s, e)
-
-#define OUT2(s, e1, e2)                             \
-  fprintf (pdf_file, s, e1, e2)
-
-#define OUT3(s, e1, e2, e3)                         \
-  fprintf (pdf_file, s, e1, e2, e3)
-
-#define OUT4(s, e1, e2, e3, e4)                     \
-  fprintf (pdf_file, s, e1, e2, e3, e4)
+#define OUT(...)                                  \
+  fprintf (pdf_file, __VA_ARGS__)
 
 /* These macros just output their arguments.  */
-#define OUT_STRING(s)	fprintf (pdf_file, "%s", s)
 #define OUT_REAL(r)	fprintf (pdf_file, r == (ROUND (r = ROUND((gfloat)6.0*r)/(gfloat)6.0))				\
                                   ? "%.0f " : "%.3f ", r)
 
@@ -64,7 +54,7 @@
     {                                               \
       OUT_REAL (first);                             \
       OUT_REAL (second);                            \
-      OUT_STRING (op "\n");                         \
+      OUT (op "\n");                         \
     }                                               \
   while (0)
 
@@ -75,13 +65,13 @@
     {                                               \
       OUT_REAL (first);                             \
       OUT_REAL (second);                            \
-      OUT_STRING (" ");                             \
+      OUT (" ");                             \
       OUT_REAL (third);                             \
       OUT_REAL (fourth);                            \
-      OUT_STRING (" ");                             \
+      OUT (" ");                             \
       OUT_REAL (fifth);                             \
       OUT_REAL (sixth);                             \
-      OUT_STRING (" " op " \n");                    \
+      OUT (" " op " \n");                    \
     }                                               \
   while (0)
 
@@ -90,20 +80,10 @@
   sprintf (temp, "%s\n", s), *length += strlen(temp)
 
 /* These output their arguments, preceded by the indentation.  */
-#define SOUT1(s, e)                                  \
-  sprintf (temp, s, e), *length += strlen(temp)
-
-#define SOUT2(s, e1, e2)                             \
-  sprintf (temp, s, e1, e2), *length += strlen(temp)
-
-#define SOUT3(s, e1, e2, e3)                         \
-  sprintf (temp, s, e1, e2, e3), *length += strlen(temp)
-
-#define SOUT4(s, e1, e2, e3, e4)                     \
-  sprintf (temp, s, e1, e2, e3, e4), *length += strlen(temp)
+#define SOUT(...)                                  \
+  sprintf (temp, __VA_ARGS__), *length += strlen(temp)
 
 /* These macros just output their arguments.  */
-#define SOUT_STRING(s)	sprintf (temp, "%s", s), *length += strlen(temp)
 #define SOUT_REAL(r)	sprintf (temp, r == (ROUND (r = ROUND((gfloat)6.0*r)/(gfloat)6.0))				\
                                   ? "%.0f " : "%.3f ", r), *length += strlen(temp)
 
@@ -114,7 +94,7 @@
     {                                               \
       SOUT_REAL (first);                             \
       SOUT_REAL (second);                            \
-      SOUT_STRING (op "\n");                         \
+      SOUT (op "\n");                         \
     }                                               \
   while (0)
 
@@ -125,13 +105,13 @@
     {                                               \
       SOUT_REAL (first);                             \
       SOUT_REAL (second);                            \
-      SOUT_STRING (" ");                             \
+      SOUT (" ");                             \
       SOUT_REAL (third);                             \
       SOUT_REAL (fourth);                            \
-      SOUT_STRING (" ");                             \
+      SOUT (" ");                             \
       SOUT_REAL (fifth);                             \
       SOUT_REAL (sixth);                             \
-      SOUT_STRING (" " op " \n");                    \
+      SOUT (" " op " \n");                    \
     }                                               \
   while (0)
 
@@ -163,7 +143,7 @@ static int output_pdf_header(FILE* pdf_file, gchar* name,
   OUT_LINE ("4 0 obj");
   OUT_LINE ("   << /Type /Page");
   OUT_LINE ("      /Parent 3 0 R");
-  OUT4     ("      /MediaBox [%d %d %d %d]\n", llx, lly, urx, ury);
+  OUT      ("      /MediaBox [%d %d %d %d]\n", llx, lly, urx, ury);
   OUT_LINE ("      /Contents 5 0 R");
   OUT_LINE ("      /Resources << /ProcSet 6 0 R >>");
   OUT_LINE ("   >>");
@@ -201,16 +181,16 @@ static int output_pdf_tailor(FILE* pdf_file, size_t length,
   tmp += (strlen (temp));
   sprintf(temp, "%d", ury);
   tmp += (strlen (temp));
-  OUT1     ("%010d 00000 n \n", tmp);
+  OUT     ("%010d 00000 n \n", tmp);
   sprintf(temp, "%d", length);
   tmp += 50 + length + strlen(temp);
-  OUT1     ("%010d 00000 n \n", tmp);
+  OUT     ("%010d 00000 n \n", tmp);
   OUT_LINE ("trailer");
   OUT_LINE ("   << /Size 7");
   OUT_LINE ("      /Root 1 0 R");
   OUT_LINE ("   >>");
   OUT_LINE ("startxref");
-  OUT1 ("%d\n", tmp + 25);
+  OUT ("%d\n", tmp + 25);
   OUT_LINE ("%%EOF");
 
   return 0;
@@ -245,7 +225,7 @@ out_splines (FILE *pdf_file, spline_list_array_type shape, size_t *length)
               SOUT_LINE ((shape.centerline || list.open) ? "S" : "f");
               SOUT_LINE("h");
             }
-          SOUT4 ("%.3f %.3f %.3f %s\n", (double) list.color.r / 255.0,
+          SOUT ("%.3f %.3f %.3f %s\n", (double) list.color.r / 255.0,
             (double) list.color.g / 255.0, (double) list.color.b / 255.0,
             (shape.centerline || list.open) ? "RG" : "rg");
           last_color = list.color;
@@ -270,7 +250,7 @@ out_splines (FILE *pdf_file, spline_list_array_type shape, size_t *length)
     SOUT_LINE ((shape.centerline || list.open) ? "S" : "f");
 
   OUT_LINE ("5 0 obj");
-  OUT1 ("   << /Length %d >>\n", *length);
+  OUT ("   << /Length %d >>\n", *length);
   OUT_LINE ("stream");
 
   last_color.r = 0;
@@ -293,7 +273,7 @@ out_splines (FILE *pdf_file, spline_list_array_type shape, size_t *length)
               OUT_LINE ((shape.centerline || list.open) ? "S" : "f");
               OUT_LINE("h");
             }
-          OUT4 ("%.3f %.3f %.3f %s\n", (double) list.color.r / 255.0,
+          OUT ("%.3f %.3f %.3f %s\n", (double) list.color.r / 255.0,
             (double) list.color.g / 255.0, (double) list.color.b / 255.0,
             (shape.centerline || list.open) ? "RG" : "rg");
           last_color = list.color;

@@ -123,7 +123,7 @@ input_tga_reader (gchar* filename,
   fp = fopen (filename, "rb");
   if (!fp)
     {
-      LOG1 ("TGA: can't open \"%s\"\n", filename);
+      LOG ("TGA: can't open \"%s\"\n", filename);
       at_exception_fatal(&exp, "Cannot open input tga file");
     }
 
@@ -131,7 +131,7 @@ input_tga_reader (gchar* filename,
   if (fseek (fp, 0L - (sizeof (tga_footer)), SEEK_END)
       || fread (&tga_footer, sizeof (tga_footer), 1, fp) != 1)
     {
-      LOG1 ("TGA: Cannot read footer from \"%s\"\n", filename);
+      LOG ("TGA: Cannot read footer from \"%s\"\n", filename);
       at_exception_fatal(&exp, "TGA: Cannot read footer");
       goto cleanup;
     }
@@ -141,7 +141,7 @@ input_tga_reader (gchar* filename,
   if (fseek (fp, 0, SEEK_SET) ||
       fread (&hdr, sizeof (hdr), 1, fp) != 1)
     {
-      LOG1 ("TGA: Cannot read header from \"%s\"\n", filename);
+      LOG ("TGA: Cannot read header from \"%s\"\n", filename);
       at_exception_fatal(&exp, "TGA: Cannot read header");
       goto cleanup;
     }
@@ -149,7 +149,7 @@ input_tga_reader (gchar* filename,
   /* Skip the image ID field. */
   if (hdr.idLength && fseek (fp, hdr.idLength, SEEK_CUR))
     {
-      LOG1 ("TGA: Cannot skip ID field in \"%s\"\n", filename);
+      LOG ("TGA: Cannot skip ID field in \"%s\"\n", filename);
       at_exception_fatal(&exp, "TGA: Cannot skip ID field");
       goto cleanup;
     }
@@ -311,24 +311,24 @@ ReadImage (FILE              *fp,
 
   if (abpp + pbpp > bpp)
     {
-      LOG3 ("TGA: %d bit image, %d bit alpha is greater than %d total bits per pixel\n",
+      LOG ("TGA: %d bit image, %d bit alpha is greater than %d total bits per pixel\n",
 	    pbpp, abpp, bpp);
       at_exception_warning (exp, "TGA: alpha bit is too great");
 
       /* Assume that alpha bits were set incorrectly. */
       abpp = bpp - pbpp;
-      LOG1("TGA: reducing to %d bit alpha\n", abpp);
+      LOG("TGA: reducing to %d bit alpha\n", abpp);
       at_exception_warning (exp, "TGA: alpha bit is reduced");
     }
   else if (abpp + pbpp < bpp)
     {
-      LOG3 ("TGA: %d bit image, %d bit alpha is less than %d total bits per pixel\n",
+      LOG ("TGA: %d bit image, %d bit alpha is less than %d total bits per pixel\n",
 	    pbpp, abpp, bpp);
       at_exception_warning(exp, "TGA: alpha bit is too little");
 
       /* Again, assume that alpha bits were set incorrectly. */
       abpp = bpp - pbpp;
-      LOG1 ("TGA: increasing to %d bit alpha\n", abpp);
+      LOG ("TGA: increasing to %d bit alpha\n", abpp);
       at_exception_warning (exp, "TGA: alpha bit is increased");
     }
 
@@ -385,7 +385,7 @@ ReadImage (FILE              *fp,
 
     default:
       {
-	LOG1 ("TGA: unrecognized image type %d\n", hdr->imageType);
+	LOG ("TGA: unrecognized image type %d\n", hdr->imageType);
 	at_exception_fatal (exp, "TGA: unrecognized image type");
 	return image;
       }
@@ -407,7 +407,7 @@ ReadImage (FILE              *fp,
     {
       if (hdr->colorMapType != 1)
 	{
-	  LOG1 ("TGA: indexed image has invalid color map type %d\n",
+	  LOG ("TGA: indexed image has invalid color map type %d\n",
 		hdr->colorMapType);
 	  at_exception_fatal (exp,
 			      "TGA: indexed image has invalid color map type");
@@ -416,7 +416,7 @@ ReadImage (FILE              *fp,
     }
   else if (hdr->colorMapType != 0)
     {
-      LOG1("TGA: non-indexed image has invalid color map type %d\n",
+      LOG("TGA: non-indexed image has invalid color map type %d\n",
 	   hdr->colorMapType);
       at_exception_fatal (exp, "TGA: non-indexed image has invalid color map type");
       return image;
@@ -435,7 +435,7 @@ ReadImage (FILE              *fp,
 
       if (length == 0)
 	{
-	  LOG1 ("TGA: invalid color map length %d\n", length);
+	  LOG ("TGA: invalid color map length %d\n", length);
 	  at_exception_fatal(exp, "TGA: invalid color map length");
 	  return image;
 	}
@@ -450,7 +450,7 @@ ReadImage (FILE              *fp,
       /* Read in the rest of the colormap. */
       if (fread (cmap + (index * pelbytes), pelbytes, length, fp) != length)
 	{
-	  LOG1 ("TGA: error reading colormap (ftell == %ld)\n", ftell (fp));
+	  LOG ("TGA: error reading colormap (ftell == %ld)\n", ftell (fp));
 	  at_exception_fatal(exp, "TGA: error reading colormap");
 	  return image;
 	}
@@ -518,7 +518,7 @@ ReadImage (FILE              *fp,
       if (!badread)
         {
           /* Probably premature end of file. */
-	  LOG1 ("TGA: error reading (ftell == %ld)\n", ftell (fp));
+	  LOG ("TGA: error reading (ftell == %ld)\n", ftell (fp));
 	  at_exception_warning(exp, "TGA: eroor reading file");
           badread = 1;
         }

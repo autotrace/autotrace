@@ -104,7 +104,7 @@ main (int argc, char * argv[])
     FATAL(_("Input and output file may not be the same\n"));
 
   if ((input_rootname = remove_suffix (get_basename (input_name))) == NULL)
-	FATAL1 (_("Not a valid input file name %s"), input_name);
+	FATAL (_("Not a valid input file name %s"), input_name);
 
   if (logging)
     log_file = xfopen (logfile_name = extend_filename (input_rootname, "log"), "w");
@@ -131,7 +131,7 @@ main (int argc, char * argv[])
     {
       output_writer = at_output_get_handler_by_suffix(DEFAULT_FORMAT);
       if (output_writer == NULL)
-	FATAL1(_("Default format %s is not supported"), DEFAULT_FORMAT);
+	FATAL(_("Default format %s is not supported"), DEFAULT_FORMAT);
     }
 
   /* Open output file */
@@ -395,7 +395,7 @@ read_command_line (int argc, char * argv[],
         {
 	  input_reader = at_input_get_handler_by_suffix (optarg);
 	  if (!input_reader)
-	    FATAL1 (_("Input format %s is not supported\n"), optarg);
+	    FATAL (_("Input format %s is not supported\n"), optarg);
         }
 
       else if (ARGUMENT_IS ("line-threshold"))
@@ -424,7 +424,7 @@ read_command_line (int argc, char * argv[],
         {
 	    output_writer = at_output_get_handler_by_suffix (optarg);
 	    if (output_writer == NULL)
-	      FATAL1 (_("Output format %s is not supported"), optarg);
+	      FATAL (_("Output format %s is not supported"), optarg);
         }
       else if (ARGUMENT_IS ("preserve_width"))
 	fitting_opts->preserve_width = TRUE;

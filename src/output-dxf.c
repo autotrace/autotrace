@@ -43,8 +43,8 @@
   fprintf (dxf_file, "%s\n", s)
 
 /* These output their arguments, preceded by the indentation.  */
-#define OUT1(s, e)							\
-  fprintf (dxf_file, s, e)
+#define OUT(s, ...)							\
+  fprintf (dxf_file, s, __VA_ARGS__)
 
 #define color_check FALSE
 
@@ -826,11 +826,11 @@ void output_layer(FILE *dxf_file,
         OUT_LINE("  0");
         OUT_LINE("LAYER");
         OUT_LINE("   2");
-        OUT1    ("C%d\n", i);
+        OUT     ("C%d\n", i);
         OUT_LINE("  70");
         OUT_LINE("     64");
         OUT_LINE("  62");
-        OUT1    ("%d\n", i);
+        OUT     ("%d\n", i);
         OUT_LINE("  6");
         OUT_LINE("CONTINUOUS");
        }
@@ -866,17 +866,17 @@ int output_dxf12_writer(FILE* dxf_file, gchar* name,
   OUT_LINE ("  9");
   OUT_LINE ("$EXTMIN");
   OUT_LINE ("  10");
-  OUT1     (" %f\n", (double)llx);
+  OUT      (" %f\n", (double)llx);
   OUT_LINE ("  20");
-  OUT1     (" %f\n", (double)lly);
+  OUT      (" %f\n", (double)lly);
   OUT_LINE ("  30");
   OUT_LINE (" 0.000000");
   OUT_LINE ("  9");
   OUT_LINE ("$EXTMAX");
   OUT_LINE ("  10");
-  OUT1     (" %f\n", (double)urx);
+  OUT      (" %f\n", (double)urx);
   OUT_LINE ("  20");
-  OUT1     (" %f\n", (double)ury);
+  OUT      (" %f\n", (double)ury);
   OUT_LINE ("  30");
   OUT_LINE (" 0.000000");
   OUT_LINE ("  0");

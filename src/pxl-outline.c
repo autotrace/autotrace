@@ -130,7 +130,7 @@ find_outline_pixels (at_bitmap * bitmap, at_color *bg_color,
 
               CHECK_FATAL ();   /* FREE(DONE) outline_list */
 
-              LOG1 ("#%u: (counterclockwise)", O_LIST_LENGTH (outline_list));
+              LOG ("#%u: (counterclockwise)", O_LIST_LENGTH (outline_list));
 
               outline = find_one_outline (bitmap, edge, row, col, marked, FALSE, FALSE, exp);
               CHECK_FATAL();    /* FREE(DONE) outline_list */
@@ -138,7 +138,7 @@ find_outline_pixels (at_bitmap * bitmap, at_color *bg_color,
               O_CLOCKWISE (outline) = FALSE;
               append_pixel_outline (&outline_list, outline);
 
-              LOG1 (" [%u].\n", O_LENGTH (outline));
+              LOG (" [%u].\n", O_LENGTH (outline));
             }
           else
             CHECK_FATAL ();	/* FREE(DONE) outline_list */
@@ -159,7 +159,7 @@ find_outline_pixels (at_bitmap * bitmap, at_color *bg_color,
                   /* This lines are for debugging only:*/
                   if (is_background)
                     {
-                      LOG1 ("#%u: (clockwise)", O_LIST_LENGTH (outline_list));
+                      LOG ("#%u: (clockwise)", O_LIST_LENGTH (outline_list));
 
                       outline = find_one_outline (bitmap, edge, row-1, col,
                                                   marked, TRUE, FALSE, exp);
@@ -168,7 +168,7 @@ find_outline_pixels (at_bitmap * bitmap, at_color *bg_color,
                       O_CLOCKWISE (outline) = TRUE;
                       append_pixel_outline (&outline_list, outline);
 
-                      LOG1 (" [%u].\n", O_LENGTH (outline));
+                      LOG (" [%u].\n", O_LENGTH (outline));
                     }
                   else
                     {
@@ -223,7 +223,7 @@ find_one_outline (at_bitmap * bitmap, edge_type original_edge,
       /* Put this edge into the output list */
       if (!ignore)
         {
-          LOG2 (" (%d,%d)", pos.x, pos.y);
+          LOG (" (%d,%d)", pos.x, pos.y);
           append_outline_pixel (&outline, pos);
         }
 
@@ -326,7 +326,7 @@ find_centerline_pixels (at_bitmap * bitmap, at_color bg_color,
                 }
             }
 
-          LOG2("#%u: (%sclockwise) ", O_LIST_LENGTH(outline_list),
+          LOG("#%u: (%sclockwise) ", O_LIST_LENGTH(outline_list),
                clockwise ? "" : "counter");
 
           outline = find_one_centerline(bitmap, dir, row, col, marked);
@@ -411,8 +411,8 @@ find_centerline_pixels (at_bitmap * bitmap, at_color bg_color,
           O_CLOCKWISE(outline) = clockwise;
           if (O_LENGTH(outline) > 1)
             append_pixel_outline(&outline_list, outline);
-          LOG1("(%s)", (outline.open ? " open" : " closed"));
-          LOG1(" [%u].\n", O_LENGTH(outline));
+          LOG("(%s)", (outline.open ? " open" : " closed"));
+          LOG(" [%u].\n", O_LENGTH(outline));
           if (O_LENGTH(outline) == 1)
             free_pixel_outline(&outline);
         }
@@ -447,7 +447,7 @@ find_one_centerline(at_bitmap *bitmap, direction_type search_dir,
      to Cartesian coordinates and specifying the left edge so that
      the coordinates won't be adjusted. */
   pos.x = col; pos.y = AT_BITMAP_HEIGHT(bitmap) - row - 1;
-  LOG2 (" (%d,%d)", pos.x, pos.y);
+  LOG (" (%d,%d)", pos.x, pos.y);
   append_outline_pixel(&outline, pos);
 
   for ( ; ; )
@@ -475,7 +475,7 @@ find_one_centerline(at_bitmap *bitmap, direction_type search_dir,
 
       /* Add the new pixel to the output list. */
       pos.x = col; pos.y = AT_BITMAP_HEIGHT(bitmap) - row - 1;
-      LOG2 (" (%d,%d)", pos.x, pos.y);
+      LOG (" (%d,%d)", pos.x, pos.y);
       append_outline_pixel(&outline, pos);
     }
   mark_dir(original_row, original_col, original_dir, marked);

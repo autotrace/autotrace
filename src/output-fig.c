@@ -417,7 +417,7 @@ static int get_fig_colour(at_color this_colour, at_exception_type * exp)
 	fig_colour_map[LAST_FIG_COLOUR].c.b = this_colour.b;
 	LAST_FIG_COLOUR++;
 	if (LAST_FIG_COLOUR >= MAX_FIG_COLOUR) {
-	  LOG1("Output-Fig: too many colours: %d", LAST_FIG_COLOUR);
+	  LOG("Output-Fig: too many colours: %d", LAST_FIG_COLOUR);
 	  at_exception_fatal(exp, "Output-Fig: too many colours");
 	  return 0;
 	}
@@ -438,7 +438,7 @@ figcolloop:
 	    fig_colour_map[LAST_FIG_COLOUR].c.b = this_colour.b;
 	    LAST_FIG_COLOUR++;
 	    if (LAST_FIG_COLOUR >= MAX_FIG_COLOUR) {
-	      LOG1("Output-Fig: too many colours: %d", LAST_FIG_COLOUR);
+	      LOG("Output-Fig: too many colours: %d", LAST_FIG_COLOUR);
 	      at_exception_fatal(exp, "Output-Fig: too many colours");
 	      return 0;
 	    }
@@ -448,7 +448,7 @@ figcolloop:
 	this_ind = fig_colour_map[this_ind].alternate;
         /* Sanity check ... if colour too big - abort */
 	if (i++ > MAX_FIG_COLOUR) {
-	  LOG1("Output-Fig: too many colours (loop): %d", i);
+	  LOG("Output-Fig: too many colours (loop): %d", i);
 	  at_exception_fatal(exp, "Output-Fig: too many colours (loop)");
 	  return 0;
 	}

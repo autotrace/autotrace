@@ -96,7 +96,7 @@ input_bmp_reader (gchar* filename,
 
   if (!fd)
     {
-      LOG1 ("Can't open \"%s\"\n", filename);
+      LOG ("Can't open \"%s\"\n", filename);
       at_exception_fatal(&exp, "bmp: cannot open input file");
       return image;
     }
@@ -106,7 +106,7 @@ input_bmp_reader (gchar* filename,
 
   if (!ReadOK(fd, buffer, 18) || (strncmp((const char *)buffer,"BM",2)))
     {
-      LOG1 ("Not a valid BMP file %s\n", filename);
+      LOG ("Not a valid BMP file %s\n", filename);
       at_exception_fatal(&exp, "bmp: invalid input file");
       goto cleanup;
     }

@@ -319,7 +319,7 @@ binarize(at_bitmap *bitmap)
     }
     else
     {
-	    WARNING1("binarize: %u-plane images are not supported", spp);
+	    WARNING("binarize: %u-plane images are not supported", spp);
     }
 }
 
@@ -340,7 +340,7 @@ ip_thin(bitmap_type input_b)
 
     if (AT_BITMAP_PLANES(input_b) != 1)
     {
-	    FATAL1("thin: single-plane image required; "
+	    FATAL("thin: single-plane image required; "
 	        "%u-plane images cannot be thinned", AT_BITMAP_PLANES(input_b));
 	    return b;
     }

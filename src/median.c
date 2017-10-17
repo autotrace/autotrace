@@ -868,7 +868,7 @@ void quantize(at_bitmap *image, long ncolors, const at_color *bgColor,
 
     if (spp != 3 && spp != 1)
     {
-      LOG1 ("quantize: %u-plane images are not supported", spp);
+      LOG ("quantize: %u-plane images are not supported", spp);
       at_exception_fatal(exp, "quantize: wrong plane images are passed");
       return;
     }
