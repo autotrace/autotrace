@@ -1,4 +1,4 @@
-/* output-pov.c: utility routines for Povray output. 
+/* output-pov.c: utility routines for Povray output.
 
    Copyright (C) 2003 Martin Weber.
 
@@ -23,10 +23,10 @@
 #include "output.h"
 
 int output_pov_writer (FILE* file, gchar* name,
-		       int llx, int lly, int urx, int ury, 
+		       int llx, int lly, int urx, int ury,
 		       at_output_opts_type * opts,
 		       at_spline_list_array_type shape,
-		       at_msg_func msg_func, 
+		       at_msg_func msg_func,
 		       gpointer msg_data,
 		       gpointer uesr_data);
 

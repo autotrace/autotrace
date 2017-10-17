@@ -323,10 +323,10 @@ static void out_fig_splines(FILE * file, spline_list_array_type shape,
 }
 
 int output_fig_writer(FILE* file, gchar* name,
-		      int llx, int lly, int urx, int ury, 
+		      int llx, int lly, int urx, int ury,
 		      at_output_opts_type * opts,
 		      spline_list_array_type shape,
-		      at_msg_func msg_func, 
+		      at_msg_func msg_func,
 		      gpointer msg_data,
 		      gpointer user_data)
 {
@@ -419,7 +419,7 @@ static int get_fig_colour(at_color this_colour, at_exception_type * exp)
 	if (LAST_FIG_COLOUR >= MAX_FIG_COLOUR) {
 	  LOG1("Output-Fig: too many colours: %d", LAST_FIG_COLOUR);
 	  at_exception_fatal(exp, "Output-Fig: too many colours");
-	  return 0;	  
+	  return 0;
 	}
 	return(fig_hash[hash].colour);
     } else {
@@ -440,7 +440,7 @@ figcolloop:
 	    if (LAST_FIG_COLOUR >= MAX_FIG_COLOUR) {
 	      LOG1("Output-Fig: too many colours: %d", LAST_FIG_COLOUR);
 	      at_exception_fatal(exp, "Output-Fig: too many colours");
-	      return 0;	  
+	      return 0;
 	    }
 	    return(fig_colour_map[this_ind].alternate);
 	}

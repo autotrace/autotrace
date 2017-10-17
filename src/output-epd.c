@@ -136,7 +136,7 @@ out_splines (FILE * epd_file, spline_list_array_type shape)
             (double) list.color.g / 255.0, (double) list.color.b / 255.0,
             (shape.centerline || list.open) ? "RG" : "rg");
           last_color = list.color;
-        }    
+        }
       OUT_COMMAND2 (START_POINT (first).x, START_POINT (first).y, "m");
 
       for (this_spline = 0; this_spline < SPLINE_LIST_LENGTH (list);
@@ -159,10 +159,10 @@ out_splines (FILE * epd_file, spline_list_array_type shape)
 
 
 int output_epd_writer(FILE* epd_file, gchar* name,
-		      int llx, int lly, int urx, int ury, 
+		      int llx, int lly, int urx, int ury,
 		      at_output_opts_type * opts,
 		      spline_list_array_type shape,
-		      at_msg_func msg_func, 
+		      at_msg_func msg_func,
 		      gpointer msg_data,
 		      gpointer user_data)
 {

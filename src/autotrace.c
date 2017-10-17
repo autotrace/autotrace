@@ -70,7 +70,7 @@ at_fitting_opts_copy (at_fitting_opts_type * original)
   return new_opts;
 }
 
-void 
+void
 at_fitting_opts_free(at_fitting_opts_type * opts)
 {
   if (opts->background_color != NULL)
@@ -112,7 +112,7 @@ at_output_opts_new(void)
 {
   at_output_opts_type * opts;
   XMALLOC(opts, sizeof(at_output_opts_type));
-  opts->dpi 	     = AT_DEFAULT_DPI;
+  opts->dpi	     = AT_DEFAULT_DPI;
   return opts;
 }
 
@@ -138,7 +138,7 @@ at_bitmap_read (at_bitmap_reader * reader,
 {
   gboolean new_opts = FALSE;
   at_bitmap * bitmap;
-  XMALLOC(bitmap, sizeof(at_bitmap)); 
+  XMALLOC(bitmap, sizeof(at_bitmap));
   if (opts == NULL)
     {
       opts     = at_input_opts_new();
@@ -156,7 +156,7 @@ at_bitmap_new(unsigned short width,
 	      unsigned int planes)
 {
   at_bitmap * bitmap;
-  XMALLOC(bitmap, sizeof(at_bitmap)); 
+  XMALLOC(bitmap, sizeof(at_bitmap));
   *bitmap = at_bitmap_init(NULL, width, height, planes);
   return bitmap;
 }
@@ -170,10 +170,10 @@ at_bitmap_copy(const at_bitmap * src)
   width  = at_bitmap_get_width(src);
   height = at_bitmap_get_height(src);
   planes = at_bitmap_get_planes(src);
-    
+
   dist = at_bitmap_new(width, height, planes);
-  memcpy(dist->bitmap, 
-	 src->bitmap, 
+  memcpy(dist->bitmap,
+	 src->bitmap,
 	 width * height * planes * sizeof(unsigned char));
   return dist;
 }
@@ -185,7 +185,7 @@ at_bitmap_init(unsigned char * area,
 	       unsigned int planes)
 {
   at_bitmap bitmap;
-  
+
   if (area)
     bitmap.bitmap = area;
   else
@@ -196,13 +196,13 @@ at_bitmap_init(unsigned char * area,
 	XCALLOC(bitmap.bitmap, width * height * planes * sizeof(unsigned char));
     }
 
-  bitmap.width 	  = width;
+  bitmap.width	  = width;
   bitmap.height   = height;
   bitmap.np       =  planes;
-  return bitmap;  
+  return bitmap;
 }
 
-void 
+void
 at_bitmap_free (at_bitmap * bitmap)
 {
   if (AT_BITMAP_BITS (bitmap) != NULL)
@@ -225,7 +225,7 @@ at_bitmap_get_height (const at_bitmap * bitmap)
 unsigned short
 at_bitmap_get_planes (const at_bitmap * bitmap)
 {
-  /* Here we use cast rather changing the type definition of 
+  /* Here we use cast rather changing the type definition of
      at_bitmap::np to keep binary compatibility. */
   return (unsigned short) bitmap->np;
 }
@@ -238,7 +238,7 @@ at_bitmap_get_color (const at_bitmap * bitmap,
   unsigned char *p;
   g_return_if_fail (color);
   g_return_if_fail (bitmap);
-  
+
   p  = AT_BITMAP_PIXEL (bitmap, row, col);
   if (at_bitmap_get_planes (bitmap) >= 3)
     at_color_set(color, p[0], p[1], p[2]);
@@ -252,30 +252,30 @@ at_bitmap_equal_color(const at_bitmap * bitmap,
 		      at_color * color)
 {
   at_color c;
-  
+
   g_return_val_if_fail (bitmap, FALSE);
   g_return_val_if_fail (color, FALSE);
-  
+
   at_bitmap_get_color(bitmap, row, col, &c);
   return at_color_equal(&c, color);
 }
 
-at_splines_type * 
+at_splines_type *
 at_splines_new (at_bitmap * bitmap,
 		at_fitting_opts_type * opts,
 		at_msg_func msg_func, gpointer msg_data)
 {
-  return at_splines_new_full(bitmap, opts, 
+  return at_splines_new_full(bitmap, opts,
 			     msg_func, msg_data,
 			     NULL, NULL, NULL, NULL);
 }
 
-/* at_splines_new_full modify its argument: BITMAP 
+/* at_splines_new_full modify its argument: BITMAP
    when despeckle, quantize and/or thin_image are invoked. */
-at_splines_type * 
+at_splines_type *
 at_splines_new_full (at_bitmap * bitmap,
 		     at_fitting_opts_type * opts,
-		     at_msg_func msg_func, 
+		     at_msg_func msg_func,
 		     gpointer msg_data,
 		     at_progress_func notify_progress,
 		     gpointer progress_data,
@@ -299,11 +299,11 @@ at_splines_new_full (at_bitmap * bitmap,
 #define FATAL_THEN_RETURN() if (FATALP) return splines;
 #define FATAL_THEN_CLEANUP_DIST() if (FATALP) goto cleanup_dist;
 #define FATAL_THEN_CLEANUP_PIXELS() if (FATALP) {FREE_SPLINE(); goto cleanup_pixels;}
-  
+
   if (opts->despeckle_level > 0)
     {
-      despeckle (bitmap, 
-		 opts->despeckle_level, 
+      despeckle (bitmap,
+		 opts->despeckle_level,
 		 opts->despeckle_tightness,
 		 opts->noise_removal,
 		 &exp);
@@ -330,33 +330,33 @@ at_splines_new_full (at_bitmap * bitmap,
           dist = &dist_map;
 	  FATAL_THEN_RETURN();
         }
-      /* Hereafter, dist is allocated. dist must be freed if 
-	 the execution is canceled or exception is raised; 
+      /* Hereafter, dist is allocated. dist must be freed if
+	 the execution is canceled or exception is raised;
 	 use FATAL_THEN_CLEANUP_DIST. */
       thin_image (bitmap, opts->background_color, &exp);
       FATAL_THEN_CLEANUP_DIST()
     }
 
-  /* Hereafter, pixels is allocated. pixels must be freed if 
+  /* Hereafter, pixels is allocated. pixels must be freed if
      the execution is canceled; use CANCEL_THEN_CLEANUP_PIXELS. */
   if (opts->centerline)
     {
       at_color background_color = { 0xff, 0xff, 0xff };
-      if (opts->background_color) 
+      if (opts->background_color)
         background_color = *opts->background_color;
 
-      pixels = find_centerline_pixels(bitmap, background_color, 
+      pixels = find_centerline_pixels(bitmap, background_color,
 				      notify_progress, progress_data,
 				      test_cancel, testcancel_data, &exp);
     }
   else
-    pixels = find_outline_pixels(bitmap, opts->background_color, 
+    pixels = find_outline_pixels(bitmap, opts->background_color,
 				 notify_progress, progress_data,
 				 test_cancel, testcancel_data, &exp);
   FATAL_THEN_CLEANUP_DIST();
   CANCEL_THEN_CLEANUP_DIST();
-  
-  XMALLOC(splines, sizeof(at_splines_type)); 
+
+  XMALLOC(splines, sizeof(at_splines_type));
   *splines = fitted_splines (pixels, opts, dist,
 			     image_header.width,
 			     image_header.height,
@@ -365,7 +365,7 @@ at_splines_new_full (at_bitmap * bitmap,
 			     test_cancel, testcancel_data);
   FATAL_THEN_CLEANUP_PIXELS();
   CANCEL_THEN_CLEANUP_PIXELS();
-  
+
   if (notify_progress)
     notify_progress(1.0, progress_data);
 
@@ -387,7 +387,7 @@ at_splines_new_full (at_bitmap * bitmap,
 
 }
 
-void 
+void
 at_splines_write (at_spline_writer * writer,
 		  FILE * writeto,
 		  gchar* file_name,
@@ -404,7 +404,7 @@ at_splines_write (at_spline_writer * writer,
 
   if (!file_name)
     file_name = "";
-  
+
   if (opts == NULL)
     {
       new_opts = TRUE;
@@ -412,7 +412,7 @@ at_splines_write (at_spline_writer * writer,
     }
 
   setlocale( LC_NUMERIC, "C" );
-  (*writer->func) (writeto, file_name, 
+  (*writer->func) (writeto, file_name,
 		   llx, lly, urx, ury, opts, *splines,
 		   msg_func, msg_data,
 		   writer->data);
@@ -420,7 +420,7 @@ at_splines_write (at_spline_writer * writer,
     at_output_opts_free(opts);
 }
 
-void 
+void
 at_splines_free (at_splines_type * splines)
 {
   free_spline_list_array (splines);
@@ -439,7 +439,7 @@ at_version (gboolean long_format)
     return AUTOTRACE_VERSION;
 }
 
-const char * 
+const char *
 at_home_site (void)
 {
   return AUTOTRACE_WEB;

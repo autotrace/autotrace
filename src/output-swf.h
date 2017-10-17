@@ -20,15 +20,15 @@
 /* Uses the Ming SWF library from http://www.opaque.net/ming/ */
 
 #ifndef OUTPUTSWF_H
-#define OUTPUTSWF_H 
+#define OUTPUTSWF_H
 
 #include "output.h"
 
 int output_swf_writer(FILE* file, at_string name,
-		      int llx, int lly, int urx, int ury, 
+		      int llx, int lly, int urx, int ury,
 		      at_output_opts_type * opts,
 		      at_spline_list_array_type shape,
-		      at_msg_func msg_func, 
+		      at_msg_func msg_func,
 		      at_address msg_data,
 		      at_address user_data);
 

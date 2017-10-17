@@ -116,7 +116,7 @@ find_size (/* in */     unsigned char *index,
 	bitmap[3 * (y * width + x1) + 2] == index[2] &&
 	mask[y * width + x] != 1; x1--) ;
   x1++;
-  
+
   for (x2 = x; x2 < width &&
 	bitmap[3 * (y * width + x2)    ] == index[0] &&
     bitmap[3 * (y * width + x2) + 1] == index[1] &&
@@ -172,7 +172,7 @@ find_size_8 (/* in */   unsigned char *index,
 	bitmap[(y * width + x1)    ] == index[0] &&
 	mask[y * width + x] != 1; x1--) ;
   x1++;
-  
+
   for (x2 = x; x2 < width &&
 	bitmap[(y * width + x2)    ] == index[0] &&
 	mask[y * width + x] != 1; x2++) ;

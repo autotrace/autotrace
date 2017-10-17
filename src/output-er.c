@@ -143,9 +143,9 @@ out_splines(FILE* er_file, spline_list_array_type shape,
             SPLINE_DEGREE(prev) = (polynomial_degree) -1;
           for (this_spline = 0; this_spline < length; this_spline++)
           {
-      	    spline_type s = SPLINE_LIST_ELT(list, this_spline);
+	    spline_type s = SPLINE_LIST_ELT(list, this_spline);
 
-      	    if (SPLINE_DEGREE(prev) == -1)
+	    if (SPLINE_DEGREE(prev) == -1)
               x0 = START_POINT(s).z;
             else if (SPLINE_DEGREE(prev) == CUBICTYPE)
               x0 = CONTROL2(prev).z;
@@ -192,10 +192,10 @@ out_splines(FILE* er_file, spline_list_array_type shape,
 }
 
 int
-output_er_writer(FILE* file, gchar* name, int llx, int lly, int urx, int ury, 
+output_er_writer(FILE* file, gchar* name, int llx, int lly, int urx, int ury,
 		 at_output_opts_type * opts,
 		 spline_list_array_type shape,
-		 at_msg_func msg_func, 
+		 at_msg_func msg_func,
 		 gpointer msg_data,
 		 gpointer user_data)
 {

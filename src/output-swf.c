@@ -81,10 +81,10 @@ out_splines (SWFMovie m, spline_list_array_type shape, int height)
 
 
 int output_swf_writer(FILE* file, at_string name,
-		      int llx, int lly, int urx, int ury, 
+		      int llx, int lly, int urx, int ury,
 		      at_output_opts_type * opts,
 		      spline_list_array_type shape,
-		      at_msg_func msg_func, 
+		      at_msg_func msg_func,
 		      at_address msg_data,
 		      at_address user_data)
 {
@@ -92,7 +92,7 @@ int output_swf_writer(FILE* file, at_string name,
   int height = ury - lly;
   SWFMovie m;
 
-#ifdef _WINDOWS 
+#ifdef _WINDOWS
   if(file == stdout)
     {
       fprintf(stderr, "This driver couldn't write to stdout!\n");

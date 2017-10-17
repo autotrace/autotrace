@@ -8,12 +8,12 @@ AM_INIT_AUTOMAKE([subdir-objects])
 
 PACKAGE=autotrace
 #
-# version setting up for Automake 
-# 
+# version setting up for Automake
+#
 MAJOR_VERSION=0
 MINOR_VERSION=31
 MICRO_VERSION=1
-dnl VERSION is not acceptable; it conflicts 
+dnl VERSION is not acceptable; it conflicts
 dnl with a variable defined in VC++.
 AUTOTRACE_VERSION=${MAJOR_VERSION}.${MINOR_VERSION}.${MICRO_VERSION}
 AC_DEFINE_UNQUOTED(PACKAGE, "$PACKAGE", [Package name])
@@ -61,7 +61,7 @@ AM_GLIB_GNU_GETTEXT
 dnl
 dnl ImageMagick
 dnl
-AC_ARG_WITH(magick, 
+AC_ARG_WITH(magick,
 [  --with-magick  compile with maigck(default)
   --without-magick  compile without maigck],,with_magick=yes)
 
@@ -75,7 +75,7 @@ if test "x${with_magick}" = xyes; then
 			   ],
 			  )
 else
-		AC_MSG_WARN([*** ImageMagick input handler is disabled.           ***])		
+		AC_MSG_WARN([*** ImageMagick input handler is disabled.           ***])
 fi
 AM_CONDITIONAL(HAVE_MAGICK, test $HAVE_MAGICK = yes)
 

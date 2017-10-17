@@ -2,7 +2,7 @@
 
    Copyright (C) 1999, 2000, 2001 Bernhard Herzog.
    Copyright (C) 2003 Masatake YAMATO
-   
+
    This library is free software; you can redistribute it and/or
    modify it under the terms of the GNU Lesser General Public License
    as published by the Free Software Foundation; either version 2.1 of
@@ -44,16 +44,16 @@ static at_input_format_entry * at_input_format_new(const char * descr,
 						   GDestroyNotify user_data_destroy_func);
 static void at_input_format_free (at_input_format_entry * entry);
 
-/* 
- * Helper functions 
+/*
+ * Helper functions
  */
 static void input_list_set (gpointer key, gpointer value, gpointer user_data);
 static void input_list_strlen (gpointer key, gpointer value, gpointer user_data);
 static void input_list_strcat (gpointer key, gpointer value, gpointer user_data);
 
 /**
- * at_input_init: 
- * Initialize at_input input plugin sub system. 
+ * at_input_init:
+ * Initialize at_input input plugin sub system.
  *
  * Return value: 1 for success, else for failure
  **/
@@ -63,7 +63,7 @@ at_input_init (void)
   if (at_input_formats)
     return 1;
 
-  at_input_formats = g_hash_table_new_full (g_str_hash, 
+  at_input_formats = g_hash_table_new_full (g_str_hash,
 					    (GEqualFunc)g_str_equal,
 					    g_free,
 					    (GDestroyNotify)at_input_format_free);
@@ -82,9 +82,9 @@ at_input_format_new(const gchar * descr,
   entry = g_malloc (sizeof(at_input_format_entry));
   if (entry)
     {
-      entry->reader.func 	    = reader;
+      entry->reader.func	    = reader;
       entry->reader.data            = user_data;
-      entry->descr     		    = g_strdup(descr);
+      entry->descr		    = g_strdup(descr);
       entry->user_data_destroy_func = user_data_destroy_func;
     }
   return entry;
@@ -97,11 +97,11 @@ at_input_format_free(at_input_format_entry * entry)
   if (entry->user_data_destroy_func)
     entry->user_data_destroy_func(entry->reader.data);
   g_free(entry);
-  
+
 }
 
 int
-at_input_add_handler (const gchar* suffix, 
+at_input_add_handler (const gchar* suffix,
 		      const gchar* description,
 		      at_input_func reader)
 {
@@ -110,7 +110,7 @@ at_input_add_handler (const gchar* suffix,
 }
 
 int
-at_input_add_handler_full (const gchar* suffix, 
+at_input_add_handler_full (const gchar* suffix,
 			   const gchar* description,
 			   at_input_func reader,
 			   gboolean override,
@@ -121,15 +121,15 @@ at_input_add_handler_full (const gchar* suffix,
   const gchar * gdescription;
   at_input_format_entry * old_entry;
   at_input_format_entry * new_entry;
-  
+
   g_return_val_if_fail (suffix, 0);
   g_return_val_if_fail (description, 0);
   g_return_val_if_fail (reader, 0);
-  
+
   gsuffix      = g_strdup((gchar *)suffix);
-  g_return_val_if_fail (gsuffix, 0);  
+  g_return_val_if_fail (gsuffix, 0);
   gsuffix = g_ascii_strdown(gsuffix, strlen(gsuffix));
-  
+
   gdescription = (const gchar *)description;
 
   old_entry        = g_hash_table_lookup (at_input_formats, gsuffix);
@@ -171,7 +171,7 @@ at_input_get_handler_by_suffix (gchar* suffix)
   gsuffix = g_ascii_strdown(gsuffix, strlen(gsuffix));
   format = g_hash_table_lookup (at_input_formats, gsuffix);
   g_free(gsuffix);
-  
+
   if (format)
     return &(format->reader);
   else
@@ -185,12 +185,12 @@ at_input_list_new (void)
   gint format_count;
   gint list_count;
 
-  format_count 	   = g_hash_table_size(at_input_formats);
-  list_count   	   = 2 * format_count;
-  list 	       	   = g_new(gchar *, list_count + 1);
+  format_count	   = g_hash_table_size(at_input_formats);
+  list_count	   = 2 * format_count;
+  list		   = g_new(gchar *, list_count + 1);
   list[list_count] = NULL;
 
-  tmp 		   = list;
+  tmp		   = list;
   g_hash_table_foreach (at_input_formats, input_list_set, &tmp);
   return (const char **)list;
 }
@@ -210,8 +210,8 @@ at_input_shortlist (void)
   count = g_hash_table_size(at_input_formats);
 
   /* 2 for ", " */
-  length  += (2*count);	
-  list 	  = g_malloc(length + 1); 
+  length  += (2*count);
+  list	  = g_malloc(length + 1);
   list[0] = '\0';
 
   tmp = list;
@@ -223,15 +223,15 @@ at_input_shortlist (void)
   return list;
 }
 
-static void 
+static void
 input_list_set (gpointer key, gpointer value, gpointer user_data)
 {
   at_input_format_entry * format = value;
   const char *** list_ptr = user_data;
   const char ** list = *list_ptr;
-  list[0] 	     = key;
-  list[1] 	     = format->descr;
-  *list_ptr 	     = &(list[2]); 
+  list[0]	     = key;
+  list[1]	     = format->descr;
+  *list_ptr	     = &(list[2]);
 }
 
 static void
@@ -251,10 +251,10 @@ input_list_strcat (gpointer key, gpointer value, gpointer user_data)
   gchar ** list_ptr;
   gchar *  list;
   list_ptr = user_data;
-  list 	   = *list_ptr;
+  list	   = *list_ptr;
   strcat (list, key);
   strcat (list, ", ");
-  
+
   /* 2 for ", " */
   *list_ptr = list + strlen(key) + 2;
 }

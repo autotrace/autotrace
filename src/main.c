@@ -56,7 +56,7 @@ static gboolean report_progress = FALSE;
 #define dot_printer_char '|'
 static void dot_printer(gfloat percentage, gpointer client_data);
 
-static char * read_command_line (int, char * [], 
+static char * read_command_line (int, char * [],
 				 at_fitting_opts_type *,
 				 at_input_opts_type *,
 				 at_output_opts_type *);
@@ -97,7 +97,7 @@ main (int argc, char * argv[])
   fitting_opts = at_fitting_opts_new ();
   input_opts   = at_input_opts_new ();
   output_opts  = at_output_opts_new ();
-  
+
   input_name = read_command_line (argc, argv, fitting_opts, input_opts, output_opts);
 
   if (strgicmp (output_name, input_name))
@@ -122,7 +122,7 @@ main (int argc, char * argv[])
   if (!input_reader)
     input_reader = at_input_get_handler (input_name);
 
-  /* Set output_writer if it is not set in command line args 
+  /* Set output_writer if it is not set in command line args
      Step1. Guess from a file name.
      Step2. Use default. */
   if (!output_writer)
@@ -143,9 +143,9 @@ main (int argc, char * argv[])
   /* Open the main input file.  */
   if (input_reader != NULL)
     {
-      bitmap = at_bitmap_read(input_reader, input_name, input_opts, 
+      bitmap = at_bitmap_read(input_reader, input_name, input_opts,
 			      exception_handler, NULL);
-      
+
       at_input_opts_free(input_opts);
     }
   else
@@ -156,12 +156,12 @@ main (int argc, char * argv[])
       progress_reporter = dot_printer;
       fprintf(stderr, "%-15s", input_name);
     };
-    
+
   splines = at_splines_new_full(bitmap, fitting_opts,
 				exception_handler, NULL,
 				progress_reporter, &progress_stat,
 				NULL, NULL);
-  
+
   /* Dump loaded bitmap if needed */
   if (dumping_bitmap)
     {
@@ -182,17 +182,17 @@ main (int argc, char * argv[])
     }
 
   at_splines_write (output_writer,
-		    output_file, 
+		    output_file,
 		    output_name,
 		    output_opts,
 		    splines,
 		    exception_handler, NULL);
   at_output_opts_free(output_opts);
-  
+
   if (output_file != stdout)
     fclose (output_file);
 
-  at_splines_free (splines); 
+  at_splines_free (splines);
   at_bitmap_free (bitmap);
   at_fitting_opts_free(fitting_opts);
 
@@ -262,7 +262,7 @@ width-weight-factor <real>: weight factor for fitting the linewidth.\n\
 /* We return the name of the image to process.  */
 
 static char *
-read_command_line (int argc, char * argv[], 
+read_command_line (int argc, char * argv[],
 		   at_fitting_opts_type * fitting_opts,
 		   at_input_opts_type * input_opts,
 		   at_output_opts_type * output_opts)
@@ -330,7 +330,7 @@ read_command_line (int argc, char * argv[],
 	  fitting_opts->charcode = strtoul (optarg, 0, 0);
 	  input_opts->charcode = fitting_opts->charcode;
 	}
-		   
+
       else if (ARGUMENT_IS ("color-count"))
         fitting_opts->color_count = atou (optarg);
 
@@ -351,7 +351,7 @@ read_command_line (int argc, char * argv[],
 	    str = "little";
 	  else
 	    str = "big";
-	  
+
 	  printf("%d bit, %s endian\n",
 		 sizeof(void *) * 8,
 		 str);
@@ -385,7 +385,7 @@ read_command_line (int argc, char * argv[],
 		   oshortlist = at_output_shortlist());
           free (ishortlist);
           free (oshortlist);
-          fprintf (stderr, 
+          fprintf (stderr,
 		   _("\nYou can get the source code of autotrace from \n%s\n"),
 		   at_home_site());
           exit (0);
@@ -431,7 +431,7 @@ read_command_line (int argc, char * argv[],
 
       else if (ARGUMENT_IS ("remove-adjacent-corners"))
 	fitting_opts->remove_adjacent_corners = TRUE;
-      
+
       else if (ARGUMENT_IS ("tangent-surround"))
         fitting_opts->tangent_surround = atou (optarg);
 
@@ -478,7 +478,7 @@ input_list_formats(FILE * file)
       descr = *list++;
       fprintf(file, "%5s %s\n", suffix, descr);
     }
-  
+
   at_input_list_free(tmp);
 }
 
@@ -498,7 +498,7 @@ output_list_formats(FILE* file)
       descr = *list++;
       fprintf(file, "%10s %s\n", suffix, descr);
     }
-  
+
   at_output_list_free(tmp);
 }
 
@@ -506,9 +506,9 @@ static void
 dot_printer(gfloat percentage, gpointer client_data)
 {
   int * current = (int *)client_data;
-  float unit 	= (float)1.0 / (float)(dot_printer_max_column) ;
+  float unit	= (float)1.0 / (float)(dot_printer_max_column) ;
   int maximum = (int)(percentage / unit);
- 
+
   while (*current < maximum)
     {
       fputc(dot_printer_char, stderr);
@@ -524,9 +524,9 @@ dump (at_bitmap * bitmap, FILE * fp)
 
   width  = at_bitmap_get_width (bitmap);
   height = at_bitmap_get_height (bitmap);
-  np 	 = at_bitmap_get_planes (bitmap);
+  np	 = at_bitmap_get_planes (bitmap);
 
-  fwrite(AT_BITMAP_BITS(bitmap), 
+  fwrite(AT_BITMAP_BITS(bitmap),
 	 sizeof(unsigned char),
 	 width * height * np,
 	 fp);

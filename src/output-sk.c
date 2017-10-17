@@ -29,7 +29,7 @@ out_splines (FILE * file, spline_list_array_type shape)
 {
   unsigned this_list;
   spline_list_type list;
-  
+
   for (this_list = 0; this_list < SPLINE_LIST_ARRAY_LENGTH (shape);
     this_list++)
     {
@@ -42,21 +42,21 @@ out_splines (FILE * file, spline_list_array_type shape)
       first = SPLINE_LIST_ELT (list, 0);
 
       stroke = shape.centerline || list.open;
- 
+
       /* If stroke, set outline color and no fill, otherwise set fill
        * color and no outline */
       fprintf(file, "%s((%g,%g,%g))\n", stroke ? "lp" : "fp",
         list.color.r / 255.0, list.color.g / 255.0,
         list.color.b / 255.0);
       fputs(stroke ? "fe()\n" : "le()\n", file);
- 
+
       /* Start a bezier object */
       fputs("b()\n", file);
- 
+
       /* Move to the start point */
       fprintf(file, "bs(%g,%g,0)\n",
         START_POINT(first).x, START_POINT(first).y);
-  
+
       /* write the splines */
       for (this_spline = 0; this_spline < SPLINE_LIST_LENGTH (list);
         this_spline++)
@@ -70,7 +70,7 @@ out_splines (FILE * file, spline_list_array_type shape)
               CONTROL2(s).x, CONTROL2(s).y,
               END_POINT(s).x, END_POINT(s).y);
         }
- 
+
       /* End the bezier object. If it's stroked do nothing otherwise
          close the path. */
       if (!stroke)
@@ -80,7 +80,7 @@ out_splines (FILE * file, spline_list_array_type shape)
 
 
 int output_sk_writer(FILE* file, gchar* name,
-		     int llx, int lly, int urx, int ury, 
+		     int llx, int lly, int urx, int ury,
 		     at_output_opts_type * opts,
 		     spline_list_array_type shape,
 		     at_msg_func msg_func, gpointer msg_data,

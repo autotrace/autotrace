@@ -1,5 +1,5 @@
-/* color.c: declarations for color handling. 
-   
+/* color.c: declarations for color handling.
+
   Copyright (C) 2000, 2001, 2002 Martin Weber
 
   The author can be contacted at <martweb@gmx.net>
@@ -34,8 +34,8 @@
 
 static unsigned int hctoi (char c, GError **err);
 
-at_color * 
-at_color_new (unsigned char r, 
+at_color *
+at_color_new (unsigned char r,
 	      unsigned char g,
 	      unsigned char b)
 {
@@ -53,7 +53,7 @@ at_color_parse (const gchar * string, GError ** err)
   GError * local_err = NULL;
   unsigned char c[6];
   int i;
-  
+
   if (!string)
     return NULL;
   else if (string[0] == '\0')
@@ -87,8 +87,8 @@ at_color_copy (const at_color * original)
 {
   if (original == NULL)
     return NULL;
-  return at_color_new(original->r, 
-		      original->g, 
+  return at_color_new(original->r,
+		      original->g,
 		      original->b);
 }
 
@@ -102,7 +102,7 @@ at_color_equal (const at_color * c1, const at_color * c2)
 }
 
 void
-at_color_set   (at_color * c, 
+at_color_set   (at_color * c,
 		unsigned char r, unsigned char g, unsigned char b)
 {
   g_return_if_fail (c);
@@ -117,7 +117,7 @@ at_color_luminance (const at_color * color)
   return ((unsigned char)((color->r) * 0.30 + (color->g) * 0.59 + (color->b) * 0.11 + 0.5));
 }
 
-void 
+void
 at_color_free(at_color * color)
 {
   g_free(color);
@@ -172,7 +172,7 @@ hctoi (char c, GError **err)
     return (15);
   else
     {
-      g_set_error(err, 
+      g_set_error(err,
 		  AT_ERROR,
 		  AT_ERROR_WRONG_COLOR_STRING,
 		  _("wrong char in color string: %c"), c);

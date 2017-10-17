@@ -20,7 +20,7 @@ along with this program; if not, write to the Free Software
 Foundation, Inc., 675 Mass Ave, Cambridge, MA 02139, USA.  */
 
 #ifndef FILENAME_H
-#define FILENAME_H 
+#define FILENAME_H
 #include "types.h"
 
 /* If NAME has a suffix, return a pointer to its first character (i.e.,

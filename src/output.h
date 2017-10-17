@@ -29,13 +29,13 @@
 extern "C" {
 #endif /* __cplusplus */
 
-typedef 
+typedef
 int (*at_output_func) (FILE*, gchar* name,
-		       int llx, int lly, 
+		       int llx, int lly,
 		       int urx, int ury,
 		       at_output_opts_type * opts,
 		       at_splines_type shape,
-		       at_msg_func msg_func, 
+		       at_msg_func msg_func,
 		       gpointer msg_data,
 		       gpointer user_data);
 
@@ -43,7 +43,7 @@ extern int at_output_add_handler (const gchar* suffix,
 				  const gchar* description,
 				  at_output_func writer);
 
-extern int at_output_add_handler_full (const gchar* suffix, 
+extern int at_output_add_handler_full (const gchar* suffix,
 				       const gchar* description,
 				       at_output_func writer,
 				       gboolean override,
@@ -87,7 +87,7 @@ extern int at_output_add_handler_full (const gchar* suffix,
 #define AT_SPLINE_LIST_ARRAY_IS_CENTERLINE_VALUE(splla) ((splla).centerline)
 #define AT_SPLINE_LIST_ARRAY_IS_CENTERLINE(splla)       AT_SPLINE_LIST_ARRAY_IS_CENTERLINE_VALUE(*(splla))
 
-/* 
+/*
  * Glib style traversing
  */
 

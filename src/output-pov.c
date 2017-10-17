@@ -1,4 +1,4 @@
-/* output-pov.c: utility routines for Povray output. 
+/* output-pov.c: utility routines for Povray output.
 
    Copyright (C) 2003 Martin Weber.
 
@@ -91,7 +91,7 @@ out_splines (FILE * pov_file, spline_list_array_type shape)
 			  {
 		        OUT3 ("\n  pigment {rgb<%.3f, %.3f, %.3f>}\n", (double) last_color.r/255.0,
                   (double) last_color.g/255.0,(double) last_color.b/255.0);
-	            OUT_LINE ("  translate <0.0, 0.0, 0.0>");    
+	            OUT_LINE ("  translate <0.0, 0.0, 0.0>");
                 OUT_LINE ("}");
 		      }
 	        else
@@ -134,17 +134,17 @@ out_splines (FILE * pov_file, spline_list_array_type shape)
 	  OUT_LINE ("");
 	  OUT3 ("  pigment {rgb<%.3f, %.3f, %.3f>}\n", (double) list.color.r/255.0,
         (double) list.color.g/255.0,(double) list.color.b/255.0);
-	  OUT_LINE ("  translate <0.0, 0.0, 0.0>");    
+	  OUT_LINE ("  translate <0.0, 0.0, 0.0>");
       OUT_LINE ("}");
 	}
 }
 
 
 int output_pov_writer(FILE* pov_file, gchar* name,
-		      int llx, int lly, int urx, int ury, 
+		      int llx, int lly, int urx, int ury,
 		      at_output_opts_type * opts,
 		      spline_list_array_type shape,
-		      at_msg_func msg_func, 
+		      at_msg_func msg_func,
 		      gpointer msg_data,
 		      gpointer user_data)
 {

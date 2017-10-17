@@ -1,6 +1,6 @@
 /* output-p2e.c: utility routines for pstoedit intermediate output
 
-   Copyright (C) 2000-2001 Wolfgang Glunz, Martin Weber 
+   Copyright (C) 2000-2001 Wolfgang Glunz, Martin Weber
 
    This library is free software; you can redistribute it and/or
    modify it under the terms of the GNU Lesser General Public License
@@ -23,10 +23,10 @@
 #include "output.h"
 
 int output_p2e_writer (FILE* file, gchar* name,
-		       int llx, int lly, int urx, int ury, 
+		       int llx, int lly, int urx, int ury,
 		       at_output_opts_type * opts,
 		       at_spline_list_array_type shape,
-		       at_msg_func msg_func, 
+		       at_msg_func msg_func,
 		       gpointer msg_data,
 		       gpointer user_data);
 

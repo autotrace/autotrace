@@ -134,7 +134,7 @@ typedef struct
 
 extern curve_list_array_type new_curve_list_array (void);
 extern void free_curve_list_array (curve_list_array_type *,
-				   at_progress_func, 
+				   at_progress_func,
 				   gpointer);
 extern void append_curve_list (curve_list_array_type *, curve_list_type);
 

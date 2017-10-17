@@ -84,7 +84,7 @@ static unsigned char        *ReadImage     (FILE *,
 at_bitmap
 input_bmp_reader (gchar* filename,
 		  at_input_opts_type * opts,
-		  at_msg_func msg_func, 
+		  at_msg_func msg_func,
 		  gpointer msg_data,
 		  gpointer user_data)
 {
@@ -95,7 +95,7 @@ input_bmp_reader (gchar* filename,
   at_bitmap image = at_bitmap_init(0, 0, 0, 1);
   unsigned char * image_storage;
   at_exception_type exp = at_exception_new(msg_func, msg_data);
-  
+
   fd = fopen (filename, "rb");
 
   if (!fd)
@@ -152,7 +152,7 @@ input_bmp_reader (gchar* filename,
 	  at_exception_fatal(&exp, "Error reading BMP file header");
 	  goto cleanup;
 	}
-         
+
 
       Bitmap_Head.biWidth   =ToL (&buffer[0x00]);       /* 12 */
       Bitmap_Head.biHeight  =ToL (&buffer[0x04]);       /* 16 */
@@ -175,7 +175,7 @@ input_bmp_reader (gchar* filename,
 	  at_exception_fatal(&exp, "Error reading BMP file header");
 	  goto cleanup;
 	}
-      
+
       Bitmap_Head.biWidth   =ToL (&buffer[0x00]);       /* 12 */
       Bitmap_Head.biHeight  =ToL (&buffer[0x04]);       /* 16 */
       Bitmap_Head.biPlanes  =ToS (&buffer[0x08]);       /* 1A */
@@ -198,9 +198,9 @@ input_bmp_reader (gchar* filename,
 
   /* Valid options 1, 4, 8, 16, 24, 32 */
   /* 16 is awful, we should probably shoot whoever invented it */
-  
+
   /* There should be some colors used! */
-  
+
   ColormapSize = (Bitmap_File_Head.bfOffs - Bitmap_File_Head.biSize - 14) / Maps;
 
   if ((Bitmap_Head.biClrUsed == 0) && (Bitmap_Head.biBitCnt <= 8))
@@ -216,12 +216,12 @@ input_bmp_reader (gchar* filename,
       at_exception_fatal(&exp, "Error reading BMP file header");
       goto cleanup;
     }
-     
+
   /* Windows and OS/2 declare filler so that rows are a multiple of
    * word length (32 bits == 4 bytes)
    */
 
-  rowbytes= ( (Bitmap_Head.biWidth * Bitmap_Head.biBitCnt - 1) / 32) * 4 + 4;  
+  rowbytes= ( (Bitmap_Head.biWidth * Bitmap_Head.biBitCnt - 1) / 32) * 4 + 4;
 
 #ifdef DEBUG
   printf("\nSize: %u, Colors: %u, Bits: %u, Width: %u, Height: %u, Comp: %u, Zeile: %u\n",
@@ -250,7 +250,7 @@ input_bmp_reader (gchar* filename,
 			 (unsigned short) Bitmap_Head.biWidth,
 			 (unsigned short) Bitmap_Head.biHeight,
 			 Grey ? 1 : 3);
- cleanup:  
+ cleanup:
   fclose (fd);
   return (image);
 }
@@ -275,7 +275,7 @@ ReadColorMap (FILE   *fd,
 	  at_exception_fatal (exp, "Bad colormap");
 	  goto cleanup;
 	}
-          
+
       /* Bitmap save the colors in another order! But change only once! */
 
       buffer[i][0] = rgb[2];
@@ -321,7 +321,7 @@ ReadImage (FILE   *fd,
 	  channels = 1;
 	}
 
-  XMALLOC (buffer, rowbytes); 
+  XMALLOC (buffer, rowbytes);
   rowstride = width * channels;
 
   ypos = height - 1;  /* Bitmaps begin in the lower left corner */
@@ -408,7 +408,7 @@ ReadImage (FILE   *fd,
 	    while (ypos >= 0 && xpos <= width)
 	      {
 		notused = ReadOK (fd, buffer, 2);
-		if ((unsigned char) buffer[0] != 0) 
+		if ((unsigned char) buffer[0] != 0)
 		  /* Count + Color - record */
 		  {
 		    for (j = 0; ((unsigned char) j < (unsigned char) buffer[0]) && (xpos < width);)

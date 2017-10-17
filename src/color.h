@@ -1,5 +1,5 @@
-/* color.h: declarations for color handling. 
-   
+/* color.h: declarations for color handling.
+
   Copyright (C) 2000, 2001, 2002 Martin Weber
 
   The author can be contacted at <martweb@gmx.net>
@@ -32,7 +32,7 @@ struct _at_color
   guint8 b;
 };
 
-at_color *  at_color_new   (guint8 r, 
+at_color *  at_color_new   (guint8 r,
 				 guint8 g,
 				 guint8 b);
 at_color *  at_color_parse (const gchar * string, GError ** err);

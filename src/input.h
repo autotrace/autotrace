@@ -29,27 +29,27 @@
 extern "C" {
 #endif /* __cplusplus */
 
-/* Input handler should be implemented with using 
+/* Input handler should be implemented with using
    following functions and macros. */
 
-typedef 
+typedef
 at_bitmap (*at_input_func)   (gchar* name,
 				   at_input_opts_type * opts,
-				   at_msg_func msg_func, 
+				   at_msg_func msg_func,
 				   gpointer msg_data,
 				   gpointer user_data);
 
 /* at_input_add_handler
-   Register an input handler to autotrace. 
+   Register an input handler to autotrace.
    If a handler for the suffix is already existed, do nothing. */
-extern int at_input_add_handler (const gchar* suffix, 
+extern int at_input_add_handler (const gchar* suffix,
 				 const gchar* description,
 				 at_input_func reader);
 /* at_input_add_handler_full
    If OVERRIDE is TRUE and if the old handler for suffix is existed,
-   remove the old handler first then add new handler.  
+   remove the old handler first then add new handler.
    If OVERRIDE is false, do nothing. */
-extern int at_input_add_handler_full (const gchar* suffix, 
+extern int at_input_add_handler_full (const gchar* suffix,
 				      const gchar* description,
 				      at_input_func reader,
 				      gboolean override,
@@ -72,7 +72,7 @@ extern int at_input_add_handler_full (const gchar* suffix,
    Only the storage is allocated if AREA is NULL.
    On the other hand, at_bitmap_new allocates
    mem for at_bitmap; and returns a pointer
-   for the mem. 
+   for the mem.
    at_bitmap_new is for autotrace library user.
    at_bitmap_init is for input-handler developer.
    Don't use at_bitmap_new in your input-handler. */

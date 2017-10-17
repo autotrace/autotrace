@@ -36,7 +36,7 @@
 
 static at_bitmap_type input_magick_reader (at_string filename,
 					   at_input_opts_type * opts,
-					   at_msg_func msg_func, 
+					   at_msg_func msg_func,
 					   at_address msg_data,
 					   at_address user_data);
 
@@ -44,7 +44,7 @@ static at_bitmap_type input_magick_reader (at_string filename,
 static at_bitmap_type
 input_magick_reader(at_string filename,
 		    at_input_opts_type * opts,
-		    at_msg_func msg_func, 
+		    at_msg_func msg_func,
 		    at_address msg_data,
 		    at_address user_data)
 {
@@ -108,7 +108,7 @@ input_magick_reader(at_string filename,
 
   DestroyImage(image);
  cleanup:
-  DestroyImageInfo(image_info);  
+  DestroyImageInfo(image_info);
   return(bitmap);
 }
 
@@ -142,7 +142,7 @@ install_input_magick_readers(void)
 #if (MagickLibVersion < 0x0540)
 #define AT_MAGICK_INFO_TYPE_MODIFIER     const
 #else  /* (MagickLibVersion < 0x0540) */
-#define AT_MAGICK_INFO_TYPE_MODIFIER 
+#define AT_MAGICK_INFO_TYPE_MODIFIER
 #endif	/* (MagickLibVersion < 0x0540)*/
 
   {

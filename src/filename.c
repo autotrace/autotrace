@@ -1,5 +1,5 @@
 /* filename.c: Function manipulate file names
-   Was: find-suffix, extend-fname, make-suffix, remove-suffx  
+   Was: find-suffix, extend-fname, make-suffix, remove-suffx
    substring, concat3 */
 
 /* remove-suffx.c: remove any suffix.

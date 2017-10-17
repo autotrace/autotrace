@@ -118,7 +118,7 @@ Vmult_scalar (const vector_type v, const gfloat r)
    degrees, in the range zero to 180.  */
 
 gfloat
-Vangle (const vector_type in_vector, 
+Vangle (const vector_type in_vector,
 	const vector_type out_vector,
 	at_exception_type * exp)
 {
@@ -307,7 +307,7 @@ acos_d (gfloat v, at_exception_type * excep)
       at_exception_fatal(excep, strerror(errno));
       return 0.0;
     }
-  
-  
+
+
   return a * (gfloat) 180.0 / (gfloat) M_PI;
 }

@@ -9,7 +9,7 @@ at_exception_new(at_msg_func client_func,
 		 gpointer client_data)
 {
   at_exception_type e;
-  e.msg_type 	= AT_MSG_NOT_SET;
+  e.msg_type	= AT_MSG_NOT_SET;
   e.client_func = client_func;
   e.client_data = client_data;
   return e;
@@ -30,13 +30,13 @@ at_exception_fatal(at_exception_type * exception,
   exception->msg_type = AT_MSG_FATAL;
   if (exception->client_func)
     {
-      exception->client_func(message, 
+      exception->client_func(message,
 			     AT_MSG_FATAL,
 			     exception->client_data);
     }
 }
 
-void 
+void
 at_exception_warning(at_exception_type * exception,
 		     const gchar* message)
 {
@@ -45,7 +45,7 @@ at_exception_warning(at_exception_type * exception,
   exception->msg_type = AT_MSG_WARNING;
   if (exception->client_func)
     {
-      exception->client_func(message, 
+      exception->client_func(message,
 			     AT_MSG_WARNING,
 			     exception->client_data);
     }

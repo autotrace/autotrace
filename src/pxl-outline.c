@@ -84,7 +84,7 @@ static gboolean next_unmarked_pixel(unsigned short *, unsigned short *,
 
 gboolean is_valid_dir (unsigned short, unsigned short, direction_type, at_bitmap*, at_bitmap*);
 
-static at_coord next_point(at_bitmap*, edge_type *, unsigned short *, unsigned short *, 
+static at_coord next_point(at_bitmap*, edge_type *, unsigned short *, unsigned short *,
                            at_color, gboolean, at_bitmap *, at_exception_type * );
 static unsigned num_neighbors(unsigned short, unsigned short, at_bitmap*);
 
@@ -241,7 +241,7 @@ find_one_outline (at_bitmap * bitmap, edge_type original_edge,
 
 gboolean is_valid_dir (unsigned short row, unsigned short col, direction_type dir, at_bitmap * bitmap, at_bitmap * marked)
 {
-  
+
   at_color c;
 
   at_bitmap_get_color(bitmap, COMPUTE_DELTA(ROW, dir)+row, COMPUTE_DELTA(COL, dir)+col, &c);
@@ -402,8 +402,8 @@ find_centerline_pixels (at_bitmap * bitmap, at_color bg_color,
                 }
 			  else
 				col++;
-            }        
-            
+            }
+
           /* Outside outlines will start at a top edge, and move
              counterclockwise, and inside outlines will start at a
              bottom edge, and move clockwise.  This happens because of
@@ -610,10 +610,10 @@ is_outline_edge (edge_type edge, at_bitmap * bitmap,
   switch (edge)
     {
     case LEFT:
-      return (gboolean)(col == 0 
+      return (gboolean)(col == 0
 			|| !at_bitmap_equal_color(bitmap, row, col - 1, &color));
     case TOP:
-      return (gboolean)(row == 0 
+      return (gboolean)(row == 0
 			|| !at_bitmap_equal_color(bitmap, row - 1, col, &color));
 
     case RIGHT:
@@ -623,7 +623,7 @@ is_outline_edge (edge_type edge, at_bitmap * bitmap,
     case BOTTOM:
       return (gboolean)(row == AT_BITMAP_HEIGHT (bitmap) - 1
 			|| !at_bitmap_equal_color(bitmap, row + 1, col, &color));
-      
+
     case NO_EDGE:
       g_assert_not_reached();
     default:
@@ -702,7 +702,7 @@ next_unmarked_pixel(unsigned short *row, unsigned short *col,
         break;
     }
   while (1);
-  if ((*row != orig_row || *col != orig_col) && 
+  if ((*row != orig_row || *col != orig_col) &&
       (!(is_other_dir_marked(orig_row,orig_col,test_dir, marked)
          &&is_other_dir_marked(orig_row + COMPUTE_DELTA(ROW, test_dir), orig_col + COMPUTE_DELTA(COL, test_dir),test_dir, marked))))
     return TRUE;
@@ -778,7 +778,7 @@ static at_coord next_point(at_bitmap* bitmap, edge_type *edge, unsigned short *r
             pos.x = *col+1;
             pos.y = AT_BITMAP_HEIGHT (bitmap) - *row;
             break;
-          } 
+          }
         CHECK_FATAL();
         if ((!is_marked_edge(LEFT,*row,*col, marked)
              && is_outline_edge(LEFT,bitmap,*row,*col, color, exp)))
@@ -791,7 +791,7 @@ static at_coord next_point(at_bitmap* bitmap, edge_type *edge, unsigned short *r
         CHECK_FATAL();
         *edge = NO_EDGE;
         break;
-      case RIGHT: 
+      case RIGHT:
         /* NORTH */
         if((*row >=1
             &&!is_marked_edge(RIGHT,*row-1,*col, marked)
@@ -817,7 +817,7 @@ static at_coord next_point(at_bitmap* bitmap, edge_type *edge, unsigned short *r
             pos.x = *col+1;
             pos.y = AT_BITMAP_HEIGHT (bitmap) - *row - 1;
             break;
-          } 
+          }
         CHECK_FATAL();
         if ((!is_marked_edge(TOP,*row,*col, marked)
              && is_outline_edge(TOP,bitmap,*row,*col, color, exp)))
@@ -830,7 +830,7 @@ static at_coord next_point(at_bitmap* bitmap, edge_type *edge, unsigned short *r
         CHECK_FATAL();
         *edge = NO_EDGE;
         break;
-      case BOTTOM: 
+      case BOTTOM:
         /* EAST */
         if((*col+1 < AT_BITMAP_WIDTH (marked)
             && !is_marked_edge(BOTTOM,*row,*col+1, marked)
@@ -869,7 +869,7 @@ static at_coord next_point(at_bitmap* bitmap, edge_type *edge, unsigned short *r
         CHECK_FATAL();
         *edge = NO_EDGE;
         break;
-      case LEFT: 
+      case LEFT:
         /* SOUTH */
         if((*row+1 < AT_BITMAP_HEIGHT (marked)
             && !is_marked_edge(LEFT,*row+1,*col, marked)
@@ -895,7 +895,7 @@ static at_coord next_point(at_bitmap* bitmap, edge_type *edge, unsigned short *r
             pos.x = *col;
             pos.y = AT_BITMAP_HEIGHT (bitmap) - *row;
             break;
-          } 
+          }
         CHECK_FATAL();
         if ((!is_marked_edge(BOTTOM,*row,*col, marked)
              && is_outline_edge(BOTTOM,bitmap,*row,*col, color, exp)))
@@ -947,11 +947,11 @@ static at_coord next_point(at_bitmap* bitmap, edge_type *edge, unsigned short *r
             pos.x = *col+1;
             pos.y = AT_BITMAP_HEIGHT (bitmap) - *row;
             break;
-          } 
+          }
         CHECK_FATAL();
         *edge = NO_EDGE;
         break;
-      case RIGHT: 
+      case RIGHT:
         if ((!is_marked_edge(TOP,*row,*col, marked)
              && is_outline_edge(TOP,bitmap,*row,*col, color, exp)))
           {
@@ -988,7 +988,7 @@ static at_coord next_point(at_bitmap* bitmap, edge_type *edge, unsigned short *r
         CHECK_FATAL();
         *edge = NO_EDGE;
         break;
-      case BOTTOM: 
+      case BOTTOM:
         if ((!is_marked_edge(RIGHT,*row,*col, marked)
              && is_outline_edge(RIGHT,bitmap,*row,*col, color, exp)))
           {
@@ -1025,7 +1025,7 @@ static at_coord next_point(at_bitmap* bitmap, edge_type *edge, unsigned short *r
         CHECK_FATAL();
         *edge = NO_EDGE;
         break;
-      case LEFT: 
+      case LEFT:
         if ((!is_marked_edge(BOTTOM,*row,*col, marked)
              && is_outline_edge(BOTTOM,bitmap,*row,*col, color, exp)))
           {
@@ -1061,7 +1061,7 @@ static at_coord next_point(at_bitmap* bitmap, edge_type *edge, unsigned short *r
           }
         CHECK_FATAL();
       case NO_EDGE:
-      default: 
+      default:
         *edge = NO_EDGE;
         break;
       }

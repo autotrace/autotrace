@@ -1,4 +1,4 @@
-/* output-dxf.h: utility routines for DXF output. 
+/* output-dxf.h: utility routines for DXF output.
 
    Copyright (C) 1999, 2000, 2001 Dietmar Kovar
 
@@ -23,10 +23,10 @@
 #include "output.h"
 
 int output_dxf12_writer (FILE* file, gchar* name,
-			 int llx, int lly, int urx, int ury, 
+			 int llx, int lly, int urx, int ury,
 			 at_output_opts_type * opts,
 			 at_spline_list_array_type shape,
-			 at_msg_func msg_func, 
+			 at_msg_func msg_func,
 			 gpointer msg_data,
 			 gpointer user_data);
 

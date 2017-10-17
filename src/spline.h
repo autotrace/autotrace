@@ -1,4 +1,4 @@
-/* spline.h: manipulate the spline representation. 
+/* spline.h: manipulate the spline representation.
    Some of macrs are only renamed macros in output.h. */
 
 #ifndef SPLINE_H

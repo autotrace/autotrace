@@ -30,7 +30,7 @@ extern "C" {
 #ifndef N_
 #define N_(x) x
 #endif /* Not def: N_ */
- 
+
 /* ===================================================================== *
  * Typedefs
  * ===================================================================== */
@@ -41,12 +41,12 @@ extern "C" {
 /* Third degree is the highest we deal with.  */
 enum _at_polynomial_degree
 {
-  AT_LINEARTYPE = 1, 
-  AT_QUADRATICTYPE = 2, 
-  AT_CUBICTYPE = 3, 
+  AT_LINEARTYPE = 1,
+  AT_QUADRATICTYPE = 2,
+  AT_CUBICTYPE = 3,
   AT_PARALLELELLIPSETYPE = 4,
-  AT_ELLIPSETYPE = 5, 
-  AT_CIRCLETYPE = 6 
+  AT_ELLIPSETYPE = 5,
+  AT_CIRCLETYPE = 6
   /* not the real number of points to define a
      circle but to distinguish between a cubic spline */
 };
@@ -66,7 +66,7 @@ typedef enum   _at_polynomial_degree at_polynomial_degree;
 typedef struct _at_spline_type       at_spline_type;
 typedef struct _at_spline_list_type  at_spline_list_type;
 typedef struct _at_spline_list_array_type at_spline_list_array_type;
-#define at_splines_type at_spline_list_array_type 
+#define at_splines_type at_spline_list_array_type
 typedef enum _at_msg_type at_msg_type;
 
 /* A Bezier spline can be represented as four points in the real plane:
@@ -101,8 +101,8 @@ struct _at_spline_list_array_type
 
   /* splines bbox */
   unsigned short height, width;
-  
-  /* the values for following members are inherited from 
+
+  /* the values for following members are inherited from
      at_fitting_opts_type */
   at_color * background_color;
   gboolean centerline;
@@ -112,7 +112,7 @@ struct _at_spline_list_array_type
 };
 
 /* Fitting option.
-   With using at_fitting_opts_doc macro, the description of 
+   With using at_fitting_opts_doc macro, the description of
    each option could be get. e.g. at_fitting_opts_doc(background_color) */
 struct _at_fitting_opts_type
 {
@@ -235,7 +235,7 @@ void (* at_msg_func) (const gchar* msg, at_msg_type msg_type, gpointer client_da
 /*
  * Autotrace initializer
  */
-#define AUTOTRACE_INIT 
+#define AUTOTRACE_INIT
 void autotrace_init (void);
 
 /*
@@ -271,7 +271,7 @@ typedef gboolean          (*  at_testcancel_func) (gpointer client_data);
  * TODO: internal data access, copy
  * --------------------------------------------------------------------- */
 at_fitting_opts_type * at_fitting_opts_new(void);
-at_fitting_opts_type * at_fitting_opts_copy (at_fitting_opts_type * original); 
+at_fitting_opts_type * at_fitting_opts_copy (at_fitting_opts_type * original);
 void at_fitting_opts_free(at_fitting_opts_type * opts);
 
 /* Gettextize */
@@ -298,20 +298,20 @@ at_output_opts_type * at_output_opts_copy(at_output_opts_type * original);
 void at_output_opts_free(at_output_opts_type * opts);
 
 /* --------------------------------------------------------------------- *
- * Bitmap related 
+ * Bitmap related
  *
  * TODO: internal data access
  * --------------------------------------------------------------------- */
 
 /* There is two way to build at_bitmap.
    1. Using input reader
-      Use at_bitmap_read. 
+      Use at_bitmap_read.
       at_input_get_handler_by_suffix or
       at_input_get_handler will help you to get at_bitmap_reader.
    2. Allocating a bitmap and rendering an image on it by yourself
       Use at_bitmap_new.
 
-   In both case, you have to call at_bitmap_free when at_bitmap * 
+   In both case, you have to call at_bitmap_free when at_bitmap *
    data are no longer needed. */
 at_bitmap * at_bitmap_read (at_bitmap_reader * reader,
 				 gchar* filename,
@@ -322,8 +322,8 @@ at_bitmap * at_bitmap_new(unsigned short width,
 			       unsigned int planes);
 at_bitmap * at_bitmap_copy(const at_bitmap * src);
 
-/* We have to export functions that supports internal datum 
-   access. Such functions might be useful for 
+/* We have to export functions that supports internal datum
+   access. Such functions might be useful for
    at_bitmap_new user. */
 unsigned short at_bitmap_get_width  (const at_bitmap * bitmap);
 unsigned short at_bitmap_get_height (const at_bitmap * bitmap);
@@ -343,7 +343,7 @@ void at_bitmap_free (at_bitmap * bitmap);
  * TODO: internal data access
  * --------------------------------------------------------------------- */
 /* at_splines_new
-   
+
    args:
 
    BITMAP is modified in at_splines_new according to opts. Therefore
@@ -362,8 +362,8 @@ at_splines_type * at_splines_new (at_bitmap * bitmap,
    args:
 
    NOTIFY_PROGRESS is called repeatedly inside at_splines_new_full
-   to notify the progress of the execution. This might be useful for 
-   interactive applications. NOTIFY_PROGRESS is called following 
+   to notify the progress of the execution. This might be useful for
+   interactive applications. NOTIFY_PROGRESS is called following
    format:
 
    NOTIFY_PROGRESS (percentage, progress_data);
@@ -371,18 +371,18 @@ at_splines_type * at_splines_new (at_bitmap * bitmap,
    test_cancel is called repeatedly inside at_splines_new_full
    to test whether the execution is canceled or not.
    If test_cancel returns TRUE, execution of at_splines_new_full
-   is stopped as soon as possible and returns NULL. If test_cancel 
+   is stopped as soon as possible and returns NULL. If test_cancel
    returns FALSE, nothing happens. test_cancel  is called following
    format:
 
    TEST_CANCEL (testcancel_data);
-   
-   NULL is valid value for notify_progress and/or test_cancel if 
-   you don't need to know the progress of the execution and/or 
-   cancel the execution */ 
+
+   NULL is valid value for notify_progress and/or test_cancel if
+   you don't need to know the progress of the execution and/or
+   cancel the execution */
 at_splines_type * at_splines_new_full (at_bitmap * bitmap,
 				       at_fitting_opts_type * opts,
-				       at_msg_func msg_func, 
+				       at_msg_func msg_func,
 				       gpointer msg_data,
 				       at_progress_func notify_progress,
 				       gpointer progress_data,
@@ -399,7 +399,7 @@ void at_splines_write(at_spline_writer * writer,
 void at_splines_free (at_splines_type * splines);
 
 /* --------------------------------------------------------------------- *
- * Input related 
+ * Input related
  * --------------------------------------------------------------------- */
 at_bitmap_reader * at_input_get_handler (gchar* filename);
 at_bitmap_reader * at_input_get_handler_by_suffix (gchar* suffix);
@@ -409,7 +409,7 @@ void at_input_list_free(const char ** list);
 
 /* at_input_shortlist
    return value: Do free by yourself */
-char * at_input_shortlist (void); 
+char * at_input_shortlist (void);
 
 /* --------------------------------------------------------------------- *
  * Output related
@@ -421,7 +421,7 @@ void at_output_list_free(const char ** list);
 
 /* at_output_shortlist
    return value: Do free by yourself */
-char * at_output_shortlist (void); 
+char * at_output_shortlist (void);
 
 /* --------------------------------------------------------------------- *
  * Misc
@@ -431,7 +431,7 @@ char * at_output_shortlist (void);
 
    args:
    LONG_FORMAT == TRUE: "AutoTrace version x.y"
-   LONG_FORMAT == FALSE: "x.y" 
+   LONG_FORMAT == FALSE: "x.y"
 
    return value: Don't free. It is allocated statically */
 const char * at_version (gboolean long_format);

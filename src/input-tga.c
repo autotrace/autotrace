@@ -1,5 +1,5 @@
-/* input-tga.c:	reads tga files 
- 
+/* input-tga.c:	reads tga files
+
    Copyright (C) 1999, 2000, 2001 Martin Weber
 
    This library is free software; you can redistribute it and/or
@@ -34,7 +34,7 @@
 #include "input-bmp.h"
 
 /* TODO:
-   - Handle loading images that aren't 8 bits per channel. 
+   - Handle loading images that aren't 8 bits per channel.
 */
 
 /* Round up a division to the nearest integer. */
@@ -110,7 +110,7 @@ static at_bitmap ReadImage (FILE *fp,
 at_bitmap
 input_tga_reader (gchar* filename,
 		  at_input_opts_type * opts,
-		  at_msg_func msg_func, 
+		  at_msg_func msg_func,
 		  gpointer msg_data,
 		  gpointer user_data)
 {
@@ -155,16 +155,16 @@ input_tga_reader (gchar* filename,
     }
 
   image = ReadImage (fp, &hdr, &exp);
- cleanup:  
+ cleanup:
   fclose (fp);
   return image;
 }
 
 
 static int
-std_fread (unsigned char *buf, 
-           int     datasize, 
-           int     nelems, 
+std_fread (unsigned char *buf,
+           int     datasize,
+           int     nelems,
            FILE   *fp)
 {
 
@@ -175,9 +175,9 @@ std_fread (unsigned char *buf,
 
 /* Decode a bufferful of file. */
 static int
-rle_fread (unsigned char *buf, 
-           int     datasize, 
-           int     nelems, 
+rle_fread (unsigned char *buf,
+           int     datasize,
+           int     nelems,
            FILE   *fp)
 {
   static unsigned char *statebuf = 0;
@@ -241,7 +241,7 @@ rle_fread (unsigned char *buf,
           /* Fill the buffer with the next value. */
           if (fread (p, datasize, 1, fp) != 1)
             {
-		  				return j / datasize;
+						return j / datasize;
             }
 
           /* Optimized case for single-byte encoded data. */
@@ -271,7 +271,7 @@ return nelems;
 }
 
 static at_bitmap
-ReadImage (FILE              *fp, 
+ReadImage (FILE              *fp,
            struct tga_header *hdr,
 	   at_exception_type * exp)
 {
@@ -292,7 +292,7 @@ ReadImage (FILE              *fp,
   char vertrev = (char) (!(hdr->descriptor & TGA_DESC_VERTICAL));
 
   image.bitmap = NULL;
-  
+
   /* Reassemble the multi-byte values correctly, regardless of
      host endianness. */
   width = (hdr->widthHi << 8) | hdr->widthLo;
@@ -397,7 +397,7 @@ ReadImage (FILE              *fp,
     {
       /* FIXME: We haven't implemented bit-packed fields yet. */
       LOG ("TGA: channel sizes other than 8 bits are unimplemented\n");
-      at_exception_fatal (exp, 
+      at_exception_fatal (exp,
 			  "TGA: channel sizes other than 8 bits are unimplemented");
       return image;
     }
@@ -478,7 +478,7 @@ ReadImage (FILE              *fp,
          mapping. */
       if (nalphas && alphas[nalphas - 1] == 0)
         colors --;
- 
+
       /* Now pretend as if we only have 8 bpp. */
       abpp = 0;
       pbpp = 8;
@@ -491,28 +491,28 @@ ReadImage (FILE              *fp,
 
    /* Calculate TGA bytes per pixel. */
   bpp = ROUNDUP_DIVIDE (pbpp + abpp, 8);
- 
+
   /* Maybe we need to reverse the data. */
   buffer = NULL;
   if (horzrev || vertrev)
-    buffer = (unsigned char *) malloc (width * height * pelbytes * sizeof (unsigned char));  
+    buffer = (unsigned char *) malloc (width * height * pelbytes * sizeof (unsigned char));
   if (rle)
-    myfread = rle_fread;        
+    myfread = rle_fread;
   else
     myfread = std_fread;
- 
+
   wbytes = width * pelbytes;
   badread = 0;
 
   npels = width * height;
   bsize = wbytes * height;
- 
+
   /* Suck in the data one height at a time. */
   if (badread)
     pels = 0;
   else
     pels = (*myfread) (image.bitmap, bpp, npels, fp);
- 
+
   if (pels != npels)
     {
       if (!badread)
@@ -522,7 +522,7 @@ ReadImage (FILE              *fp,
 	  at_exception_warning(exp, "TGA: eroor reading file");
           badread = 1;
         }
- 
+
 
       /* Fill the rest of this tile with zeros. */
       memset (image.bitmap + (pels * bpp), 0, ((npels - pels) * bpp));
@@ -560,9 +560,9 @@ ReadImage (FILE              *fp,
           image.bitmap[j + 2] = tmp;
         }
     }
- 
-  
- 
+
+
+
   if (horzrev || vertrev)
     {
       unsigned char *tmp;
@@ -588,7 +588,7 @@ ReadImage (FILE              *fp,
             memcpy (buffer + j,
               image.bitmap + bsize - (j + pelbytes), pelbytes);
         }
-  
+
        /* Swap the buffers because we modified them. */
       tmp = buffer;
       buffer = image.bitmap;
@@ -611,7 +611,7 @@ ReadImage (FILE              *fp,
 
       temp2 = temp = image.bitmap;
       image.bitmap = temp3 = (unsigned char *) malloc (width * height * 3 * sizeof (unsigned char));
-	  
+
       for (ypos = 0; ypos < height; ypos++)
         {
           for (xpos = 0; xpos < width; xpos++)
@@ -625,9 +625,9 @@ ReadImage (FILE              *fp,
       free (temp);
       free (cmap);
     }
- 
+
   if (alphas)
     free (alphas);
- 
+
   return image;
 }  /* read_image */

@@ -2,7 +2,7 @@
 
   Copyright (C) 2003 Martin Weber
   Copyright (C) 2003 Masatake YAMATO
-  
+
   The author can be contacted at <martweb@gmx.net>
 
   This program is free software; you can redistribute it and/or modify
@@ -60,7 +60,7 @@ int install_input_magick_readers(void) {return 0;}
 #include "output-dr2d.h"
 #if HAVE_LIBPSTOEDIT
 #include "output-pstoedit.h"
-#else 
+#else
 int install_output_pstoedit_writers(void) {return 0;}
 #endif /* HAVE_LIBPSTOEDIT */
 #include "output-pov.h"
@@ -72,7 +72,7 @@ static int install_output_writers (void);
 
 int
 at_module_init (void)
-{ 
+{
   int r, w;
   /* TODO: Loading every thing in dynamic.
    For a while, these are staticly added. */
@@ -84,7 +84,7 @@ at_module_init (void)
 static int
 install_input_readers (void)
 {
-#ifdef HAVE_LIBPNG  
+#ifdef HAVE_LIBPNG
   at_input_add_handler      ("PNG", "Portable network graphics",      input_png_reader);
 #endif
   at_input_add_handler      ("TGA", "Truevision Targa image",         input_tga_reader);
@@ -114,8 +114,8 @@ install_output_writers (void)
 
 #ifdef HAVE_LIBSWF
   at_output_add_handler("SWF", "Shockwave Flash 3",        output_swf_writer);
-#endif /* HAVE_LIBSWF */    
-  
+#endif /* HAVE_LIBSWF */
+
   at_output_add_handler ("EMF",  "Enhanced Metafile format",     output_emf_writer);
   at_output_add_handler ("MIF",  "FrameMaker MIF format",        output_mif_writer);
   at_output_add_handler ("ER",   "Elastic Reality Shape file",   output_er_writer);

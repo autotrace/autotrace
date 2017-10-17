@@ -43,10 +43,10 @@ static gboolean write16(FILE *fdes, UI16 data)
 {
   size_t count = 0;
   UI8 outch;
-  
+
   outch = (UI8) ((data >> 8) & 0x0FF);
   count += fwrite(&outch, 1, 1, fdes);
-  
+
   outch = (UI8) (data & 0x0FF);
   count += fwrite(&outch, 1, 1, fdes);
 
@@ -58,7 +58,7 @@ static gboolean write8(FILE *fdes, UI8 data)
   size_t count = 0;
 
   count = fwrite(&data, 1, 1, fdes);
-  
+
   return (count == sizeof(UI8)) ? TRUE : FALSE;
 }
 
@@ -66,7 +66,7 @@ static gboolean write8(FILE *fdes, UI8 data)
 static gboolean output_beginmetafilename(FILE *fdes, const char *string)
 {
   size_t len = strlen (string);
- 
+
   if (len + 1 < 0x001F)
     write16(fdes, (UI16)(CGM_BEGINMETAFILE + len + 1));
   else
@@ -93,7 +93,7 @@ static gboolean output_beginmetafilename(FILE *fdes, const char *string)
 static gboolean output_beginpicture(FILE *fdes, const char *string)
 {
   int len = strlen (string);
- 
+
   if (len + 1 < 0x001F)
     write16(fdes, (UI16)(CGM_BEGINPICTURE + len + 1));
   else
@@ -120,7 +120,7 @@ static gboolean output_beginpicture(FILE *fdes, const char *string)
 static gboolean output_metafiledescription(FILE *fdes, const char *string)
 {
   int len = strlen (string);
- 
+
   if (len + 1 < 0x001F)
     write16(fdes, (UI16)(CGM_METAFILEDESCRIPTION + len + 1));
   else
@@ -145,10 +145,10 @@ static gboolean output_metafiledescription(FILE *fdes, const char *string)
 }
 
 int output_cgm_writer(FILE* cgm_file, gchar* name,
-		      int llx, int lly, int urx, int ury, 
+		      int llx, int lly, int urx, int ury,
 		      at_output_opts_type * opts,
 		      spline_list_array_type shape,
-		      at_msg_func msg_func, 
+		      at_msg_func msg_func,
 		      gpointer msg_data,
 		      gpointer user_data)
 {
@@ -235,7 +235,7 @@ int output_cgm_writer(FILE* cgm_file, gchar* name,
 	  if (shape.centerline)
 	    write16 (cgm_file, 0x01E0); /* begin a compound line */
 	  else
-		write16 (cgm_file, 0x0100); /* begin a figure */   
+		write16 (cgm_file, 0x0100); /* begin a figure */
 
       for (this_spline = 0; this_spline < SPLINE_LIST_LENGTH (list);
            this_spline++)
@@ -258,7 +258,7 @@ int output_cgm_writer(FILE* cgm_file, gchar* name,
             write16 (cgm_file, (UI16) (ury - START_POINT (s).y));
             write16 (cgm_file, (UI16) CONTROL1 (s).x);
             write16 (cgm_file, (UI16) (ury - CONTROL1 (s).y));
-            write16 (cgm_file, (UI16) CONTROL2 (s).x); 
+            write16 (cgm_file, (UI16) CONTROL2 (s).x);
             write16 (cgm_file, (UI16) (ury - CONTROL2 (s).y));
             write16 (cgm_file, (UI16) END_POINT (s).x);
             write16 (cgm_file, (UI16) (ury - END_POINT (s).y));

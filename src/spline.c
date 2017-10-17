@@ -78,7 +78,7 @@ new_spline_list (void)
   return answer;
 }
 
-spline_list_type 
+spline_list_type
 empty_spline_list (void)
 {
   spline_list_type answer;

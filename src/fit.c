@@ -91,13 +91,13 @@ static spline_list_type fit_curve_list (curve_list_type,
  at_exception_type * exception);
 static spline_list_type *fit_with_least_squares (curve_type,
  fitting_opts_type *,
- at_exception_type * exception);						 
+ at_exception_type * exception);
 static spline_list_type *fit_with_line (curve_type);
 static void remove_knee_points (curve_type, gboolean);
 static void set_initial_parameter_values (curve_type);
 static gboolean spline_linear_enough (spline_type *, curve_type,
   fitting_opts_type *);
-static curve_list_array_type split_at_corners (pixel_outline_list_type, 
+static curve_list_array_type split_at_corners (pixel_outline_list_type,
 					       fitting_opts_type *,
 					       at_exception_type * exception);
 static at_coord real_to_int_coord (at_real_coord);
@@ -127,7 +127,7 @@ new_fitting_opts (void)
   fitting_opts.centerline = FALSE;
   fitting_opts.preserve_width = FALSE;
   fitting_opts.width_weight_factor   = 6.0;
-  
+
   return (fitting_opts);
 }
 
@@ -140,7 +140,7 @@ fitted_splines (pixel_outline_list_type pixel_outline_list,
   fitting_opts_type *fitting_opts, at_distance_map *dist,
   unsigned short width, unsigned short height,
   at_exception_type * exception,
-  at_progress_func notify_progress, 
+  at_progress_func notify_progress,
   gpointer progress_data,
   at_testcancel_func test_cancel,
   gpointer testcancel_data)
@@ -148,7 +148,7 @@ fitted_splines (pixel_outline_list_type pixel_outline_list,
   unsigned this_list;
 
   spline_list_array_type char_splines = new_spline_list_array ();
-  curve_list_array_type curve_array = split_at_corners (pixel_outline_list, 
+  curve_list_array_type curve_array = split_at_corners (pixel_outline_list,
 							fitting_opts,
 							exception);
 
@@ -159,7 +159,7 @@ fitted_splines (pixel_outline_list_type pixel_outline_list,
   if (fitting_opts->background_color)
     char_splines.background_color = at_color_copy(fitting_opts->background_color);
   else
-    char_splines.background_color = NULL;   
+    char_splines.background_color = NULL;
   /* Set dummy values. Real value is set in upper context. */
   char_splines.width = width;
   char_splines.height = height;
@@ -369,7 +369,7 @@ fit_curve (curve_type curve, fitting_opts_type *fitting_opts,
   if (CURVE_LENGTH (curve) < 2)
     {
       LOG ("Tried to fit curve with less than two points");
-      at_exception_warning(exception, 
+      at_exception_warning(exception,
 			   "Tried to fit curve with less than two points");
       return NULL;
     }
@@ -677,8 +677,8 @@ find_corners (pixel_outline_type pixel_outline,
     remove_adjacent_corners (&corner_list,
 			     O_LENGTH (pixel_outline) - (pixel_outline.open ? 2 : 1),
 			     fitting_opts->remove_adjacent_corners,
-     			     exception);
- cleanup:  
+			     exception);
+ cleanup:
   return corner_list;
 }
 
@@ -729,7 +729,7 @@ static void
 remove_adjacent_corners (index_list_type *list, unsigned last_index,
 			 gboolean remove_adj_corners,
 			 at_exception_type * exception)
-			 
+
 {
   unsigned j;
   unsigned last;
@@ -751,7 +751,7 @@ remove_adjacent_corners (index_list_type *list, unsigned last_index,
           temp = GET_INDEX (*list, j);
           GET_INDEX (*list, j) = GET_INDEX (*list, max_index);
           GET_INDEX (*list, max_index) = temp;
-	  
+
 	  /* xx -- really have to sort?  */
 	  LOG ("needed exchange");
 	  at_exception_warning(exception, "needed exchange");
@@ -966,7 +966,7 @@ filter (curve_type curve, fitting_opts_type *fitting_opts)
           /* Just as with the first point, we have to keep the last point.  */
           if (offset)
 	    append_point (newcurve, LAST_CURVE_POINT (curve));
-	  
+
           /* Set the original curve to the newly filtered one, and go again.  */
           free_curve (curve);
           *curve = *newcurve;
@@ -1013,7 +1013,7 @@ fit_with_line (curve_type curve)
 static spline_list_type *
 fit_with_least_squares (curve_type curve, fitting_opts_type *fitting_opts,
 			at_exception_type * exception)
-			
+
 {
   gfloat error = 0, best_error = FLT_MAX;
   spline_type spline, best_spline;
@@ -1143,7 +1143,7 @@ fit_with_least_squares (curve_type curve, fitting_opts_type *fitting_opts,
       CURVE_START_TANGENT (right_curve) = CURVE_END_TANGENT (left_curve);
 
       /* Now that we've set up the curves, we can fit them.  */
-      left_spline_list = fit_curve (left_curve, fitting_opts, 
+      left_spline_list = fit_curve (left_curve, fitting_opts,
 				    exception);
       if (at_exception_got_fatal(exception))
 	/* TODO: Memory allocated for left_curve and right_curve
@@ -1219,7 +1219,7 @@ fit_with_least_squares (curve_type curve, fitting_opts_type *fitting_opts,
 #define B3(t) CUBE (t)
 
 static spline_type
-fit_one_spline (curve_type curve, 
+fit_one_spline (curve_type curve,
 		at_exception_type * exception)
 {
   /* Since our arrays are zero-based, the `C0' and `C1' here correspond

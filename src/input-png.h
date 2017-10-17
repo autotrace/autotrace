@@ -1,5 +1,5 @@
-/* input-png.h: import png files. 
-   
+/* input-png.h: import png files.
+
    Copyright (C) 2000 MenTaLguY <mental@rydia.net>
 
    This library is free software; you can redistribute it and/or
@@ -26,7 +26,7 @@
 
 at_bitmap input_png_reader (gchar* filename,
 				 at_input_opts_type * opts,
-				 at_msg_func msg_func, 
+				 at_msg_func msg_func,
 				 gpointer msg_data,
 				 gpointer user_data);
 

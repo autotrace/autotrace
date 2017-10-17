@@ -17,7 +17,7 @@
    Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111-1307
    USA. */
 
-/* 
+/*
  * The pnm reading and writing code was written from scratch by Erik Nygren
  * (nygren@mit.edu) based on the specifications in the man pages and
  * does not contain any code from the netpbm or pbmplus distributions.
@@ -58,7 +58,7 @@ typedef struct _PNMInfo
   int       np;		/* Number of image planes (0 for pbm) */
   int       asciibody;		/* 1 if ascii body, 0 if raw body */
   /* Routine to use to load the pnm body */
-  void    (* loader) (PNMScanner *, struct _PNMInfo *, unsigned char *, 
+  void    (* loader) (PNMScanner *, struct _PNMInfo *, unsigned char *,
 		      at_exception_type * excep);
 } PNMInfo;
 
@@ -124,7 +124,7 @@ static struct struct_pnm_types
 
 at_bitmap input_pnm_reader (gchar* filename,
 				 at_input_opts_type * opts,
-				 at_msg_func msg_func, 
+				 at_msg_func msg_func,
 				 gpointer msg_data,
 				 gpointer user_data)
 {
@@ -155,7 +155,7 @@ at_bitmap input_pnm_reader (gchar* filename,
   scan = pnmscanner_create(fd);
 
   /* Get magic number */
-  pnmscanner_gettoken (scan, (unsigned char *)buf, BUFLEN); 
+  pnmscanner_gettoken (scan, (unsigned char *)buf, BUFLEN);
   if (pnmscanner_eof(scan))
     {
       LOG("pnm filter: premature end of file\n");
@@ -184,9 +184,9 @@ at_bitmap input_pnm_reader (gchar* filename,
       at_exception_fatal (&excep, "pnm filter: file not in a supported format");
       goto cleanup;
     }
-      
 
-  pnmscanner_gettoken(scan, (unsigned char *)buf, BUFLEN); 
+
+  pnmscanner_gettoken(scan, (unsigned char *)buf, BUFLEN);
   if (pnmscanner_eof(scan))
     {
       LOG ("pnm filter: premature end of file\n");
@@ -201,7 +201,7 @@ at_bitmap input_pnm_reader (gchar* filename,
       goto cleanup;
     }
 
-  pnmscanner_gettoken(scan, (unsigned char *)buf, BUFLEN); 
+  pnmscanner_gettoken(scan, (unsigned char *)buf, BUFLEN);
   if (pnmscanner_eof(scan))
     {
       LOG ("pnm filter: premature end of file\n");
@@ -215,7 +215,7 @@ at_bitmap input_pnm_reader (gchar* filename,
       at_exception_fatal (&excep, "pnm filter: invalid yres while loading");
       goto cleanup;
     }
-    
+
 
   if (pnminfo->np != 0)		/* pbm's don't have a maxval field */
     {
@@ -252,7 +252,7 @@ at_bitmap input_pnm_reader (gchar* filename,
 
   /* close the file */
   fclose (fd);
-  
+
   return (bitmap);
 }
 

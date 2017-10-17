@@ -263,7 +263,7 @@ new_curve_list_array (void)
 
 void
 free_curve_list_array (curve_list_array_type *curve_list_array,
-		       at_progress_func notify_progress, 
+		       at_progress_func notify_progress,
 		       gpointer client_data)
 {
   unsigned this_list;

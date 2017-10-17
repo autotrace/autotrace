@@ -1,5 +1,5 @@
 /* input-tga.h:	import tga files.
- 
+
    Copyright (C) 1999, 2000, 2001 Martin Weber
 
    This library is free software; you can redistribute it and/or
@@ -24,7 +24,7 @@
 
 at_bitmap input_tga_reader (gchar* filename,
 				 at_input_opts_type * opts,
-				 at_msg_func msg_func, 
+				 at_msg_func msg_func,
 				 gpointer msg_data,
 				 gpointer user_data);
 

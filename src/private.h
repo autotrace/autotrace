@@ -2,7 +2,7 @@
 
   Copyright (C) 2003 Martin Weber
   Copyright (C) 2003 Masatake YAMATO
-  
+
   The author can be contacted at <martweb@gmx.net>
 
   This program is free software; you can redistribute it and/or modify
@@ -20,7 +20,7 @@
   Foundation, Inc., 675 Mass Ave, Cambridge, MA 02139, USA. */
 
 #ifndef PRIVATE_H
-#define PRIVATE_H 
+#define PRIVATE_H
 
 #include "autotrace.h"
 #include "input.h"

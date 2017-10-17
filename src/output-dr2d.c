@@ -89,7 +89,7 @@ static struct Chunk * BuildCMAP(spline_list_array_type shape) {
 	unsigned char * CMAP;
 	unsigned char * IndexCol;
 	struct Chunk * CMAPChunk;
-	
+
 	MaxListSize = SPLINE_LIST_ARRAY_LENGTH(shape);
 
 	if ((CMAPChunk = (struct Chunk *) malloc(sizeof(struct Chunk))) == NULL) {
@@ -126,7 +126,7 @@ static struct Chunk * BuildCMAP(spline_list_array_type shape) {
 			IndexCol = CMAP + (ListSize * 3);
 			*IndexCol = Red;
 			*(IndexCol + 1) = Green;
-			*(IndexCol + 2) = Blue;			
+			*(IndexCol + 2) = Blue;
 			++ListSize;
 		}
 	}
@@ -169,7 +169,7 @@ static struct Chunk * BuildBBOX(spline_list_type list, int height) {
 	struct Chunk * BBOXChunk;
 	unsigned char * BBOXData;
 	spline_type s;
-	
+
 	if ((BBOXChunk = (struct Chunk *) malloc(sizeof(struct Chunk))) == NULL) {
 		fprintf(stderr, "Insufficient memory to allocate BBOX chunk\n");
 		return NULL;
@@ -227,7 +227,7 @@ static struct Chunk * BuildATTR(at_color colour, int StrokeOrFill, struct Chunk 
 	struct Chunk * ATTRChunk;
 	unsigned char * ATTRData;
 	int ColourIndex;
-	
+
 	if ((ATTRChunk = (struct Chunk *) malloc(sizeof(struct Chunk))) == NULL) {
 		fprintf(stderr, "Insufficient memory to allocate ATTR chunk\n");
 		return NULL;
@@ -260,7 +260,7 @@ static struct Chunk * BuildATTR(at_color colour, int StrokeOrFill, struct Chunk 
 static struct Chunk * BuildDRHD(int x1, int y1, int x2, int y2) {
 	struct Chunk * DRHDChunk;
 	unsigned char * DRHDData;
-	
+
 	if ((DRHDChunk = (struct Chunk *) malloc(sizeof(struct Chunk))) == NULL) {
 		fprintf(stderr, "Insufficient memory to allocate DRHD chunk\n");
 		return NULL;
@@ -289,7 +289,7 @@ static struct Chunk * BuildPPRF(char * Units, int Portrait, char * PageType, flo
 	char * PPRFData;
 	char * PPRFPos;
 	int ChunkSize;
-	
+
 	if ((PPRFChunk = (struct Chunk *) malloc(sizeof(struct Chunk))) == NULL) {
 		fprintf(stderr, "Insufficient memory to allocate PPRF chunk\n");
 		return NULL;
@@ -325,7 +325,7 @@ static struct Chunk * BuildPPRF(char * Units, int Portrait, char * PageType, flo
 static struct Chunk * BuildLAYR() {
 	struct Chunk * LAYRChunk;
 	unsigned char * LAYRData;
-	
+
 	if ((LAYRChunk = (struct Chunk *) malloc(sizeof(struct Chunk))) == NULL) {
 		fprintf(stderr, "Insufficient memory to allocate LAYR chunk\n");
 		return NULL;
@@ -353,7 +353,7 @@ static struct Chunk * BuildLAYR() {
 static struct Chunk * BuildDASH(void) {
 	struct Chunk * DASHChunk;
 	unsigned char * DASHData;
-	
+
 	if ((DASHChunk = (struct Chunk *) malloc(sizeof(struct Chunk))) == NULL) {
 		fprintf(stderr, "Insufficient memory to allocate DASH chunk\n");
 		return NULL;
@@ -389,7 +389,7 @@ static struct Chunk ** GeneratexPLY(struct Chunk * CMAP, spline_list_array_type 
 
 	this_list_length = SPLINE_LIST_ARRAY_LENGTH(shape);
 
-	/* We store three chunks for every spline (one for BBOX, one for ATTR, and one for xPLY) */	
+	/* We store three chunks for every spline (one for BBOX, one for ATTR, and one for xPLY) */
 	if ((ChunkList = (struct Chunk **) malloc(sizeof(struct Chunk) * (this_list_length * 3))) == NULL) {
 		fprintf(stderr, "Insufficient memory to allocate chunk list\n");
 		return NULL;
@@ -451,7 +451,7 @@ static struct Chunk ** GeneratexPLY(struct Chunk * CMAP, spline_list_array_type 
 			}
 		}
 	}
-	
+
 	return ChunkList;
 }
 
@@ -459,7 +459,7 @@ static int CountSplines(spline_list_type list) {
 	unsigned this_spline;
 	unsigned this_spline_length;
 	int Total;
-	
+
 	Total = 0;
 
 	if (SPLINE_DEGREE(SPLINE_LIST_ELT(list, 0)) == LINEARTYPE) {
@@ -480,7 +480,7 @@ static int CountSplines(spline_list_type list) {
 
 static void PushPolyPoint(unsigned char * PolyData, int * PolyPoint, float x, float y) {
 	int PolyLocal;
-	
+
 	PolyLocal = *PolyPoint;
 
 	FloatAsIEEEBytes(x * XFactor, PolyData + PolyLocal);
@@ -492,7 +492,7 @@ static void PushPolyPoint(unsigned char * PolyData, int * PolyPoint, float x, fl
 
 static void PushPolyIndicator(unsigned char * PolyData, int * PolyPoint, unsigned int flags) {
 	int PolyLocal;
-	
+
 	PolyLocal = *PolyPoint;
 
 	IntAsBytes(INDICATOR, PolyData + PolyLocal);
@@ -505,7 +505,7 @@ static void PushPolyIndicator(unsigned char * PolyData, int * PolyPoint, unsigne
 static void WriteChunk(FILE * file, struct Chunk * Chunk) {
 	unsigned char SizeBytes[4];
 	int Size;
-	
+
 	Size = Chunk->Size;
 	IntAsBytes(Size, SizeBytes);
 
@@ -519,7 +519,7 @@ static void WriteChunk(FILE * file, struct Chunk * Chunk) {
 
 static void WriteChunks(FILE * file, struct Chunk ** ChunkList, int NumChunks) {
 	int WalkChunks;
-	
+
 	for (WalkChunks = 0; WalkChunks < NumChunks; WalkChunks++) {
 		WriteChunk(file, ChunkList[WalkChunks]);
 	}
@@ -529,7 +529,7 @@ static int TotalSizeChunks(struct Chunk ** ChunkList, int NumChunks) {
 	int WalkChunks;
 	int Size;
 	int Total;
-	
+
 	Total = 0;
 	for (WalkChunks = 0; WalkChunks < NumChunks; WalkChunks++) {
 		/* 4 bytes for ID and 4 bytes for length */
@@ -537,13 +537,13 @@ static int TotalSizeChunks(struct Chunk ** ChunkList, int NumChunks) {
 		Size += Size & 0x01;
 		Total += (Size) + 8;
 	}
-	
+
 	return Total;
 }
 
 static int SizeChunk(struct Chunk * ThisChunk) {
 	int Size;
-	
+
 	Size = ThisChunk->Size;
 	Size += Size & 0x01;
 
@@ -557,16 +557,16 @@ static void FreeChunk(struct Chunk * ThisChunk) {
 
 static void FreeChunks(struct Chunk ** ChunkList, int NumChunks) {
 	int WalkChunks;
-	
+
 	for (WalkChunks = 0; WalkChunks < NumChunks; WalkChunks++) {
 		FreeChunk(ChunkList[WalkChunks]);
 	}
 }
 
-int output_dr2d_writer(FILE * file, gchar* name, int llx, int lly, int urx, int ury, 
+int output_dr2d_writer(FILE * file, gchar* name, int llx, int lly, int urx, int ury,
 		       at_output_opts_type * opts,
 		       spline_list_array_type shape, at_msg_func msg_func, gpointer msg_data,
-		       gpointer user_data) 
+		       gpointer user_data)
 {
 	int width = urx - llx;
 	int height = ury - lly;
@@ -649,7 +649,7 @@ static void FloatAsIEEEBytes(float value, unsigned char * bytes) {
 static void flt2ieee(float * flt, unsigned char * bytes) {
 	long RealMant, RealMask, RealExp;
 	long MoveExp;
-		
+
 	RealMant = (long) *flt;
 
 	*bytes = 0;

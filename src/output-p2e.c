@@ -1,6 +1,6 @@
 /* output-p2e.c: utility routines for pstoedit intermediate output
 
-   Copyright (C) 2000-2001 Wolfgang Glunz, Martin Weber 
+   Copyright (C) 2000-2001 Wolfgang Glunz, Martin Weber
 
    This library is free software; you can redistribute it and/or
    modify it under the terms of the GNU Lesser General Public License
@@ -134,7 +134,7 @@ static int output_p2e_header(FILE* ps_file, gchar* name,
   OUT_LINE ("/imagestring 1 string def");
   OUT_LINE ("%%EndProlog");
   OUT_LINE ("%%BeginSetup");
-  OUT_LINE ("% textastext doflatten backendconstraints  "); 
+  OUT_LINE ("% textastext doflatten backendconstraints  ");
   OUT1     ("%d 0 backendconstraints\n", with_curves);
   OUT_LINE ("%%EndSetup");
 
@@ -174,7 +174,7 @@ out_splines (FILE * ps_file, spline_list_array_type shape)
           int c, m, y, k;
 
           OUT_LINE ((shape.centerline || list.open) ? "stroke" : "fill");
-          OUT1("\n\n%% %d pathnumber\n",pathnr); 
+          OUT1("\n\n%% %d pathnumber\n",pathnr);
           OUT_LINE ((shape.centerline || list.open) ? "% strokedpath" : "% filledpath");
           pathnr++;
 #ifdef withrgbcolor
@@ -222,10 +222,10 @@ out_splines (FILE * ps_file, spline_list_array_type shape)
 
 
 int output_p2e_writer(FILE* ps_file, gchar* name,
-		      int llx, int lly, int urx, int ury, 
+		      int llx, int lly, int urx, int ury,
 		      at_output_opts_type * opts,
 		      spline_list_array_type shape,
-		      at_msg_func msg_func, 
+		      at_msg_func msg_func,
 		      gpointer msg_data,
 		      gpointer user_data)
 {

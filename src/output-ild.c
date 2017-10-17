@@ -51,7 +51,7 @@
 
 #define POINT_ATTRIB_BLANKED 0x01
 
-int write3DFrames = 0; 
+int write3DFrames = 0;
 int trueColorWrite = 1;
 int writeTable = 0;
 int fromToZero = 1;
@@ -334,7 +334,7 @@ static unsigned char ilda_standard_color_palette[256][3]={
     { 255,  96,  96 },	// Medium skin tone
     { 255, 255, 255 },	// White (cycleable)
     { 245, 245, 245 },
-    { 235, 235, 235 }, 
+    { 235, 235, 235 },
     { 224, 224, 224 },	// Very light gray (7/8 intensity)
     { 213, 213, 213 },
     { 203, 203, 203 },
@@ -417,10 +417,10 @@ pLaserPoint frame_point_add(pLaserFrame fra){
   pLaserPoint point2 = NULL;
 
   fra->count += 1;
-    
+
   if(point == NULL){
     point = newLaserPoint();
-    point->next = NULL;    
+    point->next = NULL;
     fra->point_first = point;
     fra->point_last = point;
     return point;
@@ -432,7 +432,7 @@ pLaserPoint frame_point_add(pLaserFrame fra){
   point->next = point2;
 
   fra->point_last = point->next;
-   
+
   return point2;
 };
 
@@ -458,19 +458,19 @@ int sequence_frame_count(pLaserSequence seq){
 }
 
 pLaserFrame sequence_frame_add(pLaserSequence seq){
-    
+
 	pLaserFrame frame1 = seq->frame_last;
 	pLaserFrame frame2 = NULL;
 
 	seq->frame_count += 1;
-    
+
 	if(frame1 == NULL){
 		frame1 = newLaserFrame();
 		frame1->next = NULL;
 		frame1->previous = NULL;
 		seq->frame_first = frame1;
 		seq->frame_last = frame1;
-		return frame1;    
+		return frame1;
 	};
 
 	frame2 = newLaserFrame();
@@ -493,7 +493,7 @@ int writeILDAFrame(FILE *file, LaserFrame *f, int format){
   LaserPoint *point;
 
   cpoints = frame_point_count(f);
-  
+
   point = f->point_first;
   points = 0;
 
@@ -548,7 +548,7 @@ int writeILDAHeader(FILE *file, unsigned int format, unsigned int datalength){
   fhbuffer[5] = (format >> 16) & 0xFF;
   fhbuffer[6] = (format >> 8) & 0xFF;
   fhbuffer[7] =  format & 0xFF;
-  
+
   fhbuffer[8] =  (datalength >> 24) & 0xFF;
   fhbuffer[9] =  (datalength >> 16) & 0xFF;
   fhbuffer[10] = (datalength >> 8) & 0xFF;
@@ -564,7 +564,7 @@ int writeILDAFrameHeader(FILE *file, LaserFrame *f, int format, unsigned int fra
   unsigned char emptys[] = "                ";
 
   writeILDAHeader(file, format, 0);
-  
+
   if(f) {
 #ifdef _WINDOWS
     _snprintf((char *)(fhbuffer), 16, "Frame #%04d", frames);
@@ -600,14 +600,14 @@ int writeILDATrueColor(FILE *file, LaserFrame *f){
   cpoints = frame_point_count(f);
 
   writeILDAHeader(file, ILDA_TRUE_COLOR, (cpoints * 3) + 4);
-  
+
   cbuffer[0] = (cpoints >> 24) & 0xFF;
   cbuffer[1] = (cpoints >> 16) & 0xFF;
   cbuffer[2] = (cpoints >> 8) & 0xFF;
   cbuffer[3] =  cpoints & 0xFF;
 
   fwrite((char *)cbuffer, sizeof(char), 4, file);
-  
+
   point = f->point_first;
 
   while(point){
@@ -628,7 +628,7 @@ int writeILDAColorTable(FILE *file){
   unsigned int i, palette = 0, colors = ILDA_COLORS_NUM;
   unsigned char fhbuffer[24];
   unsigned char emptys[] = "Color Table     ";
-  
+
   writeILDAHeader(file, ILDA_COLOR_TABLE, 0);
 
   strncpy((char *)(fhbuffer),(char *)emptys, 16);
@@ -643,7 +643,7 @@ int writeILDAColorTable(FILE *file){
   fwrite((char *)fhbuffer, sizeof(char), 24, file);
 
   for(i = 0; i < colors; i++){
-    fhbuffer[0] = ilda_standard_color_palette[i][0];  
+    fhbuffer[0] = ilda_standard_color_palette[i][0];
     fhbuffer[1] = ilda_standard_color_palette[i][1];
     fhbuffer[2] = ilda_standard_color_palette[i][2];
     fwrite((char *)fhbuffer, sizeof(char), 3, file);
@@ -661,17 +661,17 @@ int writeILDA(FILE *file, LaserSequence *s) {
   if(writeTable){
      writeILDAColorTable(file);
   }
-   
+
   cframes = sequence_frame_count(s);
 
   f = s->frame_first;
-            
+
   while(f){
 
     if(trueColorWrite) writeILDATrueColor(file, f);
     // write ILDA header for frame
     writeILDAFrameHeader(file, f, format, frames, cframes);
-    writeILDAFrame(file, f, format);                                    
+    writeILDAFrame(file, f, format);
 
     f = f->next;
     frames++;
@@ -693,7 +693,7 @@ static inline short int clip(double x){
   if(x > 32767.0) x = 32767.0;
   if(x < -32768.0) x = -32768.0;
   return (unsigned short) rint(x);
-} 
+}
 
 
 /** No descriptions */
@@ -738,7 +738,7 @@ void frameDrawInit(int x, int y, unsigned char r, unsigned char g, unsigned char
       if(fromToZero) blankingPath(0, 0, x, y);
     }
   } else {
-    blankingPathTo(x, y);  
+    blankingPathTo(x, y);
   }
 }
 
@@ -746,7 +746,7 @@ double getAngle(double b1x, double b1y, double b2x, double b2y){
   double acosa;
   double b1v = sqrt(b1x * b1x + b1y * b1y);
   double b2v = sqrt(b2x * b2x + b2y * b2y);
-  
+
   if((b1v == 0) || (b2v == 0)) return 0.0;
   acosa = (b1x * b2x + b1y * b2y) / (b1v * b2v);
   if(acosa > 1.0) acosa = 1.0;
@@ -763,7 +763,7 @@ void insertAnchorPoints(){
   dx1 = ((LaserPoint *)p->next)->x - p->x;
   dy1 = ((LaserPoint *)p->next)->y - p->y;
   p = p->next;
-  
+
   while(p && p->next){
 
     dx = ((LaserPoint *)p->next)->x - p->x;
@@ -778,7 +778,7 @@ void insertAnchorPoints(){
     if(dx || dy){
       a = getAngle(dx1, dy1, dx, dy);
 	while(a > anchor_thresh){
-	  pn = newLaserPoint();  
+	  pn = newLaserPoint();
 	  pn->x=p->x; pn->y=p->y; pn->z=p->z;
 	  pn->r=p->r; pn->g=p->g; pn->b=p->b;
 #ifdef ANCHOR_DEBUG
@@ -807,7 +807,7 @@ void frameDrawFinish(){
 
   if(sequence_frame_count(drawsequence) < 1){
     frameDrawInit(0, 0, 0, 0, 0);
-    
+
     if(frame_point_count(drawframe) < 1){
       p = frame_point_add(drawframe); // add 0 point, else ILDA write will fail
       p->x = 0; p->y = 0; p->z = 0;
@@ -915,7 +915,7 @@ static void OutputILDA(FILE *fdes, int llx, int lly, int urx, int ury, spline_li
   drawsequence = newLaserSequence();
 
   LastPoint.x = 0; LastPoint.y = 0;
-    
+
   // visit each spline-list
   for(this_list = 0; this_list < SPLINE_LIST_ARRAY_LENGTH(shape); this_list++){
     curr_list = SPLINE_LIST_ARRAY_ELT(shape, this_list);
@@ -927,7 +927,7 @@ static void OutputILDA(FILE *fdes, int llx, int lly, int urx, int ury, spline_li
     for (this_spline=0; this_spline<SPLINE_LIST_LENGTH(curr_list); this_spline++){
       curr_spline = SPLINE_LIST_ELT(curr_list, this_spline);
       last_degree = ((int)SPLINE_DEGREE(curr_spline));
-                
+
       switch((polynomial_degree)last_degree){
         case LINEARTYPE:
            //output Line
@@ -935,7 +935,7 @@ static void OutputILDA(FILE *fdes, int llx, int lly, int urx, int ury, spline_li
 		              curr_list.color.r, curr_list.color.g, curr_list.color.b);
            LastPoint = END_POINT(curr_spline);
            break;
-         
+
 	   default:
            //output Bezier curve
             drawCubicBezier((LastPoint.x - ox) * sx, (LastPoint.y - oy) * sy,
@@ -948,21 +948,21 @@ static void OutputILDA(FILE *fdes, int llx, int lly, int urx, int ury, spline_li
        }
      }
     }
-    
+
   frameDrawFinish();
   writeILDA(fdes, drawsequence);
 }
 
 
 int output_ild_writer(FILE* file, gchar* name,
-		      int llx, int lly, int urx, int ury, 
+		      int llx, int lly, int urx, int ury,
 		      at_output_opts_type * opts,
 		      at_spline_list_array_type shape,
-		      at_msg_func msg_func, 
+		      at_msg_func msg_func,
 		      gpointer msg_data,
 		      gpointer user_data){
 
-#ifdef _WINDOWS 
+#ifdef _WINDOWS
   if(file == stdout){
     fprintf(stderr, "This driver couldn't write to stdout!\n");
     return -1;
@@ -970,7 +970,7 @@ int output_ild_writer(FILE* file, gchar* name,
 #endif
 
   /* This should be user-adjustable. */
-  write3DFrames = 0; 
+  write3DFrames = 0;
   trueColorWrite = 1;
   writeTable = 0;
   fromToZero = 1;
@@ -983,11 +983,11 @@ int output_ild_writer(FILE* file, gchar* name,
   OutputILDA(file, llx, lly, urx, ury, shape);
 
   if(file == stdout) return 0;
-  
+
   printf("Wrote %d frame with %d points (%d anchors", sequence_frame_count(drawsequence), frame_point_count(drawframe),inserted_anchor_points);
   if(trueColorWrite) printf(", True Color Header");
   if(writeTable) printf(", Color Table");
-  printf(").\n");  
+  printf(").\n");
   return 0;
 }
 

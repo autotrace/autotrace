@@ -1,11 +1,11 @@
-/* xstd.h: Wrappers for functions in C standard library 
+/* xstd.h: Wrappers for functions in C standard library
  Was: xmem, xfile */
 
 /* These call the corresponding function in the standard library, and
    abort if those routines fail. */
 
 #ifndef XSTD_H
-#define XSTD_H 
+#define XSTD_H
 
 #include "types.h"
 #include "message.h"
@@ -57,16 +57,16 @@ do								\
   {								\
     (gpointer&)(new_mem) = (gpointer) malloc (size);	\
      assert(new_mem);						\
-  } while (0) 
+  } while (0)
 
- 
+
 #define XCALLOC(new_mem, sizex)					\
 do								\
   {								\
     (gpointer&)(new_mem) = (void *) calloc (sizex, 1);	\
     assert(new_mem);						\
-  } while (0) 
- 
+  } while (0)
+
 #define XREALLOC(old_ptr, size)						  \
 do									  \
   {									  \

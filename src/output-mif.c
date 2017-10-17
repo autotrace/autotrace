@@ -101,7 +101,7 @@ static void print_coord(FILE* f, gfloat x, gfloat y)
   Main conversion routine
 ===========================================================================*/
 int output_mif_writer(FILE* ps_file, gchar* name,
-		      int llx, int lly, int urx, int ury, 
+		      int llx, int lly, int urx, int ury,
 		      at_output_opts_type * opts,
 		      spline_list_array_type shape,
 		      at_msg_func msg_func, gpointer msg_data,
@@ -125,7 +125,7 @@ int output_mif_writer(FILE* ps_file, gchar* name,
   for( this_list=0; this_list < SPLINE_LIST_ARRAY_LENGTH(shape); this_list++ ){
     spline_list_type list = SPLINE_LIST_ARRAY_ELT (shape, this_list);
     curr_color = (list.clockwise && shape.background_color != NULL)? *(shape.background_color) : list.color;
-    
+
     for( i=0; i<n_ctbl; i++ )
       if( at_color_equal(&curr_color, &col_tbl[i].c) ) break;
 
@@ -172,7 +172,7 @@ int output_mif_writer(FILE* ps_file, gchar* name,
       if( at_color_equal(&curr_color, &col_tbl[i].c) ) break;
 
     fprintf(ps_file, " %s\n",
-      (shape.centerline || list.open) ? 
+      (shape.centerline || list.open) ?
       "<PolyLine <Fill 15><Pen 0>" :
       "<Polygon <Fill 0><Pen 15>");
     fprintf(ps_file, "  <ObColor `%s'>\n", col_tbl[i].tag);

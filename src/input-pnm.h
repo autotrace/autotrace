@@ -1,5 +1,5 @@
-/* input-pnm.h: import pnm and pbm files. 
- 
+/* input-pnm.h: import pnm and pbm files.
+
    Copyright (C) 1999, 2000, 2001 Erik Nygren <nygren@mit.edu>
 
    This library is free software; you can redistribute it and/or

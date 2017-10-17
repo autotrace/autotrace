@@ -1,5 +1,5 @@
 /* input-png.c: PNG loader for autotrace
-   
+
    Copyright (C) 2000 MenTaLguY <mental@rydia.net>
 
    This library is free software; you can redistribute it and/or
@@ -53,7 +53,7 @@ static void handle_error(png_structp png, const gchar* message) {
 			   message);
 	/* at_exception_fatal((at_exception_type *)at_png->error_ptr,
 	   "PNG error"); */
-	
+
 }
 
 static void finalize_structs(png_structp png, png_infop info,
@@ -72,7 +72,7 @@ static int init_structs(png_structp *png, png_infop *info,
 
 	*png = png_create_read_struct(PNG_LIBPNG_VER_STRING, exp,
 	                              (png_error_ptr)handle_error, (png_error_ptr)handle_warning);
-	
+
 	if (*png) {
 		*info = png_create_info_struct(*png);
 		if (*info) {
@@ -90,7 +90,7 @@ static int init_structs(png_structp *png, png_infop *info,
 	    goto cleanup;					\
 	  } } while (0)
 
-static int load_image(at_bitmap *image, FILE *stream, at_input_opts_type * opts, at_exception_type * exp) 
+static int load_image(at_bitmap *image, FILE *stream, at_input_opts_type * opts, at_exception_type * exp)
 {
 	png_structp png;
 	png_infop info, end_info;
@@ -98,13 +98,13 @@ static int load_image(at_bitmap *image, FILE *stream, at_input_opts_type * opts,
 	unsigned short width, height, row;
 	int pixel_size;
 	int result = 1;
-	
-	if (!init_structs(&png, &info, &end_info, exp)) 
+
+	if (!init_structs(&png, &info, &end_info, exp))
 	  return 0;
 
 	png_init_io(png, stream);
 	CHECK_ERROR();
-	
+
 	rows = read_png(png, info, opts);
 
 	width = (unsigned short)png_get_image_width(png, info);
@@ -176,7 +176,7 @@ read_png(png_structp png_ptr, png_infop info_ptr, at_input_opts_type * opts)
 		} else
 			  /* else, use white */
 			  my_bg.red = my_bg.green = my_bg.blue = my_bg.gray = 0xFFFF;
-		
+
 		png_set_background(png_ptr, &my_bg,
 				   PNG_BACKGROUND_GAMMA_FILE, 1, 1.0);
 	} else

@@ -1,4 +1,4 @@
-/* output-eps.c: utility routines for PostScript output. 
+/* output-eps.c: utility routines for PostScript output.
 
    Copyright (C) 2000, 2001 Martin Weber.
 
@@ -174,9 +174,9 @@ out_splines (FILE * ps_file, spline_list_array_type shape)
           OUT5 ("%.3f %.3f %.3f %.3f %s\n", (double) c/255.0,
             (double) m/255.0,(double) y/255.0, (double) k/255.0,
             (shape.centerline || list.open) ? "K" : "k");
-	      OUT_LINE("*u");    
+	      OUT_LINE("*u");
 	      last_color = list.color;
-        }    
+        }
       OUT_COMMAND2 (START_POINT (first).x, START_POINT (first).y, "m");
 
       for (this_spline = 0; this_spline < SPLINE_LIST_LENGTH (list);
@@ -201,10 +201,10 @@ out_splines (FILE * ps_file, spline_list_array_type shape)
 
 
 int output_eps_writer(FILE* ps_file, gchar* name,
-		      int llx, int lly, int urx, int ury, 
+		      int llx, int lly, int urx, int ury,
 		      at_output_opts_type * opts,
 		      spline_list_array_type shape,
-		      at_msg_func msg_func, 
+		      at_msg_func msg_func,
 		      gpointer msg_data,
 		      gpointer user_data)
 {

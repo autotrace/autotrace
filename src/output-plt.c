@@ -45,7 +45,7 @@
 #define X_FLOAT_TO_UI32(num) ((UI32)(num * SCALE))
 #define Y_FLOAT_TO_UI32(num) ((UI32)(num * SCALE))
 
-/* maybe these definitions be put into types.h 
+/* maybe these definitions be put into types.h
    with some ifdefs ... */
 
 typedef unsigned long int  UI32;
@@ -61,16 +61,16 @@ static int GetIndexFromRGBValue(int red, int green, int blue)
     int i, index = 0;
     int psav = 3*(0xFF*0xFF), pnew, px, py, pz;
     int nred, ngreen, nblue;
-    const at_color HPGL_COLORS[] = 
+    const at_color HPGL_COLORS[] =
        {{0,0,0}, {0,0,0}, {0xFF,0,0},
         {0,0xFF,0}, {0xFF,0xFF,0}, {0,0,0xFF},
-        {0xB8,0,0x80}, {0,0xFF,0xFF}, {0xFF,0x84,00}};    
+        {0xB8,0,0x80}, {0,0xFF,0xFF}, {0xFF,0x84,00}};
     for (i = 1; i < sizeof(HPGL_COLORS)/sizeof(at_color); i++)
     {
         nred   = HPGL_COLORS[i].r;
         ngreen = HPGL_COLORS[i].g;
         nblue  = HPGL_COLORS[i].b;
-        
+
         /* compute shortest distance between rgb colors */
         px = (red - nred)*(red - nred);
         py = (green - ngreen)*(green - ngreen);
@@ -82,7 +82,7 @@ static int GetIndexFromRGBValue(int red, int green, int blue)
                 index = i;
             }
     }
-    
+
     return index;
 }
 
@@ -94,21 +94,21 @@ static void GetSplinePts(at_real_coord *BezierPts, at_real_coord *Splines, int n
     use formula for points along Bezier:
 
     G(t) = a + b t + c t**2 + d t**3,   0 <= t <= 1
-  
+
     a = P0
     b = 3(P1 - P0)
     c = 3(P2 - P1) - b
     d = P3 - P0 - (b + c)
     */
-    
+
     gfloat t; int count;
     at_real_coord a, b, c, d;
-    
+
     a.x = BezierPts[0].x;
     b.x = 3*(BezierPts[1].x - BezierPts[0].x);
     c.x = 3*(BezierPts[2].x - BezierPts[1].x) - b.x;
     d.x =   (BezierPts[3].x - BezierPts[0].x) - (b.x + c.x);
-    
+
     a.y = BezierPts[0].y;
     b.y = 3*(BezierPts[1].y - BezierPts[0].y);
     c.y = 3*(BezierPts[2].y - BezierPts[1].y) - b.y;
@@ -125,13 +125,13 @@ static void GetSplinePts(at_real_coord *BezierPts, at_real_coord *Splines, int n
             Splines[count].x = a.x + t*(b.x + t*(c.x + t*d.x));
             Splines[count].y = a.y + t*(b.y + t*(c.y + t*d.y));
         }
-    }   
+    }
 }
 
 static void WriteBezier(FILE *fdes, spline_type sp1, at_real_coord *BeginPt)
 {
     //Bezier from begin point
-    at_real_coord Splines[NUM_SPLINES];                
+    at_real_coord Splines[NUM_SPLINES];
     at_real_coord BezierPts[4], LastPoint;
     int i;
     BezierPts[0] = (*BeginPt);
@@ -143,10 +143,10 @@ static void WriteBezier(FILE *fdes, spline_type sp1, at_real_coord *BeginPt)
 
     for (i=1; i < NUM_SPLINES; i++)
     {
-        LastPoint = Splines[i];  
+        LastPoint = Splines[i];
         WritePenDown(fdes, LastPoint.x, LastPoint.y);
     }
-    
+
     *BeginPt = LastPoint;
 }
 
@@ -157,7 +157,7 @@ static void OutputPlt(FILE *fdes, int llx, int lly, int urx, int ury, spline_lis
 */
     const int plu_inch = 1016;
     const int LOGXPIXELS=120;
-    
+
     unsigned int this_list, this_spline;
     unsigned char red, green, blue;
     UI32 last_color = 0xFFFFFFFF, curr_color;
@@ -169,23 +169,23 @@ static void OutputPlt(FILE *fdes, int llx, int lly, int urx, int ury, spline_lis
     at_real_coord LastPoint;
 
     if (fdes == NULL) return;
-    
+
     //output PLT header and sizing information
     WriteInitialize(fdes);
     //            CView *pView=GetNextView(pos);
     //            int LOGXPIXELS = pView->GetDC()->GetDeviceCaps(LOGPIXELSX);
     WriteInitPt(fdes, (UI32)(Scale*llx), (UI32)(Scale*lly),
                       (UI32)(Scale*urx), (UI32)(Scale*ury));
-    WriteScale(fdes, llx, urx, lly, ury); 
-    
+    WriteScale(fdes, llx, urx, lly, ury);
+
     LastPoint.x = 0; LastPoint.y = 0;
     StartPoint = LastPoint;
-    
+
     // visit each spline-list
     for(this_list=0; this_list<SPLINE_LIST_ARRAY_LENGTH(shape); this_list++)
     {
         curr_list = SPLINE_LIST_ARRAY_ELT(shape, this_list);
-        
+
         // output pen selection
         curr_color = MAKE_COLREF(curr_list.color.r,curr_list.color.g,curr_list.color.b);
         if(this_list == 0 || curr_color != last_color)
@@ -198,19 +198,19 @@ static void OutputPlt(FILE *fdes, int llx, int lly, int urx, int ury, spline_lis
             WriteSelectPen(fdes, index);
             last_color = curr_color;
         }
-        
+
         //output MoveTo first point
         curr_spline = SPLINE_LIST_ELT(curr_list, 0);
         LastPoint = START_POINT(curr_spline);
         WritePenUp(fdes, LastPoint.x, LastPoint.y);
         StartPoint = LastPoint;
-        
+
         //visit each spline
         for (this_spline=0; this_spline<SPLINE_LIST_LENGTH(curr_list); this_spline++)
         {
             curr_spline = SPLINE_LIST_ELT(curr_list, this_spline);
             last_degree = ((int)SPLINE_DEGREE(curr_spline));
-                
+
             switch((polynomial_degree)last_degree)
             {
             case LINEARTYPE:
@@ -225,24 +225,24 @@ static void OutputPlt(FILE *fdes, int llx, int lly, int urx, int ury, spline_lis
             }
         }
     }
-    
-    
+
+
     WritePenUp(fdes, LastPoint.x, LastPoint.y);
-    
+
 }
 
 
 //PLT output
 
 int output_plt_writer(FILE* file, gchar* name,
-		      int llx, int lly, int urx, int ury, 
+		      int llx, int lly, int urx, int ury,
 		      at_output_opts_type * opts,
 		      at_spline_list_array_type shape,
-		      at_msg_func msg_func, 
+		      at_msg_func msg_func,
 		      gpointer msg_data,
 		      gpointer user_data)
 {
-#ifdef _WINDOWS 
+#ifdef _WINDOWS
     if(file == stdout)
 	  {
         fprintf(stderr, "This driver couldn't write to stdout!\n");
@@ -252,6 +252,6 @@ int output_plt_writer(FILE* file, gchar* name,
 
   /* Output PLT */
   OutputPlt(file, llx, lly, urx, ury, shape);
-  
+
   return 0;
 }

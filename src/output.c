@@ -46,8 +46,8 @@ static at_output_format_entry * at_output_format_new (const char * descr,
 						      GDestroyNotify user_data_destroy_func);
 static void at_output_format_free(at_output_format_entry * entry);
 
-/* 
- * Helper functions 
+/*
+ * Helper functions
  */
 static void output_list_set (gpointer key, gpointer value, gpointer user_data);
 static void output_list_strlen (gpointer key, gpointer value, gpointer user_data);
@@ -59,7 +59,7 @@ at_output_init (void)
   if (at_output_formats)
     return 1;
 
-  at_output_formats = g_hash_table_new_full (g_str_hash, 
+  at_output_formats = g_hash_table_new_full (g_str_hash,
 					     (GEqualFunc)g_str_equal,
 					     g_free,
 					     (GDestroyNotify)at_output_format_free);
@@ -79,9 +79,9 @@ at_output_format_new(const gchar * descr,
   entry = g_malloc (sizeof(at_output_format_entry));
   if (entry)
     {
-      entry->writer.func 	    = writer;
+      entry->writer.func	    = writer;
       entry->writer.data            = user_data;
-      entry->descr     		    = g_strdup(descr);
+      entry->descr		    = g_strdup(descr);
       entry->user_data_destroy_func = user_data_destroy_func;
     }
   return entry;
@@ -94,11 +94,11 @@ at_output_format_free(at_output_format_entry * entry)
   if (entry->user_data_destroy_func)
     entry->user_data_destroy_func(entry->writer.data);
   g_free(entry);
-  
+
 }
 
 int
-at_output_add_handler (const gchar* suffix, 
+at_output_add_handler (const gchar* suffix,
 		       const gchar* description,
 		       at_output_func writer)
 {
@@ -107,7 +107,7 @@ at_output_add_handler (const gchar* suffix,
 }
 
 int
-at_output_add_handler_full (const gchar* suffix, 
+at_output_add_handler_full (const gchar* suffix,
 			    const gchar* description,
 			    at_output_func writer,
 			    gboolean override,
@@ -118,15 +118,15 @@ at_output_add_handler_full (const gchar* suffix,
   const gchar * gdescription;
   at_output_format_entry * old_entry;
   at_output_format_entry * new_entry;
-  
+
   g_return_val_if_fail (suffix, 0);
   g_return_val_if_fail (description, 0);
   g_return_val_if_fail (writer, 0);
-  
+
   gsuffix      = g_strdup((gchar *)suffix);
-  g_return_val_if_fail (gsuffix, 0);  
+  g_return_val_if_fail (gsuffix, 0);
   gsuffix = g_ascii_strdown(gsuffix, strlen(gsuffix));
-  
+
   gdescription = (const gchar *)description;
 
   old_entry        = g_hash_table_lookup (at_output_formats, gsuffix);
@@ -168,7 +168,7 @@ at_output_get_handler_by_suffix (gchar* suffix)
   gsuffix = g_ascii_strdown(gsuffix, strlen(gsuffix));
   format = g_hash_table_lookup (at_output_formats, gsuffix);
   g_free(gsuffix);
-  
+
   if (format)
     return &(format->writer);
   else
@@ -182,12 +182,12 @@ at_output_list_new (void)
   gint format_count;
   gint list_count;
 
-  format_count 	   = g_hash_table_size(at_output_formats);
-  list_count   	   = 2 * format_count;
-  list 	       	   = g_new(gchar *, list_count + 1);
+  format_count	   = g_hash_table_size(at_output_formats);
+  list_count	   = 2 * format_count;
+  list		   = g_new(gchar *, list_count + 1);
   list[list_count] = NULL;
 
-  tmp 		   = list;
+  tmp		   = list;
   g_hash_table_foreach (at_output_formats, output_list_set, &tmp);
   return (const char **)list;
 }
@@ -207,8 +207,8 @@ at_output_shortlist (void)
   count = g_hash_table_size(at_output_formats);
 
   /* 2 for ", " */
-  length  += (2*count);	
-  list 	  = g_malloc(length + 1); 
+  length  += (2*count);
+  list	  = g_malloc(length + 1);
   list[0] = '\0';
 
   tmp = list;
@@ -220,15 +220,15 @@ at_output_shortlist (void)
   return list;
 }
 
-static void 
+static void
 output_list_set (gpointer key, gpointer value, gpointer user_data)
 {
   at_output_format_entry * format = value;
   const char *** list_ptr = user_data;
   const char ** list = *list_ptr;
-  list[0] 	     = key;
-  list[1] 	     = format->descr;
-  *list_ptr 	     = &(list[2]); 
+  list[0]	     = key;
+  list[1]	     = format->descr;
+  *list_ptr	     = &(list[2]);
 }
 
 static void
@@ -248,10 +248,10 @@ output_list_strcat (gpointer key, gpointer value, gpointer user_data)
   gchar ** list_ptr;
   gchar *  list;
   list_ptr = user_data;
-  list 	   = *list_ptr;
+  list	   = *list_ptr;
   strcat (list, key);
   strcat (list, ", ");
-  
+
   /* 2 for ", " */
   *list_ptr = list + strlen(key) + 2;
 }

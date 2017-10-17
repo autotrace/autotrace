@@ -30,9 +30,9 @@
    mkstemp  || no problem | BSD 4.3
    tempnam  || risky      | SVID 2, BSD 4.3
    tmpfile  || no problem | SVID 3, POSIX, BSD 4.3, ISO 9899, SUSv2
-   tmpnam   || risky      | SVID 2, POSIX, BSD 4.3, ISO 9899 
+   tmpnam   || risky      | SVID 2, POSIX, BSD 4.3, ISO 9899
    -------------------------------------------------------------------
-   tmpfile returns file pointer, not file name 
+   tmpfile returns file pointer, not file name
 
    mkstemp is the best in the security aspect, however it is not portable.
    (Read http://groups.yahoo.com/group/autotrace/message/369) */
@@ -56,10 +56,10 @@
 /* #define OUTPUT_PSTOEDIT_DEBUG */
 
 static int output_pstoedit_writer (FILE* file, gchar* name,
-				   int llx, int lly, int urx, int ury, 
+				   int llx, int lly, int urx, int ury,
 				   at_output_opts_type * opts,
 				   at_spline_list_array_type shape,
-				   at_msg_func msg_func, 
+				   at_msg_func msg_func,
 				   gpointer msg_data,
 				   gpointer user_data);
 
@@ -70,18 +70,18 @@ static void remove_temporary_file (const gchar* tmpfile_name);
 static FILE * make_temporary_file(char *template, char * mode);
 
 /* This output routine uses two temporary files to keep the
-   both the command line syntax of autotrace and the 
-   pstoedit API. 
+   both the command line syntax of autotrace and the
+   pstoedit API.
 
-   shape -> bo file(tmpfile_name_p2e) 
-   -> specified formatted file(tmpfile_name_pstoedit) 
+   shape -> bo file(tmpfile_name_p2e)
+   -> specified formatted file(tmpfile_name_pstoedit)
    -> file */
 static int
 output_pstoedit_writer (FILE* file, gchar* name,
-			int llx, int lly, int urx, int ury, 
+			int llx, int lly, int urx, int ury,
 			at_output_opts_type * opts,
 			at_spline_list_array_type shape,
-			at_msg_func msg_func, 
+			at_msg_func msg_func,
 			gpointer msg_data,
 			gpointer user_data)
 {
@@ -111,18 +111,18 @@ output_pstoedit_writer (FILE* file, gchar* name,
       goto remove_tmp_p2e;
     }
 
-  /* 
-   * shape -> bo file 
+  /*
+   * shape -> bo file
    */
   p2e_writer = at_output_get_handler_by_suffix ("p2e");
-  at_splines_write (p2e_writer, 
-		    tmpfile, 
+  at_splines_write (p2e_writer,
+		    tmpfile,
 		    tmpfile_name_p2e,
-		    opts, 
-		    &shape, 
+		    opts,
+		    &shape,
 		    msg_func,
 		    msg_data);
-		    
+
   fclose(tmpfile);
 
   tmpfile = make_temporary_file(tmpfile_name_pstoedit, "r");
@@ -133,7 +133,7 @@ output_pstoedit_writer (FILE* file, gchar* name,
     }
 
   /*
-   * bo file -> specified formatted file 
+   * bo file -> specified formatted file
    */
   argv[SYMBOLICNAME_VAL_INDEX] = symbolicname;
   argv[INPUT_INDEX]      = tmpfile_name_p2e;
@@ -141,13 +141,13 @@ output_pstoedit_writer (FILE* file, gchar* name,
   pstoedit_plainC(argc, argv, NULL);
 
   /*
-   * specified formatted file(tmpfile_name_pstoedit) -> file  
+   * specified formatted file(tmpfile_name_pstoedit) -> file
    */
   /* fseek(tmpfile, 0, SEEK_SET); */
   while (EOF != (c = fgetc(tmpfile)))
     fputc(c, file);
   fclose(tmpfile);
-  
+
  remove_tmp_pstoedit:
   remove_temporary_file(tmpfile_name_pstoedit);
  remove_tmp_p2e:
@@ -199,19 +199,19 @@ remove_temporary_file (const gchar* tmpfile_name)
 {
 #if BO_DEBUG == 0
   remove (tmpfile_name);
-#else 
+#else
   fprintf(stderr, "tmp file name: %s\n", tmpfile_name);
-#endif /* Not BO_DEBUG == 0 */ 
+#endif /* Not BO_DEBUG == 0 */
 }
 
 int
 install_output_pstoedit_writers (void)
 {
   struct DriverDescription_S* dd_start, *dd_tmp;
-  
+
   pstoedit_checkversion(pstoeditdllversion);
   dd_start = getPstoeditDriverInfo_plainC();
-  
+
   if (dd_start)
     {
       dd_tmp = dd_start;
