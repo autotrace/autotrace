@@ -7,18 +7,15 @@
 #include "types.h"
 
 #ifdef _EXPORTING
-/* The file we write information to.  */
-extern FILE __declspec(dllexport) *log_file;
-
+#define DECLSPEC __declspec(dllexport)
 #elif _IMPORTING
-/* The file we write information to.  */
-extern FILE __declspec(dllimport) *log_file;
-
+#define DECLSPEC __declspec(dllimport)
 #else
-/* The file we write information to.  */
-extern FILE *at_log_file;
-#define log_file at_log_file
+#define DECLSPEC
 #endif
+
+/* The file we write information to.  */
+extern FILE DECLSPEC *log_file;
 
 extern void flush_log_output (void);
 
