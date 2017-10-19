@@ -17,9 +17,6 @@
    Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111-1307
    USA. */
 
-/* This code was tested with ImageMagick 5.2.1-5.5.2
-   it doesn't work with earlier versions */
-
 #ifdef HAVE_CONFIG_H
 #include "config.h"
 #endif /* Def: HAVE_CONFIG_H */
@@ -34,25 +31,25 @@
 #include <sys/types.h> /* Needed for correct interpretation of magick/api.h */
 #include <magick/api.h>
 
-static at_bitmap_type input_magick_reader (at_string filename,
+static at_bitmap input_magick_reader (gchar* filename,
 					   at_input_opts_type * opts,
 					   at_msg_func msg_func,
-					   at_address msg_data,
-					   at_address user_data);
+					   gpointer msg_data,
+					   gpointer user_data);
 
 
-static at_bitmap_type
-input_magick_reader(at_string filename,
+static at_bitmap
+input_magick_reader(gchar* filename,
 		    at_input_opts_type * opts,
 		    at_msg_func msg_func,
-		    at_address msg_data,
-		    at_address user_data)
+		    gpointer msg_data,
+		    gpointer user_data)
 {
   Image *image = NULL;
   ImageInfo *image_info;
   ImageType image_type;
   unsigned int i,j,point,np,runcount;
-  at_bitmap_type bitmap;
+  at_bitmap bitmap;
   PixelPacket p;
   PixelPacket *pixel=&p;
   ExceptionInfo exception;
@@ -99,10 +96,10 @@ input_magick_reader(at_string filename,
 #else
       GetOnePixel(image,i,j,pixel);
 #endif
-      AT_BITMAP_BITS(bitmap)[point++]=pixel->red; /* if gray: red=green=blue */
+      AT_BITMAP_BITS(&bitmap)[point++]=pixel->red; /* if gray: red=green=blue */
       if(np==3) {
-        AT_BITMAP_BITS(bitmap)[point++]=pixel->green;
-        AT_BITMAP_BITS(bitmap)[point++]=pixel->blue;
+        AT_BITMAP_BITS(&bitmap)[point++]=pixel->green;
+        AT_BITMAP_BITS(&bitmap)[point++]=pixel->blue;
       }
     }
 
