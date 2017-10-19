@@ -105,14 +105,13 @@ AC_CHECK_HEADER(ming.h,
 	        swf_header_found=yes,
 		swf_header_found=no)
 if test "${swf_header_found}" = yes ; then
-	AC_CHECK_LIB(ming, Ming_init, 
-		     HAVE_LIBSWF=yes,,-lm)
-	if test "$HAVE_LIBSWF" = "yes" ; then
-		AC_DEFINE(HAVE_LIBSWF,1,[SWF library is available or not])
-	else
- 		AC_MSG_WARN([*** Cannot find libming.    ***])
-		AC_MSG_WARN([*** SWF output is disabled. ***])
-	fi
+	PKG_CHECK_MODULES([LIBSWF],
+			  [libming],
+			  [
+			   HAVE_LIBSWF=yes
+			   AC_DEFINE(HAVE_LIBSWF,1,[SWF library is available or not])
+			   ],
+			  )
 else
 	AC_MSG_WARN([*** Cannot find ming.h.     ***])
 	AC_MSG_WARN([*** SWF output is disabled. ***])

@@ -35,7 +35,7 @@ static void
 out_splines (SWFMovie m, spline_list_array_type shape, int height)
 {
   unsigned this_list;
-  color_type last_color = {0,0,0};
+  at_color last_color = {0,0,0};
 
   for (this_list = 0; this_list < SPLINE_LIST_ARRAY_LENGTH (shape);
     this_list++)
@@ -46,7 +46,7 @@ out_splines (SWFMovie m, spline_list_array_type shape, int height)
         spline_list_type list = SPLINE_LIST_ARRAY_ELT (shape, this_list);
         spline_type first = SPLINE_LIST_ELT (list, 0);
 
-        if (this_list == 0 || !COLOR_EQUAL(list.color, last_color))
+        if (this_list == 0 || !at_color_equal(&list.color, &last_color))
 		  {
             k = newSWFShape();
             SWFShape_setRightFill(k, SWFShape_addSolidFill(k, list.color.r, list.color.g, list.color.b, 0xff));
@@ -80,13 +80,13 @@ out_splines (SWFMovie m, spline_list_array_type shape, int height)
 }
 
 
-int output_swf_writer(FILE* file, at_string name,
+int output_swf_writer(FILE* file, gchar* name,
 		      int llx, int lly, int urx, int ury,
 		      at_output_opts_type * opts,
 		      spline_list_array_type shape,
 		      at_msg_func msg_func,
-		      at_address msg_data,
-		      at_address user_data)
+		      gpointer msg_data,
+		      gpointer user_data)
 {
   int width = urx - llx;
   int height = ury - lly;
