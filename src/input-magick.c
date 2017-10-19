@@ -53,11 +53,7 @@ input_magick_reader(gchar* filename,
   PixelPacket p;
   PixelPacket *pixel=&p;
   ExceptionInfo exception;
-#if (MagickLibVersion < 0x0538)
-  MagickIncarnate("");
-#else
   InitializeMagick("");
-#endif
   GetExceptionInfo(&exception);
   image_info=CloneImageInfo((ImageInfo *) NULL);
   (void) strcpy(image_info->filename,filename);
@@ -65,23 +61,12 @@ input_magick_reader(gchar* filename,
 
   image=ReadImage(image_info,&exception);
   if (image == (Image *) NULL) {
-#if (MagickLibVersion <= 0x0525)
-    /* MagickError(exception.severity,exception.message,exception.qualifier); */
-    if (msg_func)
-      msg_func (exception.qualifier, AT_MSG_FATAL, msg_data);
-    goto cleanup;
-#else
     /* MagickError(exception.severity,exception.reason,exception.description); */
     if (msg_func)
       msg_func (exception.reason, AT_MSG_FATAL, msg_data);
     goto cleanup;
-#endif
   }
-#if (MagickLibVersion < 0x0540)
-  image_type=GetImageType(image);
-#else
   image_type=GetImageType(image, &exception);
-#endif
   if(image_type == BilevelType || image_type == GrayscaleType)
     np=1;
   else
@@ -112,58 +97,26 @@ input_magick_reader(gchar* filename,
 int
 install_input_magick_readers(void)
 {
-#if (MagickLibVersion < 0x0534)
-#define AT_MAGICK_SET_INFO(X) X = GetMagickInfo(NULL)
-#else  /* (MagickLibVersion < 0x0534) */
-#define AT_MAGICK_SET_INFO(X)			\
-  do {						\
-    X = GetMagickInfo(NULL, &exception);	\
-    if (X && !X->next)				\
-      X = GetMagickInfo("*", &exception);	\
-  } while (0)
-#endif	/* (MagickLibVersion < 0x0534) */
+  ExceptionInfo exception;
+  MagickInfo *info, *magickinfo;
+  InitializeMagick("");
 
-#if (MagickLibVersion < 0x0537)
-#define AT_MAGICK_SUFFIX_FIELD_NAME tag
-#else  /* (MagickLibVersion < 0x0537) */
-#define AT_MAGICK_SUFFIX_FIELD_NAME name
-#endif	/* (MagickLibVersion < 0x0537) */
+  GetExceptionInfo(&exception);
 
-#if (MagickLibVersion < 0x0538)
-#define AT_MAGICK_INITIALIZER()     MagickIncarnate("")
-#else  /* (MagickLibVersion < 0x0538) */
-#define AT_MAGICK_INITIALIZER()     InitializeMagick("")
-#endif	/* (MagickLibVersion < 0x0538) */
+  info = GetMagickInfo(NULL, &exception);
+  if (info && !info->next)
+    info = GetMagickInfo("*", &exception);
+  magickinfo = info;
 
-
-#if (MagickLibVersion < 0x0540)
-#define AT_MAGICK_INFO_TYPE_MODIFIER     const
-#else  /* (MagickLibVersion < 0x0540) */
-#define AT_MAGICK_INFO_TYPE_MODIFIER
-#endif	/* (MagickLibVersion < 0x0540)*/
-
-  {
-    ExceptionInfo exception;
-
-    AT_MAGICK_INFO_TYPE_MODIFIER MagickInfo *info, *magickinfo;
-    AT_MAGICK_INITIALIZER() ;
-
-    GetExceptionInfo(&exception);
-
-    AT_MAGICK_SET_INFO(info);
-    magickinfo = info;
-
-    while (info)
-      {
-	if (info->AT_MAGICK_SUFFIX_FIELD_NAME && info->description)
-	  at_input_add_handler_full(info->AT_MAGICK_SUFFIX_FIELD_NAME,
-				    info->description,
-				    input_magick_reader,
-				    0,
-				    info->AT_MAGICK_SUFFIX_FIELD_NAME,
-				    NULL);
-	info = info->next ;
-      }
+  while (info) {
+    if (info->name && info->description)
+      at_input_add_handler_full(info->name,
+		      info->description,
+		      input_magick_reader,
+		      0,
+		      info->name,
+		      NULL);
+    info = info->next;
   }
   return 0;
 }
