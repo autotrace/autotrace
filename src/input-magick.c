@@ -31,13 +31,6 @@
 #include <sys/types.h> /* Needed for correct interpretation of magick/api.h */
 #include <magick/api.h>
 
-static at_bitmap input_magick_reader (gchar* filename,
-					   at_input_opts_type * opts,
-					   at_msg_func msg_func,
-					   gpointer msg_data,
-					   gpointer user_data);
-
-
 static at_bitmap
 input_magick_reader(gchar* filename,
 		    at_input_opts_type * opts,
