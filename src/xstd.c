@@ -7,6 +7,9 @@
 #include "xstd.h"
 #include <errno.h>
 
+/* This should be called only after a system call fails.  */
+#define FATAL_PERROR(s) do { perror (s); exit (errno); } while (0)
+
 FILE *
 xfopen (gchar* filename, gchar* mode)
 {
