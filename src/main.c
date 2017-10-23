@@ -44,9 +44,6 @@ static at_spline_writer * output_writer = NULL;
 /* Whether to print version information */
 static gboolean printed_version;
 
-/* Whether to write a log file */
-static gboolean logging = FALSE;
-
 /* Whether to dump a bitmap file */
 static gboolean dumping_bitmap = FALSE;
 
@@ -77,7 +74,7 @@ main (int argc, char * argv[])
   at_input_opts_type * input_opts;
   at_output_opts_type * output_opts;
   char * input_name, * input_rootname;
-  char * logfile_name = NULL, * dumpfile_name = NULL;
+  char * dumpfile_name = NULL;
   at_splines_type * splines;
   at_bitmap * bitmap;
   FILE *output_file;
@@ -106,17 +103,12 @@ main (int argc, char * argv[])
   if ((input_rootname = remove_suffix (get_basename (input_name))) == NULL)
 	FATAL (_("Not a valid input file name %s"), input_name);
 
-  if (logging)
-    log_file = xfopen (logfile_name = extend_filename (input_rootname, "log"), "w");
-
   /* BUG: Sometimes input_rootname points to the heap, sometimes to
      the stack, so it can't safely be freed. */
 /*
   if (input_rootname != input_name)
     free (input_rootname);
 */
-  if (logging)
-    free (logfile_name);
 
   /* Set input_reader if it is not set in command line args */
   if (!input_reader)

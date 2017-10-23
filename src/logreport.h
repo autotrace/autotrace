@@ -14,11 +14,11 @@
 #define DECLSPEC
 #endif
 
-/* The file we write information to.  */
-extern FILE DECLSPEC *log_file;
+/* Whether to write a log */
+extern gboolean logging;
 
 #define LOG(...)								\
-  do { if (log_file) fprintf (log_file, __VA_ARGS__); } while (0)
+  do { if (logging) fprintf (stdout, __VA_ARGS__); } while (0)
 
 #endif /* not LOGREPORT_H */
 
