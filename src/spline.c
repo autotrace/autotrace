@@ -177,8 +177,6 @@ free_spline_list_array (spline_list_array_type *spline_list_array)
 
   if (SPLINE_LIST_ARRAY_DATA (*spline_list_array) != NULL)
     free (SPLINE_LIST_ARRAY_DATA (*spline_list_array));
-
-  flush_log_output ();
 }
 
 

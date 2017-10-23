@@ -17,8 +17,6 @@
 /* The file we write information to.  */
 extern FILE DECLSPEC *log_file;
 
-extern void flush_log_output (void);
-
 #define LOG(...)								\
   do { if (log_file) fprintf (log_file, __VA_ARGS__); } while (0)
 

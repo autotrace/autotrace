@@ -18,11 +18,3 @@ FILE __declspec(dllexport) *log_file = NULL;
 FILE *log_file = NULL;
 
 #endif
-
-void
-flush_log_output (void)
-{
-  if (log_file)
-    fflush (log_file);
-}
-

@@ -196,8 +196,6 @@ fitted_splines (pixel_outline_list_type pixel_outline_list,
  cleanup:
   free_curve_list_array (&curve_array, notify_progress, progress_data);
 
-  flush_log_output ();
-
   return char_splines;
 }
 
