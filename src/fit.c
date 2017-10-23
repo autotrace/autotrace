@@ -974,7 +974,8 @@ filter (curve_type curve, fitting_opts_type *fitting_opts)
       free (newcurve);
     }
 
-  log_curve (curve, FALSE);
+  if (log_file)
+    log_curve (curve, FALSE);
 }
 
 
@@ -1328,7 +1329,8 @@ set_initial_parameter_values (curve_type curve)
   for (p = 1; p < CURVE_LENGTH (curve); p++)
     CURVE_T (curve, p) = CURVE_T (curve, p) / LAST_CURVE_T (curve);
 
-  log_entire_curve (curve);
+  if (log_file)
+    log_entire_curve (curve);
 }
 
 /* Find an approximation to the tangent to an endpoint of CURVE (to the
