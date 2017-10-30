@@ -18,6 +18,7 @@
 #include <string.h>
 #include <assert.h>
 #include <math.h>
+#include <errno.h>
 
 #undef N_
 #include "intl.h"
@@ -129,8 +130,13 @@ main (int argc, char * argv[])
   /* Open output file */
   if (!strcmp (output_name, ""))
     output_file = stdout;
-  else
-    output_file = xfopen(output_name, "wb");
+  else {
+    output_file = fopen (output_name, "wb");
+    if (output_file == NULL) {
+      perror (output_name);
+      exit (errno);
+    }
+  }
 
   /* Open the main input file.  */
   if (input_reader != NULL)
@@ -161,7 +167,11 @@ main (int argc, char * argv[])
         dumpfile_name = extend_filename (input_rootname, "dump.pgm");
 	  else
         dumpfile_name = extend_filename (input_rootname, "dump.ppm");
-      dump_file   = xfopen (dumpfile_name, "wb");
+      dump_file   = fopen (dumpfile_name, "wb");
+      if (dump_file == NULL) {
+        perror (dumpfile_name);
+	exit (errno);
+      }
       if (at_bitmap_get_planes (bitmap) == 1)
         fprintf(dump_file, "%s\n", "P5");
 	  else

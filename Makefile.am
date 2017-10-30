@@ -94,7 +94,6 @@ libautotrace_la_SOURCES =\
 		src/thin-image.c \
 		src/logreport.c \
 		src/filename.c \
-		src/xstd.c \
 		src/epsilon-equal.h \
 		src/thin-image.h \
 		src/quantize.h \

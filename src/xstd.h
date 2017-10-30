@@ -84,11 +84,4 @@ do									  \
   } while (0)
 #endif
 
-/*
- * XFILE
- */
-/* Like their stdio counterparts, but abort on error, after calling
-   perror(3) with FILENAME as its argument.  */
-extern FILE *xfopen (gchar* filename, gchar* mode);
-
 #endif /* Not XSTD_H */
