@@ -1,4 +1,4 @@
-/* xfopen.c: fopen and fclose with error checking. */
+/* xfopen.c: fopen with error checking. */
 
 #ifdef HAVE_CONFIG_H
 #include "config.h"
@@ -6,9 +6,6 @@
 
 #include "xstd.h"
 #include <errno.h>
-
-/* This should be called only after a system call fails.  */
-#define FATAL_PERROR(s) do { perror (s); exit (errno); } while (0)
 
 FILE *
 xfopen (gchar* filename, gchar* mode)
@@ -20,28 +17,12 @@ xfopen (gchar* filename, gchar* mode)
   else
     {
       f = fopen (filename, mode);
-      if (f == NULL)
-	FATAL_PERROR (filename);
+      if (f == NULL) {
+	perror (filename);
+	exit (errno);
+      }
     }
 
   return f;
-}
-
-
-void
-xfclose (FILE *f, gchar* filename)
-{
-  if (f != stdin)
-    {
-      if (fclose (f) == EOF)
-	FATAL_PERROR (filename);
-    }
-}
-
-void
-xfseek (FILE *f, long offset, int wherefrom, gchar* filename)
-{
-  if (fseek (f, offset, wherefrom) < 0)
-    FATAL_PERROR (filename);
 }
 
