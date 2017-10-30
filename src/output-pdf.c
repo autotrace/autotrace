@@ -28,10 +28,8 @@
 #include "xstd.h"
 #include "autotrace.h"
 #include <time.h>
+#include <math.h>
 #include <string.h>
-
-#define SIGN(x) ((x) > 0 ? 1 : (x) < 0 ? -1 : 0)
-#define ROUND(x) ((int) ((int) (x) + .5 * SIGN (x)))
 
 /* Output macros.  */
 
@@ -44,7 +42,7 @@
   fprintf (pdf_file, __VA_ARGS__)
 
 /* These macros just output their arguments.  */
-#define OUT_REAL(r)	fprintf (pdf_file, r == (ROUND (r = ROUND((gfloat)6.0*r)/(gfloat)6.0))				\
+#define OUT_REAL(r)	fprintf (pdf_file, r == (lround (r = lround((gfloat)6.0*r)/(gfloat)6.0))				\
                                   ? "%.0f " : "%.3f ", r)
 
 /* For a PostScript command with two real arguments, e.g., lineto.  OP
@@ -84,7 +82,7 @@
   sprintf (temp, __VA_ARGS__), *length += strlen(temp)
 
 /* These macros just output their arguments.  */
-#define SOUT_REAL(r)	sprintf (temp, r == (ROUND (r = ROUND((gfloat)6.0*r)/(gfloat)6.0))				\
+#define SOUT_REAL(r)	sprintf (temp, r == (lround (r = lround((gfloat)6.0*r)/(gfloat)6.0))				\
                                   ? "%.0f " : "%.3f ", r), *length += strlen(temp)
 
 /* For a PostScript command with two real arguments, e.g., lineto.  OP

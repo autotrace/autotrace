@@ -33,9 +33,6 @@
 #include <time.h>
 #include <string.h>
 
-#define SIGN(x) ((x) > 0 ? 1 : (x) < 0 ? -1 : 0)
-#define ROUND(x) ((int) ((int) (x) + .5 * SIGN (x)))
-
 /* Output macros.  */
 
 /* This should be used for outputting a string S on a line by itself.  */
@@ -568,7 +565,7 @@ int bspline_to_lines(xypnt_head_rec *vtx_list          /*  */,
       total_length = get_total_length(vtx_list);
       r = (spline_resolution==0) ? sqrt(total_length) :
         total_length/spline_resolution;
-      number_of_segments = ROUND(r);
+      number_of_segments = lround(r);
       spline_step = ((double)knot[vtx_count+spline_order-1]) /
         number_of_segments;
       for (knot_index=spline_order-1; knot_index<vtx_count; knot_index++)
@@ -603,8 +600,8 @@ int bspline_to_lines(xypnt_head_rec *vtx_list          /*  */,
                     }
                   weight[(j-1)*n+i] = 0;
                 }
-              spline_pnt.xp = ROUND(spline_pnt_x);
-              spline_pnt.yp = ROUND(spline_pnt_y);
+              spline_pnt.xp = lround(spline_pnt_x);
+              spline_pnt.yp = lround(spline_pnt_y);
               xypnt_add_pnt(*new_vtx_list, spline_pnt);
               t += spline_step;
             }
@@ -656,7 +653,7 @@ static void out_splines (FILE * dxf_file, spline_list_array_type shape)
       starty = START_POINT (first).y;
       if (!first_seg)
         {
-         if (ROUND(startx*RESOLUTION) != pnt_old.xp || ROUND(starty*RESOLUTION) != pnt_old.yp || new_layer)
+         if (lround(startx*RESOLUTION) != pnt_old.xp || lround(starty*RESOLUTION) != pnt_old.yp || new_layer)
            {
             /* must begin new polyline */
              new_layer = 0;
@@ -665,8 +662,8 @@ static void out_splines (FILE * dxf_file, spline_list_array_type shape)
                      layerstr, startx, starty);
              fprintf(dxf_file, "  0\nVERTEX\n  8\n%s\n  10\n%f\n  20\n%f\n",
                      layerstr, startx, starty);
-             pnt_old.xp = ROUND(startx*RESOLUTION);
-             pnt_old.yp = ROUND(starty*RESOLUTION);
+             pnt_old.xp = lround(startx*RESOLUTION);
+             pnt_old.yp = lround(starty*RESOLUTION);
            }
         }
       else
@@ -675,8 +672,8 @@ static void out_splines (FILE * dxf_file, spline_list_array_type shape)
                  layerstr, startx, starty);
          fprintf(dxf_file, "  0\nVERTEX\n  8\n%s\n  10\n%f\n  20\n%f\n",
                  layerstr, startx, starty);
-         pnt_old.xp = ROUND(startx*RESOLUTION);
-         pnt_old.yp = ROUND(starty*RESOLUTION);
+         pnt_old.xp = lround(startx*RESOLUTION);
+         pnt_old.yp = lround(starty*RESOLUTION);
         }
       for (this_spline = 0; this_spline < SPLINE_LIST_LENGTH (list);
            this_spline++)
@@ -686,7 +683,7 @@ static void out_splines (FILE * dxf_file, spline_list_array_type shape)
           if (SPLINE_DEGREE (s) == LINEARTYPE)
             {
 
-              if (ROUND(startx*RESOLUTION) != pnt_old.xp || ROUND(starty*RESOLUTION) != pnt_old.yp || new_layer)
+              if (lround(startx*RESOLUTION) != pnt_old.xp || lround(starty*RESOLUTION) != pnt_old.yp || new_layer)
                 {
                   /* must begin new polyline */
                   new_layer = 0;
@@ -701,20 +698,20 @@ static void out_splines (FILE * dxf_file, spline_list_array_type shape)
 
               startx = END_POINT(s).x;
               starty = END_POINT(s).y;
-              pnt_old.xp = ROUND(startx*RESOLUTION);
-              pnt_old.yp = ROUND(starty*RESOLUTION);
+              pnt_old.xp = lround(startx*RESOLUTION);
+              pnt_old.yp = lround(starty*RESOLUTION);
             }
           else
             {
               vec = (struct xypnt_head_t *)calloc(1, sizeof (struct xypnt_head_t));
 
-              pnt.xp = ROUND(startx*RESOLUTION);  pnt.yp = ROUND(starty*RESOLUTION);
+              pnt.xp = lround(startx*RESOLUTION);  pnt.yp = lround(starty*RESOLUTION);
               xypnt_add_pnt(vec, pnt);
-              pnt.xp = ROUND(CONTROL1(s).x*RESOLUTION);  pnt.yp = ROUND(CONTROL1 (s).y*RESOLUTION);
+              pnt.xp = lround(CONTROL1(s).x*RESOLUTION);  pnt.yp = lround(CONTROL1 (s).y*RESOLUTION);
               xypnt_add_pnt(vec, pnt);
-              pnt.xp = ROUND(CONTROL2(s).x*RESOLUTION);  pnt.yp = ROUND(CONTROL2 (s).y*RESOLUTION);
+              pnt.xp = lround(CONTROL2(s).x*RESOLUTION);  pnt.yp = lround(CONTROL2 (s).y*RESOLUTION);
               xypnt_add_pnt(vec, pnt);
-              pnt.xp = ROUND(END_POINT(s).x*RESOLUTION);  pnt.yp = ROUND(END_POINT (s).y*RESOLUTION);
+              pnt.xp = lround(END_POINT(s).x*RESOLUTION);  pnt.yp = lround(END_POINT (s).y*RESOLUTION);
               xypnt_add_pnt(vec, pnt);
 
               res = NULL;

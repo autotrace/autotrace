@@ -24,6 +24,7 @@
 #include "spline.h"
 #include "color.h"
 #include "output-ugs.h"
+#include <math.h>
 
 long ugs_design_pixels;		/*  A design size of font in pixels. */
 
@@ -33,13 +34,6 @@ long ugs_left_bearing, ugs_descend;
 long ugs_max_col, ugs_max_row;
 
 static long lowerx, upperx, lowery, uppery;
-
-static int round (double x)
-{
-	if (x < 0)
-		return - (int) (-x + 0.5);
-	return (int) (x + 0.5);
-}
 
 static int compute_determinant (double *det, double a, double b,
 	double c, double d)
@@ -185,8 +179,8 @@ static void output_splines (FILE *file, spline_list_array_type shape,
 
 		x1 = START_POINT (first).x + ugs_left_bearing;
 		y1 = START_POINT (first).y + ugs_descend;
-		ix1 = round (x1);
-		iy1 = round (y1);
+		ix1 = lround (x1);
+		iy1 = lround (y1);
 
 		fprintf (file, "\t\tpath\n");
 		fprintf (file, "\t\t\tdot-on %d %d\n", ix1, iy1);
@@ -202,10 +196,10 @@ static void output_splines (FILE *file, spline_list_array_type shape,
 			if (SPLINE_DEGREE(t) == LINEARTYPE) {
 				x3 = END_POINT(t).x + ugs_left_bearing;
 				y3 = END_POINT(t).y + ugs_descend;
-				ix3 = round (x3);
-				iy3 = round (y3);
+				ix3 = lround (x3);
+				iy3 = lround (y3);
 
-				if (! (ix3 == round(x1) && iy3 == round(y1)))
+				if (! (ix3 == lround(x1) && iy3 == lround(y1)))
 					fprintf (file, "\t\t\tdot-on %d %d\n",
 						ix3, iy3);
 
@@ -220,19 +214,19 @@ static void output_splines (FILE *file, spline_list_array_type shape,
 				y3a = CONTROL2(t).y + ugs_descend;
 				x3 = END_POINT(t).x + ugs_left_bearing;
 				y3 = END_POINT(t).y + ugs_descend;
-				ix3 = round (x3);
-				iy3 = round (y3);
+				ix3 = lround (x3);
+				iy3 = lround (y3);
 
 				cubic_to_quadratic (x1, y1, x1a, y1a, x3a, y3a, x3, y3,
 					&x1a, &y1a, &x2, &y2, &x3a, &y3a);
-				ix1a = round (x1a);
-				iy1a = round (y1a);
-				ix2 = round (x2);
-				iy2 = round (y2);
-				ix3a = round (x3a);
-				iy3a = round (y3a);
+				ix1a = lround (x1a);
+				iy1a = lround (y1a);
+				ix2 = lround (x2);
+				iy2 = lround (y2);
+				ix3a = lround (x3a);
+				iy3a = lround (y3a);
 
-				if (! (ix1a == round(x1) && iy1a == round(y1)) &&
+				if (! (ix1a == lround(x1) && iy1a == lround(y1)) &&
 				    ! (ix1a == ix2 && iy1a == iy2))
 					fprintf (file, "\t\t\tdot-off %d %d\n", ix1a, iy1a);
 

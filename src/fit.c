@@ -48,8 +48,6 @@
 
 #define SQUARE(x) ((x) * (x))
 #define CUBE(x) ((x) * (x) * (x))
-#define ROUND(x) ((unsigned short) ((unsigned short) (x) + .5 * SIGN (x)))
-#define SIGN(x) ((x) > 0 ? 1 : (x) < 0 ? -1 : 0)
 
 /* We need to manipulate lists of array indices.  */
 
@@ -1639,8 +1637,8 @@ real_to_int_coord (at_real_coord real_coord)
 {
   at_coord int_coord;
 
-  int_coord.x = ROUND (real_coord.x);
-  int_coord.y = ROUND (real_coord.y);
+  int_coord.x = lround (real_coord.x);
+  int_coord.y = lround (real_coord.y);
 
   return int_coord;
 }

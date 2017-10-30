@@ -29,10 +29,7 @@
 #include "spline.h"
 #include "color.h"
 #include "output-p2e.h"
-
-
-#define SIGN(x) ((x) > 0 ? 1 : (x) < 0 ? -1 : 0)
-#define ROUND(x) ((int) ((int) (x) + .5 * SIGN (x)))
+#include <math.h>
 
 /* Output macros.  */
 
@@ -46,7 +43,7 @@
 
 /* These macros just output their arguments.  */
 #define OUT_REAL(r)	fprintf (ps_file,				\
-                                 r == ROUND (r) ? "%.0f " : "%.3f ", r)
+                                 r == lround (r) ? "%.0f " : "%.3f ", r)
 
 /* For a PostScript command with two real arguments, e.g., lineto.  OP
    should be a constant string.  */
