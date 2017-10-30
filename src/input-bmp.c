@@ -502,11 +502,6 @@ ReadImage (FILE   *fd,
   return image;
 }
 
-FILE  *errorfile;
-char *prog_name = "bmp";
-char *filename;
-int   interactive_bmp;
-
 static long
 ToL (unsigned char *puffer)
 {
