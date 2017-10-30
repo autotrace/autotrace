@@ -26,6 +26,7 @@
 #include <stdio.h>
 #include <time.h>
 #include "xstd.h"
+#include "logreport.h"
 #include "types.h"
 #include "bitmap.h"
 #include "despeckle.h"

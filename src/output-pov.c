@@ -25,7 +25,7 @@
 #include "spline.h"
 #include "color.h"
 #include "output-pov.h"
-#include "xstd.h"
+#include "message.h"
 #include "autotrace.h"
 #include <string.h>
 #include <math.h>
@@ -147,5 +147,3 @@ int output_pov_writer(FILE* pov_file, gchar* name,
 
     return 0;
 }
-
-

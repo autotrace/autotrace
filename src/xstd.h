@@ -8,9 +8,8 @@
 #define XSTD_H
 
 #include "types.h"
-#include "message.h"
 #include <assert.h>
-#include <string.h>
+#include <stdlib.h>
 
 /*
  * XMEM
