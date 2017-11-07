@@ -24,7 +24,7 @@
 #include "spline.h"
 #include "color.h"
 #include "output-ugs.h"
-#include "message.h"
+#include "logreport.h"
 #include <math.h>
 
 long ugs_design_pixels;		/*  A design size of font in pixels. */

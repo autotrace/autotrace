@@ -25,7 +25,7 @@
 #include "spline.h"
 #include "color.h"
 #include "output-pov.h"
-#include "message.h"
+#include "logreport.h"
 #include "autotrace.h"
 #include <string.h>
 #include <math.h>

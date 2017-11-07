@@ -5,9 +5,8 @@
 #endif /* Def: HAVE_CONFIG_H */
 
 #include "autotrace.h"
-#include "message.h"
-#include "cmdline.h"
 #include "logreport.h"
+#include "cmdline.h"
 #include "getopt.h"
 #include "filename.h"
 #include "xstd.h"

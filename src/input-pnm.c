@@ -30,7 +30,7 @@
 #include "types.h"
 #include "bitmap.h"
 #include "input-pnm.h"
-#include "message.h"
+#include "logreport.h"
 #include "xstd.h"
 
 #include <math.h>

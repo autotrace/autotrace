@@ -5,12 +5,11 @@
 #include "config.h"
 #endif /* Def: HAVE_CONFIG_H */
 
-#include "message.h"
+#include "logreport.h"
 #include "types.h"
 #include "bitmap.h"
 #include "color.h"
 #include "bitmap.h"
-#include "logreport.h"
 #include "xstd.h"
 #include "pxl-outline.h"
 #include <assert.h>

@@ -26,7 +26,6 @@
 
 #include "autotrace.h"
 #include "fit.h"
-#include "message.h"
 #include "logreport.h"
 #include "spline.h"
 #include "vector.h"

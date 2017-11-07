@@ -130,8 +130,7 @@ libautotrace_la_LDFLAGS = -version-info $(LT_CURRENT):$(LT_REVISION):$(LT_AGE)
 # libautotrace_a_SOURCES.
 noinst_HEADERS = src/filename.h                     \
 		src/xstd.h                          \
-		src/logreport.h			\
-		src/message.h
+		src/logreport.h
 
 autotrace_SOURCES=\
 		src/atou.c				\
