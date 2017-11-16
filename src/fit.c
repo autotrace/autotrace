@@ -26,7 +26,6 @@
 
 #include "autotrace.h"
 #include "fit.h"
-#include "message.h"
 #include "logreport.h"
 #include "spline.h"
 #include "vector.h"
@@ -48,8 +47,6 @@
 
 #define SQUARE(x) ((x) * (x))
 #define CUBE(x) ((x) * (x) * (x))
-#define ROUND(x) ((unsigned short) ((unsigned short) (x) + .5 * SIGN (x)))
-#define SIGN(x) ((x) > 0 ? 1 : (x) < 0 ? -1 : 0)
 
 /* We need to manipulate lists of array indices.  */
 
@@ -196,8 +193,6 @@ fitted_splines (pixel_outline_list_type pixel_outline_list,
  cleanup:
   free_curve_list_array (&curve_array, notify_progress, progress_data);
 
-  flush_log_output ();
-
   return char_splines;
 }
 
@@ -325,9 +320,8 @@ fit_curve_list (curve_list_type curve_list,
                this_spline++)
             {
               LOG ("  %u: ", this_spline);
-              if (log_file)
-                print_spline (log_file,
-                              SPLINE_LIST_ELT (*curve_splines, this_spline));
+              if (logging)
+                print_spline (SPLINE_LIST_ELT (*curve_splines, this_spline));
             }
 
           /* After fitting, we may need to change some would-be lines
@@ -341,15 +335,14 @@ fit_curve_list (curve_list_type curve_list,
         }
     }
 
-  if (log_file)
+  if (logging)
     {
       LOG ("\nFitted splines are:\n");
       for (this_spline = 0; this_spline < SPLINE_LIST_LENGTH (curve_list_splines);
            this_spline++)
         {
           LOG ("  %u: ", this_spline);
-          print_spline (log_file, SPLINE_LIST_ELT (curve_list_splines,
-                                                   this_spline));
+          print_spline (SPLINE_LIST_ELT (curve_list_splines, this_spline));
         }
     }
  cleanup:
@@ -974,7 +967,8 @@ filter (curve_type curve, fitting_opts_type *fitting_opts)
       free (newcurve);
     }
 
-  log_curve (curve, FALSE);
+  if (logging)
+    log_curve (curve, FALSE);
 }
 
 
@@ -997,10 +991,10 @@ fit_with_line (curve_type curve)
   /* Make sure that this line is never changed to a cubic.  */
   SPLINE_LINEARITY (line) = 0;
 
-  if (log_file)
+  if (logging)
     {
       LOG ("  ");
-      print_spline (log_file, line);
+      print_spline (line);
     }
 
   return new_spline_list_with_spline (line);
@@ -1052,10 +1046,10 @@ fit_with_least_squares (curve_type curve, fitting_opts_type *fitting_opts,
           else
         LOG ("  fitted to spline:\n");
 
-      if (log_file)
+      if (logging)
         {
           LOG ("    ");
-          print_spline (log_file, spline);
+          print_spline (spline);
         }
 
           if (SPLINE_DEGREE(spline) == LINEARTYPE)
@@ -1328,7 +1322,8 @@ set_initial_parameter_values (curve_type curve)
   for (p = 1; p < CURVE_LENGTH (curve); p++)
     CURVE_T (curve, p) = CURVE_T (curve, p) / LAST_CURVE_T (curve);
 
-  log_entire_curve (curve);
+  if (logging)
+    log_entire_curve (curve);
 }
 
 /* Find an approximation to the tangent to an endpoint of CURVE (to the
@@ -1641,8 +1636,8 @@ real_to_int_coord (at_real_coord real_coord)
 {
   at_coord int_coord;
 
-  int_coord.x = ROUND (real_coord.x);
-  int_coord.y = ROUND (real_coord.y);
+  int_coord.x = lround (real_coord.x);
+  int_coord.y = lround (real_coord.y);
 
   return int_coord;
 }

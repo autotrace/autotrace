@@ -27,7 +27,7 @@ typedef at_spline_type spline_type;
 
 #ifndef _IMPORTING
 /* Print a spline on the given file.  */
-extern void print_spline (FILE *, spline_type);
+extern void print_spline (spline_type);
 
 /* Evaluate SPLINE at the given T value.  */
 extern at_real_coord evaluate_spline (spline_type spline, gfloat t);

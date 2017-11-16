@@ -24,7 +24,7 @@
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
-#include "message.h"
+#include "logreport.h"
 #include "xstd.h"
 #include "quantize.h"
 

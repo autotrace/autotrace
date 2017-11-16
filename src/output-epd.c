@@ -30,10 +30,8 @@
 #include "autotrace.h"
 #include "private.h"
 #include <string.h>
+#include <math.h>
 #include <glib.h>
-
-#define SIGN(x) ((x) > 0 ? 1 : (x) < 0 ? -1 : 0)
-#define ROUND(x) ((int) ((int) (x) + .5 * SIGN (x)))
 
 /* Output macros.  */
 
@@ -46,7 +44,7 @@
   fprintf (epd_file, __VA_ARGS__)
 
 /* These macros just output their arguments.  */
-#define OUT_REAL(r)	fprintf (epd_file, r == (ROUND (r = ROUND((gfloat)6.0*r)/(gfloat)6.0))				\
+#define OUT_REAL(r)	fprintf (epd_file, r == (lround (r = lround((gfloat)6.0*r)/(gfloat)6.0))				\
                                   ? "%.0f " : "%.3f ", r)
 
 /* For a PostScript command with two real arguments, e.g., lineto.  OP

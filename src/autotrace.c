@@ -44,6 +44,7 @@
 #include <locale.h>
 #include <time.h>
 #include <stdlib.h>
+#include <string.h>
 
 #define AT_DEFAULT_DPI 72
 

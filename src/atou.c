@@ -4,7 +4,7 @@
 #include "config.h"
 #endif /* Def: HAVE_CONFIG_H */
 
-#include "message.h"
+#include "logreport.h"
 #include "atou.h"
 
 unsigned

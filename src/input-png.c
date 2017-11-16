@@ -27,7 +27,7 @@
 
 #include "types.h"
 #include "bitmap.h"
-#include "message.h"
+#include "logreport.h"
 #include "xstd.h"
 #include <png.h>
 #include "input-png.h"

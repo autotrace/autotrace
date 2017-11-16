@@ -23,6 +23,7 @@
 
 #include "output-fig.h"
 #include "xstd.h"
+#include "logreport.h"
 #include "color.h"
 #include "spline.h"
 

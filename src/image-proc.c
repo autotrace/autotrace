@@ -7,6 +7,7 @@
 #include <assert.h>
 #include <math.h>
 #include "xstd.h"
+#include "logreport.h"
 #include "image-proc.h"
 
 #define BLACK 0

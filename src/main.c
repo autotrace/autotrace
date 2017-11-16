@@ -5,9 +5,8 @@
 #endif /* Def: HAVE_CONFIG_H */
 
 #include "autotrace.h"
-#include "message.h"
-#include "cmdline.h"
 #include "logreport.h"
+#include "cmdline.h"
 #include "getopt.h"
 #include "filename.h"
 #include "xstd.h"
@@ -18,6 +17,7 @@
 #include <string.h>
 #include <assert.h>
 #include <math.h>
+#include <errno.h>
 
 #undef N_
 #include "intl.h"
@@ -43,9 +43,6 @@ static at_spline_writer * output_writer = NULL;
 
 /* Whether to print version information */
 static gboolean printed_version;
-
-/* Whether to write a log file */
-static gboolean logging = FALSE;
 
 /* Whether to dump a bitmap file */
 static gboolean dumping_bitmap = FALSE;
@@ -77,7 +74,7 @@ main (int argc, char * argv[])
   at_input_opts_type * input_opts;
   at_output_opts_type * output_opts;
   char * input_name, * input_rootname;
-  char * logfile_name = NULL, * dumpfile_name = NULL;
+  char * dumpfile_name = NULL;
   at_splines_type * splines;
   at_bitmap * bitmap;
   FILE *output_file;
@@ -106,17 +103,12 @@ main (int argc, char * argv[])
   if ((input_rootname = remove_suffix (get_basename (input_name))) == NULL)
 	FATAL (_("Not a valid input file name %s"), input_name);
 
-  if (logging)
-    log_file = xfopen (logfile_name = extend_filename (input_rootname, "log"), "w");
-
   /* BUG: Sometimes input_rootname points to the heap, sometimes to
      the stack, so it can't safely be freed. */
 /*
   if (input_rootname != input_name)
     free (input_rootname);
 */
-  if (logging)
-    free (logfile_name);
 
   /* Set input_reader if it is not set in command line args */
   if (!input_reader)
@@ -137,8 +129,13 @@ main (int argc, char * argv[])
   /* Open output file */
   if (!strcmp (output_name, ""))
     output_file = stdout;
-  else
-    output_file = xfopen(output_name, "wb");
+  else {
+    output_file = fopen (output_name, "wb");
+    if (output_file == NULL) {
+      perror (output_name);
+      exit (errno);
+    }
+  }
 
   /* Open the main input file.  */
   if (input_reader != NULL)
@@ -169,7 +166,11 @@ main (int argc, char * argv[])
         dumpfile_name = extend_filename (input_rootname, "dump.pgm");
 	  else
         dumpfile_name = extend_filename (input_rootname, "dump.ppm");
-      dump_file   = xfopen (dumpfile_name, "wb");
+      dump_file   = fopen (dumpfile_name, "wb");
+      if (dump_file == NULL) {
+        perror (dumpfile_name);
+	exit (errno);
+      }
       if (at_bitmap_get_planes (bitmap) == 1)
         fprintf(dump_file, "%s\n", "P5");
 	  else

@@ -27,7 +27,7 @@
 
 #include "types.h"
 #include "bitmap.h"
-#include "message.h"
+#include "logreport.h"
 #include "xstd.h"
 #include "input-bmp.h"
 
@@ -501,11 +501,6 @@ ReadImage (FILE   *fd,
   free (buffer);
   return image;
 }
-
-FILE  *errorfile;
-char *prog_name = "bmp";
-char *filename;
-int   interactive_bmp;
 
 static long
 ToL (unsigned char *puffer)

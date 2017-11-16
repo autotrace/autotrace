@@ -25,12 +25,10 @@
 #include "spline.h"
 #include "color.h"
 #include "output-pov.h"
-#include "xstd.h"
+#include "logreport.h"
 #include "autotrace.h"
 #include <string.h>
-
-#define SIGN(x) ((x) > 0 ? 1 : (x) < 0 ? -1 : 0)
-#define ROUND(x) ((int) ((int) (x) + .5 * SIGN (x)))
+#include <math.h>
 
 /* Output macros.  */
 
@@ -43,7 +41,7 @@
   fprintf (pov_file, s, __VA_ARGS__)
 
 /* These macros just output their arguments.  */
-#define OUT_REAL(r)	fprintf (pov_file, r == (ROUND (r = ROUND((gfloat)6.0*r)/(gfloat)6.0))				\
+#define OUT_REAL(r)	fprintf (pov_file, r == (lround (r = lround((gfloat)6.0*r)/(gfloat)6.0))				\
                                   ? "%.0f " : "%.3f ", r)
 
 /* This outputs the Povray code which produces the shape in
@@ -149,5 +147,3 @@ int output_pov_writer(FILE* pov_file, gchar* name,
 
     return 0;
 }
-
-

@@ -25,7 +25,6 @@
 #include <stdio.h>
 #include "thin-image.h"
 #include "logreport.h"
-#include "message.h"
 #include "types.h"
 #include "bitmap.h"
 #include "xstd.h"

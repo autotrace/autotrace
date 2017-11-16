@@ -5,12 +5,11 @@
 #include "config.h"
 #endif /* Def: HAVE_CONFIG_H */
 
-#include "message.h"
+#include "logreport.h"
 #include "types.h"
 #include "bitmap.h"
 #include "color.h"
 #include "bitmap.h"
-#include "logreport.h"
 #include "xstd.h"
 #include "pxl-outline.h"
 #include <assert.h>
@@ -189,7 +188,6 @@ find_outline_pixels (at_bitmap * bitmap, at_color *bg_color,
     }
  cleanup:
   at_bitmap_free (marked);
-  flush_log_output ();
   if (at_exception_got_fatal(exp))
     free_pixel_outline_list(&outline_list);
   return outline_list;
@@ -425,7 +423,6 @@ find_centerline_pixels (at_bitmap * bitmap, at_color bg_color,
     }
  cleanup:
   at_bitmap_free(marked);
-  flush_log_output();
   return outline_list;
 }
 
@@ -514,8 +511,6 @@ free_pixel_outline_list (pixel_outline_list_type *outline_list)
       free (outline_list->data);
       outline_list->data = NULL;
     }
-
-  flush_log_output ();
 }
 
 

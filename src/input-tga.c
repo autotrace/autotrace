@@ -29,7 +29,7 @@
 /* #include <unistd.h> */
 
 #include "bitmap.h"
-#include "message.h"
+#include "logreport.h"
 #include "xstd.h"
 #include "input-bmp.h"
 

@@ -5,7 +5,7 @@
 #endif /* Def: HAVE_CONFIG_H */
 
 #include "vector.h"
-#include "message.h"
+#include "logreport.h"
 #include "epsilon-equal.h"
 #include <math.h>
 #include <errno.h>
@@ -16,9 +16,6 @@ static gfloat acos_d (gfloat, at_exception_type * excep);
 
 #define _USE_MATH_DEFINES
 #include <math.h>
-
-#define SIGN(x) ((x) > 0 ? 1 : (x) < 0 ? -1 : 0)
-#define ROUND(x) ((int) ((int) (x) + .5 * SIGN (x)))
 
 /* Given the point COORD, return the corresponding vector.  */
 
@@ -158,8 +155,8 @@ Vadd_int_point (const at_coord c, const vector_type v)
 {
   at_coord a;
 
-  a.x = (unsigned short) ROUND ((gfloat) c.x + v.dx);
-  a.y = (unsigned short) ROUND ((gfloat) c.y + v.dy);
+  a.x = (unsigned short) lround ((gfloat) c.x + v.dx);
+  a.y = (unsigned short) lround ((gfloat) c.y + v.dy);
   return a;
 }
 

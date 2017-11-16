@@ -4,7 +4,7 @@
 #include "config.h"
 #endif /* Def: HAVE_CONFIG_H */
 
-#include "message.h"
+#include "logreport.h"
 #include "types.h"
 #include "spline.h"
 #include "vector.h"
@@ -14,17 +14,17 @@
 /* Print a spline in human-readable form.  */
 
 void
-print_spline (FILE *f, spline_type s)
+print_spline (spline_type s)
 {
   assert(SPLINE_DEGREE (s) == LINEARTYPE || SPLINE_DEGREE (s) == CUBICTYPE);
 
   if (SPLINE_DEGREE (s) == LINEARTYPE)
-    fprintf (f, "(%.3f,%.3f)--(%.3f,%.3f).\n",
+    fprintf (stdout, "(%.3f,%.3f)--(%.3f,%.3f).\n",
                 START_POINT (s).x, START_POINT (s).y,
                 END_POINT (s).x, END_POINT (s).y);
 
   else if (SPLINE_DEGREE (s) == CUBICTYPE)
-    fprintf (f, "(%.3f,%.3f)..ctrls(%.3f,%.3f)&(%.3f,%.3f)..(%.3f,%.3f).\n",
+    fprintf (stdout, "(%.3f,%.3f)..ctrls(%.3f,%.3f)&(%.3f,%.3f)..(%.3f,%.3f).\n",
                 START_POINT (s).x, START_POINT (s).y,
                 CONTROL1 (s).x, CONTROL1 (s).y,
                 CONTROL2 (s).x, CONTROL2 (s).y,
@@ -177,8 +177,6 @@ free_spline_list_array (spline_list_array_type *spline_list_array)
 
   if (SPLINE_LIST_ARRAY_DATA (*spline_list_array) != NULL)
     free (SPLINE_LIST_ARRAY_DATA (*spline_list_array));
-
-  flush_log_output ();
 }
 
 

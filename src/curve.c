@@ -114,8 +114,6 @@ log_curve (curve_type curve, gboolean print_t)
 {
   unsigned this_point;
 
-  if (!log_file) return;
-
   LOG ("curve id = %lx:\n", (unsigned long) curve);
   LOG ("  length = %u.\n", CURVE_LENGTH (curve));
   if (CURVE_CYCLIC (curve))
@@ -174,8 +172,6 @@ void
 log_entire_curve (curve_type curve)
 {
   unsigned this_point;
-
-  if (!log_file) return;
 
   LOG ("curve id = %lx:\n", (unsigned long) curve);
   LOG ("  length = %u.\n", CURVE_LENGTH (curve));
