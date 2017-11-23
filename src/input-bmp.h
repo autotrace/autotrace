@@ -22,12 +22,6 @@
 
 #include "input.h"
 
-
-at_bitmap input_bmp_reader (gchar* filename,
-				 at_input_opts_type * opts,
-				 at_msg_func msg_func,
-				 gpointer msg_data,
-				 gpointer user_data);
+at_bitmap input_bmp_reader(gchar * filename, at_input_opts_type * opts, at_msg_func msg_func, gpointer msg_data, gpointer user_data);
 
 #endif /* not INPUT_BMP_H */
-

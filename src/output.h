@@ -27,28 +27,14 @@
 
 #ifdef __cplusplus
 extern "C" {
-#endif /* __cplusplus */
+#endif                          /* __cplusplus */
 
-typedef
-int (*at_output_func) (FILE*, gchar* name,
-		       int llx, int lly,
-		       int urx, int ury,
-		       at_output_opts_type * opts,
-		       at_splines_type shape,
-		       at_msg_func msg_func,
-		       gpointer msg_data,
-		       gpointer user_data);
+  typedef
+  int (*at_output_func) (FILE *, gchar * name, int llx, int lly, int urx, int ury, at_output_opts_type * opts, at_splines_type shape, at_msg_func msg_func, gpointer msg_data, gpointer user_data);
 
-extern int at_output_add_handler (const gchar* suffix,
-				  const gchar* description,
-				  at_output_func writer);
+  extern int at_output_add_handler(const gchar * suffix, const gchar * description, at_output_func writer);
 
-extern int at_output_add_handler_full (const gchar* suffix,
-				       const gchar* description,
-				       at_output_func writer,
-				       gboolean override,
-				       gpointer user_data,
-				       GDestroyNotify user_data_destroy_func);
+  extern int at_output_add_handler_full(const gchar * suffix, const gchar * description, at_output_func writer, gboolean override, gpointer user_data, GDestroyNotify user_data_destroy_func);
 
 /* Data struct hierarchy:
    spline_list_array (splines)
@@ -91,24 +77,13 @@ extern int at_output_add_handler_full (const gchar* suffix,
  * Glib style traversing
  */
 
-typedef void (* AtSplineListForeachFunc) (at_spline_list_type * spline_list,
-					     at_spline_type * spline,
-					     int index,
-					     gpointer user_data);
-typedef void (* AtSplineListArrayForeachFunc) (at_spline_list_array_type * spline_list_array,
-						  at_spline_list_type * spline_list,
-						  int index,
-						  gpointer user_data);
+  typedef void (*AtSplineListForeachFunc) (at_spline_list_type * spline_list, at_spline_type * spline, int index, gpointer user_data);
+  typedef void (*AtSplineListArrayForeachFunc) (at_spline_list_array_type * spline_list_array, at_spline_list_type * spline_list, int index, gpointer user_data);
 
-void at_spline_list_foreach (at_spline_list_type *,
-			     AtSplineListForeachFunc func,
-			     gpointer user_data);
-void at_spline_list_array_foreach (at_spline_list_array_type *,
-				   AtSplineListArrayForeachFunc func,
-				   gpointer user_data);
+  void at_spline_list_foreach(at_spline_list_type *, AtSplineListForeachFunc func, gpointer user_data);
+  void at_spline_list_array_foreach(at_spline_list_array_type *, AtSplineListArrayForeachFunc func, gpointer user_data);
 
 #ifdef __cplusplus
 }
-#endif /* __cplusplus */
-
-#endif /* not OUTPUT_H */
+#endif                          /* __cplusplus */
+#endif                          /* not OUTPUT_H */

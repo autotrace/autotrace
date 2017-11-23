@@ -75,16 +75,14 @@
 
 /* color list type */
 
-typedef struct EMFColorListType
-{
+typedef struct EMFColorListType {
   uint32_t colref;
   struct EMFColorListType *next;
 } EMFColorList;
 
 /* Emf stats needed for outputting EHNMETAHEADER*/
 
-typedef struct
-{
+typedef struct {
   int ncolors;
   int nrecords;
   int filesize;
@@ -92,24 +90,23 @@ typedef struct
 
 /* globals */
 
-static EMFColorList *color_list = NULL;  /* Color list */
-static uint32_t *color_table = NULL;         /* Color table */
+static EMFColorList *color_list = NULL; /* Color list */
+static uint32_t *color_table = NULL;  /* Color table */
 static float y_offset;
 
 /* color list & table functions */
 
-static int SearchColor(EMFColorList *head, uint32_t colref)
+static int SearchColor(EMFColorList * head, uint32_t colref)
 {
-  while(head != NULL)
-  {
-    if(head->colref == colref)
+  while (head != NULL) {
+    if (head->colref == colref)
       return 1;
     head = head->next;
   }
   return 0;
 }
 
-static void AddColor(EMFColorList **head, uint32_t colref)
+static void AddColor(EMFColorList ** head, uint32_t colref)
 {
   EMFColorList *temp;
 
@@ -120,15 +117,14 @@ static void AddColor(EMFColorList **head, uint32_t colref)
   *head = temp;
 }
 
-static void ColorListToColorTable(EMFColorList **head, uint32_t **table, int len)
+static void ColorListToColorTable(EMFColorList ** head, uint32_t ** table, int len)
 {
   EMFColorList *temp;
   int i = 0;
 
   XMALLOC(*table, sizeof(uint32_t) * len);
 
-  while(*head != NULL)
-  {
+  while (*head != NULL) {
     temp = *head;
     *head = (*head)->next;
     (*table)[i] = temp->colref;
@@ -137,13 +133,12 @@ static void ColorListToColorTable(EMFColorList **head, uint32_t **table, int len
   }
 }
 
-static int ColorLookUp(uint32_t colref, uint32_t *table, int len)
+static int ColorLookUp(uint32_t colref, uint32_t * table, int len)
 {
   int i;
 
-  for(i=0; i<len; i++)
-  {
-    if(colref == table[i])
+  for (i = 0; i < len; i++) {
+    if (colref == table[i])
       return i;
   }
   return 0;
@@ -151,7 +146,7 @@ static int ColorLookUp(uint32_t colref, uint32_t *table, int len)
 
 /* endianess independent IO functions */
 
-static gboolean write32(FILE *fdes, uint32_t data)
+static gboolean write32(FILE * fdes, uint32_t data)
 {
   size_t count = 0;
   uint8_t outch;
@@ -171,7 +166,7 @@ static gboolean write32(FILE *fdes, uint32_t data)
   return (count == sizeof(uint32_t)) ? TRUE : FALSE;
 }
 
-static gboolean write16(FILE *fdes, uint16_t data)
+static gboolean write16(FILE * fdes, uint16_t data)
 {
   size_t count = 0;
   uint8_t outch;
@@ -187,12 +182,11 @@ static gboolean write16(FILE *fdes, uint16_t data)
 
 /* EMF record-type function definitions */
 
-static int WriteMoveTo(FILE* fdes, at_real_coord *pt)
+static int WriteMoveTo(FILE * fdes, at_real_coord * pt)
 {
   int recsize = sizeof(uint32_t) * 4;
 
-  if(fdes != NULL)
-  {
+  if (fdes != NULL) {
     write32(fdes, ENMT_MOVETO);
     write32(fdes, (uint32_t) recsize);
     write32(fdes, (uint32_t) X_FLOAT_TO_UI32(pt->x));
@@ -201,12 +195,11 @@ static int WriteMoveTo(FILE* fdes, at_real_coord *pt)
   return recsize;
 }
 
-static int WriteLineTo(FILE* fdes, spline_type *spl)
+static int WriteLineTo(FILE * fdes, spline_type * spl)
 {
   int recsize = sizeof(uint32_t) * 4;
 
-  if(fdes != NULL)
-  {
+  if (fdes != NULL) {
     write32(fdes, ENMT_LINETO);
     write32(fdes, (uint32_t) recsize);
     write32(fdes, (uint32_t) X_FLOAT_TO_UI32(END_POINT(*spl).x));
@@ -241,15 +234,13 @@ int WritePolyLineTo(FILE* fdes, spline_type *spl, int nlines)
   return recsize;
 } */
 
-static int MyWritePolyLineTo(FILE* fdes, spline_type *spl, int nlines)
+static int MyWritePolyLineTo(FILE * fdes, spline_type * spl, int nlines)
 {
   int i;
   int recsize = nlines * WriteLineTo(NULL, NULL);
 
-  if(fdes != NULL)
-  {
-    for(i=0; i<nlines; i++)
-    {
+  if (fdes != NULL) {
+    for (i = 0; i < nlines; i++) {
       WriteLineTo(fdes, &spl[i]);
     }
   }
@@ -287,13 +278,12 @@ int WritePolyBezierTo(FILE *fdes, spline_type *spl, int ncurves)
   return recsize;
 } */
 
-static int WritePolyBezierTo16(FILE *fdes, spline_type *spl, int ncurves)
+static int WritePolyBezierTo16(FILE * fdes, spline_type * spl, int ncurves)
 {
   int i;
   int recsize = sizeof(uint32_t) * 7 + sizeof(uint16_t) * ncurves * 6;
 
-  if(fdes != NULL)
-  {
+  if (fdes != NULL) {
     write32(fdes, ENMT_POLYBEZIERTO16);
     write32(fdes, (uint32_t) recsize);
     write32(fdes, (uint32_t) 0x0);
@@ -302,8 +292,7 @@ static int WritePolyBezierTo16(FILE *fdes, spline_type *spl, int ncurves)
     write32(fdes, (uint32_t) 0xFFFFFFFF);
     write32(fdes, (uint32_t) ncurves * 3);
 
-    for(i=0; i<ncurves; i++)
-    {
+    for (i = 0; i < ncurves; i++) {
       write16(fdes, (uint16_t) X_FLOAT_TO_UI16(CONTROL1(spl[i]).x));
       write16(fdes, (uint16_t) Y_FLOAT_TO_UI16(CONTROL1(spl[i]).y));
       write16(fdes, (uint16_t) X_FLOAT_TO_UI16(CONTROL2(spl[i]).x));
@@ -315,13 +304,11 @@ static int WritePolyBezierTo16(FILE *fdes, spline_type *spl, int ncurves)
   return recsize;
 }
 
-
-static int WriteSetPolyFillMode(FILE *fdes)
+static int WriteSetPolyFillMode(FILE * fdes)
 {
   int recsize = sizeof(uint32_t) * 3;
 
-  if(fdes != NULL)
-  {
+  if (fdes != NULL) {
     write32(fdes, ENMT_SETPOLYFILLMODE);
     write32(fdes, (uint32_t) recsize);
     write32(fdes, (uint32_t) FM_ALTERNATE);
@@ -329,36 +316,33 @@ static int WriteSetPolyFillMode(FILE *fdes)
   return recsize;
 }
 
-static int WriteBeginPath(FILE *fdes)
+static int WriteBeginPath(FILE * fdes)
 {
   int recsize = sizeof(uint32_t) * 2;
 
-  if(fdes != NULL)
-  {
+  if (fdes != NULL) {
     write32(fdes, ENMT_BEGINPATH);
     write32(fdes, (uint32_t) recsize);
   }
   return recsize;
 }
 
-static int WriteEndPath(FILE *fdes)
+static int WriteEndPath(FILE * fdes)
 {
   int recsize = sizeof(uint32_t) * 2;
 
-  if(fdes != NULL)
-  {
+  if (fdes != NULL) {
     write32(fdes, ENMT_ENDPATH);
     write32(fdes, (uint32_t) recsize);
   }
   return recsize;
 }
 
-static int WriteFillPath(FILE *fdes)
+static int WriteFillPath(FILE * fdes)
 {
   int recsize = sizeof(uint32_t) * 6;
 
-  if(fdes != NULL)
-  {
+  if (fdes != NULL) {
     write32(fdes, ENMT_FILLPATH);
     write32(fdes, (uint32_t) recsize);
     write32(fdes, (uint32_t) 0x0);
@@ -369,12 +353,11 @@ static int WriteFillPath(FILE *fdes)
   return recsize;
 }
 
-static int WriteStrokePath(FILE *fdes)
+static int WriteStrokePath(FILE * fdes)
 {
   int recsize = sizeof(uint32_t) * 6;
 
-  if(fdes != NULL)
-  {
+  if (fdes != NULL) {
     write32(fdes, ENMT_STROKEPATH);
     write32(fdes, (uint32_t) recsize);
     write32(fdes, (uint32_t) 0x0);
@@ -386,23 +369,22 @@ static int WriteStrokePath(FILE *fdes)
 }
 
 #if 0
-static int WriteSetWorldTransform(FILE *fdes, uint32_t height)
+static int WriteSetWorldTransform(FILE * fdes, uint32_t height)
 {
   int recsize = sizeof(uint32_t) * 8;
   float fHeight;
 
-  if(fdes != NULL)
-  {
-	float s1 = (float) (1.0/SCALE);
-	float s2 = (float) (1.0/SCALE);
-	uint32_t t1;
-	uint32_t t2;
+  if (fdes != NULL) {
+    float s1 = (float)(1.0 / SCALE);
+    float s2 = (float)(1.0 / SCALE);
+    uint32_t t1;
+    uint32_t t2;
     /* conversion to float */
-    fHeight = (float) height;
+    fHeight = (float)height;
     /* binary copy for serialization */
-    memcpy((void *) &height, (void *) &fHeight, sizeof(uint32_t));
-    memcpy((void *) &t1, (void *) &s1, sizeof(uint32_t));
-    memcpy((void *) &t2, (void *) &s2, sizeof(uint32_t));
+    memcpy((void *)&height, (void *)&fHeight, sizeof(uint32_t));
+    memcpy((void *)&t1, (void *)&s1, sizeof(uint32_t));
+    memcpy((void *)&t2, (void *)&s2, sizeof(uint32_t));
 
     write32(fdes, ENMT_SETWORLDTRANSFORM);
     write32(fdes, (uint32_t) recsize);
@@ -417,12 +399,11 @@ static int WriteSetWorldTransform(FILE *fdes, uint32_t height)
 }
 #endif /* 0 */
 
-static int WriteCreateSolidPen(FILE *fdes, int hndNum, uint32_t colref)
+static int WriteCreateSolidPen(FILE * fdes, int hndNum, uint32_t colref)
 {
   int recsize = sizeof(uint32_t) * 7;
 
-  if(fdes != NULL)
-  {
+  if (fdes != NULL) {
     write32(fdes, ENMT_CREATEPEN);
     write32(fdes, (uint32_t) recsize);
     write32(fdes, (uint32_t) hndNum);
@@ -434,12 +415,11 @@ static int WriteCreateSolidPen(FILE *fdes, int hndNum, uint32_t colref)
   return recsize;
 }
 
-static int WriteCreateSolidBrush(FILE *fdes, int hndNum, uint32_t colref)
+static int WriteCreateSolidBrush(FILE * fdes, int hndNum, uint32_t colref)
 {
   int recsize = sizeof(uint32_t) * 6;
 
-  if(fdes != NULL)
-  {
+  if (fdes != NULL) {
     write32(fdes, ENMT_CREATEBRUSHINDIRECT);
     write32(fdes, (uint32_t) recsize);
     write32(fdes, (uint32_t) hndNum);
@@ -450,12 +430,11 @@ static int WriteCreateSolidBrush(FILE *fdes, int hndNum, uint32_t colref)
   return recsize;
 }
 
-static int WriteSelectObject(FILE *fdes, int hndNum)
+static int WriteSelectObject(FILE * fdes, int hndNum)
 {
   int recsize = sizeof(uint32_t) * 3;
 
-  if(fdes != NULL)
-  {
+  if (fdes != NULL) {
     write32(fdes, ENMT_SELECTOBJECT);
     write32(fdes, (uint32_t) recsize);
     write32(fdes, (uint32_t) hndNum);
@@ -463,14 +442,12 @@ static int WriteSelectObject(FILE *fdes, int hndNum)
   return recsize;
 }
 
-
 /* SPH: Added 10/14/04 to prevent resource overflow when large number of colors used */
-static int WriteDeleteObject(FILE *fdes, int hndNum)
+static int WriteDeleteObject(FILE * fdes, int hndNum)
 {
   int recsize = sizeof(uint32_t) * 3;
 
-  if(fdes != NULL)
-  {
+  if (fdes != NULL) {
     write32(fdes, ENMT_DELETEOBJECT);
     write32(fdes, (uint32_t) recsize);
     write32(fdes, (uint32_t) hndNum);
@@ -478,13 +455,11 @@ static int WriteDeleteObject(FILE *fdes, int hndNum)
   return recsize;
 }
 
-
-static int WriteEndOfMetafile(FILE *fdes)
+static int WriteEndOfMetafile(FILE * fdes)
 {
   int recsize = sizeof(uint32_t) * 5;
 
-  if(fdes != NULL)
-  {
+  if (fdes != NULL) {
     write32(fdes, ENMT_EOF);
     write32(fdes, (uint32_t) recsize);
     write32(fdes, (uint32_t) 0);
@@ -495,17 +470,16 @@ static int WriteEndOfMetafile(FILE *fdes)
   return recsize;
 }
 
-static int WriteHeader(FILE *fdes, gchar* name, int width, int height, int fsize, int nrec, int nhand)
+static int WriteHeader(FILE * fdes, gchar * name, int width, int height, int fsize, int nrec, int nhand)
 {
   int i, recsize;
   size_t desclen;
-  const char * editor = at_version(TRUE);
+  const char *editor = at_version(TRUE);
 
   desclen = (strlen(editor) + strlen(name) + 3);
   recsize = sizeof(uint32_t) * 25 + (desclen * 2) + ((desclen * 2) % 4);
 
-  if(fdes != NULL)
-  {
+  if (fdes != NULL) {
     write32(fdes, ENMT_HEADER);
     write32(fdes, (uint32_t) recsize);
     /* pixel bounds */
@@ -546,17 +520,15 @@ static int WriteHeader(FILE *fdes, gchar* name, int width, int height, int fsize
     write32(fdes, (uint32_t) 0);
     write32(fdes, (uint32_t) 0);
     /* description string in Unicode */
-    for(i=0;editor[i]; i++)
-    {
-      write16(fdes, ((uint16_t) (editor[i] & 0x07F)) );
+    for (i = 0; editor[i]; i++) {
+      write16(fdes, ((uint16_t) (editor[i] & 0x07F)));
     }
     write16(fdes, (uint16_t) 0);
-    for(i=0;name[i]; i++)
-    {
-      write16(fdes, ((uint16_t) (name[i] & 0x07F)) );
+    for (i = 0; name[i]; i++) {
+      write16(fdes, ((uint16_t) (name[i] & 0x07F)));
     }
     write32(fdes, (uint32_t) 0);
-    if((desclen * 2) % 4)
+    if ((desclen * 2) % 4)
       write16(fdes, (uint16_t) 0);
   }
   return recsize;
@@ -664,7 +636,6 @@ static void GetEmfStats(EMFStats *stats, gchar* name, spline_list_array_type sha
   // convert the color list into a color table
   ColorListToColorTable(&color_list, &color_table, ncolors);
 }
-
 
 static void OutputEmf(FILE* fdes, EMFStats *stats, gchar* name, int width, int height, spline_list_array_type shape)
 {
@@ -781,7 +752,7 @@ static void OutputEmf(FILE* fdes, EMFStats *stats, gchar* name, int width, int h
 
 */
 
-static void GetEmfStats(EMFStats *stats, gchar* name, spline_list_array_type shape)
+static void GetEmfStats(EMFStats * stats, gchar * name, spline_list_array_type shape)
 {
   unsigned int this_list, this_spline;
   int ncolors = 0;
@@ -795,105 +766,90 @@ static void GetEmfStats(EMFStats *stats, gchar* name, spline_list_array_type sha
   int nlines;
 
   // visit each spline-list
-  for(this_list=0; this_list<SPLINE_LIST_ARRAY_LENGTH(shape); this_list++)
-    {
-      curr_list = SPLINE_LIST_ARRAY_ELT(shape, this_list);
-      curr_color = MAKE_COLREF(curr_list.color.r,curr_list.color.g,curr_list.color.b);
-      if(this_list == 0 || curr_color != last_color)
-        {
-          ncolorchng++;
-          if(!SearchColor(color_list, curr_color))
-            {
-              ncolors++;
-              AddColor(&color_list, curr_color);
-            }
-          if (shape.centerline)
-		  {
-			 nrecords += 2;
-			 filesize += (WriteCreateSolidPen(NULL, 0, 0) + WriteSelectObject(NULL,0));
-			 if (this_list != 0)
-			 {
-				 nrecords++;
-				 filesize += WriteDeleteObject(NULL, 0);
-			 }
-		  }
-          else
-		  {
-			  nrecords++;
-              filesize += WriteSelectObject(NULL, 0);
-		  }
-
-		  nrecords += 2;
-          filesize += (WriteCreateSolidBrush(NULL,0,0) + WriteSelectObject(NULL,0));
-	      if (this_list != 0)
-		  {
-			  nrecords++;
-			  filesize += WriteDeleteObject(NULL, 0);
-		  }
-
-          last_color = curr_color;
-
-
-	  }
-
-      // emf stats :: BeginPath
-      nrecords += 1;
-      filesize += WriteBeginPath(NULL);
-	  // emf stats :: MoveTo
-      nrecords ++;
-      filesize += WriteMoveTo(NULL,NULL);
-      // visit each spline
-	  this_spline = 0;
-      last_degree = -1;
-      // the outer loop iterates through spline
-      // groups of the same degree
-      while(this_spline<SPLINE_LIST_LENGTH(curr_list))
-        {
-          nlines = 0;
-          curr_spline = SPLINE_LIST_ELT(curr_list, this_spline);
-          last_degree = ((int)SPLINE_DEGREE(curr_spline));
-
-          // the inner loop iterates through lists
-          // of spline having the same degree
-          while(last_degree == ((int)SPLINE_DEGREE(curr_spline)))
-            {
-              nlines++;
-              this_spline++;
-              if(this_spline>=SPLINE_LIST_LENGTH(curr_list))
-                break;
-              curr_spline = SPLINE_LIST_ELT(curr_list, this_spline);
-            }
-          switch((polynomial_degree)last_degree)
-            {
-              case LINEARTYPE:
-                //emf stats :: PolyLineTo
-                nrecords += nlines;
-                filesize += MyWritePolyLineTo(NULL, NULL, nlines);
-                break;
-              default:
-                // emf stats :: PolyBezierTo
-                nrecords++;
-                filesize += WritePolyBezierTo16(NULL, NULL, nlines);
-                break;
-            }
-        }
-
-        // emf stats :: EndPath + FillPath
+  for (this_list = 0; this_list < SPLINE_LIST_ARRAY_LENGTH(shape); this_list++) {
+    curr_list = SPLINE_LIST_ARRAY_ELT(shape, this_list);
+    curr_color = MAKE_COLREF(curr_list.color.r, curr_list.color.g, curr_list.color.b);
+    if (this_list == 0 || curr_color != last_color) {
+      ncolorchng++;
+      if (!SearchColor(color_list, curr_color)) {
+        ncolors++;
+        AddColor(&color_list, curr_color);
+      }
+      if (shape.centerline) {
         nrecords += 2;
-        filesize += WriteEndPath(NULL) + WriteFillPath(NULL);
+        filesize += (WriteCreateSolidPen(NULL, 0, 0) + WriteSelectObject(NULL, 0));
+        if (this_list != 0) {
+          nrecords++;
+          filesize += WriteDeleteObject(NULL, 0);
+        }
+      } else {
+        nrecords++;
+        filesize += WriteSelectObject(NULL, 0);
+      }
+
+      nrecords += 2;
+      filesize += (WriteCreateSolidBrush(NULL, 0, 0) + WriteSelectObject(NULL, 0));
+      if (this_list != 0) {
+        nrecords++;
+        filesize += WriteDeleteObject(NULL, 0);
+      }
+
+      last_color = curr_color;
 
     }
+    // emf stats :: BeginPath
+    nrecords += 1;
+    filesize += WriteBeginPath(NULL);
+    // emf stats :: MoveTo
+    nrecords++;
+    filesize += WriteMoveTo(NULL, NULL);
+    // visit each spline
+    this_spline = 0;
+    last_degree = -1;
+    // the outer loop iterates through spline
+    // groups of the same degree
+    while (this_spline < SPLINE_LIST_LENGTH(curr_list)) {
+      nlines = 0;
+      curr_spline = SPLINE_LIST_ELT(curr_list, this_spline);
+      last_degree = ((int)SPLINE_DEGREE(curr_spline));
+
+      // the inner loop iterates through lists
+      // of spline having the same degree
+      while (last_degree == ((int)SPLINE_DEGREE(curr_spline))) {
+        nlines++;
+        this_spline++;
+        if (this_spline >= SPLINE_LIST_LENGTH(curr_list))
+          break;
+        curr_spline = SPLINE_LIST_ELT(curr_list, this_spline);
+      }
+      switch ((polynomial_degree) last_degree) {
+      case LINEARTYPE:
+        //emf stats :: PolyLineTo
+        nrecords += nlines;
+        filesize += MyWritePolyLineTo(NULL, NULL, nlines);
+        break;
+      default:
+        // emf stats :: PolyBezierTo
+        nrecords++;
+        filesize += WritePolyBezierTo16(NULL, NULL, nlines);
+        break;
+      }
+    }
+
+    // emf stats :: EndPath + FillPath
+    nrecords += 2;
+    filesize += WriteEndPath(NULL) + WriteFillPath(NULL);
+
+  }
 
   // cleanup Pen and Brush
-  if (shape.centerline)
-  {
-	 nrecords++;
-	 filesize += WriteDeleteObject(NULL, 0);
+  if (shape.centerline) {
+    nrecords++;
+    filesize += WriteDeleteObject(NULL, 0);
   }
 
   nrecords++;
   filesize += WriteDeleteObject(NULL, 0);
-
 
   // emf stats :: header + footer
   nrecords += 2;
@@ -903,7 +859,7 @@ static void GetEmfStats(EMFStats *stats, gchar* name, spline_list_array_type sha
   nrecords++;
   filesize += WriteSetPolyFillMode(NULL);
 
-  stats->ncolors  = ncolors;
+  stats->ncolors = ncolors;
   stats->nrecords = nrecords;
   stats->filesize = filesize;
 
@@ -911,10 +867,9 @@ static void GetEmfStats(EMFStats *stats, gchar* name, spline_list_array_type sha
   ColorListToColorTable(&color_list, &color_table, ncolors);
 }
 
-
 //EMF output
 
-static void OutputEmf(FILE* fdes, EMFStats *stats, gchar* name, int width, int height, spline_list_array_type shape)
+static void OutputEmf(FILE * fdes, EMFStats * stats, gchar * name, int width, int height, spline_list_array_type shape)
 {
   unsigned int this_list, this_spline;
   int color_index, last_index;
@@ -925,7 +880,7 @@ static void OutputEmf(FILE* fdes, EMFStats *stats, gchar* name, int width, int h
   int nlines;
 
   //output EMF header
-  WriteHeader(fdes, name, width, height, stats->filesize, stats->nrecords, (stats->ncolors * 2) +1);
+  WriteHeader(fdes, name, width, height, stats->filesize, stats->nrecords, (stats->ncolors * 2) + 1);
 
   y_offset = SCALE * height;
 
@@ -933,37 +888,34 @@ static void OutputEmf(FILE* fdes, EMFStats *stats, gchar* name, int width, int h
   WriteSetPolyFillMode(fdes);
 
   // visit each spline-list
-  for(this_list=0; this_list<SPLINE_LIST_ARRAY_LENGTH(shape); this_list++)
-  {
+  for (this_list = 0; this_list < SPLINE_LIST_ARRAY_LENGTH(shape); this_list++) {
     curr_list = SPLINE_LIST_ARRAY_ELT(shape, this_list);
 
     // output pen & brush selection
-    curr_color = MAKE_COLREF(curr_list.color.r,curr_list.color.g,curr_list.color.b);
-    if(this_list == 0 || curr_color != last_color)
-    {
+    curr_color = MAKE_COLREF(curr_list.color.r, curr_list.color.g, curr_list.color.b);
+    if (this_list == 0 || curr_color != last_color) {
 
       color_index = ColorLookUp(curr_color, color_table, stats->ncolors);
-      if (shape.centerline)
-	  {
+      if (shape.centerline) {
         WriteCreateSolidPen(fdes, MK_PEN(color_index), color_table[color_index]);
         WriteSelectObject(fdes, MK_PEN(color_index));
-		if (this_list != 0) WriteDeleteObject(fdes, MK_PEN(last_index));
-	  }
-      else
+        if (this_list != 0)
+          WriteDeleteObject(fdes, MK_PEN(last_index));
+      } else
         WriteSelectObject(fdes, STOCK_NULL_PEN);
 
       WriteCreateSolidBrush(fdes, MK_BRUSH(color_index), color_table[color_index]);
       WriteSelectObject(fdes, MK_BRUSH(color_index));
-	  if (this_list != 0) WriteDeleteObject(fdes, MK_BRUSH(last_index));
+      if (this_list != 0)
+        WriteDeleteObject(fdes, MK_BRUSH(last_index));
 
       last_color = curr_color;
-	  last_index = color_index;
+      last_index = color_index;
     }
-
     //output a BeginPath for current shape
     WriteBeginPath(fdes);
 
-	//output MoveTo first point
+    //output MoveTo first point
     curr_spline = SPLINE_LIST_ELT(curr_list, 0);
     WriteMoveTo(fdes, &(START_POINT(curr_spline)));
 
@@ -971,50 +923,47 @@ static void OutputEmf(FILE* fdes, EMFStats *stats, gchar* name, int width, int h
     this_spline = 0;
     //the outer loop iterates through spline
     //groups of the same degree
-    while (this_spline<SPLINE_LIST_LENGTH(curr_list))
-    {
+    while (this_spline < SPLINE_LIST_LENGTH(curr_list)) {
       nlines = 0;
       curr_spline = SPLINE_LIST_ELT(curr_list, this_spline);
       last_degree = ((int)SPLINE_DEGREE(curr_spline));
 
       //the inner loop iterates through lists
       //of spline having the same degree
-      while(last_degree == ((int)SPLINE_DEGREE(curr_spline)))
-      {
+      while (last_degree == ((int)SPLINE_DEGREE(curr_spline))) {
         nlines++;
         this_spline++;
-        if(this_spline>=SPLINE_LIST_LENGTH(curr_list))
-         break;
+        if (this_spline >= SPLINE_LIST_LENGTH(curr_list))
+          break;
         curr_spline = SPLINE_LIST_ELT(curr_list, this_spline);
       }
-      switch((polynomial_degree)last_degree)
-      {
-        case LINEARTYPE:
-          //output PolyLineTo
-          MyWritePolyLineTo(fdes, &(SPLINE_LIST_ELT(curr_list, this_spline - nlines)), nlines);
-          break;
-        default:
-          //output PolyBezierTo
-          WritePolyBezierTo16(fdes, &(SPLINE_LIST_ELT(curr_list, this_spline - nlines)), nlines);
-          break;
+      switch ((polynomial_degree) last_degree) {
+      case LINEARTYPE:
+        //output PolyLineTo
+        MyWritePolyLineTo(fdes, &(SPLINE_LIST_ELT(curr_list, this_spline - nlines)), nlines);
+        break;
+      default:
+        //output PolyBezierTo
+        WritePolyBezierTo16(fdes, &(SPLINE_LIST_ELT(curr_list, this_spline - nlines)), nlines);
+        break;
       }
     }
 
-      //output EndPath
-	  WriteEndPath(fdes);
+    //output EndPath
+    WriteEndPath(fdes);
 
-	  if (shape.centerline || curr_list.open)
-	    //output StrokePath
-	    WriteStrokePath(fdes);
-	  else
-	    //output StrokePath
-	    WriteFillPath(fdes);
+    if (shape.centerline || curr_list.open)
+      //output StrokePath
+      WriteStrokePath(fdes);
+    else
+      //output StrokePath
+      WriteFillPath(fdes);
 
   }
 
   //cleanup DC
   if (shape.centerline)
-      WriteDeleteObject(fdes, MK_PEN(last_index));
+    WriteDeleteObject(fdes, MK_PEN(last_index));
   WriteDeleteObject(fdes, MK_BRUSH(last_index));
 
   //output EndOfMetafile
@@ -1024,23 +973,15 @@ static void OutputEmf(FILE* fdes, EMFStats *stats, gchar* name, int width, int h
   free((void *)color_table);
 }
 
-
-int output_emf_writer(FILE* file, gchar* name,
-		      int llx, int lly, int urx, int ury,
-		      at_output_opts_type * opts,
-		      spline_list_array_type shape,
-		      at_msg_func msg_func,
-		      gpointer msg_data,
-		      gpointer user_data)
+int output_emf_writer(FILE * file, gchar * name, int llx, int lly, int urx, int ury, at_output_opts_type * opts, spline_list_array_type shape, at_msg_func msg_func, gpointer msg_data, gpointer user_data)
 {
   EMFStats stats;
 
 #ifdef _WINDOWS
-    if(file == stdout)
-	  {
-        fprintf(stderr, "This driver couldn't write to stdout!\n");
-        return -1;
-      }
+  if (file == stdout) {
+    fprintf(stderr, "This driver couldn't write to stdout!\n");
+    return -1;
+  }
 #endif
 
   /* Get EMF stats */

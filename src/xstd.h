@@ -22,14 +22,12 @@ do						\
     assert(new_mem);				\
   } while (0)
 
-
 #define XCALLOC(new_mem, size)			\
 do						\
   {						\
     new_mem = (gpointer) calloc (size, 1);	\
     assert(new_mem);				\
   } while (0)
-
 
 #define XREALLOC(old_ptr, size)				\
 do							\
@@ -47,7 +45,6 @@ do							\
     old_ptr = new_mem;					\
 } while (0)
 
-
 #else
 /* Use templates if Cplusplus... */
 #define XMALLOC(new_mem, size)					\
@@ -56,7 +53,6 @@ do								\
     (gpointer&)(new_mem) = (gpointer) malloc (size);	\
      assert(new_mem);						\
   } while (0)
-
 
 #define XCALLOC(new_mem, sizex)					\
 do								\

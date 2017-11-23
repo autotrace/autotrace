@@ -26,22 +26,20 @@
 #include "input.h"
 #include "output.h"
 
-struct _at_bitmap_reader
-{
+struct _at_bitmap_reader {
   at_input_func func;
   gpointer data;
 };
 
-struct _at_spline_writer
-{
+struct _at_spline_writer {
   at_output_func func;
   gpointer data;
 };
 
-int at_input_init   (void);
-int at_output_init  (void);
-int at_param_init   (void);
-int at_module_init  (void);
+int at_input_init(void);
+int at_output_init(void);
+int at_param_init(void);
+int at_module_init(void);
 
-gchar * at_time_string (void);
+gchar *at_time_string(void);
 #endif /* Not def: PRIVATE_H */

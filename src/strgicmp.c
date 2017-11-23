@@ -5,34 +5,33 @@
 #include "strgicmp.h"
 #include <ctype.h>
 
-gboolean strgicmp (const char *s1, const char *s2)
+gboolean strgicmp(const char *s1, const char *s2)
 {
   if (s1 == NULL || s2 == NULL)
     return (FALSE);
 
-  while (*s1 != '\0' && *s2 != '\0')
-    {
-      if (tolower (*s1) != tolower (*s2))
-        break;
-      s1++;
-      s2++;
-    }
+  while (*s1 != '\0' && *s2 != '\0') {
+    if (tolower(*s1) != tolower(*s2))
+      break;
+    s1++;
+    s2++;
+  }
   if (*s1 == '\0' && *s2 == '\0')
-	return (TRUE);
+    return (TRUE);
   else
     return (FALSE);
 }
 
 #if 0
 #include <stdio.h>
-void
-result (gboolean val)
+void result(gboolean val)
 {
   if (val)
     printf("successful\n");
   else
     printf("failed\n");
 }
+
 int main()
 {
   result(strgicmp("abc", "abc"));

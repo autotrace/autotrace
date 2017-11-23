@@ -8,7 +8,6 @@
 #include "strgicmp.h"
 #include <string.h>
 
-
 /* Test whether getopt found an option ``A''.
    Assumes the option index is in the variable `option_index', and the
    option table in a variable `long_options'.  */
@@ -56,4 +55,3 @@
 #define ARG_SEP ", \t\n"
 
 #endif /* not CMDLINE_H */
-
