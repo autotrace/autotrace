@@ -710,13 +710,6 @@ int writeILDA(FILE * file, LaserSequence * s)
   return 0;
 };
 
-/** No descriptions */
-void addDrawFrame()
-{
-  drawframe = sequence_frame_add(drawsequence);
-  // we can't do frameInit here, because we don't know where the first point will be.
-}
-
 static inline short int clip(double x)
 {
   if (x > 32767.0)
@@ -770,7 +763,7 @@ void blankingPathTo(int x, int y)
 void frameDrawInit(int x, int y, unsigned char r, unsigned char g, unsigned char b)
 {
   if (!drawframe)
-    addDrawFrame();
+    drawframe = sequence_frame_add(drawsequence); // we can't do frameInit here, because we don't know where the first point will be.
   if (!frame_point_count(drawframe)) {
     if (drawframe->previous && ((LaserFrame *) drawframe->previous)->point_last) {
       blankingPath(((LaserFrame *) drawframe->previous)->point_last->x, ((LaserFrame *) drawframe->previous)->point_last->y, x, y);
