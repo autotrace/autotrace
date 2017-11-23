@@ -1,5 +1,4 @@
-# FIXME FIXME FIXME
-#SUBDIRS = po 
+SUBDIRS = po
 man_MANS = autotrace.1
 EXTRA_DIST=$(man_MANS) \
 	   src/output-swf.c \
@@ -14,12 +13,11 @@ EXTRA_DIST=$(man_MANS) \
 	   autotrace-config.in \
 	   autotrace.m4 \
 	   shape_cubic.c.diff \
-	   README.MING \
+	   doc/README.MING \
 	   autotrace.pc.in \
-	   autotrace.spec.in \
 	   TODO \
-	   HACKING \
-	   FAQ
+	   doc/HACKING \
+	   doc/FAQ
 
 AUTOMAKE_OPTIONS = foreign no-dependencies
 
@@ -152,16 +150,7 @@ autotrace_LDADD =				\
 		$(INTLLIBS)			\
 		-lm
 
-m4datadir = $(datadir)/aclocal
-m4data_DATA = autotrace.m4
-
 pkgconfigdir = $(libdir)/pkgconfig
 pkgconfig_DATA= autotrace.pc
 
-dist-hook: autotrace.spec
-	cp autotrace.spec $(distdir)
-
-rpm: dist autotrace.spec
-	rpm -bb autotrace.spec
-
-# ACLOCAL_AMFLAGS = -I m4
+ACLOCAL_AMFLAGS = -I m4

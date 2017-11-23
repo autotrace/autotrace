@@ -68,23 +68,16 @@
 #define MAKE_COLREF(r,g,b) (((r) & 0x0FF) | (((g) & 0x0FF) << 8) | (((b) & 0x0FF) << 16))
 #define MK_PEN(n) ((n) * 2 + 1)
 #define MK_BRUSH(n) ((n) * 2 + 2)
-#define X_FLOAT_TO_UI32(num) ((UI32)(num * SCALE))
-#define X_FLOAT_TO_UI16(num) ((UI16)(num * SCALE))
-#define Y_FLOAT_TO_UI32(num) ((UI32)(y_offset - num * SCALE))
-#define Y_FLOAT_TO_UI16(num) ((UI16)(y_offset - num * SCALE))
-
-/* maybe these definitions be put into types.h
-   with some ifdefs ... */
-
-typedef unsigned long int  UI32;
-typedef unsigned short int UI16;
-typedef unsigned char      UI8;
+#define X_FLOAT_TO_UI32(num) ((uint32_t)(num * SCALE))
+#define X_FLOAT_TO_UI16(num) ((uint16_t)(num * SCALE))
+#define Y_FLOAT_TO_UI32(num) ((uint32_t)(y_offset - num * SCALE))
+#define Y_FLOAT_TO_UI16(num) ((uint16_t)(y_offset - num * SCALE))
 
 /* color list type */
 
 typedef struct EMFColorListType
 {
-  UI32 colref;
+  uint32_t colref;
   struct EMFColorListType *next;
 } EMFColorList;
 
@@ -100,12 +93,12 @@ typedef struct
 /* globals */
 
 static EMFColorList *color_list = NULL;  /* Color list */
-static UI32 *color_table = NULL;         /* Color table */
+static uint32_t *color_table = NULL;         /* Color table */
 static float y_offset;
 
 /* color list & table functions */
 
-static int SearchColor(EMFColorList *head, UI32 colref)
+static int SearchColor(EMFColorList *head, uint32_t colref)
 {
   while(head != NULL)
   {
@@ -116,7 +109,7 @@ static int SearchColor(EMFColorList *head, UI32 colref)
   return 0;
 }
 
-static void AddColor(EMFColorList **head, UI32 colref)
+static void AddColor(EMFColorList **head, uint32_t colref)
 {
   EMFColorList *temp;
 
@@ -127,12 +120,12 @@ static void AddColor(EMFColorList **head, UI32 colref)
   *head = temp;
 }
 
-static void ColorListToColorTable(EMFColorList **head, UI32 **table, int len)
+static void ColorListToColorTable(EMFColorList **head, uint32_t **table, int len)
 {
   EMFColorList *temp;
   int i = 0;
 
-  XMALLOC(*table, sizeof(UI32) * len);
+  XMALLOC(*table, sizeof(uint32_t) * len);
 
   while(*head != NULL)
   {
@@ -144,7 +137,7 @@ static void ColorListToColorTable(EMFColorList **head, UI32 **table, int len)
   }
 }
 
-static int ColorLookUp(UI32 colref, UI32 *table, int len)
+static int ColorLookUp(uint32_t colref, uint32_t *table, int len)
 {
   int i;
 
@@ -158,66 +151,66 @@ static int ColorLookUp(UI32 colref, UI32 *table, int len)
 
 /* endianess independent IO functions */
 
-static gboolean write32(FILE *fdes, UI32 data)
+static gboolean write32(FILE *fdes, uint32_t data)
 {
   size_t count = 0;
-  UI8 outch;
+  uint8_t outch;
 
-  outch = (UI8) (data & 0x0FF);
+  outch = (uint8_t) (data & 0x0FF);
   count += fwrite(&outch, 1, 1, fdes);
 
-  outch = (UI8) ((data >> 8) & 0x0FF);
+  outch = (uint8_t) ((data >> 8) & 0x0FF);
   count += fwrite(&outch, 1, 1, fdes);
 
-  outch = (UI8) ((data >> 16) & 0x0FF);
+  outch = (uint8_t) ((data >> 16) & 0x0FF);
   count += fwrite(&outch, 1, 1, fdes);
 
-  outch = (UI8) ((data >> 24) & 0x0FF);
+  outch = (uint8_t) ((data >> 24) & 0x0FF);
   count += fwrite(&outch, 1, 1, fdes);
 
-  return (count == sizeof(UI32)) ? TRUE : FALSE;
+  return (count == sizeof(uint32_t)) ? TRUE : FALSE;
 }
 
-static gboolean write16(FILE *fdes, UI16 data)
+static gboolean write16(FILE *fdes, uint16_t data)
 {
   size_t count = 0;
-  UI8 outch;
+  uint8_t outch;
 
-  outch = (UI8) (data & 0x0FF);
+  outch = (uint8_t) (data & 0x0FF);
   count += fwrite(&outch, 1, 1, fdes);
 
-  outch = (UI8) ((data >> 8) & 0x0FF);
+  outch = (uint8_t) ((data >> 8) & 0x0FF);
   count += fwrite(&outch, 1, 1, fdes);
 
-  return (count == sizeof(UI16)) ? TRUE : FALSE;
+  return (count == sizeof(uint16_t)) ? TRUE : FALSE;
 }
 
 /* EMF record-type function definitions */
 
 static int WriteMoveTo(FILE* fdes, at_real_coord *pt)
 {
-  int recsize = sizeof(UI32) * 4;
+  int recsize = sizeof(uint32_t) * 4;
 
   if(fdes != NULL)
   {
     write32(fdes, ENMT_MOVETO);
-    write32(fdes, (UI32) recsize);
-    write32(fdes, (UI32) X_FLOAT_TO_UI32(pt->x));
-    write32(fdes, (UI32) Y_FLOAT_TO_UI32(pt->y));
+    write32(fdes, (uint32_t) recsize);
+    write32(fdes, (uint32_t) X_FLOAT_TO_UI32(pt->x));
+    write32(fdes, (uint32_t) Y_FLOAT_TO_UI32(pt->y));
   }
   return recsize;
 }
 
 static int WriteLineTo(FILE* fdes, spline_type *spl)
 {
-  int recsize = sizeof(UI32) * 4;
+  int recsize = sizeof(uint32_t) * 4;
 
   if(fdes != NULL)
   {
     write32(fdes, ENMT_LINETO);
-    write32(fdes, (UI32) recsize);
-    write32(fdes, (UI32) X_FLOAT_TO_UI32(END_POINT(*spl).x));
-    write32(fdes, (UI32) Y_FLOAT_TO_UI32(END_POINT(*spl).y));
+    write32(fdes, (uint32_t) recsize);
+    write32(fdes, (uint32_t) X_FLOAT_TO_UI32(END_POINT(*spl).x));
+    write32(fdes, (uint32_t) Y_FLOAT_TO_UI32(END_POINT(*spl).y));
   }
   return recsize;
 }
@@ -227,22 +220,22 @@ static int WriteLineTo(FILE* fdes, spline_type *spl)
 int WritePolyLineTo(FILE* fdes, spline_type *spl, int nlines)
 {
   int i;
-  int recsize = sizeof(UI32) * (7 + nlines * 1);
+  int recsize = sizeof(uint32_t) * (7 + nlines * 1);
 
   if(fdes != NULL)
   {
     write32(fdes, ENMT_POLYLINETO);
-    write32(fdes, (UI32) recsize);
-    write32(fdes, (UI32) 0x0);
-    write32(fdes, (UI32) 0x0);
-    write32(fdes, (UI32) 0xFFFFFFFF);
-    write32(fdes, (UI32) 0xFFFFFFFF);
-    write32(fdes, (UI32) nlines);
+    write32(fdes, (uint32_t) recsize);
+    write32(fdes, (uint32_t) 0x0);
+    write32(fdes, (uint32_t) 0x0);
+    write32(fdes, (uint32_t) 0xFFFFFFFF);
+    write32(fdes, (uint32_t) 0xFFFFFFFF);
+    write32(fdes, (uint32_t) nlines);
 
     for(i=0; i<nlines; i++)
     {
-      write16(fdes, (UI16) FLOAT_TO_UI32(END_POINT(spl[i]).x));
-      write16(fdes, (UI16) FLOAT_TO_UI32(END_POINT(spl[i]).y));
+      write16(fdes, (uint16_t) FLOAT_TO_UI32(END_POINT(spl[i]).x));
+      write16(fdes, (uint16_t) FLOAT_TO_UI32(END_POINT(spl[i]).y));
     }
   }
   return recsize;
@@ -269,26 +262,26 @@ static int MyWritePolyLineTo(FILE* fdes, spline_type *spl, int nlines)
 int WritePolyBezierTo(FILE *fdes, spline_type *spl, int ncurves)
 {
   int i;
-  int recsize = sizeof(UI32) * (7 + ncurves * 6);
+  int recsize = sizeof(uint32_t) * (7 + ncurves * 6);
 
   if(fdes != NULL)
   {
     write32(fdes, ENMT_POLYBEZIERTO);
-    write32(fdes, (UI32) recsize);
-    write32(fdes, (UI32) 0x0);
-    write32(fdes, (UI32) 0x0);
-    write32(fdes, (UI32) 0xFFFFFFFF);
-    write32(fdes, (UI32) 0xFFFFFFFF);
-    write32(fdes, (UI32) ncurves * 3);
+    write32(fdes, (uint32_t) recsize);
+    write32(fdes, (uint32_t) 0x0);
+    write32(fdes, (uint32_t) 0x0);
+    write32(fdes, (uint32_t) 0xFFFFFFFF);
+    write32(fdes, (uint32_t) 0xFFFFFFFF);
+    write32(fdes, (uint32_t) ncurves * 3);
 
     for(i=0; i<ncurves; i++)
     {
-      write16(fdes, (UI32) FLOAT_TO_UI32(CONTROL1(spl[i]).x));
-      write16(fdes, (UI32) FLOAT_TO_UI32(CONTROL1(spl[i]).y));
-      write16(fdes, (UI32) FLOAT_TO_UI32(CONTROL2(spl[i]).x));
-      write16(fdes, (UI32) FLOAT_TO_UI32(CONTROL2(spl[i]).y));
-      write16(fdes, (UI32) FLOAT_TO_UI32(END_POINT(spl[i]).x));
-      write16(fdes, (UI32) FLOAT_TO_UI32(END_POINT(spl[i]).y));
+      write16(fdes, (uint32_t) FLOAT_TO_UI32(CONTROL1(spl[i]).x));
+      write16(fdes, (uint32_t) FLOAT_TO_UI32(CONTROL1(spl[i]).y));
+      write16(fdes, (uint32_t) FLOAT_TO_UI32(CONTROL2(spl[i]).x));
+      write16(fdes, (uint32_t) FLOAT_TO_UI32(CONTROL2(spl[i]).y));
+      write16(fdes, (uint32_t) FLOAT_TO_UI32(END_POINT(spl[i]).x));
+      write16(fdes, (uint32_t) FLOAT_TO_UI32(END_POINT(spl[i]).y));
     }
   }
   return recsize;
@@ -297,26 +290,26 @@ int WritePolyBezierTo(FILE *fdes, spline_type *spl, int ncurves)
 static int WritePolyBezierTo16(FILE *fdes, spline_type *spl, int ncurves)
 {
   int i;
-  int recsize = sizeof(UI32) * 7 + sizeof(UI16) * ncurves * 6;
+  int recsize = sizeof(uint32_t) * 7 + sizeof(uint16_t) * ncurves * 6;
 
   if(fdes != NULL)
   {
     write32(fdes, ENMT_POLYBEZIERTO16);
-    write32(fdes, (UI32) recsize);
-    write32(fdes, (UI32) 0x0);
-    write32(fdes, (UI32) 0x0);
-    write32(fdes, (UI32) 0xFFFFFFFF);
-    write32(fdes, (UI32) 0xFFFFFFFF);
-    write32(fdes, (UI32) ncurves * 3);
+    write32(fdes, (uint32_t) recsize);
+    write32(fdes, (uint32_t) 0x0);
+    write32(fdes, (uint32_t) 0x0);
+    write32(fdes, (uint32_t) 0xFFFFFFFF);
+    write32(fdes, (uint32_t) 0xFFFFFFFF);
+    write32(fdes, (uint32_t) ncurves * 3);
 
     for(i=0; i<ncurves; i++)
     {
-      write16(fdes, (UI16) X_FLOAT_TO_UI16(CONTROL1(spl[i]).x));
-      write16(fdes, (UI16) Y_FLOAT_TO_UI16(CONTROL1(spl[i]).y));
-      write16(fdes, (UI16) X_FLOAT_TO_UI16(CONTROL2(spl[i]).x));
-      write16(fdes, (UI16) Y_FLOAT_TO_UI16(CONTROL2(spl[i]).y));
-      write16(fdes, (UI16) X_FLOAT_TO_UI16(END_POINT(spl[i]).x));
-      write16(fdes, (UI16) Y_FLOAT_TO_UI16(END_POINT(spl[i]).y));
+      write16(fdes, (uint16_t) X_FLOAT_TO_UI16(CONTROL1(spl[i]).x));
+      write16(fdes, (uint16_t) Y_FLOAT_TO_UI16(CONTROL1(spl[i]).y));
+      write16(fdes, (uint16_t) X_FLOAT_TO_UI16(CONTROL2(spl[i]).x));
+      write16(fdes, (uint16_t) Y_FLOAT_TO_UI16(CONTROL2(spl[i]).y));
+      write16(fdes, (uint16_t) X_FLOAT_TO_UI16(END_POINT(spl[i]).x));
+      write16(fdes, (uint16_t) Y_FLOAT_TO_UI16(END_POINT(spl[i]).y));
     }
   }
   return recsize;
@@ -325,148 +318,147 @@ static int WritePolyBezierTo16(FILE *fdes, spline_type *spl, int ncurves)
 
 static int WriteSetPolyFillMode(FILE *fdes)
 {
-  int recsize = sizeof(UI32) * 3;
+  int recsize = sizeof(uint32_t) * 3;
 
   if(fdes != NULL)
   {
     write32(fdes, ENMT_SETPOLYFILLMODE);
-    write32(fdes, (UI32) recsize);
-    write32(fdes, (UI32) FM_ALTERNATE);
+    write32(fdes, (uint32_t) recsize);
+    write32(fdes, (uint32_t) FM_ALTERNATE);
   }
   return recsize;
 }
 
 static int WriteBeginPath(FILE *fdes)
 {
-  int recsize = sizeof(UI32) * 2;
+  int recsize = sizeof(uint32_t) * 2;
 
   if(fdes != NULL)
   {
     write32(fdes, ENMT_BEGINPATH);
-    write32(fdes, (UI32) recsize);
+    write32(fdes, (uint32_t) recsize);
   }
   return recsize;
 }
 
 static int WriteEndPath(FILE *fdes)
 {
-  int recsize = sizeof(UI32) * 2;
+  int recsize = sizeof(uint32_t) * 2;
 
   if(fdes != NULL)
   {
     write32(fdes, ENMT_ENDPATH);
-    write32(fdes, (UI32) recsize);
+    write32(fdes, (uint32_t) recsize);
   }
   return recsize;
 }
 
 static int WriteFillPath(FILE *fdes)
 {
-  int recsize = sizeof(UI32) * 6;
+  int recsize = sizeof(uint32_t) * 6;
 
   if(fdes != NULL)
   {
     write32(fdes, ENMT_FILLPATH);
-    write32(fdes, (UI32) recsize);
-    write32(fdes, (UI32) 0x0);
-    write32(fdes, (UI32) 0x0);
-    write32(fdes, (UI32) 0xFFFFFFFF);
-    write32(fdes, (UI32) 0xFFFFFFFF);
+    write32(fdes, (uint32_t) recsize);
+    write32(fdes, (uint32_t) 0x0);
+    write32(fdes, (uint32_t) 0x0);
+    write32(fdes, (uint32_t) 0xFFFFFFFF);
+    write32(fdes, (uint32_t) 0xFFFFFFFF);
   }
   return recsize;
 }
 
 static int WriteStrokePath(FILE *fdes)
 {
-  int recsize = sizeof(UI32) * 6;
+  int recsize = sizeof(uint32_t) * 6;
 
   if(fdes != NULL)
   {
     write32(fdes, ENMT_STROKEPATH);
-    write32(fdes, (UI32) recsize);
-    write32(fdes, (UI32) 0x0);
-    write32(fdes, (UI32) 0x0);
-    write32(fdes, (UI32) 0xFFFFFFFF);
-    write32(fdes, (UI32) 0xFFFFFFFF);
+    write32(fdes, (uint32_t) recsize);
+    write32(fdes, (uint32_t) 0x0);
+    write32(fdes, (uint32_t) 0x0);
+    write32(fdes, (uint32_t) 0xFFFFFFFF);
+    write32(fdes, (uint32_t) 0xFFFFFFFF);
   }
   return recsize;
 }
 
 #if 0
-static int WriteSetWorldTransform(FILE *fdes, UI32 height)
+static int WriteSetWorldTransform(FILE *fdes, uint32_t height)
 {
-  int recsize = sizeof(UI32) * 8;
+  int recsize = sizeof(uint32_t) * 8;
   float fHeight;
 
   if(fdes != NULL)
   {
 	float s1 = (float) (1.0/SCALE);
 	float s2 = (float) (1.0/SCALE);
-	UI32 t1;
-	UI32 t2;
+	uint32_t t1;
+	uint32_t t2;
     /* conversion to float */
     fHeight = (float) height;
     /* binary copy for serialization */
-    memcpy((void *) &height, (void *) &fHeight, sizeof(UI32));
-    memcpy((void *) &t1, (void *) &s1, sizeof(UI32));
-    memcpy((void *) &t2, (void *) &s2, sizeof(UI32));
+    memcpy((void *) &height, (void *) &fHeight, sizeof(uint32_t));
+    memcpy((void *) &t1, (void *) &s1, sizeof(uint32_t));
+    memcpy((void *) &t2, (void *) &s2, sizeof(uint32_t));
 
     write32(fdes, ENMT_SETWORLDTRANSFORM);
-    write32(fdes, (UI32) recsize);
-    write32(fdes, (UI32) t1);
-    write32(fdes, (UI32) 0x0);
-    write32(fdes, (UI32) 0x0);
-    write32(fdes, (UI32) t2);
-    write32(fdes, (UI32) 0x0);
-    write32(fdes, (UI32) 0x0);
+    write32(fdes, (uint32_t) recsize);
+    write32(fdes, (uint32_t) t1);
+    write32(fdes, (uint32_t) 0x0);
+    write32(fdes, (uint32_t) 0x0);
+    write32(fdes, (uint32_t) t2);
+    write32(fdes, (uint32_t) 0x0);
+    write32(fdes, (uint32_t) 0x0);
   }
   return recsize;
 }
 #endif /* 0 */
 
-static int WriteCreateSolidPen(FILE *fdes, int hndNum, UI32 colref)
+static int WriteCreateSolidPen(FILE *fdes, int hndNum, uint32_t colref)
 {
-  int recsize = sizeof(UI32) * 7;
+  int recsize = sizeof(uint32_t) * 7;
 
   if(fdes != NULL)
   {
     write32(fdes, ENMT_CREATEPEN);
-    write32(fdes, (UI32) recsize);
-    write32(fdes, (UI32) hndNum);
-    write32(fdes, (UI32) 0x0);  /* solid pen style */
-    write32(fdes, (UI32) 0x0);  /* 1 pixel ...  */
-    write32(fdes, (UI32) 0x0);  /* ... pen size */
-    write32(fdes, (UI32) colref);
+    write32(fdes, (uint32_t) recsize);
+    write32(fdes, (uint32_t) hndNum);
+    write32(fdes, (uint32_t) 0x0);  /* solid pen style */
+    write32(fdes, (uint32_t) 0x0);  /* 1 pixel ...  */
+    write32(fdes, (uint32_t) 0x0);  /* ... pen size */
+    write32(fdes, (uint32_t) colref);
   }
   return recsize;
 }
 
-static int WriteCreateSolidBrush(FILE *fdes, int hndNum, UI32 colref)
+static int WriteCreateSolidBrush(FILE *fdes, int hndNum, uint32_t colref)
 {
-  int recsize = sizeof(UI32) * 6;
+  int recsize = sizeof(uint32_t) * 6;
 
   if(fdes != NULL)
   {
     write32(fdes, ENMT_CREATEBRUSHINDIRECT);
-    write32(fdes, (UI32) recsize);
-    write32(fdes, (UI32) hndNum);
-    write32(fdes, (UI32) 0x0);  /* solid brush style */
-    write32(fdes, (UI32) colref);
-    write32(fdes, (UI32) 0x0);  /* ignored when solid */
-
+    write32(fdes, (uint32_t) recsize);
+    write32(fdes, (uint32_t) hndNum);
+    write32(fdes, (uint32_t) 0x0);  /* solid brush style */
+    write32(fdes, (uint32_t) colref);
+    write32(fdes, (uint32_t) 0x0);  /* ignored when solid */
   }
   return recsize;
 }
 
 static int WriteSelectObject(FILE *fdes, int hndNum)
 {
-  int recsize = sizeof(UI32) * 3;
+  int recsize = sizeof(uint32_t) * 3;
 
   if(fdes != NULL)
   {
     write32(fdes, ENMT_SELECTOBJECT);
-    write32(fdes, (UI32) recsize);
-    write32(fdes, (UI32) hndNum);
+    write32(fdes, (uint32_t) recsize);
+    write32(fdes, (uint32_t) hndNum);
   }
   return recsize;
 }
@@ -475,13 +467,13 @@ static int WriteSelectObject(FILE *fdes, int hndNum)
 /* SPH: Added 10/14/04 to prevent resource overflow when large number of colors used */
 static int WriteDeleteObject(FILE *fdes, int hndNum)
 {
-  int recsize = sizeof(UI32) * 3;
+  int recsize = sizeof(uint32_t) * 3;
 
   if(fdes != NULL)
   {
     write32(fdes, ENMT_DELETEOBJECT);
-    write32(fdes, (UI32) recsize);
-    write32(fdes, (UI32) hndNum);
+    write32(fdes, (uint32_t) recsize);
+    write32(fdes, (uint32_t) hndNum);
   }
   return recsize;
 }
@@ -489,15 +481,15 @@ static int WriteDeleteObject(FILE *fdes, int hndNum)
 
 static int WriteEndOfMetafile(FILE *fdes)
 {
-  int recsize = sizeof(UI32) * 5;
+  int recsize = sizeof(uint32_t) * 5;
 
   if(fdes != NULL)
   {
     write32(fdes, ENMT_EOF);
-    write32(fdes, (UI32) recsize);
-    write32(fdes, (UI32) 0);
-    write32(fdes, (UI32) recsize - sizeof(UI32));
-    write32(fdes, (UI32) recsize);
+    write32(fdes, (uint32_t) recsize);
+    write32(fdes, (uint32_t) 0);
+    write32(fdes, (uint32_t) recsize - sizeof(uint32_t));
+    write32(fdes, (uint32_t) recsize);
 
   }
   return recsize;
@@ -510,62 +502,62 @@ static int WriteHeader(FILE *fdes, gchar* name, int width, int height, int fsize
   const char * editor = at_version(TRUE);
 
   desclen = (strlen(editor) + strlen(name) + 3);
-  recsize = sizeof(UI32) * 25 + (desclen * 2) + ((desclen * 2) % 4);
+  recsize = sizeof(uint32_t) * 25 + (desclen * 2) + ((desclen * 2) % 4);
 
   if(fdes != NULL)
   {
     write32(fdes, ENMT_HEADER);
-    write32(fdes, (UI32) recsize);
+    write32(fdes, (uint32_t) recsize);
     /* pixel bounds */
-    write32(fdes, (UI32) 0);
-    write32(fdes, (UI32) 0);
-    write32(fdes, (UI32) width);
-    write32(fdes, (UI32) height);
+    write32(fdes, (uint32_t) 0);
+    write32(fdes, (uint32_t) 0);
+    write32(fdes, (uint32_t) width);
+    write32(fdes, (uint32_t) height);
     /* millimeter bounds */
-    write32(fdes, (UI32) 0);
-    write32(fdes, (UI32) 0);
-    write32(fdes, (UI32) width * WDEVMLMTR * 100 / WDEVPIXEL);
-    write32(fdes, (UI32) height * HDEVMLMTR * 100 / HDEVPIXEL);
+    write32(fdes, (uint32_t) 0);
+    write32(fdes, (uint32_t) 0);
+    write32(fdes, (uint32_t) width * WDEVMLMTR * 100 / WDEVPIXEL);
+    write32(fdes, (uint32_t) height * HDEVMLMTR * 100 / HDEVPIXEL);
     /* signature " EMF" */
-    write32(fdes, (UI32) 0x464D4520);
+    write32(fdes, (uint32_t) 0x464D4520);
     /* current version */
-    write32(fdes, (UI32) 0x00010000);
+    write32(fdes, (uint32_t) 0x00010000);
     /* file size */
-    write32(fdes, (UI32) fsize);
+    write32(fdes, (uint32_t) fsize);
     /* number of records */
-    write32(fdes, (UI32) nrec);
+    write32(fdes, (uint32_t) nrec);
     /* number of handles */
-    write16(fdes, (UI16) nhand);
+    write16(fdes, (uint16_t) nhand);
     /* reserved */
-    write16(fdes, (UI16) 0);
+    write16(fdes, (uint16_t) 0);
     /* size of description */
-    write32(fdes, (UI32) desclen);
+    write32(fdes, (uint32_t) desclen);
     /* description offset */
-    write32(fdes, (UI32) 100);
+    write32(fdes, (uint32_t) 100);
     /* palette entries */
-    write32(fdes, (UI32) 0);
+    write32(fdes, (uint32_t) 0);
     /* device width & height in pixel & millimeters */
-    write32(fdes, (UI32) WDEVPIXEL);
-    write32(fdes, (UI32) HDEVPIXEL);
-    write32(fdes, (UI32) WDEVMLMTR);
-    write32(fdes, (UI32) HDEVMLMTR);
+    write32(fdes, (uint32_t) WDEVPIXEL);
+    write32(fdes, (uint32_t) HDEVPIXEL);
+    write32(fdes, (uint32_t) WDEVMLMTR);
+    write32(fdes, (uint32_t) HDEVMLMTR);
     /* pixel format & opengl (not used) */
-    write32(fdes, (UI32) 0);
-    write32(fdes, (UI32) 0);
-    write32(fdes, (UI32) 0);
+    write32(fdes, (uint32_t) 0);
+    write32(fdes, (uint32_t) 0);
+    write32(fdes, (uint32_t) 0);
     /* description string in Unicode */
     for(i=0;editor[i]; i++)
     {
-      write16(fdes, ((UI16) (editor[i] & 0x07F)) );
+      write16(fdes, ((uint16_t) (editor[i] & 0x07F)) );
     }
-    write16(fdes, (UI16) 0);
+    write16(fdes, (uint16_t) 0);
     for(i=0;name[i]; i++)
     {
-      write16(fdes, ((UI16) (name[i] & 0x07F)) );
+      write16(fdes, ((uint16_t) (name[i] & 0x07F)) );
     }
-    write32(fdes, (UI32) 0);
+    write32(fdes, (uint32_t) 0);
     if((desclen * 2) % 4)
-      write16(fdes, (UI16) 0);
+      write16(fdes, (uint16_t) 0);
   }
   return recsize;
 }
@@ -586,7 +578,7 @@ static void GetEmfStats(EMFStats *stats, gchar* name, spline_list_array_type sha
   int ncolorchng = 0;
   int nrecords = 0;
   int filesize = 0;
-  UI32 last_color = 0xFFFFFFFF, curr_color;
+  uint32_t last_color = 0xFFFFFFFF, curr_color;
   spline_list_type curr_list;
   spline_type curr_spline;
   int last_degree;
@@ -678,7 +670,7 @@ static void OutputEmf(FILE* fdes, EMFStats *stats, gchar* name, int width, int h
 {
   unsigned int i, j;
   int color_index;
-  UI32 last_color = 0xFFFFFFFF, curr_color;
+  uint32_t last_color = 0xFFFFFFFF, curr_color;
   spline_list_type curr_list;
   spline_type curr_spline;
   int last_degree;
@@ -796,7 +788,7 @@ static void GetEmfStats(EMFStats *stats, gchar* name, spline_list_array_type sha
   int ncolorchng = 0;
   int nrecords = 0;
   int filesize = 0;
-  UI32 last_color = 0xFFFFFFFF, curr_color;
+  uint32_t last_color = 0xFFFFFFFF, curr_color;
   spline_list_type curr_list;
   spline_type curr_spline;
   int last_degree;
@@ -926,7 +918,7 @@ static void OutputEmf(FILE* fdes, EMFStats *stats, gchar* name, int width, int h
 {
   unsigned int this_list, this_spline;
   int color_index, last_index;
-  UI32 last_color = 0xFFFFFFFF, curr_color;
+  uint32_t last_color = 0xFFFFFFFF, curr_color;
   spline_list_type curr_list;
   spline_type curr_spline;
   int last_degree;

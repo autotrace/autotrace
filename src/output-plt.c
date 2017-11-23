@@ -42,15 +42,8 @@
 #define SCALE (gfloat) 1.0
 
 #define MAKE_COLREF(r,g,b) (((r) & 0x0FF) | (((g) & 0x0FF) << 8) | (((b) & 0x0FF) << 16))
-#define X_FLOAT_TO_UI32(num) ((UI32)(num * SCALE))
-#define Y_FLOAT_TO_UI32(num) ((UI32)(num * SCALE))
-
-/* maybe these definitions be put into types.h
-   with some ifdefs ... */
-
-typedef unsigned long int  UI32;
-typedef unsigned short int UI16;
-typedef unsigned char      UI8;
+#define X_FLOAT_TO_UI32(num) ((uint32_t)(num * SCALE))
+#define Y_FLOAT_TO_UI32(num) ((uint32_t)(num * SCALE))
 
 /*
   Searches color by closest rgb values (distance**2 of 2 3D points)
@@ -160,7 +153,7 @@ static void OutputPlt(FILE *fdes, int llx, int lly, int urx, int ury, spline_lis
 
     unsigned int this_list, this_spline;
     unsigned char red, green, blue;
-    UI32 last_color = 0xFFFFFFFF, curr_color;
+    uint32_t last_color = 0xFFFFFFFF, curr_color;
     spline_list_type curr_list;
     spline_type curr_spline;
     int last_degree, index;
@@ -174,8 +167,8 @@ static void OutputPlt(FILE *fdes, int llx, int lly, int urx, int ury, spline_lis
     WriteInitialize(fdes);
     //            CView *pView=GetNextView(pos);
     //            int LOGXPIXELS = pView->GetDC()->GetDeviceCaps(LOGPIXELSX);
-    WriteInitPt(fdes, (UI32)(Scale*llx), (UI32)(Scale*lly),
-                      (UI32)(Scale*urx), (UI32)(Scale*ury));
+    WriteInitPt(fdes, (uint32_t)(Scale*llx), (uint32_t)(Scale*lly),
+                      (uint32_t)(Scale*urx), (uint32_t)(Scale*ury));
     WriteScale(fdes, llx, urx, lly, ury);
 
     LastPoint.x = 0; LastPoint.y = 0;
