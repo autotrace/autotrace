@@ -290,9 +290,7 @@ int output_ugs_writer(FILE * file, gchar * name, int llx, int lly, int urx, int 
   uppery = ugs_max_row;
 
   lowerx = ugs_left_bearing;
-  upperx = ugs_advance_width - ugs_max_col - 1;
   lowery = ugs_descend;
-  uppery = ugs_max_row;
 
   output_splines(file, shape, ury - lly);
 
