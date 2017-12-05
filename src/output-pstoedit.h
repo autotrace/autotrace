@@ -20,6 +20,6 @@
 #ifndef OUTPUT_PSTOEDIT_H
 #define OUTPUT_PSTOEDIT_H
 
-int install_output_pstoedit_writers (void);
+int install_output_pstoedit_writers(void);
 
 #endif /* Not def: OUTPUTPSTOEDIT_H */

@@ -7,14 +7,12 @@
 #include "logreport.h"
 #include "atou.h"
 
-unsigned
-atou (gchar* s)
+unsigned atou(gchar * s)
 {
-  int i = atoi (s);
+  int i = atoi(s);
 
   if (i < 0)
-    FATAL ("I expected a positive number, not %d", i);
+    FATAL("I expected a positive number, not %d", i);
 
-  return (unsigned) i;
+  return (unsigned)i;
 }
-

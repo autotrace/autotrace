@@ -29,6 +29,4 @@ extern gboolean logging;
 #define WARNING(...)							\
   do { fputs ("warning: ", stderr); LOG ("warning: "); fprintf (stderr, __VA_ARGS__); LOG (__VA_ARGS__); fputs (".\n", stderr); } while (0)
 
-
 #endif /* not LOGREPORT_H */
-

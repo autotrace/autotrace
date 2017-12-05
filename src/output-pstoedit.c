@@ -36,18 +36,11 @@
 
 /* #define OUTPUT_PSTOEDIT_DEBUG */
 
-static int output_pstoedit_writer (FILE* file, gchar* name,
-				   int llx, int lly, int urx, int ury,
-				   at_output_opts_type * opts,
-				   at_spline_list_array_type shape,
-				   at_msg_func msg_func,
-				   gpointer msg_data,
-				   gpointer user_data);
+static int output_pstoedit_writer(FILE * file, gchar * name, int llx, int lly, int urx, int ury, at_output_opts_type * opts, at_spline_list_array_type shape, at_msg_func msg_func, gpointer msg_data, gpointer user_data);
 
+static gboolean unusable_writer_p(const gchar * name);
 
-static gboolean unusable_writer_p(const gchar* name);
-
-static FILE * make_temporary_file(char *template, char * mode);
+static FILE *make_temporary_file(char *template, char *mode);
 
 /* This output routine uses two temporary files to keep the
    both the command line syntax of autotrace and the
@@ -56,20 +49,13 @@ static FILE * make_temporary_file(char *template, char * mode);
    shape -> bo file(tmpfile_name_p2e)
    -> specified formatted file(tmpfile_name_pstoedit)
    -> file */
-static int
-output_pstoedit_writer (FILE* file, gchar* name,
-			int llx, int lly, int urx, int ury,
-			at_output_opts_type * opts,
-			at_spline_list_array_type shape,
-			at_msg_func msg_func,
-			gpointer msg_data,
-			gpointer user_data)
+static int output_pstoedit_writer(FILE * file, gchar * name, int llx, int lly, int urx, int ury, at_output_opts_type * opts, at_spline_list_array_type shape, at_msg_func msg_func, gpointer msg_data, gpointer user_data)
 {
-  at_spline_writer *  p2e_writer = NULL;
-  char  tmpfile_name_p2e[] = "/tmp/at-bo-XXXXXX";
-  char  tmpfile_name_pstoedit[] = "/tmp/at-fo-XXXXXX";
-  const gchar* symbolicname = (const gchar*)user_data;
-  FILE * tmpfile;
+  at_spline_writer *p2e_writer = NULL;
+  char tmpfile_name_p2e[] = "/tmp/at-bo-XXXXXX";
+  char tmpfile_name_pstoedit[] = "/tmp/at-fo-XXXXXX";
+  const gchar *symbolicname = (const gchar *)user_data;
+  FILE *tmpfile;
   int result = 0;
   int c;
 
@@ -80,44 +66,36 @@ output_pstoedit_writer (FILE* file, gchar* name,
 #define BO_FLAG_INDEX     3
 #define INPUT_INDEX       4
 #define OUTPUT_INDEX      5
-  const char * argv[]  = {"pstoedit", "-f", 0, "-bo", 0, 0};
+  const char *argv[] = { "pstoedit", "-f", 0, "-bo", 0, 0 };
 
   argc = sizeof(argv) / sizeof(char *);
 
   tmpfile = make_temporary_file(tmpfile_name_p2e, "w");
-  if (NULL == tmpfile)
-    {
-      result = -1;
-      goto remove_tmp_p2e;
-    }
+  if (NULL == tmpfile) {
+    result = -1;
+    goto remove_tmp_p2e;
+  }
 
   /*
    * shape -> bo file
    */
-  p2e_writer = at_output_get_handler_by_suffix ("p2e");
-  at_splines_write (p2e_writer,
-		    tmpfile,
-		    tmpfile_name_p2e,
-		    opts,
-		    &shape,
-		    msg_func,
-		    msg_data);
+  p2e_writer = at_output_get_handler_by_suffix("p2e");
+  at_splines_write(p2e_writer, tmpfile, tmpfile_name_p2e, opts, &shape, msg_func, msg_data);
 
   fclose(tmpfile);
 
   tmpfile = make_temporary_file(tmpfile_name_pstoedit, "r");
-  if (NULL == tmpfile)
-    {
-      result = -1;
-      goto remove_tmp_pstoedit;
-    }
+  if (NULL == tmpfile) {
+    result = -1;
+    goto remove_tmp_pstoedit;
+  }
 
   /*
    * bo file -> specified formatted file
    */
   argv[SYMBOLICNAME_VAL_INDEX] = symbolicname;
-  argv[INPUT_INDEX]      = tmpfile_name_p2e;
-  argv[OUTPUT_INDEX]     = tmpfile_name_pstoedit;
+  argv[INPUT_INDEX] = tmpfile_name_p2e;
+  argv[OUTPUT_INDEX] = tmpfile_name_pstoedit;
   pstoedit_plainC(argc, argv, NULL);
 
   /*
@@ -128,15 +106,14 @@ output_pstoedit_writer (FILE* file, gchar* name,
     fputc(c, file);
   fclose(tmpfile);
 
- remove_tmp_pstoedit:
+remove_tmp_pstoedit:
   remove(tmpfile_name_pstoedit);
- remove_tmp_p2e:
+remove_tmp_p2e:
   remove(tmpfile_name_p2e);
   return result;
 }
 
-gboolean
-unusable_writer_p(const gchar* suffix)
+gboolean unusable_writer_p(const gchar * suffix)
 {
   if (0 == strcmp(suffix, "sam")
       || 0 == strcmp(suffix, "dbg")
@@ -154,8 +131,7 @@ unusable_writer_p(const gchar* suffix)
 }
 
 /* make_temporary_file --- Make a temporary file */
-static FILE *
-make_temporary_file(char *template, char * mode)
+static FILE *make_temporary_file(char *template, char *mode)
 {
   int tmpfd;
   tmpfd = mkstemp(template);
@@ -164,41 +140,27 @@ make_temporary_file(char *template, char * mode)
   return fdopen(tmpfd, mode);
 }
 
-int
-install_output_pstoedit_writers (void)
+int install_output_pstoedit_writers(void)
 {
-  struct DriverDescription_S* dd_start, *dd_tmp;
+  struct DriverDescription_S *dd_start, *dd_tmp;
 
   pstoedit_checkversion(pstoeditdllversion);
   dd_start = getPstoeditDriverInfo_plainC();
 
-  if (dd_start)
-    {
-      dd_tmp = dd_start;
-      while (dd_tmp->symbolicname)
-	{
-	  if (unusable_writer_p(dd_tmp->suffix))
-	    {
-	      dd_tmp++;
-	      continue;
-	    }
-	  if (!at_output_get_handler_by_suffix (dd_tmp->suffix))
-	    at_output_add_handler_full(dd_tmp->suffix,
-				       dd_tmp->explanation,
-				       output_pstoedit_writer,
-				       0,
-				       g_strdup(dd_tmp->symbolicname),
-				       g_free);
-	  if (!at_output_get_handler_by_suffix (dd_tmp->symbolicname))
-	    at_output_add_handler_full(dd_tmp->symbolicname,
-				       dd_tmp->explanation,
-				       output_pstoedit_writer,
-				       0,
-				       g_strdup(dd_tmp->symbolicname),
-				       g_free);
-	  dd_tmp++;
-	}
+  if (dd_start) {
+    dd_tmp = dd_start;
+    while (dd_tmp->symbolicname) {
+      if (unusable_writer_p(dd_tmp->suffix)) {
+        dd_tmp++;
+        continue;
+      }
+      if (!at_output_get_handler_by_suffix(dd_tmp->suffix))
+        at_output_add_handler_full(dd_tmp->suffix, dd_tmp->explanation, output_pstoedit_writer, 0, g_strdup(dd_tmp->symbolicname), g_free);
+      if (!at_output_get_handler_by_suffix(dd_tmp->symbolicname))
+        at_output_add_handler_full(dd_tmp->symbolicname, dd_tmp->explanation, output_pstoedit_writer, 0, g_strdup(dd_tmp->symbolicname), g_free);
+      dd_tmp++;
     }
+  }
   clearPstoeditDriverInfo_plainC(dd_start);
   return 0;
 }

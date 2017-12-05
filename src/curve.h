@@ -6,26 +6,22 @@
 #include "autotrace.h"
 #include "vector.h"
 
-
 /* We are simultaneously manipulating two different representations of
    the same outline: one based on (x,y) positions in the plane, and one
    based on parametric splines.  (We are trying to match the latter to
    the former.)  Although the original (x,y)'s are pixel positions,
    i.e., integers, after filtering they are reals.  */
 
-typedef struct
-{
+typedef struct {
   at_real_coord coord;
   gfloat t;
 } point_type;
-
 
 /* It turns out to be convenient to break the list of all the pixels in
    the outline into sublists, divided at ``corners''.  Then each of the
    sublists is treated independently.  Each of these sublists is a `curve'.  */
 
-struct curve
-{
+struct curve {
   point_type *point_list;
   unsigned length;
   gboolean cyclic;
@@ -68,33 +64,31 @@ typedef struct curve *curve_type;
 #define PREVIOUS_CURVE(c) ((c)->previous)
 #define NEXT_CURVE(c) ((c)->next)
 
-
 /* Return an entirely empty curve.  */
-extern curve_type new_curve (void);
+extern curve_type new_curve(void);
 
 /* Return a curve the same as C, except without any points.  */
-extern curve_type copy_most_of_curve (curve_type c);
+extern curve_type copy_most_of_curve(curve_type c);
 
 /* Free the memory C uses.  */
-extern void free_curve (curve_type c);
+extern void free_curve(curve_type c);
 
 /* Append the point P to the end of C's list.  */
-extern void append_pixel (curve_type c, at_coord p);
+extern void append_pixel(curve_type c, at_coord p);
 
 /* Like `append_pixel', for a point in real coordinates.  */
-extern void append_point (curve_type c, at_real_coord p);
+extern void append_point(curve_type c, at_real_coord p);
 
 /* Write some or all, respectively, of the curve C in human-readable
    form to the log file, if logging is enabled.  */
-extern void log_curve (curve_type c, gboolean print_t);
-extern void log_entire_curve (curve_type c);
+extern void log_curve(curve_type c, gboolean print_t);
+extern void log_entire_curve(curve_type c);
 
 /* Display the curve C online, if displaying is enabled.  */
-extern void display_curve (curve_type);
+extern void display_curve(curve_type);
 
 /* So, an outline is a list of curves.  */
-typedef struct
-{
+typedef struct {
   curve_type *data;
   unsigned length;
   gboolean clockwise;
@@ -112,16 +106,14 @@ typedef struct
    clockwise or counterclockwise.  */
 #define CURVE_LIST_CLOCKWISE(c_l) ((c_l).clockwise)
 
-
-extern curve_list_type new_curve_list (void);
-extern void free_curve_list (curve_list_type *);
-extern void append_curve (curve_list_type *, curve_type);
+extern curve_list_type new_curve_list(void);
+extern void free_curve_list(curve_list_type *);
+extern void append_curve(curve_list_type *, curve_type);
 
 /* And a character is a list of outlines.  I named this
    `curve_list_array_type' because `curve_list_list_type' seemed pretty
    monstrous.  */
-typedef struct
-{
+typedef struct {
   curve_list_type *data;
   unsigned length;
 } curve_list_array_type;
@@ -132,11 +124,8 @@ typedef struct
 #define CURVE_LIST_ARRAY_ELT CURVE_LIST_ELT
 #define LAST_CURVE_LIST_ARRAY_ELT LAST_CURVE_LIST_ELT
 
-extern curve_list_array_type new_curve_list_array (void);
-extern void free_curve_list_array (curve_list_array_type *,
-				   at_progress_func,
-				   gpointer);
-extern void append_curve_list (curve_list_array_type *, curve_list_type);
+extern curve_list_array_type new_curve_list_array(void);
+extern void free_curve_list_array(curve_list_array_type *, at_progress_func, gpointer);
+extern void append_curve_list(curve_list_array_type *, curve_list_type);
 
 #endif /* not CURVE_H */
-

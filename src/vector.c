@@ -12,15 +12,14 @@
 #include <assert.h>
 #include <string.h>
 
-static gfloat acos_d (gfloat, at_exception_type * excep);
+static gfloat acos_d(gfloat, at_exception_type * excep);
 
 #define _USE_MATH_DEFINES
 #include <math.h>
 
 /* Given the point COORD, return the corresponding vector.  */
 
-vector_type
-make_vector (const at_real_coord c)
+vector_type make_vector(const at_real_coord c)
 {
   vector_type v;
 
@@ -31,11 +30,9 @@ make_vector (const at_real_coord c)
   return v;
 }
 
-
 /* And the converse: given a vector, return the corresponding point.  */
 
-at_real_coord
-vector_to_point (const vector_type v)
+at_real_coord vector_to_point(const vector_type v)
 {
   at_real_coord coord;
 
@@ -45,31 +42,24 @@ vector_to_point (const vector_type v)
   return coord;
 }
 
-
-gfloat
-magnitude (const vector_type v)
+gfloat magnitude(const vector_type v)
 {
-  return (gfloat) sqrt (v.dx * v.dx + v.dy * v.dy + v.dz * v.dz);
+  return (gfloat) sqrt(v.dx * v.dx + v.dy * v.dy + v.dz * v.dz);
 }
 
-
-vector_type
-normalize (const vector_type v)
+vector_type normalize(const vector_type v)
 {
   vector_type new_v;
-  gfloat m = magnitude (v);
+  gfloat m = magnitude(v);
 
   /* assert (m > 0.0); */
 
-  if (m > 0.0)
-  {
+  if (m > 0.0) {
     new_v.dx = v.dx / m;
     new_v.dy = v.dy / m;
     new_v.dz = v.dz / m;
-  }
-  else
-  {
-	new_v.dx = v.dx;
+  } else {
+    new_v.dx = v.dx;
     new_v.dy = v.dy;
     new_v.dz = v.dz;
   }
@@ -77,9 +67,7 @@ normalize (const vector_type v)
   return new_v;
 }
 
-
-vector_type
-Vadd (const vector_type v1, const vector_type v2)
+vector_type Vadd(const vector_type v1, const vector_type v2)
 {
   vector_type new_v;
 
@@ -90,16 +78,12 @@ Vadd (const vector_type v1, const vector_type v2)
   return new_v;
 }
 
-
-gfloat
-Vdot (const vector_type v1, const vector_type v2)
+gfloat Vdot(const vector_type v1, const vector_type v2)
 {
   return v1.dx * v2.dx + v1.dy * v2.dy + v1.dz * v2.dz;
 }
 
-
-vector_type
-Vmult_scalar (const vector_type v, const gfloat r)
+vector_type Vmult_scalar(const vector_type v, const gfloat r)
 {
   vector_type new_v;
 
@@ -110,24 +94,18 @@ Vmult_scalar (const vector_type v, const gfloat r)
   return new_v;
 }
 
-
 /* Given the IN_VECTOR and OUT_VECTOR, return the angle between them in
    degrees, in the range zero to 180.  */
 
-gfloat
-Vangle (const vector_type in_vector,
-	const vector_type out_vector,
-	at_exception_type * exp)
+gfloat Vangle(const vector_type in_vector, const vector_type out_vector, at_exception_type * exp)
 {
-  vector_type v1 = normalize (in_vector);
-  vector_type v2 = normalize (out_vector);
+  vector_type v1 = normalize(in_vector);
+  vector_type v2 = normalize(out_vector);
 
-  return acos_d (Vdot (v2, v1), exp);
+  return acos_d(Vdot(v2, v1), exp);
 }
 
-
-at_real_coord
-Vadd_point (const at_real_coord c, const vector_type v)
+at_real_coord Vadd_point(const at_real_coord c, const vector_type v)
 {
   at_real_coord new_c;
 
@@ -137,9 +115,7 @@ Vadd_point (const at_real_coord c, const vector_type v)
   return new_c;
 }
 
-
-at_real_coord
-Vsubtract_point (const at_real_coord c, const vector_type v)
+at_real_coord Vsubtract_point(const at_real_coord c, const vector_type v)
 {
   at_real_coord new_c;
 
@@ -149,34 +125,28 @@ Vsubtract_point (const at_real_coord c, const vector_type v)
   return new_c;
 }
 
-
-at_coord
-Vadd_int_point (const at_coord c, const vector_type v)
+at_coord Vadd_int_point(const at_coord c, const vector_type v)
 {
   at_coord a;
 
-  a.x = (unsigned short) lround ((gfloat) c.x + v.dx);
-  a.y = (unsigned short) lround ((gfloat) c.y + v.dy);
+  a.x = (unsigned short)lround((gfloat) c.x + v.dx);
+  a.y = (unsigned short)lround((gfloat) c.y + v.dy);
   return a;
 }
 
-
-vector_type
-Vabs (const vector_type v)
+vector_type Vabs(const vector_type v)
 {
   vector_type new_v;
 
-  new_v.dx = (gfloat) fabs (v.dx);
-  new_v.dy = (gfloat) fabs (v.dy);
-  new_v.dz = (gfloat) fabs (v.dz);
+  new_v.dx = (gfloat) fabs(v.dx);
+  new_v.dy = (gfloat) fabs(v.dy);
+  new_v.dz = (gfloat) fabs(v.dz);
   return new_v;
 }
 
-
 /* Operations on points.  */
 
-at_real_coord
-Padd (const at_real_coord coord1, const at_real_coord coord2)
+at_real_coord Padd(const at_real_coord coord1, const at_real_coord coord2)
 {
   at_real_coord sum;
 
@@ -187,9 +157,7 @@ Padd (const at_real_coord coord1, const at_real_coord coord2)
   return sum;
 }
 
-
-at_real_coord
-Pmult_scalar (const at_real_coord coord, const gfloat r)
+at_real_coord Pmult_scalar(const at_real_coord coord, const gfloat r)
 {
   at_real_coord answer;
 
@@ -200,9 +168,7 @@ Pmult_scalar (const at_real_coord coord, const gfloat r)
   return answer;
 }
 
-
-vector_type
-Psubtract (const at_real_coord c1, const at_real_coord c2)
+vector_type Psubtract(const at_real_coord c1, const at_real_coord c2)
 {
   vector_type v;
 
@@ -213,12 +179,9 @@ Psubtract (const at_real_coord c1, const at_real_coord c2)
   return v;
 }
 
-
-
 /* Operations on integer points.  */
 
-vector_type
-IPsubtract (const at_coord coord1, const at_coord coord2)
+vector_type IPsubtract(const at_coord coord1, const at_coord coord2)
 {
   vector_type v;
 
@@ -229,9 +192,7 @@ IPsubtract (const at_coord coord1, const at_coord coord2)
   return v;
 }
 
-
-at_coord
-IPsubtractP (const at_coord c1, const at_coord c2)
+at_coord IPsubtractP(const at_coord c1, const at_coord c2)
 {
   at_coord c;
 
@@ -241,9 +202,7 @@ IPsubtractP (const at_coord c1, const at_coord c2)
   return c;
 }
 
-
-at_coord
-IPadd (const at_coord c1, const at_coord c2)
+at_coord IPadd(const at_coord c1, const at_coord c2)
 {
   at_coord c;
 
@@ -253,21 +212,17 @@ IPadd (const at_coord c1, const at_coord c2)
   return c;
 }
 
-
-at_coord
-IPmult_scalar (const at_coord c, const int i)
+at_coord IPmult_scalar(const at_coord c, const int i)
 {
   at_coord a;
 
-  a.x = (unsigned short) (c.x * i);
-  a.y = (unsigned short) (c.y * i);
+  a.x = (unsigned short)(c.x * i);
+  a.y = (unsigned short)(c.y * i);
 
   return a;
 }
 
-
-at_real_coord
-IPmult_real (const at_coord c, const gfloat r)
+at_real_coord IPmult_real(const at_coord c, const gfloat r)
 {
   at_real_coord a;
 
@@ -277,9 +232,7 @@ IPmult_real (const at_coord c, const gfloat r)
   return a;
 }
 
-
-gboolean
-IPequal (const at_coord c1, const at_coord c2)
+gboolean IPequal(const at_coord c1, const at_coord c2)
 {
   if ((c1.x == c2.x) && (c1.y == c2.y))
     return TRUE;
@@ -287,24 +240,21 @@ IPequal (const at_coord c1, const at_coord c2)
     return FALSE;
 }
 
-static gfloat
-acos_d (gfloat v, at_exception_type * excep)
+static gfloat acos_d(gfloat v, at_exception_type * excep)
 {
   gfloat a;
 
-  if (epsilon_equal (v, 1.0))
+  if (epsilon_equal(v, 1.0))
     v = 1.0;
-  else if (epsilon_equal (v, -1.0))
+  else if (epsilon_equal(v, -1.0))
     v = -1.0;
 
   errno = 0;
-  a = (gfloat) acos (v);
-  if (errno == ERANGE || errno == EDOM)
-    {
-      at_exception_fatal(excep, strerror(errno));
-      return 0.0;
-    }
-
+  a = (gfloat) acos(v);
+  if (errno == ERANGE || errno == EDOM) {
+    at_exception_fatal(excep, strerror(errno));
+    return 0.0;
+  }
 
   return a * (gfloat) 180.0 / (gfloat) M_PI;
 }

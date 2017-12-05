@@ -77,20 +77,19 @@
 /* This should be called before the others in this file.  It opens the
    output file `OUTPUT_NAME.ps', and writes some preliminary boilerplate. */
 
-static int output_eps_header(FILE* ps_file, gchar* name,
-			     int llx, int lly, int urx, int ury)
+static int output_eps_header(FILE * ps_file, gchar * name, int llx, int lly, int urx, int ury)
 {
-  gchar* time;
+  gchar *time;
 
-  OUT_LINE ("%!PS-Adobe-3.0 EPSF-3.0");
-  OUT ("%%%%Creator: Adobe Illustrator by %s\n", at_version(TRUE));
-  OUT ("%%%%Title: %s\n", name);
-  OUT ("%%%%CreationDate: %s\n", time = at_time_string ());
-  OUT ("%%%%BoundingBox: %d %d %d %d\n", llx, lly, urx, ury);
-  OUT_LINE ("%%DocumentData: Clean7Bit");
-  OUT_LINE ("%%EndComments");
+  OUT_LINE("%!PS-Adobe-3.0 EPSF-3.0");
+  OUT("%%%%Creator: Adobe Illustrator by %s\n", at_version(TRUE));
+  OUT("%%%%Title: %s\n", name);
+  OUT("%%%%CreationDate: %s\n", time = at_time_string());
+  OUT("%%%%BoundingBox: %d %d %d %d\n", llx, lly, urx, ury);
+  OUT_LINE("%%DocumentData: Clean7Bit");
+  OUT_LINE("%%EndComments");
 
-  g_free (time);
+  g_free(time);
   /* Prolog to define Illustrator commands.
    *
    * The s and S commands are not used at the moment and could be
@@ -100,22 +99,22 @@ static int output_eps_header(FILE* ps_file, gchar* name,
    * paths are simply filled currently, this is the easiest solution.
    */
 
-  OUT_LINE ("%%BeginProlog");
-  OUT_LINE ("/bd { bind def } bind def");
-  OUT_LINE ("/incompound false def");
-  OUT_LINE ("/m { moveto } bd");
-  OUT_LINE ("/l { lineto } bd");
-  OUT_LINE ("/c { curveto } bd");
-  OUT_LINE ("/F { incompound not {fill} if } bd");
-  OUT_LINE ("/f { closepath F } bd");
-  OUT_LINE ("/S { stroke } bd");
-  OUT_LINE ("/*u { /incompound true def } bd");
-  OUT_LINE ("/*U { /incompound false def f} bd");
-  OUT_LINE ("/k { setcmykcolor } bd"); /* must symbol k for CorelDraw 3/4 */
-  OUT_LINE ("/K { k } bd");
-  OUT_LINE ("%%EndProlog");
-  OUT_LINE ("%%BeginSetup"); /* needed for CorelDraw 3/4 */
-  OUT_LINE ("%%EndSetup");  /* needed for CorelDraw 3/4 */
+  OUT_LINE("%%BeginProlog");
+  OUT_LINE("/bd { bind def } bind def");
+  OUT_LINE("/incompound false def");
+  OUT_LINE("/m { moveto } bd");
+  OUT_LINE("/l { lineto } bd");
+  OUT_LINE("/c { curveto } bd");
+  OUT_LINE("/F { incompound not {fill} if } bd");
+  OUT_LINE("/f { closepath F } bd");
+  OUT_LINE("/S { stroke } bd");
+  OUT_LINE("/*u { /incompound true def } bd");
+  OUT_LINE("/*U { /incompound false def f} bd");
+  OUT_LINE("/k { setcmykcolor } bd"); /* must symbol k for CorelDraw 3/4 */
+  OUT_LINE("/K { k } bd");
+  OUT_LINE("%%EndProlog");
+  OUT_LINE("%%BeginSetup");     /* needed for CorelDraw 3/4 */
+  OUT_LINE("%%EndSetup");       /* needed for CorelDraw 3/4 */
 
   return 0;
 }
@@ -123,85 +122,67 @@ static int output_eps_header(FILE* ps_file, gchar* name,
 /* This outputs the PostScript code which produces the shape in
    SHAPE.  */
 
-static void
-out_splines (FILE * ps_file, spline_list_array_type shape)
+static void out_splines(FILE * ps_file, spline_list_array_type shape)
 {
   unsigned this_list;
   spline_list_type list;
 
-  at_color last_color = {0,0,0};
+  at_color last_color = { 0, 0, 0 };
 
-  for (this_list = 0; this_list < SPLINE_LIST_ARRAY_LENGTH (shape);
-       this_list++)
-    {
-      unsigned this_spline;
-      int c, m, y, k;
-	  spline_type first;
+  for (this_list = 0; this_list < SPLINE_LIST_ARRAY_LENGTH(shape); this_list++) {
+    unsigned this_spline;
+    int c, m, y, k;
+    spline_type first;
 
-      list = SPLINE_LIST_ARRAY_ELT (shape, this_list);
-      first = SPLINE_LIST_ELT (list, 0);
+    list = SPLINE_LIST_ARRAY_ELT(shape, this_list);
+    first = SPLINE_LIST_ELT(list, 0);
 
-      if (this_list == 0 || !at_color_equal(&list.color, &last_color))
-        {
-          if (this_list > 0)
-              OUT_LINE("*U");
-          c = k = 255 - list.color.r;
-          m = 255 - list.color.g;
-          if (m < k)
-            k = m;
-          y = 255 - list.color.b;
-          if (y < k)
-          k = y;
-          c -= k;
-          m -= k;
-          y -= k;
-          /* symbol k is used for CorelDraw 3/4 compatibility */
-          OUT ("%.3f %.3f %.3f %.3f %s\n", (double) c/255.0,
-            (double) m/255.0,(double) y/255.0, (double) k/255.0,
-            (shape.centerline || list.open) ? "K" : "k");
-	      OUT_LINE("*u");
-	      last_color = list.color;
-        }
-      OUT_COMMAND2 (START_POINT (first).x, START_POINT (first).y, "m");
-
-      for (this_spline = 0; this_spline < SPLINE_LIST_LENGTH (list);
-           this_spline++)
-        {
-          spline_type s = SPLINE_LIST_ELT (list, this_spline);
-
-          if (SPLINE_DEGREE (s) == LINEARTYPE)
-            OUT_COMMAND2 (END_POINT (s).x, END_POINT (s).y, "l");
-          else
-            OUT_COMMAND6 (CONTROL1 (s).x, CONTROL1 (s).y,
-                          CONTROL2 (s).x, CONTROL2 (s).y,
-                          END_POINT (s).x, END_POINT (s).y,
-                          "c");
-        }
-      if (SPLINE_LIST_ARRAY_LENGTH(shape) > 0)
-          OUT_LINE ((shape.centerline || list.open) ? "S" : "f");
-    }
-  if (SPLINE_LIST_ARRAY_LENGTH(shape) > 0)
+    if (this_list == 0 || !at_color_equal(&list.color, &last_color)) {
+      if (this_list > 0)
         OUT_LINE("*U");
+      c = k = 255 - list.color.r;
+      m = 255 - list.color.g;
+      if (m < k)
+        k = m;
+      y = 255 - list.color.b;
+      if (y < k)
+        k = y;
+      c -= k;
+      m -= k;
+      y -= k;
+      /* symbol k is used for CorelDraw 3/4 compatibility */
+      OUT("%.3f %.3f %.3f %.3f %s\n", (double)c / 255.0, (double)m / 255.0, (double)y / 255.0, (double)k / 255.0, (shape.centerline || list.open) ? "K" : "k");
+      OUT_LINE("*u");
+      last_color = list.color;
+    }
+    OUT_COMMAND2(START_POINT(first).x, START_POINT(first).y, "m");
+
+    for (this_spline = 0; this_spline < SPLINE_LIST_LENGTH(list); this_spline++) {
+      spline_type s = SPLINE_LIST_ELT(list, this_spline);
+
+      if (SPLINE_DEGREE(s) == LINEARTYPE)
+        OUT_COMMAND2(END_POINT(s).x, END_POINT(s).y, "l");
+      else
+        OUT_COMMAND6(CONTROL1(s).x, CONTROL1(s).y, CONTROL2(s).x, CONTROL2(s).y, END_POINT(s).x, END_POINT(s).y, "c");
+    }
+    if (SPLINE_LIST_ARRAY_LENGTH(shape) > 0)
+      OUT_LINE((shape.centerline || list.open) ? "S" : "f");
+  }
+  if (SPLINE_LIST_ARRAY_LENGTH(shape) > 0)
+    OUT_LINE("*U");
 }
 
-
-int output_eps_writer(FILE* ps_file, gchar* name,
-		      int llx, int lly, int urx, int ury,
-		      at_output_opts_type * opts,
-		      spline_list_array_type shape,
-		      at_msg_func msg_func,
-		      gpointer msg_data,
-		      gpointer user_data)
+int output_eps_writer(FILE * ps_file, gchar * name, int llx, int lly, int urx, int ury, at_output_opts_type * opts, spline_list_array_type shape, at_msg_func msg_func, gpointer msg_data, gpointer user_data)
 {
-    int result;
+  int result;
 
-    result = output_eps_header(ps_file, name, llx, lly, urx, ury);
-    if (result != 0)
-	return result;
+  result = output_eps_header(ps_file, name, llx, lly, urx, ury);
+  if (result != 0)
+    return result;
 
-    out_splines(ps_file, shape);
+  out_splines(ps_file, shape);
 
-    OUT_LINE ("%%Trailer");
-    OUT_LINE ("%%EOF");
-    return 0;
+  OUT_LINE("%%Trailer");
+  OUT_LINE("%%EOF");
+  return 0;
 }

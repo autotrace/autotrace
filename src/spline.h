@@ -27,16 +27,15 @@ typedef at_spline_type spline_type;
 
 #ifndef _IMPORTING
 /* Print a spline on the given file.  */
-extern void print_spline (spline_type);
+extern void print_spline(spline_type);
 
 /* Evaluate SPLINE at the given T value.  */
-extern at_real_coord evaluate_spline (spline_type spline, gfloat t);
+extern at_real_coord evaluate_spline(spline_type spline, gfloat t);
 #endif
 
 /* Each outline in a character is typically represented by many
    splines.  So, here is a list structure for that:  */
 typedef at_spline_list_type spline_list_type;
-
 
 /* An empty list will have length zero (and null data).  */
 #define SPLINE_LIST_LENGTH  AT_SPLINE_LIST_LENGTH_VALUE
@@ -61,16 +60,16 @@ typedef at_spline_list_type spline_list_type;
 
 #ifndef _IMPORTING
 /* Construct and destroy new `spline_list_type' objects.  */
-extern spline_list_type *new_spline_list (void); /* Allocate new memory */
-extern spline_list_type empty_spline_list (void); /* No allocation */
-extern spline_list_type *new_spline_list_with_spline (spline_type);
-extern void free_spline_list (spline_list_type);
+extern spline_list_type *new_spline_list(void); /* Allocate new memory */
+extern spline_list_type empty_spline_list(void);  /* No allocation */
+extern spline_list_type *new_spline_list_with_spline(spline_type);
+extern void free_spline_list(spline_list_type);
 
 /* Append the spline S to the list S_LIST.  */
-extern void append_spline (spline_list_type *s_list, spline_type s);
+extern void append_spline(spline_list_type * s_list, spline_type s);
 
 /* Append the elements in list S2 to S1, changing S1.  */
-extern void concat_spline_lists (spline_list_type *s1, spline_list_type s2);
+extern void concat_spline_lists(spline_list_type * s1, spline_list_type s2);
 #endif
 
 typedef at_spline_list_array_type spline_list_array_type;
@@ -82,9 +81,8 @@ typedef at_spline_list_array_type spline_list_array_type;
 #define SPLINE_LIST_ARRAY_ELT      AT_SPLINE_LIST_ARRAY_ELT_VALUE
 #define LAST_SPLINE_LIST_ARRAY_ELT LAST_SPLINE_LIST_ELT
 
-extern spline_list_array_type new_spline_list_array (void);
-extern void append_spline_list (spline_list_array_type *, spline_list_type);
-extern void free_spline_list_array (spline_list_array_type *);
+extern spline_list_array_type new_spline_list_array(void);
+extern void append_spline_list(spline_list_array_type *, spline_list_type);
+extern void free_spline_list_array(spline_list_array_type *);
 
 #endif /* not SPLINE_H */
-
