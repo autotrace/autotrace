@@ -84,6 +84,7 @@ port
 release
 rpm.log
 semantic.cache
+src/*.c.smatch
 src/*.o
 src/.dirstamp
 stamp-*
