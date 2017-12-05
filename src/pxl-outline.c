@@ -415,12 +415,9 @@ void free_pixel_outline_list(pixel_outline_list_type * outline_list)
     pixel_outline_type o = outline_list->data[this_outline];
     free_pixel_outline(&o);
   }
+  free(outline_list->data);
+  outline_list->data = NULL;
   outline_list->length = 0;
-
-  if (outline_list->data != NULL) {
-    free(outline_list->data);
-    outline_list->data = NULL;
-  }
 }
 
 /* Return an empty list of pixels.  */
@@ -438,11 +435,9 @@ static pixel_outline_type new_pixel_outline(void)
 
 static void free_pixel_outline(pixel_outline_type * outline)
 {
-  if (outline->data) {
-    free(outline->data);
-    outline->data = NULL;
-    outline->length = 0;
-  }
+  free(outline->data);
+  outline->data = NULL;
+  outline->length = 0;
 }
 
 /* Concatenate two pixel lists. The two lists are assumed to have the

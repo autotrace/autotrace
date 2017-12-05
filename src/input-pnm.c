@@ -362,8 +362,7 @@ static PNMScanner *pnmscanner_create(FILE * fd)
  */
 static void pnmscanner_destroy(PNMScanner * s)
 {
-  if (s->inbuf)
-    free(s->inbuf);
+  free(s->inbuf);
   free(s);
 }
 

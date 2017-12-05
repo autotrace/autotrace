@@ -459,8 +459,7 @@ static void deblank(gf_char_t * sym)
       sym->bbox_min_col += white_on_left;
       sym->bbox_max_col -= white_on_right;
     }
-    if (sym->bitmap)
-      free(sym->bitmap);
+    free(sym->bitmap);
     sym->bitmap = condensed.bitmap;
   }
 }
@@ -680,8 +679,7 @@ at_bitmap input_gf_reader(gchar * filename, at_input_opts_type * opts, at_msg_fu
       AT_BITMAP_BITS(&bitmap)[ptr++] = PIXEL(sym, j, i);
     }
   }
-  if (sym->bitmap)
-    free(sym->bitmap);
+  free(sym->bitmap);
   fclose(font->input_file);
   return bitmap;
 }
