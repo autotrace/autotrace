@@ -238,8 +238,8 @@ static int rle_fread(unsigned char *buf, int datasize, int nelems, FILE * fp)
 static at_bitmap ReadImage(FILE * fp, struct tga_header *hdr, at_exception_type * exp)
 {
   at_bitmap image = at_bitmap_init(0, 0, 0, 1);
-  unsigned char *buffer;
-  unsigned char *alphas;
+  unsigned char *buffer = NULL;
+  unsigned char *alphas = NULL;
 
   unsigned short width, height, bpp, abpp, pbpp, nalphas;
   int j, k;
@@ -364,7 +364,6 @@ static at_bitmap ReadImage(FILE * fp, struct tga_header *hdr, at_exception_type 
     return image;
   }
 
-  alphas = 0;
   nalphas = 0;
   if (hdr->colorMapType == 1) {
     /* We need to read in the colormap. */
@@ -430,7 +429,6 @@ static at_bitmap ReadImage(FILE * fp, struct tga_header *hdr, at_exception_type 
   bpp = ROUNDUP_DIVIDE(pbpp + abpp, 8);
 
   /* Maybe we need to reverse the data. */
-  buffer = NULL;
   if (horzrev || vertrev)
     buffer = (unsigned char *)malloc(width * height * pelbytes * sizeof(unsigned char));
   if (rle)
@@ -539,8 +537,7 @@ static at_bitmap ReadImage(FILE * fp, struct tga_header *hdr, at_exception_type 
     free(cmap);
   }
 
-  if (alphas)
-    free(alphas);
+  free(alphas);
 
   return image;
 }                               /* read_image */
