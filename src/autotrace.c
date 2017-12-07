@@ -71,8 +71,7 @@ at_fitting_opts_type *at_fitting_opts_copy(at_fitting_opts_type * original)
 
 void at_fitting_opts_free(at_fitting_opts_type * opts)
 {
-  if (opts->background_color != NULL)
-    free(opts->background_color);
+  free(opts->background_color);
   free(opts);
 }
 
@@ -97,8 +96,7 @@ at_input_opts_type *at_input_opts_copy(at_input_opts_type * original)
 
 void at_input_opts_free(at_input_opts_type * opts)
 {
-  if (opts->background_color != NULL)
-    free(opts->background_color);
+  free(opts->background_color);
   free(opts);
 }
 
@@ -180,8 +178,7 @@ at_bitmap at_bitmap_init(unsigned char *area, unsigned short width, unsigned sho
 
 void at_bitmap_free(at_bitmap * bitmap)
 {
-  if (AT_BITMAP_BITS(bitmap) != NULL)
-    free(AT_BITMAP_BITS(bitmap));
+  free(AT_BITMAP_BITS(bitmap));
   free(bitmap);
 }
 

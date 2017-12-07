@@ -93,8 +93,7 @@ spline_list_type *new_spline_list_with_spline(spline_type spline)
 
 void free_spline_list(spline_list_type spline_list)
 {
-  if (SPLINE_LIST_DATA(spline_list) != NULL)
-    free(SPLINE_LIST_DATA(spline_list));
+  free(SPLINE_LIST_DATA(spline_list));
 }
 
 /* Append the spline S to the list SPLINE_LIST.  */
@@ -148,8 +147,7 @@ void free_spline_list_array(spline_list_array_type * spline_list_array)
   for (this_list = 0; this_list < SPLINE_LIST_ARRAY_LENGTH(*spline_list_array); this_list++)
     free_spline_list(SPLINE_LIST_ARRAY_ELT(*spline_list_array, this_list));
 
-  if (SPLINE_LIST_ARRAY_DATA(*spline_list_array) != NULL)
-    free(SPLINE_LIST_ARRAY_DATA(*spline_list_array));
+  free(SPLINE_LIST_ARRAY_DATA(*spline_list_array));
 }
 
 /* Append the spline S to the list SPLINE_LIST_ARRAY.  */

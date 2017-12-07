@@ -192,8 +192,7 @@ void free_curve_list(curve_list_type * curve_list)
   }
 
   /* If the character was empty, it won't have any curves.  */
-  if (curve_list->data != NULL)
-    free(curve_list->data);
+  free(curve_list->data);
 }
 
 /* Add an element to a curve list.  */
@@ -230,8 +229,7 @@ void free_curve_list_array(curve_list_array_type * curve_list_array, at_progress
   }
 
   /* If the character was empty, it won't have any curves.  */
-  if (curve_list_array->data != NULL)
-    free(curve_list_array->data);
+  free(curve_list_array->data);
 }
 
 /* Add an element to a curve list array.  */
