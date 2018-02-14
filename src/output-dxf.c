@@ -589,7 +589,7 @@ static void out_splines(FILE * dxf_file, spline_list_array_type shape)
 
     spline_list_type list = SPLINE_LIST_ARRAY_ELT(shape, this_list);
     spline_type first = SPLINE_LIST_ELT(list, 0);
-    at_color curr_color = curr_color = (list.clockwise && shape.background_color != NULL) ? *(shape.background_color) : list.color;
+    at_color curr_color = (list.clockwise && shape.background_color != NULL) ? *(shape.background_color) : list.color;
 
     if (this_list == 0 || !at_color_equal(&curr_color, &last_color)) {
       if (!(curr_color.r == 0 && curr_color.g == 0 && curr_color.b == 0) || !color_check) {

@@ -75,8 +75,6 @@ static void fig_new_depth()
   if (glo_bbox_flag == 0) {
     glob_max_y = loc_max_y;
     glob_min_y = loc_min_y;
-    glob_max_y = loc_max_y;
-    glob_min_y = loc_min_y;
     glob_max_x = loc_max_x;
     glob_min_x = loc_min_x;
     glo_bbox_flag = 1;
