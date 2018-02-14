@@ -1,0 +1,21 @@
+language: c
+compiler:
+        - gcc
+
+notifications:
+        email: false
+
+sudo: required
+
+before_install:
+        - sudo apt-get -qq update
+        - sudo apt-get install -y autotools-dev autopoint libtool intltool libpng12-dev libexif-dev libtiff5-dev libjpeg-dev libxml2-dev libbz2-dev libpstoedit-dev libmagickcore-dev libfreetype6-dev
+
+before_script:
+        - autoreconf -ivf
+        - intltoolize --force
+        - ./configure
+
+script:
+        - make
+
