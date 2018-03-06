@@ -1,0 +1,209 @@
+			     -*- text -*-
+
+		    Notes for autotrace developers
+
+* Autotools
+
+  Versions I (Masatake) am using:
+
+  autoconf --version
+  autoconf (GNU Autoconf) 2.53
+  
+  automake --version
+  automake (GNU automake) 1.6.3
+
+  libtool --version
+  ltmain.sh (GNU libtool) 1.4.2 (1.922.2.53 2001/09/11 03:18:52)
+
+  However config.guess of 1.5 that is part of automake is broken,
+  therefore I'm replacing it with
+
+  ./config.guess --version
+  GNU config.guess (2002-07-23)
+
+  gettext --version
+  gettext (GNU gettext) 0.11.4
+
+  when releasing.
+
+* AM_PATH_PSTOEDIT
+
+AM_PATH_PSTOEDIT is m4 macro defined in pstoedit.m4.
+pstoedit.m4 will be in pstoedit-3.33. However, it is not 
+released yet(Wed Sep 25 04:43:36 2002). You can get pstoedit.m4
+from http://autotrace.sourceforge.net/tools/.
+(You need pstoedit.m4 if you want to build autotrace from CVS sources.)
+
+Even if you installed pstoedit-3.33, there is a case that autogen.sh
+or aclocal reports an error like:
+
+   aclocal: configure.in: 301: macro `AM_PATH_PSTOEDIT' not found in library
+
+The reason is that aclocal cannot find pstoedit.m4. You can specify the
+path to pstoedit.m4 with -I option of aclocal. To set -I option from
+outside of autogen.sh, use $ACLOCAL_FLAGS like: 
+
+	export ACLOCAL_FLAGS="-I /usr/local/share/aclocal -I /usr/share/aclocal"
+
+This variable is passed to aclocal that is invoked by autogen.sh.
+
+* How to release
+
+  (0) Update NEWS file
+  (1) Check and/or set Version number in configure.in
+  (2) CVS tagging
+  (3) sourceforge(http://sourceforge.net/docman/display_doc.php?docid=781&group_id=1)
+
+* Shared library
+
+  We use libtool to manage our shared library, libautotrace.so.
+  First of all, read "Versioning" section of libtool info manual.
+  Especially "Libtool versioning" and "Updating library version 
+  information" subsections are important.
+
+  I quote the most important blocks here:
+====================================
+	CURRENT
+	     The most recent interface number that this library 
+	     implements.
+
+	REVISION
+	     The implementation number of the CURRENT interface.
+
+	AGE
+	     The difference between the newest and oldest interfaces
+	     that this library implements.  In other words, the
+	     library implements all the interface numbers in the range
+	     from number `CURRENT - AGE' to `CURRENT'.
+
+	   If two libraries have identical CURRENT and AGE numbers,
+	then the dynamic linker chooses the library with the greater
+	REVISION number.
+						--- Libtool versioning
+  
+	  Here are a set of rules to help you update your library version
+	information:
+
+	  1. Start with version information of `0:0:0' for each libtool library.
+
+	  2. Update the version information only immediately before a public
+	     release of your software.  More frequent updates are unnecessary,
+	     and only guarantee that the current interface number gets larger
+	     faster.
+
+	  3. If the library source code has changed at all since the last
+	     update, then increment REVISION (`C:R:A' becomes `C:r+1:A').
+
+	  4. If any interfaces have been added, removed, or changed since the
+	     last update, increment CURRENT, and set REVISION to 0.
+
+	  5. If any interfaces have been added since the last public release,
+	     then increment AGE.
+
+	  6. If any interfaces have been removed since the last public release,
+	     then set AGE to 0.
+					---Updating library version information
+====================================
+
+* CVS
+
+See http://sourceforge.net/cvs/?group_id=11789 
+
+The module name is autotrace.  After checking out the code, invoke
+autogen.sh in the distribution. That generates configure.in,
+Makefile.in and so on. autogen.sh invokes automake, autoconf, aclocal
+and autofig.
+
+When you check out the code, you will find autotrace-0.27pre directory
+under autotrace source code top directory. You should ignore 
+autotrace-0.27pre directory. The directory was checked in by
+my mistake(Masatake YAMATO). It is difficult to remove a 
+directory from a CVS repository.
+
+* Library
+
+See README
+
+* Tag naming scheme
+
+CVS tag for version X.Y: RELEASE_X_Y. 
+CVS tag for version X.YpreN: PRERELEASE_X_Y_N. 
+Branch for version X.Y: TOWARD_version X.Y.
+
+If you need to put a tag after putting a tag, RELEASE_X_Y, 
+for minor modification, POSTRELEASE_X_Y_N.
+
+* Tools for debugging output
+
+   eps: ghostscript, Illustrator, CorelDraw
+   sk:  sketch
+   emf: CorelDraw, Illustrator, StarOffice, OpenOffice
+        and Microsoft Office.
+   svg: sodipodi, CorelDraw, Illustrator, Adobe SVGViewer
+   ai: Illustrator, CorelDraw
+   pdf: ghostscript, xpdf, acrobat, Illustrator
+   fig: xfig
+   er: Elastic Reality
+   dxf: AutoCAD, VoloView
+   epd: pstoepd, txt2pdf, epd2svg
+   mif: FrameMaker
+   dr2d: visit http://uk.amigasoc.org/asearch and enter a search string of "DR2D".
+
+* Web page
+
+    From sourceforge.org:
+
+    5. Setup your group's web site.
+
+    I'll assume that you have some sort of web
+    page or site built already that you wish to put up on
+    SourceForge to give your group a public face.
+    Login to SourceForge using SSH, for example ;
+
+    ssh -l loginname yourproject.sourceforge.net
+
+    you will now be in your home directory. All
+    group files are stored in a directory structure for each
+    project. The group directory structure is
+    split out by the first, then first and second, letters of
+    the project name. From here all group files
+    are stored in /home/groups/y/yo/yourproject.
+    Change to this directory. All your web pages
+    are stored in the htdocs directory. Going in here will
+    contain index.php, which is a blank page that
+    says you haven't uploaded a web page yet.
+    Logout, and copy the files for your web page
+    using scp, a program which comes with ssh. For
+    example:
+
+    scp localfile loginname@yourproject.sourceforge.net:/home/groups/y/yo/yourproject/htdocs/
+
+    I suggest you gzip up your site, send it in
+    one go using scp, then login with ssh and gunzip it.
+
+    So what should be on the web page ? Perhaps
+    you'd like the following, as well as your project's
+    information ;
+
+    1.A link to the projects group page on SourceForge.
+    2.Mailing list links (we'll create them in a second)
+    3.A SourceForge icon and web counter - see the site documentation for this.
+    4.A link to the CVS web interface at
+
+    http://cvs.sourceforge.net/cgi-bin/cvsweb.cgi/?cvsroot=yourproject
+
+    5.Some info about using CVS specific to your project.
+    6.Setup mailing lists for your project.
+
+    If your project isn't that active yet (or only
+    has one lonely developer) your mailing lists will be
+    very quiet, however I still suggest you look
+    to the future and setup three standard lists for your
+    project: a devel list for developers, a users
+    list for users, and an announce list for new version
+    announcements.
+
+    Do this via your group page using the mailing
+    list admin link. Its quite simple so you shouldn't
+    have any problems...
+
