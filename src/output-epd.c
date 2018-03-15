@@ -28,7 +28,7 @@
 #include "output-epd.h"
 #include "xstd.h"
 #include "autotrace.h"
-#include "private.h"
+#include "datetime.h"
 #include <string.h>
 #include <math.h>
 #include <glib.h>

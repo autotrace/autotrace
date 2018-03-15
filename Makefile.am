@@ -84,6 +84,7 @@ libautotrace_la_SOURCES =\
 		src/epsilon-equal.c \
 		src/vector.c \
 		src/color.c \
+		src/datetime.c \
 		src/autotrace.c \
 		src/output.c \
 		src/input.c \

@@ -21,7 +21,6 @@
 #include "config.h"
 #endif /* Def: HAVE_CONFIG_H */
 
-#include "private.h"
 #include "autotrace.h"
 #include "output-pstoedit.h"
 #include "output-p2e.h"
