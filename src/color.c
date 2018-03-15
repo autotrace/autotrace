@@ -29,9 +29,6 @@
 #include <string.h>
 #include <stdlib.h>
 
-/* TODO:
-   Use gmemcache */
-
 at_color *at_color_new(unsigned char r, unsigned char g, unsigned char b)
 {
   at_color *color;
@@ -101,7 +98,6 @@ void at_color_free(at_color * color)
 {
   g_free(color);
 }
-
 
 GType at_color_get_type(void)
 {
