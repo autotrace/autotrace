@@ -16,6 +16,12 @@
 #define M_SQRT2 1.41421356237
 #endif
 
+/* Threshold for binarizing a monochrome image */
+#define GRAY_THRESHOLD 225
+
+/* RGB to grayscale */
+#define LUMINANCE(r, g, b) ((r) * 0.30 + (g) * 0.59 + (b) * 0.11 + 0.5)
+
 #if 0
 struct etyp {
   int t00, t11, t01, t01s;

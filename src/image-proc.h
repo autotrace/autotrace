@@ -6,12 +6,6 @@
 #include "bitmap.h"
 #include "color.h"
 
-/* Threshold for binarizing a monochrome image */
-#define GRAY_THRESHOLD 225
-
-/* RGB to grayscale */
-#define LUMINANCE(r, g, b) ((r) * 0.30 + (g) * 0.59 + (b) * 0.11 + 0.5)
-
 typedef struct {
   unsigned height, width;
   float **weight;
