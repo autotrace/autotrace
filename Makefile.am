@@ -105,7 +105,6 @@ libautotrace_la_SOURCES =\
 		src/despeckle.c \
 		src/despeckle.h \
 		src/exception.c \
-		src/strgicmp.c \
 		src/image-proc.c \
 		src/image-proc.h \
 		src/module.c \
@@ -134,8 +133,7 @@ autotrace_SOURCES=\
 		src/atou.c				\
 		src/atou.h				\
 		src/main.c				\
-		src/cmdline.h			\
-		src/strgicmp.h
+		src/cmdline.h
 
 AM_CPPFLAGS = $(MAGICK_CFLAGS) $(LIBPSTOEDIT_CFLAGS) $(LIBSWF_CFLAGS) $(GLIB2_CFLAGS) -DLOCALEDIR=\""$(datadir)/locale"\"
 
