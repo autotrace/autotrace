@@ -27,11 +27,10 @@
 #include "exception.h"
 
 #include <string.h>
+#include <stdlib.h>
 
 /* TODO:
    Use gmemcache */
-
-static unsigned int hctoi(char c, GError ** err);
 
 at_color *at_color_new(unsigned char r, unsigned char g, unsigned char b)
 {
@@ -59,8 +58,10 @@ at_color *at_color_parse(const gchar * string, GError ** err)
   }
 
   for (i = 0; i < 6; i++) {
-    c[i] = hctoi(string[i], &local_err);
-    if (local_err != NULL) {
+    char *endptr;
+    c[i] = (int)strtol(&string[i], &endptr, 16);
+    if (endptr == &string[i]) {
+      g_set_error(&local_err, AT_ERROR, AT_ERROR_WRONG_COLOR_STRING, _("wrong char in color string: %c"), string[i]);
       g_propagate_error(err, local_err);
       return NULL;
     }
@@ -101,57 +102,6 @@ void at_color_free(at_color * color)
   g_free(color);
 }
 
-static unsigned int hctoi(char c, GError ** err)
-{
-  if (c == '0')
-    return (0);
-  else if (c == '1')
-    return (1);
-  else if (c == '2')
-    return (2);
-  else if (c == '3')
-    return (3);
-  else if (c == '4')
-    return (4);
-  else if (c == '5')
-    return (5);
-  else if (c == '6')
-    return (6);
-  else if (c == '7')
-    return (7);
-  else if (c == '8')
-    return (8);
-  else if (c == '9')
-    return (9);
-  else if (c == 'a')
-    return (10);
-  else if (c == 'A')
-    return (10);
-  else if (c == 'b')
-    return (11);
-  else if (c == 'B')
-    return (11);
-  else if (c == 'c')
-    return (12);
-  else if (c == 'C')
-    return (12);
-  else if (c == 'd')
-    return (13);
-  else if (c == 'D')
-    return (13);
-  else if (c == 'e')
-    return (14);
-  else if (c == 'E')
-    return (14);
-  else if (c == 'f')
-    return (15);
-  else if (c == 'F')
-    return (15);
-  else {
-    g_set_error(err, AT_ERROR, AT_ERROR_WRONG_COLOR_STRING, _("wrong char in color string: %c"), c);
-    return (unsigned int)-1;
-  }
-}
 
 GType at_color_get_type(void)
 {
