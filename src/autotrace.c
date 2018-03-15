@@ -353,8 +353,8 @@ const char *at_version(gboolean long_format)
 {
   if (long_format)
     return "AutoTrace version " AUTOTRACE_VERSION;
-  else
-    return AUTOTRACE_VERSION;
+
+  return AUTOTRACE_VERSION;
 }
 
 const char *at_home_site(void)

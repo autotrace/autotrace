@@ -70,6 +70,7 @@ at_color *at_color_copy(const at_color * original)
 {
   if (original == NULL)
     return NULL;
+
   return at_color_new(original->r, original->g, original->b);
 }
 
@@ -77,8 +78,8 @@ gboolean at_color_equal(const at_color * c1, const at_color * c2)
 {
   if (c1 == c2 || ((c1->r == c2->r) && (c1->g == c2->g) && (c1->b == c2->b)))
     return TRUE;
-  else
-    return FALSE;
+
+  return FALSE;
 }
 
 void at_color_set(at_color * c, unsigned char r, unsigned char g, unsigned char b)

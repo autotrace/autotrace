@@ -17,6 +17,6 @@ gboolean epsilon_equal(gfloat v1, gfloat v2)
   if (v1 == v2                  /* Usually they'll be exactly equal, anyway.  */
       || fabs(v1 - v2) <= REAL_EPSILON)
     return TRUE;
-  else
-    return FALSE;
+
+  return FALSE;
 }
