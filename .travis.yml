@@ -1,3 +1,8 @@
+os:
+  - linux
+  - osx
+
+
 language: c
 compiler:
         - gcc
@@ -7,15 +12,39 @@ notifications:
 
 sudo: required
 
+addons:
+  apt:
+    packages:
+      - autotools-dev
+      - autopoint
+      - libtool
+      - intltool
+      - libpng12-dev
+      - libexif-dev
+      - libtiff5-dev
+      - libjpeg-dev
+      - libxml2-dev
+      - libbz2-dev
+      - libpstoedit-dev
+      - libmagickcore-dev
+      - libfreetype6-dev
+
+
+# CAUTION: all the scripts run under set -e. So we always use || for os specific commands.
+
 before_install:
-        - sudo apt-get -qq update
-        - sudo apt-get install -y autotools-dev autopoint libtool intltool libpng12-dev libexif-dev libtiff5-dev libjpeg-dev libxml2-dev libbz2-dev libpstoedit-dev libmagickcore-dev libfreetype6-dev
+        - test "$TRAVIS_OS_NAME" != osx || brew update
+        - test "$TRAVIS_OS_NAME" != osx || brew install gettext intltool glib
+
 
 before_script:
+        - test "$TRAVIS_OS_NAME" != osx || export PATH="/usr/local/opt/gettext/bin:$PATH"
         - autoreconf -ivf
         - intltoolize --force
-        - ./configure
+        - test "$TRAVIS_OS_NAME" != osx || sh ./configure --without-magick --without-pstoedit
+        - test "$TRAVIS_OS_NAME" != linux || ./configure
 
 script:
         - make
-
+        - LD_LIBRARY_PATH=.libs ldd .libs/autotrace || true 
+        - ./autotrace -v
