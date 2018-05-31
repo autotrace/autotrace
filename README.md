@@ -1,3 +1,6 @@
+[![Build Status](https://travis-ci.org/jnweiger/autotrace.svg?branch=future)](https://travis-ci.org/jnweiger/autotrace)
+
+
 AutoTrace
 =========
 
