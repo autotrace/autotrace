@@ -205,6 +205,9 @@ gboolean is_valid_dir(unsigned short row, unsigned short col, direction_type dir
 
   at_color c;
 
+  if ((COMPUTE_DELTA(ROW, dir) + row < 0) || (COMPUTE_DELTA(COL, dir) + col < 0))
+	return FALSE;	// Must not call at_bitmap_get_color() with negative row or col.
+
   at_bitmap_get_color(bitmap, COMPUTE_DELTA(ROW, dir) + row, COMPUTE_DELTA(COL, dir) + col, &c);
   return ((gboolean) (!is_marked_dir(row, col, dir, marked)
                       && COMPUTE_DELTA(ROW, dir) + row > 0 && COMPUTE_DELTA(COL, dir) + col > 0 && AT_BITMAP_VALID_PIXEL(bitmap, COMPUTE_DELTA(ROW, dir) + row, COMPUTE_DELTA(COL, dir) + col)

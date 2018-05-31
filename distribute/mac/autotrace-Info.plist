@@ -1,0 +1,40 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE plist PUBLIC "-//Apple//DTD PLIST 1.0//EN" "http://www.apple.com/DTDs/PropertyList-1.0.dtd">
+<plist version="1.0">
+<dict>
+	<key>CFBundleDevelopmentRegion</key>
+	<string>English</string>
+	<key>CFBundleExecutable</key>
+	<string>autotrace</string>
+	<key>CFBundleIconFile</key>
+	<string>AutoTraceIcon.icns</string>
+	<key>CFBundleGetInfoString</key>
+	<string>A bitmap vectorizer with a centerline option</string>
+	<key>CFBundleIdentifier</key>
+	<string>com.github.autotrace.AutoTraceApp</string>
+	<key>CFBundleInfoDictionaryVersion</key>
+	<string>6.0</string>
+	<key>CFBundleName</key>
+	<string>AutoTrace</string>
+	<key>CFBundlePackageType</key>
+	<string>APPL</string>
+	<key>CFBundleShortVersionString</key>
+	<string>APP_VERSION</string>
+	<key>NSHumanReadableCopyright</key>
+	<string>Copyright © 2018, The autotrace developers. This Software is licensed under the GNU General Public License (GPL) version 2 or later.</string>
+	<key>CFBundleSignature</key>
+	<string>????</string>
+	<key>CFBundleVersion</key>
+	<string>1</string>
+	<key>LSMinimumSystemVersion</key>
+	<string>10.9.0</string>
+	<key>OSBundleRequired</key>
+	<string>Root</string>
+	<key>NOTE</key>
+	<string>Please improve this file. It was created by
+		* random guesswork,
+		* browsing github and
+		* studying https://developer.apple.com/library/archive/documentation/General/Reference/InfoPlistKeyReference/Introduction/Introduction.html
+	</string>
+</dict>
+</plist>
