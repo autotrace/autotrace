@@ -1,4 +1,4 @@
-[![Build Status](https://travis-ci.org/jnweiger/autotrace.svg?branch=future)](https://travis-ci.org/jnweiger/autotrace)
+[![Build Status](https://travis-ci.org/autotrace/autotrace.svg?branch=future)](https://travis-ci.org/autotrace/autotrace)
 
 
 AutoTrace
