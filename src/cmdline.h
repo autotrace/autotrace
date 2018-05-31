@@ -11,7 +11,7 @@
    Assumes the option index is in the variable `option_index', and the
    option table in a variable `long_options'.  */
 
-#define ARGUMENT_IS(a) (long_options[option_index].name == NULL || a == NULL || 0 == strcasecmp(long_options[option_index].name, a))
+#define ARGUMENT_IS(a) (long_options[option_index].name != NULL && a != NULL && 0 == strcasecmp(long_options[option_index].name, a))
 
 /* Perform common actions at the end of parsing the arguments.  Assumes
    lots of variables: `printed_version', a boolean for whether the
