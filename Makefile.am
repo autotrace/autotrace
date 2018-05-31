@@ -141,7 +141,7 @@ AM_CPPFLAGS = $(MAGICK_CFLAGS) $(LIBPSTOEDIT_CFLAGS) $(LIBSWF_CFLAGS) $(GLIB2_CF
 autotrace_LDADD =				\
 		libautotrace.la			\
 		$(MAGICK_LIBS)		\
-		$(LIBPNG_LDFLAGS)		\
+		$(LIBPNG_LIBS)		\
 		$(LIBSWF_LIBS)		\
 		$(LIBPSTOEDIT_LIBS)		\
 		$(GLIB2_LIBS)			\
