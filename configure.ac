@@ -2,7 +2,7 @@
 #
 # Author: Masatake YAMATO (yamato@redhat.com)
 #
-AC_INIT([autotrace], [0.31.1])
+AC_INIT([autotrace], [0.40.0])
 AC_CONFIG_SRCDIR([src/main.c])
 AM_INIT_AUTOMAKE([subdir-objects])
 AC_CONFIG_MACRO_DIR([m4])
@@ -12,8 +12,8 @@ PACKAGE=autotrace
 # version setting up for Automake
 #
 MAJOR_VERSION=0
-MINOR_VERSION=31
-MICRO_VERSION=1
+MINOR_VERSION=40
+MICRO_VERSION=0
 dnl VERSION is not acceptable; it conflicts
 dnl with a variable defined in VC++.
 AUTOTRACE_VERSION=${MAJOR_VERSION}.${MINOR_VERSION}.${MICRO_VERSION}
