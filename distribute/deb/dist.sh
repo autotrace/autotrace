@@ -9,6 +9,13 @@ requires="libpstoedit0c2a,libbz2-1.0,libgd3,libexif12,libtiff5,imagemagick"
 # libtool must not call ranlib when installing in fakeroot
 export PATH=$(pwd):$PATH
 
+if [ -n "$(../../libtool --config | grep host_os | grep mingw)" ]; then
+  echo "ERROR: configured for mingw cross compiler."
+  echo "Please rerun: ./configure; make clean; make"
+  exit 1
+fi
+
+
 mkdir -p doc-pak
 cp ../../ChangeLog 	doc-pak/
 cp ../../COPYING	doc-pak/
@@ -19,7 +26,7 @@ cp ../../THANKS		doc-pak/
 tmp=../out
 
 [ -d $tmp ] && rm -rf $tmp/*.deb
-mkdir $tmp
+mkdir -p $tmp
 fakeroot checkinstall --fstrans --reset-uid --type debian \
   --install=no -y --pkgname $name --pkgversion $vers --pkgrelease $(date +%Y%m%d) --arch all \
   --pkglicense GPL --pkggroup other --pakdir $tmp --pkgsource $url \

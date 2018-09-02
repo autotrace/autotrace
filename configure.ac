@@ -62,6 +62,8 @@ AC_DEFINE_UNQUOTED([GETTEXT_PACKAGE], "$GETTEXT_PACKAGE", [Define to the gettext
 ALL_LINGUAS="ja de"
 AM_GLIB_GNU_GETTEXT
 
+AC_CHECK_FUNCS([localtime_r])
+
 dnl
 dnl ImageMagick
 dnl
