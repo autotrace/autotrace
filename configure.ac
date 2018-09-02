@@ -38,7 +38,7 @@ AC_PROG_LIBTOOL
 
 PKG_PROG_PKG_CONFIG
 
-AUTOTRACE_WEB=http://autotrace.sourceforge.net
+AUTOTRACE_WEB=https://github.com/autotrace/autotrace
 AC_DEFINE_UNQUOTED(AUTOTRACE_WEB, "$AUTOTRACE_WEB", [Project home page])
 
 AM_MAINTAINER_MODE
