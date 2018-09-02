@@ -24,7 +24,7 @@ OutFile "autotrace-${VERSION}-setup.exe"
 
 ; The default installation directory
 ;InstallDir $EXEDIR
-InstallDir $PROGRAMFILES
+InstallDir $PROGRAMFILES\AutoTrace
 
 ; Request application privileges for Windows Vista
 ; RequestExecutionLevel user
@@ -47,5 +47,10 @@ Section "" ;No components page, name is not important
 
   ; Put file there
   File /oname=autotrace.exe "../../autotrace.exe"
+  File /oname=libffi-6.dll   "3rdparty/libffi-6.dll"
+  File /oname=libintl-8.dll  "3rdparty/libintl-8.dll"
+  File /oname=libiconv-2.dll "3rdparty/libiconv-2.dll"
+  File /oname=libglib-2.0-0.dll    "glib-2/bin/libglib-2.0-0.dll"
+  File /oname=libgobject-2.0-0.dll "glib-2/bin/libgobject-2.0-0.dll"
 
 SectionEnd ; end the section

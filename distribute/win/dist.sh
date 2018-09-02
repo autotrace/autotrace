@@ -26,12 +26,12 @@ echo "Cross compiler: $win32gcc_vers"
 rm -rf $disttop/glib-2
 mkdir -p $disttop/glib-2
 cd $disttop/glib-2
-unzip -q -o $top/3rdparty/glib_2*win64.zip
-unzip -q -o $top/3rdparty/glib-dev_2*win64.zip
+unzip -q -o $disttop/3rdparty/glib_2*win64.zip
+unzip -q -o $disttop/3rdparty/glib-dev_2*win64.zip
 
 cd $top
 make clean
-GLIB2_LIBS="-L$disttop/glib-2/lib -lglib-2.0 -lgobject-2.0" GLIB2_CFLAGS="-I$disttop/glib-2/include/glib-2.0 -I$disttop/glib-2/lib/glib-2.0/include" CC="$win32gcc -static" ./configure --host x86_64-w64-mingw32 --without-magick --without-pstoedit
+GLIB2_LIBS="-L$disttop/glib-2/lib -lglib-2.0 -lgobject-2.0" GLIB2_CFLAGS="-I$disttop/glib-2/include/glib-2.0 -I$disttop/glib-2/lib/glib-2.0/include" CC="$win32gcc -static" ./configure --host x86_64-w64-mingw32 --without-magick --without-pstoedit --without-png
 make
 
 cd $disttop

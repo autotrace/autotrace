@@ -68,8 +68,8 @@ dnl
 dnl ImageMagick
 dnl
 AC_ARG_WITH(magick,
-[  --with-magick  compile with maigck(default)
-  --without-magick  compile without maigck],,with_magick=yes)
+[  --with-magick  compile with magick(default)
+  --without-magick  compile without magick],,with_magick=yes)
 
 HAVE_MAGICK=no
 if test "x${with_magick}" = xyes; then
@@ -89,8 +89,13 @@ dnl
 dnl LIBPNG
 dnl
 
+AC_ARG_WITH(png,
+[  --with-png  compile with png(default)
+  --without-png  compile without png],,with_png=yes)
+
 HAVE_LIBPNG=no
-PKG_CHECK_MODULES([LIBPNG],[libpng],
+if test "x${with_png}" = xyes; then
+	PKG_CHECK_MODULES([LIBPNG],[libpng],
 		  [
 		   HAVE_LIBPNG=yes
 		   AC_DEFINE(HAVE_LIBPNG,1,[PNG library is available or not])
@@ -100,6 +105,9 @@ PKG_CHECK_MODULES([LIBPNG],[libpng],
 		    AC_MSG_WARN([*** Png input handler is disabled. ***])
 		    ]
 		  )
+else
+		AC_MSG_WARN([*** libpng input handler is disabled.           ***])
+fi
 AM_CONDITIONAL(HAVE_LIBPNG, test $HAVE_LIBPNG = yes)
 
 dnl
