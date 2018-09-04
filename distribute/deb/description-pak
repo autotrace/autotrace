@@ -1,0 +1,7 @@
+AutoTrace is a utility for converting bitmap into vector graphics.
+Features
+ * tracing outline and midline
+ * color reduction and despeckling
+ * supports a lot of input and output format
+Program comes from two parts: command and library. 
+The library is named libautotrace.

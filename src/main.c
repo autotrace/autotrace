@@ -11,7 +11,6 @@
 #include "filename.h"
 #include "xstd.h"
 #include "atou.h"
-#include "strgicmp.h"
 #include "input.h"
 
 #include <string.h>
@@ -93,7 +92,7 @@ int main(int argc, char *argv[])
 
   input_name = read_command_line(argc, argv, fitting_opts, input_opts, output_opts);
 
-  if (strgicmp(output_name, input_name))
+  if (output_name != NULL && input_name != NULL && 0 == strcasecmp(output_name, input_name))
     FATAL(_("Input and output file may not be the same\n"));
 
   if ((input_rootname = remove_suffix(get_basename(input_name))) == NULL)

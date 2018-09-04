@@ -84,6 +84,7 @@ libautotrace_la_SOURCES =\
 		src/epsilon-equal.c \
 		src/vector.c \
 		src/color.c \
+		src/datetime.c \
 		src/autotrace.c \
 		src/output.c \
 		src/input.c \
@@ -105,7 +106,6 @@ libautotrace_la_SOURCES =\
 		src/despeckle.c \
 		src/despeckle.h \
 		src/exception.c \
-		src/strgicmp.c \
 		src/image-proc.c \
 		src/image-proc.h \
 		src/module.c \
@@ -134,15 +134,14 @@ autotrace_SOURCES=\
 		src/atou.c				\
 		src/atou.h				\
 		src/main.c				\
-		src/cmdline.h			\
-		src/strgicmp.h
+		src/cmdline.h
 
 AM_CPPFLAGS = $(MAGICK_CFLAGS) $(LIBPSTOEDIT_CFLAGS) $(LIBSWF_CFLAGS) $(GLIB2_CFLAGS) -DLOCALEDIR=\""$(datadir)/locale"\"
 
 autotrace_LDADD =				\
 		libautotrace.la			\
 		$(MAGICK_LIBS)		\
-		$(LIBPNG_LDFLAGS)		\
+		$(LIBPNG_LIBS)		\
 		$(LIBSWF_LIBS)		\
 		$(LIBPSTOEDIT_LIBS)		\
 		$(GLIB2_LIBS)			\
