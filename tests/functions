@@ -1,0 +1,80 @@
+# This regression test is a part of Autotrace.
+# Author: Walter Doekes, OSSO B.V., 2014
+# Taken from https://github.com/SIPp/sipp
+
+init() {
+    # Jump into the directory where the test is.
+    cd "`dirname "$0"`"
+
+    # Print a nice message.
+    echo -n "Testing `basename \`pwd\``: "
+}
+
+# Allow AUTOTRACE=/path/to/autotrace to override autodetection.  Please use an
+# absolute path.  This allows you to test a different version.
+get_autotrace() {
+    if test -z "$AUTOTRACE"; then
+        # The cd in init() jumps to the directory where the test lives.
+        # We traverse upwards in the directory until we find the autotrace
+        # binary.
+        tmp=`pwd`
+        while ! test -x "$tmp/autotrace"; do
+            tmp=`dirname "$tmp"`
+            test "$tmp" = "/" && break
+        done
+        test -x "$tmp/autotrace" || exit 1
+        AUTOTRACE="$tmp/autotrace"
+    fi
+    echo "$AUTOTRACE"
+}
+
+autotrace() {
+    "`get_autotrace`" "$@"
+}
+
+autotraceversion() {
+    "`get_autotrace`" -v
+}
+
+cleanup() {
+    # Kill all of our children, if there are any.
+    pkill -P$$
+    wait
+}
+
+ok() {
+    echo "."
+    cleanup
+    exit 0
+}
+
+fail() {
+    test -z "$@" && echo "failed" || echo "failed ($@)"
+    cleanup
+    exit 1
+}
+
+unexpected_ok() {
+    echo "unexpected success"
+    cleanup
+    exit 2
+}
+
+expected_fail() {
+    echo "x"
+    cleanup
+    test -n "$VERBOSE_EXITSTATUS" && exit 3
+    exit 0
+}
+
+skip() {
+    echo "skipped ($@)"
+    cleanup
+    test -n "$VERBOSE_EXITSTATUS" && exit 4
+    exit 0
+}
+
+# Workaround when no term is set. See also github-#0075.
+export TERM=dumb
+
+# vim: set syn=sh ts=8 sw=4 sts=4 et ai:
