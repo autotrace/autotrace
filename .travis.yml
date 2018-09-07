@@ -19,6 +19,7 @@ addons:
     packages:
       - autotools-dev
       - autopoint
+      - diffutils
       - libtool
       - intltool
       - libpng-dev

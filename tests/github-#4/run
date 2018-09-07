@@ -1,0 +1,16 @@
+#!/bin/sh
+
+. "`dirname "$0"`/../functions"
+
+DIR=$1
+
+autotrace -report-progress -filter-iterations 0 -error-threshold 1 -centerline $DIR/testrect.pbm -output-format svg -output-file $DIR/testrect.svg
+cmp --silent $DIR/testrect.output.svg $DIR/testrect.svg
+RESULT=$?
+
+if [ $RESULT -eq 0 ] ; then
+    rm -f $DIR/testrect.svg
+    ok
+else
+    fail "$DIR/testrect.output.svg not equal to $DIR/testrect.svg"
+fi
