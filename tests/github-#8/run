@@ -1,0 +1,12 @@
+#!/bin/sh
+
+. "`dirname "$0"`/../functions"
+
+DIR=$1
+
+autotrace -output-file $DIR/trace01.svg -output-format svg -report-progress $DIR/trace01.bmp
+autotrace -output-file $DIR/trace02.svg -output-format svg -report-progress $DIR/trace02.bmp
+autotrace -centerline -output-file $DIR/trace01_c.svg -output-format svg -report-progress $DIR/trace01.bmp
+autotrace -centerline -output-file $DIR/trace02_c.svg -output-format svg -report-progress $DIR/trace02.bmp
+rm -f $DIR/trace01.svg $DIR/trace02.svg $DIR/trace01_c.svg $DIR/trace02_c.svg
+ok

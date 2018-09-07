@@ -19,6 +19,7 @@ addons:
     packages:
       - autotools-dev
       - autopoint
+      - diffutils
       - libtool
       - intltool
       - libpng-dev
@@ -57,6 +58,7 @@ script:
   - test "$TRAVIS_OS_NAME" != osx   || DYLD_LIBRARY_PATH=.libs objdump -macho -dylibs-used .libs/autotrace || true
   - test "$TRAVIS_OS_NAME" != linux || LD_LIBRARY_PATH=.libs ldd .libs/autotrace || true
   - "./autotrace -v"
+  - ./tests/runtests.sh
   - (cd distribute; sh ./distribute.sh)
   # avoid silly error: Skipping a deployment with the releases provider because this is not a tagged commit
   - test -n "$TRAVIS_TAG" || export TRAVIS_TAG="travis-$(date +%Y%m%d).$TRAVIS_BUILD_NUMBER"
