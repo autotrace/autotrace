@@ -70,7 +70,7 @@ int main(int argc, char *argv[])
   at_output_opts_type *output_opts;
   char *input_name, *input_rootname;
   char *dumpfile_name = NULL;
-  at_splines_type *splines;
+  at_splines_type splines;
   at_bitmap *bitmap;
   FILE *output_file;
   FILE *dump_file;
@@ -144,7 +144,7 @@ int main(int argc, char *argv[])
     fprintf(stderr, "%-15s", input_name);
   };
 
-  splines = at_splines_new_full(bitmap, fitting_opts, exception_handler, NULL, progress_reporter, &progress_stat, NULL, NULL);
+  splines = *at_splines_new_full(bitmap, fitting_opts, exception_handler, NULL, progress_reporter, &progress_stat, NULL, NULL);
 
   /* Dump loaded bitmap if needed */
   if (dumping_bitmap) {
@@ -168,13 +168,13 @@ int main(int argc, char *argv[])
     fclose(dump_file);
   }
 
-  at_splines_write(output_writer, output_file, output_name, output_opts, splines, exception_handler, NULL);
+  at_splines_write(output_writer, output_file, output_name, output_opts, &splines, exception_handler, NULL);
   at_output_opts_free(output_opts);
 
   if (output_file != stdout)
     fclose(output_file);
 
-  at_splines_free(splines);
+  at_splines_free(&splines);
   at_bitmap_free(bitmap);
   at_fitting_opts_free(fitting_opts);
 
@@ -202,7 +202,7 @@ corner-always-threshold <angle-in-degrees>: if the angle at a pixel is\n\
   `corner-surround' pixels of another corner; default is 60.\n\
 corner-surround <unsigned>: number of pixels on either side of a\n\
   point to consider when determining if that point is a corner;\n\
-  default is 4.\n\
+  default is 3.\n\
 corner-threshold <angle-in-degrees>: if a pixel, its predecessor(s),\n\
   and its successor(s) meet at an angle smaller than this, it's a\n\
   corner; default is 100.\n\
@@ -213,7 +213,7 @@ dpi <unsigned>: The dots per inch value in the input image, affects scaling\n\
 #define USAGE2 "error-threshold <real>: subdivide fitted curves that are off by\n\
   more pixels than this; default is 2.0.\n\
 filter-iterations <unsigned>: smooth the curve this many times\n\
-  before fitting; default is 4.\n\
+  before fitting; default is 2.\n\
 input-format:  %s. \n\
 help: print this message.\n\
 line-reversion-threshold <real>: if a spline is closer to a straight\n\
@@ -231,6 +231,7 @@ output-format <format>: use format <format> for the output file\n\
   %s can be used.\n\
 preserve-width: whether to preserve line width prior to thinning.\n\
 remove-adjacent-corners: remove corners that are adjacent.\n\
+remove-knees: remove knees that are found.\n\
 tangent-surround <unsigned>: number of points on either side of a\n\
   point to consider when computing the tangent at that point; default is 3.\n\
 report-progress: report tracing status in real time.\n\
@@ -275,6 +276,7 @@ static char *read_command_line(int argc, char *argv[], at_fitting_opts_type * fi
   {"preserve-width", 0, 0, 0},
   {"range", 1, 0, 0},
   {"remove-adjacent-corners", 0, 0, 0},
+  { "remove-knees",    0, 0, 0 },
   {"tangent-surround", 1, 0, 0},
   {"report-progress", 0, (int *)&report_progress, 1},
   {"version", 0, (int *)&printed_version, 1},
@@ -393,6 +395,9 @@ static char *read_command_line(int argc, char *argv[], at_fitting_opts_type * fi
     else if (ARGUMENT_IS("remove-adjacent-corners"))
       fitting_opts->remove_adjacent_corners = TRUE;
 
+    else if (ARGUMENT_IS("remove-knees"))
+      fitting_opts->remove_knees = true;
+
     else if (ARGUMENT_IS("tangent-surround"))
       fitting_opts->tangent_surround = atou(optarg);
 
@@ -429,11 +434,24 @@ static void input_list_formats(FILE * file)
 
   const char *suffix;
   const char *descr;
+  unsigned lensuffix = 0;
   tmp = list;
   while (*list) {
     suffix = *list++;
+    *list++;
+    if (strlen(suffix) > lensuffix) lensuffix = strlen(suffix);
+  }
+  list = tmp;
+  while (*list) {
+    char len[3];
+    char format[10];
+    suffix = *list++;
     descr = *list++;
-    fprintf(file, "%5s %s\n", suffix, descr);
+    _itoa_s(lensuffix, len, 3, 10);
+    strcpy_s(format, 10, "%");
+    strcat_s(format, 10, len);
+    strcat_s(format, 10, "s %s\n");
+    fprintf(file, format, suffix, descr);
   }
 
   at_input_list_free(tmp);

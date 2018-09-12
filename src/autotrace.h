@@ -172,6 +172,11 @@ N_("remove-adjacent-corners: remove corners that are adjacent; "	\
 "default doesn't remove.")
     gboolean remove_adjacent_corners;
 
+#define at_doc__remove_knees                                   		\
+N_("remove-knees: remove knees that are found; "       			\
+"default doesn't remove.")
+    gboolean remove_knees; 
+
 #define at_doc__tangent_surround					\
 N_("tangent-surround <unsigned>: number of points on either side of a "	\
 "point to consider when computing the tangent at that point; "		\

@@ -24,12 +24,13 @@
 #include "spline.h"
 #include "color.h"
 #include "output-swf.h"
-#include <ming.h>
+#include "../ming-0.2a/ming.h"
 
 #define FPS 24.0
 #define IMGID 1
 #define IMGLAYER 1
 #define SWFSCALE 20
+#define SWFSCALE 1
 
 static void out_splines(SWFMovie m, spline_list_array_type shape, int height)
 {
@@ -59,7 +60,7 @@ static void out_splines(SWFMovie m, spline_list_array_type shape, int height)
         SWFShape_drawCubicTo(k, SWFSCALE * CONTROL1(s).x, SWFSCALE * height - SWFSCALE * CONTROL1(s).y, SWFSCALE * CONTROL2(s).x, SWFSCALE * height - SWFSCALE * CONTROL2(s).y, SWFSCALE * END_POINT(s).x, SWFSCALE * height - SWFSCALE * END_POINT(s).y);
       }
     }
-    SWFMovie_add(m, k);
+    SWFMovie_add(m, (SWFBlock)k); //(SWFBlock)k needed for higher versions
   }
 }
 

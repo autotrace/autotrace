@@ -29,7 +29,14 @@
 #include <stdlib.h>
 #include <string.h>
 #include <sys/types.h>          /* Needed for correct interpretation of magick/api.h */
+#define MagickLibVersion 0x0626  /* workaround because not yet defined */
+#if (MagickLibVersion < 0x0626)
+#undef MagickLibVersion
 #include <magick/api.h>
+#else
+#undef MagickLibVersion
+#include <MagickCore/magickCore.h>
+#endif
 
 static at_bitmap input_magick_reader(gchar * filename, at_input_opts_type * opts, at_msg_func msg_func, gpointer msg_data, gpointer user_data)
 {
@@ -38,12 +45,32 @@ static at_bitmap input_magick_reader(gchar * filename, at_input_opts_type * opts
   ImageType image_type;
   unsigned int i, j, point, np, runcount;
   at_bitmap bitmap;
+#if (MagickLibVersion < 0x0645)
   PixelPacket p;
   PixelPacket *pixel = &p;
+#else
+  Quantum quantum[32]; /* no idea why it must be this number, otherwise memory of other variables becomes corrupted */
+#endif
   ExceptionInfo exception;
+#if (MagickLibVersion < 0x0538)
+  MagickIncarnate("");
+#elif (MagickLibVersion < 0x0634)
   InitializeMagick("");
+#else
+  MagickCoreGenesis("", MagickTrue);
+#endif
+#if (MagickLibVersion < 0x0626)
   GetExceptionInfo(&exception);
+#else
+  exception = *AcquireExceptionInfo();
+#endif
+
+#if (MagickLibVersion < 0x0629)
   image_info = CloneImageInfo((ImageInfo *) NULL);
+#else
+  image_info = AcquireImageInfo();
+#endif
+
   (void)strcpy(image_info->filename, filename);
   image_info->antialias = 0;
 
@@ -54,7 +81,11 @@ static at_bitmap input_magick_reader(gchar * filename, at_input_opts_type * opts
       msg_func(exception.reason, AT_MSG_FATAL, msg_data);
     goto cleanup;
   }
+#if (MagickLibVersion < 0x0540 || MagickLibVersion > 0x0697)
+  image_type = GetImageType(image);
+#else
   image_type = GetImageType(image, &exception);
+#endif
   if (image_type == BilevelType || image_type == GrayscaleType)
     np = 1;
   else
@@ -64,10 +95,24 @@ static at_bitmap input_magick_reader(gchar * filename, at_input_opts_type * opts
 
   for (j = 0, runcount = 0, point = 0; j < image->rows; j++)
     for (i = 0; i < image->columns; i++) {
-#if (MagickLibVersion < 0x0645) || (MagickLibVersion >= 0x0649)
+#if (MagickLibVersion < 0x0645)
       p = GetOnePixel(image, i, j);
+      AT_BITMAP_BITS(bitmap)[point++]=pixel->red; /* if gray: red=green=blue */
+      if(np==3) {
+        AT_BITMAP_BITS(bitmap)[point++]=pixel->green;
+        AT_BITMAP_BITS(bitmap)[point++]=pixel->blue;
+      }
 #else
-      GetOnePixel(image, i, j, pixel);
+	if (GetOneVirtualPixel(image, i, j, quantum, &exception) == false) {
+		if (msg_func)
+			msg_func(exception.reason, AT_MSG_FATAL, msg_data);
+		goto cleanup;
+	}
+	AT_BITMAP_BITS(bitmap)[point++] = ScaleQuantumToChar(quantum[0]); /* if gray: red=green=blue */
+	if (np == 3) {
+		AT_BITMAP_BITS(bitmap)[point++] = ScaleQuantumToChar(quantum[1]);
+		AT_BITMAP_BITS(bitmap)[point++] = ScaleQuantumToChar(quantum[2]);
+	}
 #endif
       AT_BITMAP_BITS(&bitmap)[point++] = pixel->red;  /* if gray: red=green=blue */
       if (np == 3) {

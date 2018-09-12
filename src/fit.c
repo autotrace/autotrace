@@ -92,13 +92,14 @@ fitting_opts_type new_fitting_opts(void)
   fitting_opts.charcode = 0;
   fitting_opts.color_count = 0;
   fitting_opts.corner_always_threshold = (gfloat) 60.0;
-  fitting_opts.corner_surround = 4;
+  fitting_opts.corner_surround = 3;
   fitting_opts.corner_threshold = (gfloat) 100.0;
   fitting_opts.error_threshold = (gfloat) 2.0;
-  fitting_opts.filter_iterations = 4;
+  fitting_opts.filter_iterations = 2;
   fitting_opts.line_reversion_threshold = (gfloat) .01;
   fitting_opts.line_threshold = (gfloat) 1.0;
   fitting_opts.remove_adjacent_corners = FALSE;
+  fitting_opts.remove_knees = FALSE;
   fitting_opts.tangent_surround = 3;
   fitting_opts.despeckle_level = 0;
   fitting_opts.despeckle_tightness = 2.0;
