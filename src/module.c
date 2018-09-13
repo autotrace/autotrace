@@ -59,6 +59,7 @@ int install_input_magick_readers(void)
 #include "output-dxf.h"
 #include "output-epd.h"
 #include "output-pdf.h"
+#include "output-plt.h"
 #include "output-cgm.h"
 #include "output-dr2d.h"
 #if HAVE_LIBPSTOEDIT
@@ -124,6 +125,7 @@ static int install_output_writers(void)
   at_output_add_handler("DXF", "DXF format (without splines)", output_dxf12_writer);
   at_output_add_handler("EPD", "EPD format", output_epd_writer);
   at_output_add_handler("PDF", "PDF format", output_pdf_writer);
+  at_output_add_handler("PLT", "HPGL format", output_plt_writer);
   at_output_add_handler("CGM", "Computer Graphics Metafile", output_cgm_writer);
   at_output_add_handler("DR2D", "IFF DR2D format", output_dr2d_writer);
   at_output_add_handler("POV", "Povray format", output_pov_writer);
