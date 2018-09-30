@@ -54,7 +54,8 @@ before_script:
   - test "$TRAVIS_OS_NAME" != linux || ./configure --prefix=/usr
 
 script:
-  - env MACOSX_DEPLOYMENT_TARGET=10.8 make
+  - test "$TRAVIS_OS_NAME" != osx || export MACOSX_DEPLOYMENT_TARGET=10.8
+  - make
   - test "$TRAVIS_OS_NAME" != osx   || DYLD_LIBRARY_PATH=.libs objdump -macho -dylibs-used .libs/autotrace || true
   - test "$TRAVIS_OS_NAME" != linux || LD_LIBRARY_PATH=.libs ldd .libs/autotrace || true
   - "./autotrace -v"
