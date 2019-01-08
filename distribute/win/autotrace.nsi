@@ -24,7 +24,8 @@ OutFile "autotrace-${VERSION}-setup.exe"
 
 ; The default installation directory
 ;InstallDir $EXEDIR
-InstallDir $PROGRAMFILES\AutoTrace
+; Do not use PROGRAMFILES, that is for 32bit code only!
+InstallDir $PROGRAMFILES64\AutoTrace
 
 ; Request application privileges for Windows Vista
 ; RequestExecutionLevel user
@@ -50,6 +51,7 @@ Section "" ;No components page, name is not important
   File /oname=libffi-6.dll   "3rdparty/libffi-6.dll"
   File /oname=libintl-8.dll  "3rdparty/libintl-8.dll"
   File /oname=libiconv-2.dll "3rdparty/libiconv-2.dll"
+  File /oname=libpng16-16.dll "3rdparty/libpng16-16.dll"
   File /oname=libglib-2.0-0.dll    "glib-2/bin/libglib-2.0-0.dll"
   File /oname=libgobject-2.0-0.dll "glib-2/bin/libgobject-2.0-0.dll"
 

@@ -4,6 +4,7 @@ glib-dev_2.34.3-1_win64.zip:
 
 libffi-6.dll
 libiconv-2.dll
-libintl-8.dll:
+libintl-8.dll
+libpng16-16.dll:
 	https://inkscape.org/de/gallery/item/12189/inkscape-0.92.3-x64.exe
 
