@@ -155,7 +155,7 @@ Contribution
 ------------
 Programmers wanted!!!
 
-See `TODO` and `HACKING` file and contact the author.
+See the [issue tracker](https://github.com/autotrace/autotrace/issues), or the `TODO` file and contact the author.
 
 Author
 ------
