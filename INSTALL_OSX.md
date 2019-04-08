@@ -16,6 +16,8 @@ For this, use `configure --without-magick --without-pstoedit`
 export PATH="/usr/local/opt/gettext/bin:$PATH"
 brew install gettext intltool glib libtool autoconf automake pkg-config
 brew install imagemagick graphicsmagick pstoedit
+git clone https://github.com/autotrace/autotrace.git
+cd autotrace
 autoreconf -ivf
 intltoolize --force
 aclocal
