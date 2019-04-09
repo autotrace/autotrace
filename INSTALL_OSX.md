@@ -21,6 +21,7 @@ cd autotrace
 autoreconf -ivf
 intltoolize --force
 aclocal
+test -e /usr/local/lib/pkgconfig/libffi.pc || ln -s ../../Cellar/libffi/3.2.1/lib/pkgconfig/libffi.pc /usr/local/lib/pkgconfig/
 sh ./configure MAGICK_CFLAGS="$(pkg-config graphicsmagick --cflags)" MAGICK_LIBS="$(pkg-config graphicsmagick --libs)"
 make
 make install
