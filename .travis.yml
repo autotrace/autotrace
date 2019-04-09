@@ -50,6 +50,8 @@ before_script:
   - autoreconf -ivf
   - intltoolize --force
   - aclocal
+  - ls -la /usr/local/lib/pkgconfig/ || true
+  - test -f /usr/local/Cellar/libffi/3.2.1/lib/pkgconfig/libffi.pc && ln -s ../../Cellar/libffi/3.2.1/lib/pkgconfig/libffi.pc /usr/local/lib/pkgconfig/ || true
   - test "$TRAVIS_OS_NAME" != osx || sh ./configure MAGICK_CFLAGS="-mmacosx-version-min=10.8 $(pkg-config graphicsmagick --cflags)" MAGICK_LIBS="$(pkg-config graphicsmagick --libs)"
   - test "$TRAVIS_OS_NAME" != linux || ./configure --prefix=/usr
 
