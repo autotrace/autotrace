@@ -55,9 +55,14 @@ at_color *at_color_parse(const gchar * string, GError ** err)
   }
 
   for (i = 0; i < 6; i++) {
-    char *endptr;
-    c[i] = (int)strtol(&string[i], &endptr, 16);
-    if (endptr == &string[i]) {
+    char ch = string[i];
+    if (ch >= '0' && ch <= '9')
+      c[i] = ch - '0';
+    else if (ch >= 'A' && ch <= 'F')
+      c[i] = ch - 'A' + 10;
+    else if (ch >= 'a' && ch <= 'f')
+      c[i] = ch - 'a' + 10;
+    else {
       g_set_error(&local_err, AT_ERROR, AT_ERROR_WRONG_COLOR_STRING, _("wrong char in color string: %c"), string[i]);
       g_propagate_error(err, local_err);
       return NULL;
