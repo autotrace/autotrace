@@ -59,9 +59,9 @@ at_color *at_color_parse(const gchar * string, GError ** err)
     if (ch >= '0' && ch <= '9')
       c[i] = ch - '0';
     else if (ch >= 'A' && ch <= 'F')
-      ch[i] = ch - 'A' + 10;
+      c[i] = ch - 'A' + 10;
     else if (ch >= 'a' && ch <= 'f')
-      ch[i] = ch - 'a' + 10;
+      c[i] = ch - 'a' + 10;
     else {
       g_set_error(&local_err, AT_ERROR, AT_ERROR_WRONG_COLOR_STRING, _("wrong char in color string: %c"), string[i]);
       g_propagate_error(err, local_err);
