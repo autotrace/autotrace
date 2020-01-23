@@ -589,10 +589,10 @@ int writeILDAFrameHeader(FILE * file, LaserFrame * f, int format, unsigned int f
 
   if (f) {
 #ifdef _WINDOWS
-    _snprintf((char *)(fhbuffer), 16, "Frame #%04d", frames);
+    _snprintf((char *)(fhbuffer), 17, "Frame #%04d     ", frames);
 #endif
 #ifndef _WINDOWS
-    snprintf((char *)(fhbuffer), 16, "Frame #%04d", frames);
+    snprintf((char *)(fhbuffer), 17, "Frame #%04d     ", frames);
 #endif
   } else {
     strncpy((char *)(fhbuffer), (char *)emptys, 16);
