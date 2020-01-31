@@ -94,6 +94,7 @@ int at_input_add_handler(const gchar * suffix, const gchar * description, at_inp
 
 int at_input_add_handler_full(const gchar * suffix, const gchar * description, at_input_func reader, gboolean override, gpointer user_data, GDestroyNotify user_data_destroy_func)
 {
+  gchar *gsuffix_raw;
   gchar *gsuffix;
   const gchar *gdescription;
   at_input_format_entry *old_entry;
@@ -103,9 +104,10 @@ int at_input_add_handler_full(const gchar * suffix, const gchar * description, a
   g_return_val_if_fail(description, 0);
   g_return_val_if_fail(reader, 0);
 
-  gsuffix = g_strdup((gchar *) suffix);
-  g_return_val_if_fail(gsuffix, 0);
-  gsuffix = g_ascii_strdown(gsuffix, strlen(gsuffix));
+  gsuffix_raw = g_strdup((gchar *) suffix);
+  g_return_val_if_fail(gsuffix_raw, 0);
+  gsuffix = g_ascii_strdown(gsuffix_raw, strlen(gsuffix_raw));
+  g_free(gsuffix_raw);
 
   gdescription = (const gchar *)description;
 
@@ -134,14 +136,16 @@ at_bitmap_reader *at_input_get_handler(gchar * filename)
 at_bitmap_reader *at_input_get_handler_by_suffix(gchar * suffix)
 {
   at_input_format_entry *format;
+  gchar *gsuffix_raw;
   gchar *gsuffix;
 
   if (!suffix || suffix[0] == '\0')
     return NULL;
 
-  gsuffix = g_strdup(suffix);
-  g_return_val_if_fail(gsuffix, NULL);
-  gsuffix = g_ascii_strdown(gsuffix, strlen(gsuffix));
+  gsuffix_raw = g_strdup(suffix);
+  g_return_val_if_fail(gsuffix_raw, NULL);
+  gsuffix = g_ascii_strdown(gsuffix_raw, strlen(gsuffix_raw));
+  g_free(gsuffix_raw);
   format = g_hash_table_lookup(at_input_formats, gsuffix);
   g_free(gsuffix);
 
