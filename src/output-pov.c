@@ -40,10 +40,6 @@
 #define OUT(s, ...)									\
   fprintf (pov_file, s, __VA_ARGS__)
 
-/* These macros just output their arguments.  */
-#define OUT_REAL(r)	fprintf (pov_file, r == (lround (r = lround((gfloat)6.0*r)/(gfloat)6.0))				\
-                                  ? "%.0f " : "%.3f ", r)
-
 /* This outputs the Povray code which produces the shape in
    SHAPE.  */
 
