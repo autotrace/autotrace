@@ -139,10 +139,27 @@ at_bitmap input_png_reader(gchar * filename, at_input_opts_type * opts, at_msg_f
   return image;
 }
 
+static png_bytep *read_image(png_structp png_ptr, png_infop info_ptr)
+{
+  unsigned width, height, y;
+  png_bytep *rows;
+
+  width = png_get_rowbytes(png_ptr, info_ptr);
+  height = png_get_image_height(png_ptr, info_ptr);
+  rows = (png_bytep *) png_malloc(png_ptr, height * sizeof(png_bytep));
+  for (y = 0; y < height; y++) {
+    rows[y] = (png_bytep) png_malloc(png_ptr, width);
+  }
+
+  png_read_image(png_ptr, rows);
+  return rows;
+}
+
 static png_bytep *read_png(png_structp png_ptr, png_infop info_ptr, at_input_opts_type * opts)
 {
   png_color_16p original_bg;
   png_color_16 my_bg;
+  png_bytep *rows;
 
   png_read_info(png_ptr, info_ptr);
 
@@ -170,7 +187,7 @@ static png_bytep *read_png(png_structp png_ptr, png_infop info_ptr, at_input_opt
   png_set_interlace_handling(png_ptr);
   png_read_update_info(png_ptr, info_ptr);
 
-  png_read_png(png_ptr, info_ptr, PNG_TRANSFORM_IDENTITY, NULL);
+  rows = read_image(png_ptr, info_ptr);
   png_read_end(png_ptr, info_ptr);
-  return png_get_rows(png_ptr, info_ptr);
+  return rows;
 }
