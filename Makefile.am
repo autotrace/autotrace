@@ -99,7 +99,6 @@ libautotrace_la_SOURCES =\
 		src/image-header.h \
 		src/fit.h \
 		src/bitmap.h \
-		src/spline.h \
 		src/curve.h \
 		src/vector.h \
 		src/pxl-outline.h \
@@ -117,6 +116,7 @@ autotraceinclude_HEADERS=\
 		src/autotrace.h \
 		src/input.h \
 		src/output.h \
+		src/spline.h \
 		src/exception.h \
 		src/color.h
 
