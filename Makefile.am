@@ -1,23 +1,24 @@
 SUBDIRS = po
 man_MANS = autotrace.1
 EXTRA_DIST=$(man_MANS) \
-	   src/output-swf.c \
-	   src/output-swf.h \
-	   src/input-magick.h \
+	   FAQ \
+	   INSTALL_OSX.md \
+	   README.md \
+	   TODO \
+	   autotrace.pc.in \
+	   distribute \
+	   doc/HACKING \
+	   doc/README.MING \
+	   doc/despeckle.txt \
+	   doc/patchestoming02a.txt \
 	   src/input-magick.c \
+	   src/input-magick.h \
 	   src/input-png.c \
 	   src/input-png.h \
 	   src/output-pstoedit.c \
 	   src/output-pstoedit.h \
-	   autotrace-config.af \
-	   autotrace-config.in \
-	   autotrace.m4 \
-	   shape_cubic.c.diff \
-	   doc/README.MING \
-	   autotrace.pc.in \
-	   TODO \
-	   doc/HACKING \
-	   doc/FAQ
+	   src/output-swf.c \
+	   src/output-swf.h
 
 AUTOMAKE_OPTIONS = foreign no-dependencies
 
@@ -153,3 +154,6 @@ pkgconfigdir = $(libdir)/pkgconfig
 pkgconfig_DATA= autotrace.pc
 
 ACLOCAL_AMFLAGS = -I m4
+
+check-recursive:
+	./tests/runtests.sh
