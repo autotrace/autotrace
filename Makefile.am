@@ -154,3 +154,6 @@ pkgconfigdir = $(libdir)/pkgconfig
 pkgconfig_DATA= autotrace.pc
 
 ACLOCAL_AMFLAGS = -I m4
+
+check-recursive:
+	./tests/runtests.sh
