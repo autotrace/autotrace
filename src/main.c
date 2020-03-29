@@ -387,7 +387,7 @@ static char *read_command_line(int argc, char *argv[], at_fitting_opts_type * fi
       output_writer = at_output_get_handler_by_suffix(optarg);
       if (output_writer == NULL)
         FATAL(_("Output format %s is not supported"), optarg);
-    } else if (ARGUMENT_IS("preserve_width"))
+    } else if (ARGUMENT_IS("preserve-width"))
       fitting_opts->preserve_width = TRUE;
 
     else if (ARGUMENT_IS("remove-adjacent-corners"))
