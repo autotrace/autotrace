@@ -187,57 +187,58 @@ int main(int argc, char *argv[])
 /* Reading the options.  */
 
 #define USAGE1 "Options:\
-<input_name> should be a supported image.\n"\
+<input_name> must be a supported image file.\n"\
   GETOPT_USAGE								\
-"background-color <hexadezimal>: the color of the background that\n\
-  should be ignored, for example FFFFFF;\n\
-  default is no background color.\n\
-centerline: trace a character's centerline, rather than its outline.\n\
-charcode <unsigned>: code of character to load from GF font file.\n\
-color-count <unsigned>: number of colors a color bitmap is reduced to,\n\
-  it does not work on grayscale, allowed are 1..256;\n\
-  default is 0, that means not color reduction is done.\n\
-corner-always-threshold <angle-in-degrees>: if the angle at a pixel is\n\
-  less than this, it is considered a corner, even if it is within\n\
-  `corner-surround' pixels of another corner; default is 60.\n\
-corner-surround <unsigned>: number of pixels on either side of a\n\
-  point to consider when determining if that point is a corner;\n\
-  default is 4.\n\
-corner-threshold <angle-in-degrees>: if a pixel, its predecessor(s),\n\
-  and its successor(s) meet at an angle smaller than this, it's a\n\
-  corner; default is 100.\n\
-despeckle-level <unsigned>: 0..20; default is no despeckling.\n\
-despeckle-tightness <real>: 0.0..8.0; default is 2.0.\n\
-dpi <unsigned>: The dots per inch value in the input image, affects scaling\n\
-  of mif output image\n"
-#define USAGE2 "error-threshold <real>: subdivide fitted curves that are off by\n\
-  more pixels than this; default is 2.0.\n\
-filter-iterations <unsigned>: smooth the curve this many times\n\
-  before fitting; default is 4.\n\
-input-format:  %s. \n\
-help: print this message.\n\
-line-reversion-threshold <real>: if a spline is closer to a straight\n\
-  line than this, weighted by the square of the curve length, keep it a\n\
-  straight line even if it is a list with curves; default is .01.\n\
-line-threshold <real>: if the spline is not more than this far away\n\
-  from the straight line defined by its endpoints,\n\
-  then output a straight line; default is 1.\n\
-list-output-formats: print a list of support output formats to stderr.\n\
-list-input-formats:  print a list of support input formats to stderr.\n\
-log: write detailed progress reports to <input_name>.log.\n\
-noise-removal <real>:: 0.0..1.0; default is 0.99.\n\
-output-file <filename>: write to <filename>\n\
-output-format <format>: use format <format> for the output file\n\
-  %s can be used.\n\
-preserve-width: whether to preserve line width prior to thinning.\n\
-remove-adjacent-corners: remove corners that are adjacent.\n\
-tangent-surround <unsigned>: number of points on either side of a\n\
-  point to consider when computing the tangent at that point; default is 3.\n\
-report-progress: report tracing status in real time.\n\
-debug-arch: print the type of cpu.\n\
-debug-bitmap: dump loaded bitmap to <input_name>.bitmap.ppm or pgm.\n\
-version: print the version number of this program.\n\
-width-weight-factor <real>: weight factor for fitting the linewidth.\n\
+"\n\
+-background-color <hexadecimal>: the color of the background that should\n\
+    be ignored, for example FFFFFF; default is no background color.\n\n\
+-centerline: trace a character's centerline, rather than its outline.\n\n\
+-charcode <unsigned>: code of character to load from GF font file.\n\n\
+-color-count <unsigned>: number of colors a color bitmap is reduced to,\n\
+    it does not work on grayscale, allowed are 1..256;\n\
+    default is 0, that means no color reduction is done.\n\n\
+-corner-always-threshold <angle-in-degrees>: if the angle at a pixel is\n\
+    less than this, it is considered a corner, even if it is within\n\
+    `corner-surround' pixels of another corner; default is 60.\n\n\
+-corner-surround <unsigned>: number of pixels on either side of a\n\
+    point to consider when determining if that point is a corner;\n\
+    default is 4.\n\n\
+-corner-threshold <angle-in-degrees>: if a pixel, its predecessor(s),\n\
+    and its successor(s) meet at an angle smaller than this, it's a\n\
+    corner; default is 100.\n\n\
+-despeckle-level <unsigned>: 0..20; default is 0: no despeckling.\n\n\
+-despeckle-tightness <real>: 0.0..8.0; default is 2.0.\n\n\
+-dpi <unsigned>: The dots per inch value in the input image, affects scaling\n\
+    of mif output image\n\n"
+#define USAGE2 "\n\
+-error-threshold <real>: subdivide fitted curves that are off by\n\
+    more pixels than this; default is 2.0.\n\n\
+-filter-iterations <unsigned>: smooth the curve this many times\n\
+    before fitting; default is 4.\n\n\
+-input-format: Available formats: %s.\n\n\
+-help: print this message.\n\n\
+-line-reversion-threshold <real>: if a spline is closer to a straight\n\
+    line than this, weighted by the square of the curve length, keep it a\n\
+    straight line even if it is a list with curves; default is .01.\n\n\
+-line-threshold <real>: if the spline is not more than this far away\n\
+    from the straight line defined by its endpoints,\n\
+    then output a straight line; default is 1.\n\n\
+-list-output-formats: print a list of supported output formats to stderr.\n\n\
+-list-input-formats: print a list of supported input formats to stderr.\n\n\
+-log: write detailed progress reports to <input_name>.log.\n\n\
+-noise-removal <real>:: 0.0..1.0; default is 0.99.\n\n\
+-output-file <filename>: write to <filename>\n\n\
+-output-format <format>: use format <format> for the output file. Available formats:\n\
+    %s\n\n\
+-preserve-width: preserve line width prior to thinning.\n\n\
+-remove-adjacent-corners: remove corners that are adjacent.\n\n\
+-tangent-surround <unsigned>: number of points on either side of a\n\
+    point to consider when computing the tangent at that point; default is 3.\n\n\
+-report-progress: report tracing status in real time.\n\n\
+-debug-arch: print the type of cpu.\n\n\
+-debug-bitmap: dump loaded bitmap to <input_name>.bitmap.ppm or pgm.\n\n\
+-version: print the version number of this program.\n\n\
+-width-weight-factor <real>: weight factor for fitting the linewidth.\n\n\
 "
 
 /* We return the name of the image to process.  */
@@ -349,7 +350,7 @@ static char *read_command_line(int argc, char *argv[], at_fitting_opts_type * fi
 
     else if (ARGUMENT_IS("help")) {
       char *ishortlist, *oshortlist;
-      fprintf(stderr, _("Usage: %s [options] <input_file_name>.\n"), argv[0]);
+      fprintf(stderr, _("Usage: %s [options] <input_file_name>\n"), argv[0]);
       fprintf(stderr, USAGE1);
       fprintf(stderr, USAGE2, ishortlist = at_input_shortlist(), oshortlist = at_output_shortlist());
       free(ishortlist);

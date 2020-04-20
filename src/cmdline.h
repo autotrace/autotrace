@@ -31,10 +31,10 @@
         }								\
       else								\
         {								\
-          fprintf (stderr, "Usage: %s [options] <image_name>.\n", argv[0]);\
+          fprintf (stderr, "Usage: %s [options] <image_file_name>\n", argv[0]);\
           fprintf (stderr, "(%s.)\n", optind == argc ? "Missing <image_name>"\
-                                      : "Too many <image_name>s");	\
-          fputs ("For more information, use ``-help''.\n", stderr);	\
+                                      : "Too many <image_file_name>s");	\
+          fputs ("For more information, use ''-help''.\n", stderr);	\
           exit (1);							\
         }								\
       return NULL; /* stop warnings */					\
@@ -42,9 +42,9 @@
   while (0)
 
 #define GETOPT_USAGE \
-"  You can use `--' or `-' to start an option.\n\
+"  You can use '--' or '-' to start an option.\n\
   You can use any unambiguous abbreviation for an option name.\n\
-  You can separate option names and values with `=' or ` '.\n\
+  You can separate option names and values with '=' or ' '.\n\
 "
 
 /* What to pass to `strtok' to separate different arguments to an
