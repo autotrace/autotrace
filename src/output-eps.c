@@ -180,6 +180,8 @@ int output_eps_writer(FILE * ps_file, gchar * name, int llx, int lly, int urx, i
   if (result != 0)
     return result;
 
+  OUT_LINE("1 setlinecap");       /* set shape of line ends for stroke (0=butt,1=round, 2=square) */
+
   out_splines(ps_file, shape);
 
   OUT_LINE("%%Trailer");
