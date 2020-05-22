@@ -4,7 +4,7 @@
 name=$1
 vers=$2
 url=http://github.com/autotrace/autotrace
-requires="libpstoedit0c2a,libbz2-1.0,libgd3,libexif12,libtiff5,imagemagick"
+requires="libpstoedit0c2a,libbz2-1.0,libgd3,libexif12,libtiff5,libgraphicsmagick-q16-3"
 
 # libtool must not call ranlib when installing in fakeroot
 export PATH=$(pwd):$PATH

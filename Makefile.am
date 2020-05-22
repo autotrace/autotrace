@@ -137,11 +137,12 @@ autotrace_SOURCES=\
 		src/main.c				\
 		src/cmdline.h
 
-AM_CPPFLAGS = $(MAGICK_CFLAGS) $(LIBPSTOEDIT_CFLAGS) $(LIBSWF_CFLAGS) $(GLIB2_CFLAGS) -DLOCALEDIR=\""$(datadir)/locale"\"
+AM_CPPFLAGS = $(GRAPHICSMAGICK_CFLAGS) $(IMAGEMAGICK_CFLAGS) $(LIBPSTOEDIT_CFLAGS) $(LIBSWF_CFLAGS) $(GLIB2_CFLAGS) -DLOCALEDIR=\""$(datadir)/locale"\"
 
 autotrace_LDADD =				\
 		libautotrace.la			\
-		$(MAGICK_LIBS)		\
+		$(GRAPHICSMAGICK_LIBS)		\
+    $(IMAGEMAGICK_LIBS)		\
 		$(LIBPNG_LIBS)		\
 		$(LIBSWF_LIBS)		\
 		$(LIBPSTOEDIT_LIBS)		\

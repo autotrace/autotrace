@@ -64,10 +64,15 @@ static at_bitmap input_magick_reader(gchar * filename, at_input_opts_type * opts
 
   for (j = 0, runcount = 0, point = 0; j < image->rows; j++)
     for (i = 0; i < image->columns; i++) {
-#if (MagickLibVersion < 0x0645) || (MagickLibVersion >= 0x0649)
+#ifdef HAVE_GRAPHICSMAGICK
+      ExceptionInfo exception;
+      p = AcquireOnePixel(image, i, j, &exception);
+#elif defined(HAVE_IMAGEMAGICK)
+  #if ((MagickLibVersion < 0x0645) || (MagickLibVersion >= 0x0649))
       p = GetOnePixel(image, i, j);
-#else
+  #else
       GetOnePixel(image, i, j, pixel);
+  #endif
 #endif
       AT_BITMAP_BITS(&bitmap)[point++] = pixel->red;  /* if gray: red=green=blue */
       if (np == 3) {
