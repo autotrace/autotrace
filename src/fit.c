@@ -1017,7 +1017,7 @@ static spline_list_type *fit_with_least_squares(curve_type curve, fitting_opts_t
     spline_list = new_spline_list();
 
     if (left_spline_list == NULL) {
-      LOG("Could not fit spline to left curve (%lx).\n", (unsigned long)left_curve);
+      LOG("Could not fit spline to left curve (%lx).\n", (unsigned long)(uintptr_t)left_curve);
       at_exception_warning(exception, "Could not fit left spline list");
     } else {
       concat_spline_lists(spline_list, *left_spline_list);
@@ -1026,7 +1026,7 @@ static spline_list_type *fit_with_least_squares(curve_type curve, fitting_opts_t
     }
 
     if (right_spline_list == NULL) {
-      LOG("Could not fit spline to right curve (%lx).\n", (unsigned long)right_curve);
+      LOG("Could not fit spline to right curve (%lx).\n", (unsigned long)(uintptr_t)right_curve);
       at_exception_warning(exception, "Could not fit right spline list");
     } else {
       concat_spline_lists(spline_list, *right_spline_list);
