@@ -69,7 +69,7 @@ int output_svg_writer(FILE * file, gchar * name, int llx, int lly, int urx, int 
   int width = urx - llx;
   int height = ury - lly;
   fputs("<?xml version=\"1.0\" standalone=\"yes\"?>\n", file);
-  fprintf(file, "<svg width=\"%d\" height=\"%d\">\n", width, height);
+  fprintf(file, "<svg xmlns=\"http://www.w3.org/2000/svg\" width=\"%d\" height=\"%d\">\n", width, height);
 
   out_splines(file, shape, height);
   fputs("</svg>\n", file);
