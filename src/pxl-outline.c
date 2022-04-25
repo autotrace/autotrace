@@ -204,8 +204,10 @@ gboolean is_valid_dir(unsigned short row, unsigned short col, direction_type dir
 {
 
   at_color c;
+  int new_row = COMPUTE_DELTA(ROW, dir) + row;
+  int new_col = COMPUTE_DELTA(COL, dir) + col;
 
-  if ((COMPUTE_DELTA(ROW, dir) + row < 0) || (COMPUTE_DELTA(COL, dir) + col < 0))
+  if ((new_row < 0) || (new_col < 0) || (new_row >= AT_BITMAP_HEIGHT(bitmap)) || (new_col >= AT_BITMAP_WIDTH(bitmap)))
 	return FALSE;	// Must not call at_bitmap_get_color() with negative row or col.
 
   at_bitmap_get_color(bitmap, COMPUTE_DELTA(ROW, dir) + row, COMPUTE_DELTA(COL, dir) + col, &c);

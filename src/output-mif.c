@@ -25,6 +25,7 @@
 #include "spline.h"
 #include "color.h"
 #include "output-mif.h"
+#include "logreport.h"
 #include "xstd.h"
 #include "autotrace.h"
 #include <time.h>
@@ -117,8 +118,6 @@ int output_mif_writer(FILE * ps_file, gchar * name, int llx, int lly, int urx, i
   cbox.ury = ury;
   cbox.dpi = (gfloat) opts->dpi;
 
-  fprintf(ps_file, "<MIFFile 4.00> #%s\n<Units Upt>\n<ColorCatalog\n", at_version(TRUE));
-
   for (this_list = 0; this_list < SPLINE_LIST_ARRAY_LENGTH(shape); this_list++) {
     spline_list_type list = SPLINE_LIST_ARRAY_ELT(shape, this_list);
     curr_color = (list.clockwise && shape.background_color != NULL) ? *(shape.background_color) : list.color;
@@ -131,8 +130,13 @@ int output_mif_writer(FILE * ps_file, gchar * name, int llx, int lly, int urx, i
       col_tbl[n_ctbl].tag = strdup(colorstring(curr_color.r, curr_color.g, curr_color.b));
       col_tbl[n_ctbl].c = curr_color;
       n_ctbl++;
+      if (n_ctbl > 255)
+        FATAL("MIF: too many colors: %d", n_ctbl);
     }
   }
+
+  fprintf(ps_file, "<MIFFile 4.00> #%s\n<Units Upt>\n<ColorCatalog\n", at_version(TRUE));
+
   for (i = 0; i < n_ctbl; i++) {
     int c, m, y, k;
     c = k = 255 - col_tbl[i].c.r;
