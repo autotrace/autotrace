@@ -73,6 +73,7 @@ AC_ARG_WITH(magick,
    ,[with_magick=GraphicsMagick])
 
 HAVE_MAGICK=no
+MAGICK_LIBRARY=none
 if test x"${with_magick}" = xno; then
   AC_MSG_WARN([*** GraphicsMagick or ImageMagick input handler is disabled.           ***])
 else
@@ -92,19 +93,14 @@ else
     )
   fi
   if test "x${with_magick}" = xImageMagick; then
-	  PKG_CHECK_MODULES([IMAGEMAGICKNEW],
-      [ImageMagick > 5.5.2],
-      [with_magick=no
-			 AC_MSG_WARN([*** ImageMagick version is too new. Please try ImageMagick <= 5.5.2])
-			],
-      [PKG_CHECK_MODULES([IMAGEMAGICK],
+      PKG_CHECK_MODULES([IMAGEMAGICK],
          [ImageMagick >= 5.2.1],
-			   [HAVE_MAGICK=yes
-          HAVE_IMAGEMAGICK=yes
-          MAGICK_LIBRARY=ImageMagick
-          AC_DEFINE(HAVE_IMAGEMAGICK, 1, [ImageMagick library is available.])
-			   ],
-			)])
+	 [HAVE_MAGICK=yes
+	  HAVE_IMAGEMAGICK=yes
+	  MAGICK_LIBRARY=ImageMagick
+	  AC_DEFINE(HAVE_IMAGEMAGICK, 1, [ImageMagick library is available.])
+	 ],
+	)
   fi
   if test "x${HAVE_MAGICK}" = xyes; then
     AC_DEFINE(HAVE_MAGICK, 1, [GraphicsMagick or ImageMagick library is available or not])
@@ -199,7 +195,7 @@ AC_OUTPUT([po/Makefile.in Makefile autotrace.pc])
 echo "
 
 Configuration:
-	graphics/imagemagick output support:	$MAGICK_LIBRARY
+	graphics/imagemagick output support:	$HAVE_MAGICK ($MAGICK_LIBRARY)
 	libpng output support:			$HAVE_LIBPNG
 	swf output support by ming:		$HAVE_LIBSWF
 	pstoedit output support:		$HAVE_LIBPSTOEDIT
