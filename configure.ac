@@ -65,25 +65,53 @@ AM_GLIB_GNU_GETTEXT
 AC_CHECK_FUNCS([localtime_r])
 
 dnl
-dnl ImageMagick
+dnl GraphicsMagick
 dnl
 AC_ARG_WITH(magick,
-[  --with-magick  compile with magick(default)
-  --without-magick  compile without magick],,with_magick=yes)
+  [AS_HELP_STRING([--with-magick=LIB],
+   [select library to use for images (options: GraphicsMagick(default) or ImageMagick (<= 5.5.2))])],
+   ,[with_magick=GraphicsMagick])
 
 HAVE_MAGICK=no
-if test "x${with_magick}" = xyes; then
-	PKG_CHECK_MODULES([MAGICK],
-			  [ImageMagick >= 5.2.1],
-			  [
-			   HAVE_MAGICK=yes
-			   AC_DEFINE(HAVE_MAGICK,1,[ImageMagick library is available or not])
-			   ],
-			  )
+if test x"${with_magick}" = xno; then
+  AC_MSG_WARN([*** GraphicsMagick or ImageMagick input handler is disabled.           ***])
 else
-		AC_MSG_WARN([*** ImageMagick input handler is disabled.           ***])
+  if test "x${with_magick}" = xyes; then
+    with_magick=GraphicsMagick
+  fi
+  if test "x${with_magick}" = xGraphicsMagick; then
+    PKG_CHECK_MODULES([GRAPHICSMAGICK],
+      [GraphicsMagick >= 1.3],
+      [HAVE_MAGICK=yes
+       HAVE_GRAPHICSMAGICK=yes
+       MAGICK_LIBRARY=GraphicsMagick
+       AC_DEFINE(HAVE_GRAPHICSMAGICK, 1, [GraphicsMagick library is available.])
+			],
+      AC_WARN(GraphicsMagick not available. Falling back to ImageMagick...)
+      [with_magick=ImageMagick]
+    )
+  fi
+  if test "x${with_magick}" = xImageMagick; then
+	  PKG_CHECK_MODULES([IMAGEMAGICKNEW],
+      [ImageMagick > 5.5.2],
+      [with_magick=no
+			 AC_MSG_WARN([*** ImageMagick version is too new. Please try ImageMagick <= 5.5.2])
+			],
+      [PKG_CHECK_MODULES([IMAGEMAGICK],
+         [ImageMagick >= 5.2.1],
+			   [HAVE_MAGICK=yes
+          HAVE_IMAGEMAGICK=yes
+          MAGICK_LIBRARY=ImageMagick
+          AC_DEFINE(HAVE_IMAGEMAGICK, 1, [ImageMagick library is available.])
+			   ],
+			)])
+  fi
+  if test "x${HAVE_MAGICK}" = xyes; then
+    AC_DEFINE(HAVE_MAGICK, 1, [GraphicsMagick or ImageMagick library is available or not])
+  fi
 fi
-AM_CONDITIONAL(HAVE_MAGICK, test $HAVE_MAGICK = yes)
+
+AM_CONDITIONAL(HAVE_MAGICK, test "x$HAVE_MAGICK" = xyes)
 
 dnl
 dnl LIBPNG
@@ -171,9 +199,9 @@ AC_OUTPUT([po/Makefile.in Makefile autotrace.pc])
 echo "
 
 Configuration:
-	imagemagick output support:	$HAVE_MAGICK
-	libpng output support:		$HAVE_LIBPNG
-	swf output support by ming:	$HAVE_LIBSWF
-	pstoedit output support:	$HAVE_LIBPSTOEDIT
+	graphics/imagemagick output support:	$MAGICK_LIBRARY
+	libpng output support:			$HAVE_LIBPNG
+	swf output support by ming:		$HAVE_LIBSWF
+	pstoedit output support:		$HAVE_LIBPSTOEDIT
 
 "

@@ -4,7 +4,7 @@ Index of this file:
 
 	0. Install a Binary Release
 	1. Basic Installation
-	2. ImageMagick related issues
+	2. GraphicsMagick or ImageMagick related issues
 	3. Pstoedit related issues
 
 0. Install a Binary Release
@@ -195,22 +195,25 @@ operates.
 
 `configure' also accepts some other, not widely useful, options.
 
-2. ImageMagick related issues
+2. GraphicsMagick or ImageMagick related issues
 =============================
 
+Autotrace is not compatible with ImageMagick 7 due to extensive API changes.
+You can compile it with GraphicsMagick instead.
+
 If you use Red Hat Linux 7.2 to build autotrace with ImageMagick rpm,
-you will get a trouble something like:
+you will get an error like:
 
     /bin/sh ./libtool --mode=link gcc  -g -O2  -o autotrace  atou.o main.o ...
     libtool: link: cannot find the library `/usr/lib/libxml2.la'
     gmake: *** [autotrace] Error 1
 
-The reasons of thie trouble are 1. libMagick.la is broken;
+The reasons of this trouble are 1. libMagick.la is broken;
 and 2. libxml2.so does not exist. There are two ways to avoid
 this trouble.
 
 1. Build autotrace without ImageMagick.
-   Run configure with "--withoud-magick" option(then run make clean; make).
+   Run configure with "--without-magick" option(then run make clean; make).
    However, you lost input functions that use ImageMagick.
 
 2. Hack the broken files.
