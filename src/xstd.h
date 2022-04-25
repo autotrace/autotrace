@@ -18,7 +18,7 @@
 #define XMALLOC(new_mem, size)			\
 do						\
   {						\
-    assert(size)                                \
+    assert(size);                               \
     new_mem = (gpointer) malloc (size);	\
     assert(new_mem);				\
   } while (0)
@@ -26,7 +26,7 @@ do						\
 #define XCALLOC(new_mem, size)			\
 do						\
   {						\
-    assert(size)                                \
+    assert(size);                               \
     new_mem = (gpointer) calloc (size, 1);	\
     assert(new_mem);				\
   } while (0)
@@ -52,7 +52,7 @@ do							\
 #define XMALLOC(new_mem, size)					\
 do								\
   {								\
-    assert(size)                                                \
+    assert(size);                                               \
     (gpointer&)(new_mem) = (gpointer) malloc (size);	\
      assert(new_mem);						\
   } while (0)
@@ -60,7 +60,7 @@ do								\
 #define XCALLOC(new_mem, sizex)					\
 do								\
   {								\
-    assert(sizex)                                               \
+    assert(sizex);                                              \
     (gpointer&)(new_mem) = (void *) calloc (sizex, 1);	\
     assert(new_mem);						\
   } while (0)
