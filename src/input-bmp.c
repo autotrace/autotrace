@@ -182,6 +182,13 @@ at_bitmap input_bmp_reader(gchar * filename, at_input_opts_type * opts, at_msg_f
   /* Windows and OS/2 declare filler so that rows are a multiple of
    * word length (32 bits == 4 bytes)
    */
+   
+  unsigned long overflowTest = Bitmap_Head.biWidth * Bitmap_Head.biBitCnt;
+  if (overflowTest / Bitmap_Head.biWidth != Bitmap_Head.biBitCnt) {
+    LOG("Error reading BMP file header. Width is too large\n");
+    at_exception_fatal(&exp, "Error reading BMP file header. Width is too large");
+    goto cleanup;
+  }
 
   rowbytes = ((Bitmap_Head.biWidth * Bitmap_Head.biBitCnt - 1) / 32) * 4 + 4;
 
