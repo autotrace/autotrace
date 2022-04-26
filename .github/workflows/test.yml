@@ -1,0 +1,39 @@
+# This is a basic workflow to help you get started with Actions
+
+name: Testing on various platforms
+
+# Controls when the action will run.
+on:
+  # Triggers the workflow on push or pull request events but only for the main branch
+  push:
+    branches:
+         - '*'
+  pull_request:
+    branches:
+         - '*'
+env:
+  DEB_DH_SHLIBDEPS_ARGS_ALL: "--dpkg-shlibdeps-params=--ignore-missing-info"
+
+  # Allows you to run this workflow manually from the Actions tab
+  workflow_dispatch:
+
+# A workflow run is made up of one or more jobs that can run sequentially or in parallel
+jobs:
+  build:
+    strategy:
+      matrix:
+        os:
+          - runs-on: ubuntu-18.04
+    runs-on: ${{ matrix.os.runs-on }}
+    steps:
+      # Checks-out your repository under $GITHUB_WORKSPACE, so your job can access it
+      - uses: actions/checkout@v2
+      # Runs a single command using the runners shell
+      - name: build and run tests packages
+        run: |
+            sudo apt update
+            sudo apt install -y libgraphicsmagick1-dev libpng-dev libexiv2-dev libtiff-dev libjpeg-dev libxml2-dev libbz2-dev libfreetype6-dev libpstoedit-dev autoconf automake libtool intltool autopoint
+            ./autogen.sh
+            ./configure
+            make
+            make check
