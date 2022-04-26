@@ -8,7 +8,9 @@ on:
   push:
     branches:
          - '*'
-
+  pull_request:
+    branches:
+         - '*'
 env:
   DEB_DH_SHLIBDEPS_ARGS_ALL: "--dpkg-shlibdeps-params=--ignore-missing-info"
 
