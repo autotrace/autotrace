@@ -24,6 +24,7 @@ jobs:
       matrix:
         os:
           - runs-on: ubuntu-18.04
+          - runs-on: ubuntu-20.04
     runs-on: ${{ matrix.os.runs-on }}
     steps:
       # Checks-out your repository under $GITHUB_WORKSPACE, so your job can access it
