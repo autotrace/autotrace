@@ -1,0 +1,15 @@
+#!/bin/sh
+
+. "`dirname "$0"`/../functions"
+
+DIR=$1
+
+autotrace -report-progress -input-format BMP $DIR/lego_5.bmp -output-format svg -output-file $DIR/lego_5.svg
+RESULT=$?
+
+if [ $RESULT -eq 0 ] ; then
+    rm -f $DIR/lego_5.svg
+    ok
+else
+    fail
+fi
