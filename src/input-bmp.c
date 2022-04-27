@@ -138,7 +138,7 @@ static unsigned char *ReadImage(FILE *, int, int, unsigned char[256][3], int, in
 at_bitmap input_bmp_reader(gchar * filename, at_input_opts_type * opts, at_msg_func msg_func, gpointer msg_data, gpointer user_data)
 {
   FILE *fd;
-  unsigned char buffer[64];
+  unsigned char buffer[128];
   int ColormapSize, rowbytes, Maps;
   gboolean Grey = FALSE;
   unsigned char ColorMap[256][3];
