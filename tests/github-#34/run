@@ -1,0 +1,15 @@
+#!/bin/sh
+
+. "`dirname "$0"`/../functions"
+
+DIR=$1
+
+autotrace -report-progress --centerline --background-color ffffff --color-count 2 --preserve-width -input-format PNG $DIR/watch.png -output-format svg -output-file $DIR/watch.svg
+RESULT=$?
+
+if [ $RESULT -eq 0 ] ; then
+    rm -f $DIR/watch.svg
+    ok
+else
+    fail
+fi
