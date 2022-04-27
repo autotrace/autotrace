@@ -8,7 +8,6 @@
 *.orig
 *.out
 *.patch
-*.png
 *.ps
 *.rej
 *.zip
