@@ -1,4 +1,4 @@
-[![Build Status](https://travis-ci.org/autotrace/autotrace.svg?branch=future)](https://travis-ci.org/autotrace/autotrace)
+![Build Status](https://github.com/autotrace/autotrace/actions/workflows/test.yml/badge.svg)
 
 
 AutoTrace
