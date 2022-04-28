@@ -25,6 +25,7 @@ jobs:
         os:
           - runs-on: ubuntu-18.04
           - runs-on: ubuntu-20.04
+          - runs-on: macOS-latest
     runs-on: ${{ matrix.os.runs-on }}
     steps:
       # Checks-out your repository under $GITHUB_WORKSPACE, so your job can access it
@@ -32,9 +33,23 @@ jobs:
       # Runs a single command using the runners shell
       - name: build and run tests packages
         run: |
-            sudo apt update
-            sudo apt install -y libgraphicsmagick1-dev libpng-dev libexiv2-dev libtiff-dev libjpeg-dev libxml2-dev libbz2-dev libfreetype6-dev libpstoedit-dev autoconf automake libtool intltool autopoint
+            if [ "$RUNNER_OS" == "Linux" ]; then
+              sudo apt update
+              sudo apt install -y libgraphicsmagick1-dev libpng-dev libexiv2-dev libtiff-dev libjpeg-dev libxml2-dev libbz2-dev libfreetype6-dev libpstoedit-dev autoconf automake libtool intltool autopoint
+            elif [ "$RUNNER_OS" == "macOS" ]; then
+              # TODO
+              brew update
+              perl -MCPAN -e "install XML::Parser"
+              perl -e "require XML::Parser"
+              for pkg in graphicsmagick pstoedit libpng exiv2 libtiff libjpeg libxml2 bzip2 freetype gettext intltool glib libtool autoconf automake pkg-config; do brew install $pkg || brew upgrade $pkg; done
+            elif [ "$RUNNER_OS" == "Windows" ]; then
+              # TODO
+              echo "Windows not yet supported"
+            else
+              echo "$RUNNER_OS not supported"
+            fi
             ./autogen.sh
             ./configure
             make
             make check
+        shell: bash
