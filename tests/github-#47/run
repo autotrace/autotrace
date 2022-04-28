@@ -7,7 +7,7 @@ DIR=$1
 autotrace -report-progress -centerline -input-format BMP $DIR/three_lines.bmp -output-format svg -output-file $DIR/three_lines.svg
 RESULT=$?
 
-if [ $RESULT -eq 0 ] ; then
+if [ $RESULT -eq 0 ] && [ -s $DIR/three_lines.svg ] ; then
     rm -f $DIR/three_lines.svg
     ok
 else
