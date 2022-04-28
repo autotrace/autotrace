@@ -17,6 +17,7 @@ For this, use `configure --without-magick --without-pstoedit`
 
 ```
 export PATH="/usr/local/opt/gettext/bin:$PATH"
+perl -MCPAN -e 'install XML::Parser'
 brew install gettext intltool glib libtool autoconf automake pkg-config
 brew install imagemagick graphicsmagick pstoedit
 git clone https://github.com/autotrace/autotrace.git
