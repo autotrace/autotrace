@@ -640,19 +640,19 @@ static unsigned char *ReadImage(FILE * fd, int width, int height,
       {
         temp = image + (ypos * rowstride);
         for (xpos = 0; xpos < width; ++xpos) {
-			  px32 = ToL(&row_buf[xpos * 4]);
-			  unsigned char red = *(temp++) = ((px32 & masks[0].mask) >> masks[0].shiftin) * 255.0 / masks[0].max_value + 0.5;
-			  unsigned char green = *(temp++) = ((px32 & masks[1].mask) >> masks[1].shiftin) * 255.0 / masks[1].max_value + 0.5;
-			  unsigned char blue = *(temp++) = ((px32 & masks[2].mask) >> masks[2].shiftin) * 255.0 / masks[2].max_value + 0.5;
-			  /* currently alpha channels are not supported by AutoTrace, thus simply ignored */
-			  /*if (channels > 3)
-				  *(temp++) = ((px32 & masks[3].mask) >> masks[3].shiftin) * 255.0 / masks[3].max_value + 0.5;*/
-		  }
+	  px32 = ToL(&row_buf[xpos * 4]);
+	  unsigned char red = *(temp++) = ((px32 & masks[0].mask) >> masks[0].shiftin) * 255.0 / masks[0].max_value + 0.5;
+	  unsigned char green = *(temp++) = ((px32 & masks[1].mask) >> masks[1].shiftin) * 255.0 / masks[1].max_value + 0.5;
+	  unsigned char blue = *(temp++) = ((px32 & masks[2].mask) >> masks[2].shiftin) * 255.0 / masks[2].max_value + 0.5;
+	  /* currently alpha channels are not supported by AutoTrace, thus simply ignored */
+	  /*if (channels > 3)
+		  *(temp++) = ((px32 & masks[3].mask) >> masks[3].shiftin) * 255.0 / masks[3].max_value + 0.5;*/
+	}
 
-		  if (ypos == 0)
-			  break;
+	if (ypos == 0)
+	  break;
 
-		  --ypos; /* next line */
+	--ypos; /* next line */
       }
     }
     break;
@@ -667,7 +667,11 @@ static unsigned char *ReadImage(FILE * fd, int width, int height,
           *(temp++) = row_buf[xpos * 3 + 1];
           *(temp++) = row_buf[xpos * 3];
         }
-        --ypos;                 /* next line */
+
+	if (ypos == 0)
+	  break;
+
+        --ypos; /* next line */
       }
     }
     break;
@@ -679,19 +683,19 @@ static unsigned char *ReadImage(FILE * fd, int width, int height,
         temp = image + (ypos * rowstride);
         for (xpos = 0; xpos < width; ++xpos)
         {
-			  rgb = ToS(&row_buf[xpos * 2]);
-			  *(temp++) = ((rgb & masks[0].mask) >> masks[0].shiftin) * 255.0 / masks[0].max_value + 0.5;
-			  *(temp++) = ((rgb & masks[1].mask) >> masks[1].shiftin) * 255.0 / masks[1].max_value + 0.5;
-			  *(temp++) = ((rgb & masks[2].mask) >> masks[2].shiftin) * 255.0 / masks[2].max_value + 0.5;
-			  /* currently alpha channels are not supported by AutoTrace, thus simply ignored */
-			  /*if (channels > 3)
-				  *(temp++) = ((rgb & masks[3].mask) >> masks[3].shiftin) * 255.0 / masks[3].max_value + 0.5;*/
-		  }
+	  rgb = ToS(&row_buf[xpos * 2]);
+	  *(temp++) = ((rgb & masks[0].mask) >> masks[0].shiftin) * 255.0 / masks[0].max_value + 0.5;
+	  *(temp++) = ((rgb & masks[1].mask) >> masks[1].shiftin) * 255.0 / masks[1].max_value + 0.5;
+	  *(temp++) = ((rgb & masks[2].mask) >> masks[2].shiftin) * 255.0 / masks[2].max_value + 0.5;
+	  /* currently alpha channels are not supported by AutoTrace, thus simply ignored */
+	  /*if (channels > 3)
+		  *(temp++) = ((rgb & masks[3].mask) >> masks[3].shiftin) * 255.0 / masks[3].max_value + 0.5;*/
+	}
 
-		  if (ypos == 0)
-			  break;
+	if (ypos == 0)
+	  break;
 
-		  --ypos; /* next line */
+	--ypos; /* next line */
       }
     }
     break;
