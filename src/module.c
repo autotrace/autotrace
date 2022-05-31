@@ -106,30 +106,27 @@ static int install_input_readers(void)
 
 static int install_output_writers(void)
 {
-  at_output_add_handler("EPS", "Encapsulated PostScript", output_eps_writer);
   at_output_add_handler("AI", "Adobe Illustrator", output_eps_writer);
+  at_output_add_handler("CGM", "Computer Graphics Metafile", output_cgm_writer);
+  at_output_add_handler("DR2D", "IFF DR2D format", output_dr2d_writer);
+  at_output_add_handler("DXF", "DXF format (without splines)", output_dxf12_writer);
+  at_output_add_handler("EMF", "Enhanced Metafile format", output_emf_writer);
+  at_output_add_handler("EPD", "EPD format", output_epd_writer);
+  at_output_add_handler("EPS", "Encapsulated PostScript", output_eps_writer);
+  at_output_add_handler("ER", "Elastic Reality Shape file", output_er_writer);
+  at_output_add_handler("FIG", "XFIG 3.2", output_fig_writer);
+  at_output_add_handler("ILD", "ILDA format", output_ild_writer);
+  at_output_add_handler("MIF", "FrameMaker MIF format", output_mif_writer);
   at_output_add_handler("P2E", "pstoedit frontend format", output_p2e_writer);
+  at_output_add_handler("PDF", "PDF format", output_pdf_writer);
+  at_output_add_handler("PLT", "HPGL format", output_plt_writer);
+  at_output_add_handler("POV", "Povray format", output_pov_writer);
   at_output_add_handler("SK", "Sketch", output_sk_writer);
   at_output_add_handler("SVG", "Scalable Vector Graphics", output_svg_writer);
-  at_output_add_handler("UGS", "Unicode glyph source", output_ugs_writer);
-  at_output_add_handler("FIG", "XFIG 3.2", output_fig_writer);
-
 #ifdef HAVE_LIBSWF
   at_output_add_handler("SWF", "Shockwave Flash 3", output_swf_writer);
 #endif /* HAVE_LIBSWF */
-
-  at_output_add_handler("EMF", "Enhanced Metafile format", output_emf_writer);
-  at_output_add_handler("MIF", "FrameMaker MIF format", output_mif_writer);
-  at_output_add_handler("ER", "Elastic Reality Shape file", output_er_writer);
-  at_output_add_handler("DXF", "DXF format (without splines)", output_dxf12_writer);
-  at_output_add_handler("EPD", "EPD format", output_epd_writer);
-  at_output_add_handler("PDF", "PDF format", output_pdf_writer);
-  at_output_add_handler("CGM", "Computer Graphics Metafile", output_cgm_writer);
-  at_output_add_handler("DR2D", "IFF DR2D format", output_dr2d_writer);
-  at_output_add_handler("POV", "Povray format", output_pov_writer);
-  at_output_add_handler("POV", "Povray format", output_pov_writer);
-  at_output_add_handler("PLT", "HPGL format", output_plt_writer);
-  at_output_add_handler("ILD", "ILDA format", output_ild_writer);
+  at_output_add_handler("UGS", "Unicode glyph source", output_ugs_writer);
 
   return (0 << 1) || install_output_pstoedit_writers();
 }
