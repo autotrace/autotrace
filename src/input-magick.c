@@ -90,20 +90,18 @@ cleanup:
 int install_input_magick_readers(void)
 {
   ExceptionInfo exception;
-  MagickInfo *info, *magickinfo;
+  MagickInfo *info;
   InitializeMagick("");
 
   GetExceptionInfo(&exception);
 
-  info = GetMagickInfo(NULL, &exception);
-  if (info && !info->next)
-    info = GetMagickInfo("*", &exception);
-  magickinfo = info;
+  info = GetMagickInfo("*", &exception);
 
   while (info) {
     if (info->name && info->description)
       at_input_add_handler_full(info->name, info->description, input_magick_reader, 0, info->name, NULL);
     info = info->next;
   }
+  DestroyExceptionInfo(&exception);
   return 0;
 }
