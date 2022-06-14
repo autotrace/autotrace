@@ -38,12 +38,18 @@ else
 input_png_src=
 endif
 
-input_src=src/input-pnm.c src/input-pnm.h \
-	  src/input-bmp.c src/input-bmp.h \
-	  src/input-tga.c src/input-tga.h \
-	  src/input-gf.c src/input-gf.h \
-	  $(input_png_src) \
-	  $(input_magick_src)
+if HAVE_MAGICK_READERS
+input_native_src=
+else
+input_native_src=src/input-bmp.c src/input-bmp.h \
+		   src/input-pnm.c src/input-pnm.h \
+		   src/input-tga.c src/input-tga.h
+endif
+
+input_src=src/input-gf.c src/input-gf.h \
+	  $(input_magick_src) \
+	  $(input_native_src) \
+	  $(input_png_src)
 
 if HAVE_LIBSWF
 output_swf_src=src/output-swf.c src/output-swf.h
