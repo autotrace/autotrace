@@ -107,9 +107,9 @@ else
     AC_DEFINE(HAVE_MAGICK, 1, [GraphicsMagick or ImageMagick library is available or not])
 	AC_ARG_ENABLE(magick-readers,
 		  [  --enable-magick-readers Use *Magick as a reader for BMP/PGM/PNM/PPM/TGA files],
-		  [ 
+		  [
 		   HAVE_MAGICK_READERS=yes
-		   AC_DEFINE(HAVE_MAGICK_READERS, 1, [Use Magick readers for simple formats.]) 
+		   AC_DEFINE(HAVE_MAGICK_READERS, 1, [Use Magick readers for simple formats.])
 		  ],
 		  [ AC_DEFINE(HAVE_MAGICK_READERS, 0, [Use native readers for simple formats.]) ]
 	  )
