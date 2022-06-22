@@ -73,6 +73,7 @@ AC_ARG_WITH(magick,
    ,[with_magick=GraphicsMagick])
 
 HAVE_MAGICK=no
+HAVE_MAGICK_READERS=no
 MAGICK_LIBRARY=none
 if test x"${with_magick}" = xno; then
   AC_MSG_WARN([*** GraphicsMagick or ImageMagick input handler is disabled.           ***])
@@ -104,10 +105,19 @@ else
   fi
   if test "x${HAVE_MAGICK}" = xyes; then
     AC_DEFINE(HAVE_MAGICK, 1, [GraphicsMagick or ImageMagick library is available or not])
+	AC_ARG_ENABLE(magick-readers,
+		  [  --enable-magick-readers Use *Magick as a reader for BMP/PGM/PNM/PPM/TGA files],
+		  [
+		   HAVE_MAGICK_READERS=yes
+		   AC_DEFINE(HAVE_MAGICK_READERS, 1, [Use Magick readers for simple formats.])
+		  ],
+		  [ AC_DEFINE(HAVE_MAGICK_READERS, 0, [Use native readers for simple formats.]) ]
+	  )
   fi
 fi
 
 AM_CONDITIONAL(HAVE_MAGICK, test "x$HAVE_MAGICK" = xyes)
+AM_CONDITIONAL(HAVE_MAGICK_READERS, test "x$HAVE_MAGICK_READERS" = xyes)
 
 dnl
 dnl LIBPNG

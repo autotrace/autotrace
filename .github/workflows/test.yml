@@ -19,7 +19,7 @@ env:
 
 # A workflow run is made up of one or more jobs that can run sequentially or in parallel
 jobs:
-  build:
+  build_all:
     strategy:
       matrix:
         os:
@@ -31,7 +31,7 @@ jobs:
       # Checks-out your repository under $GITHUB_WORKSPACE, so your job can access it
       - uses: actions/checkout@v2
       # Runs a single command using the runners shell
-      - name: build and run tests packages
+      - name: build and run tests packages with all featured readers
         run: |
             if [ "$RUNNER_OS" == "Linux" ]; then
               sudo apt update
@@ -53,3 +53,33 @@ jobs:
             make
             make check
         shell: bash
+
+  build_with_latest_imagemagick:
+    runs-on: ubuntu-latest
+    steps:
+      # Checks-out your repository under $GITHUB_WORKSPACE, so your job can access it
+      - uses: actions/checkout@v2
+      # Runs a single command using the runners shell
+      - name: build and run tests package against ImageMagick only
+        run: |
+            sudo apt update
+            sudo apt install -y libmagickcore-6.q16-dev libpng-dev libexiv2-dev libtiff-dev libjpeg-dev libxml2-dev libbz2-dev libfreetype6-dev libpstoedit-dev autoconf automake libtool intltool autopoint
+            ./autogen.sh
+            ./configure --enable-magick-readers
+            make
+            make check
+
+  build_with_latest_graphicsmagick:
+    runs-on: ubuntu-latest
+    steps:
+      # Checks-out your repository under $GITHUB_WORKSPACE, so your job can access it
+      - uses: actions/checkout@v2
+      # Runs a single command using the runners shell
+      - name: build and run tests package against GraphicsMagick only
+        run: |
+            sudo apt update
+            sudo apt install -y libgraphicsmagick1-dev libpng-dev libexiv2-dev libtiff-dev libjpeg-dev libxml2-dev libbz2-dev libfreetype6-dev libpstoedit-dev autoconf automake libtool intltool autopoint
+            ./autogen.sh
+            ./configure --enable-magick-readers
+            make
+            make check
