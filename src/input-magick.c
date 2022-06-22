@@ -89,19 +89,30 @@ cleanup:
 
 int install_input_magick_readers(void)
 {
+  size_t n = 0;
   ExceptionInfo exception;
   MagickInfo *info;
+  const MagickInfo **infos;
   InitializeMagick("");
 
   GetExceptionInfo(&exception);
 
+#ifdef HAVE_GRAPHICSMAGICK
   info = GetMagickInfo("*", &exception);
-
   while (info) {
     if (info->name && info->description)
       at_input_add_handler_full(info->name, info->description, input_magick_reader, 0, info->name, NULL);
     info = info->next;
   }
+#else
+  infos = GetMagickInfoList("*", &n, &exception);
+  for (int i = 0; i < n; i++){
+    info = infos[i];
+    if (info->name && info->description)
+      at_input_add_handler_full(info->name, info->description, input_magick_reader, 0, info->name, NULL);
+  }
+#endif // HAVE_GRAPHICSMAGICK
+
   DestroyExceptionInfo(&exception);
   return 0;
 }
