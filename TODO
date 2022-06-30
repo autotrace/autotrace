@@ -32,7 +32,6 @@ Output:
 Library and its clients:
 - Graphical user interface
   -- using gnome/gtk+, frontline is under developing.
-     See http://autotrace.sourceforge.net/frontline
   -- using KDE/Qt (working)
   -- using Windows native (working)
 

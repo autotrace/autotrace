@@ -177,7 +177,7 @@ To compile, invoke following commands (on posix):
 GUI Frontend
 ------------
 Frontline, a Gtk+/Gnome based GUI frontend, was under development until 2002.
-See https://sourceforge.net/projects/autotrace/files/FrontLine/
+See https://github.com/autotrace/frontline
 
 
 More Information
