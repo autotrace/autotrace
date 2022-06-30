@@ -1,0 +1,16 @@
+#!/bin/sh
+
+. "`dirname "$0"`/../functions"
+
+DIR=$1
+
+autotrace -output-file $DIR/trace01.svg -output-format svg -report-progress -input-format BPM $DIR/trace01.bmp
+RESULT=$?
+
+if [ $RESULT -ne 0 ]; then
+    rm -f $DIR/trace01.svg
+    expected_fail
+else
+    fail "Invalid options parsing"
+fi
+ok
