@@ -1,0 +1,49 @@
+#!/bin/sh
+
+. "`dirname "$0"`/../functions"
+
+DIR=$1
+
+# Whether we have native reader or the one from ImageMagick?
+autotrace -list-input-formats 2>&1 | grep tga |grep -q "8 bit only"
+RESULT=$?
+
+if [ $RESULT -ne 0 ] ; then
+	NATIVE=0
+else
+	NATIVE=1
+fi
+
+# Supported natively
+for filename in cbw8.tga ctc24.tga ubw8.tga utc24.tga
+do
+	autotrace -report-progress -centerline -input-format TGA $DIR/${filename} -output-format svg -output-file $DIR/${filename}.svg
+	RESULT=$?
+
+	if [ $RESULT -ne 0 ] ; then
+	    fail
+	else
+	    rm -f $DIR/${filename}.svg
+	fi
+
+done
+
+# Supported only by ImageMagick
+for filename in ccm8.tga ucm8.tga utc16.tga utc32.tga
+do
+	if [ $NATIVE -eq 1 ] ; then
+		echo "Skipping ${filename}. Native decoder doesn't support it."
+		RESULT=0
+	else
+		autotrace -report-progress -centerline -input-format TGA $DIR/${filename} -output-format svg -output-file $DIR/${filename}.svg
+		RESULT=$?
+	fi
+
+	if [ $RESULT -ne 0 ] ; then
+	    fail
+	else
+	    rm -f $DIR/${filename}.svg
+	fi
+
+done
+ok
