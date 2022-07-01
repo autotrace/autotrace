@@ -27,11 +27,11 @@
 #include "private.h"
 
 #include "input.h"
-#ifdef HAVE_NATIVE_READERS
+#if !HAVE_MAGICK_READERS
 #include "input-pnm.h"
 #include "input-bmp.h"
 #include "input-tga.h"
-#endif /* HAVE_NATIVE_READERS */
+#endif /* HAVE_MAGICK_READERS */
 #include "input-gf.h"
 
 #ifdef HAVE_LIBPNG
@@ -94,7 +94,7 @@ static int install_input_readers(void)
   at_input_add_handler("PNG", "Portable network graphics", input_png_reader);
 #endif
 
-#ifndef HAVE_MAGICK_READERS
+#if !HAVE_MAGICK_READERS
   at_input_add_handler("TGA", "Truevision Targa image", input_tga_reader);
   at_input_add_handler("BMP", "Microsoft Windows bitmap image", input_bmp_reader);
 
