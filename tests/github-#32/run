@@ -1,0 +1,19 @@
+#!/bin/sh
+
+. "`dirname "$0"`/../functions"
+
+DIR=$1
+
+for filename in cbw8.tga ccm8.tga ctc24.tga ubw8.tga ucm8.tga utc16.tga utc24.tga utc32.tga
+do
+	autotrace -report-progress -centerline -input-format TGA $DIR/${filename} -output-format svg -output-file $DIR/${filename}.svg
+	RESULT=$?
+
+	if [ $RESULT -ne 0 ] ; then
+	    fail
+	else
+	    rm -f $DIR/${filename}.svg
+	fi
+
+done
+ok
