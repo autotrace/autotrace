@@ -27,11 +27,11 @@
 #include "private.h"
 
 #include "input.h"
-#ifdef HAVE_NATIVE_READERS
+#ifndef HAVE_MAGICK_READERS
 #include "input-pnm.h"
 #include "input-bmp.h"
 #include "input-tga.h"
-#endif /* HAVE_NATIVE_READERS */
+#endif /* HAVE_MAGICK_READERS */
 #include "input-gf.h"
 
 #ifdef HAVE_LIBPNG
