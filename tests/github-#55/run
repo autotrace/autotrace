@@ -2,6 +2,17 @@
 
 . "`dirname "$0"`/../functions"
 
+# Whether we have native reader or the one from ImageMagick?
+autotrace -list-input-formats 2>&1 | grep pbm |grep -q "native"
+RESULT=$?
+
+if [ $RESULT -ne 0 ] ; then
+	NATIVE=0
+else
+	NATIVE=1
+	skip "github#55: AutoTrace cannot read image from stdin yet if not built against ImageMagick/GraphicsMagic"
+fi
+
 DIR=$1
 cat $DIR/testrect.pbm | autotrace -report-progress -filter-iterations 0 -error-threshold 1 -centerline -output-format svg -output-file $DIR/testrect.svg -input-format pbm -
 cmp --silent $DIR/testrect.output.svg $DIR/testrect.svg
