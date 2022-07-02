@@ -5,11 +5,7 @@
 # Whether we have native reader or the one from ImageMagick?
 autotrace -list-input-formats 2>&1 | grep pbm |grep -q "native"
 RESULT=$?
-
-if [ $RESULT -ne 0 ] ; then
-	NATIVE=0
-else
-	NATIVE=1
+if [ $RESULT -eq 0 ] ; then
 	skip "github#55: AutoTrace cannot read image from stdin yet if not built against ImageMagick/GraphicsMagic"
 fi
 
