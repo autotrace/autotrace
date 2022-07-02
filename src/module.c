@@ -30,8 +30,10 @@
 #if !HAVE_MAGICK_READERS
 #include "input-pnm.h"
 #include "input-bmp.h"
-#include "input-tga.h"
 #endif /* HAVE_MAGICK_READERS */
+#if !HAVE_MAGICK_READERS || HAVE_GRAPHICSMAGICK
+#include "input-tga.h"
+#endif /* !HAVE_MAGICK_READERS || HAVE_GRAPHICSMAGICK */
 #include "input-gf.h"
 
 #ifdef HAVE_LIBPNG
@@ -94,10 +96,12 @@ static int install_input_readers(void)
   at_input_add_handler("PNG", "Portable network graphics", input_png_reader);
 #endif
 
-#if !HAVE_MAGICK_READERS
+#if !HAVE_MAGICK_READERS || HAVE_GRAPHICSMAGICK
   at_input_add_handler("TGA", "Truevision Targa image", input_tga_reader);
-  at_input_add_handler("BMP", "Microsoft Windows bitmap image", input_bmp_reader);
+#endif /* !HAVE_MAGICK_READERS || HAVE_GRAPHICSMAGICK */
 
+#if !HAVE_MAGICK_READERS
+  at_input_add_handler("BMP", "Microsoft Windows bitmap image", input_bmp_reader);
   at_input_add_handler_full("PBM", "Portable bitmap format", input_pnm_reader, 0, "PBM", NULL);
   at_input_add_handler_full("PNM", "Portable anymap format", input_pnm_reader, 0, "PNM", NULL);
   at_input_add_handler_full("PGM", "Portable graymap format", input_pnm_reader, 0, "PGM", NULL);
