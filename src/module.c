@@ -27,11 +27,13 @@
 #include "private.h"
 
 #include "input.h"
-#ifdef HAVE_NATIVE_READERS
+#if !HAVE_MAGICK_READERS
 #include "input-pnm.h"
 #include "input-bmp.h"
+#endif /* HAVE_MAGICK_READERS */
+#if !HAVE_MAGICK_READERS || HAVE_GRAPHICSMAGICK
 #include "input-tga.h"
-#endif /* HAVE_NATIVE_READERS */
+#endif /* !HAVE_MAGICK_READERS || HAVE_GRAPHICSMAGICK */
 #include "input-gf.h"
 
 #ifdef HAVE_LIBPNG
@@ -91,20 +93,22 @@ int at_module_init(void)
 static int install_input_readers(void)
 {
 #ifdef HAVE_LIBPNG
-  at_input_add_handler("PNG", "Portable network graphics", input_png_reader);
+  at_input_add_handler("PNG", "Portable network graphics (native)", input_png_reader);
 #endif
 
-#ifndef HAVE_MAGICK_READERS
-  at_input_add_handler("TGA", "Truevision Targa image", input_tga_reader);
-  at_input_add_handler("BMP", "Microsoft Windows bitmap image", input_bmp_reader);
+#if !HAVE_MAGICK_READERS || HAVE_GRAPHICSMAGICK
+  at_input_add_handler("TGA", "Truevision Targa image (native, 8 bit only)", input_tga_reader);
+#endif /* !HAVE_MAGICK_READERS || HAVE_GRAPHICSMAGICK */
 
-  at_input_add_handler_full("PBM", "Portable bitmap format", input_pnm_reader, 0, "PBM", NULL);
-  at_input_add_handler_full("PNM", "Portable anymap format", input_pnm_reader, 0, "PNM", NULL);
-  at_input_add_handler_full("PGM", "Portable graymap format", input_pnm_reader, 0, "PGM", NULL);
-  at_input_add_handler_full("PPM", "Portable pixmap format", input_pnm_reader, 0, "PPM", NULL);
+#if !HAVE_MAGICK_READERS
+  at_input_add_handler("BMP", "Microsoft Windows bitmap image (native)", input_bmp_reader);
+  at_input_add_handler_full("PBM", "Portable bitmap format (native)", input_pnm_reader, 0, "PBM", NULL);
+  at_input_add_handler_full("PNM", "Portable anymap format (native)", input_pnm_reader, 0, "PNM", NULL);
+  at_input_add_handler_full("PGM", "Portable graymap format (native)", input_pnm_reader, 0, "PGM", NULL);
+  at_input_add_handler_full("PPM", "Portable pixmap format (native)", input_pnm_reader, 0, "PPM", NULL);
 #endif /* HAVE_MAGICK_READERS */
 
-  at_input_add_handler("GF", "TeX raster font", input_gf_reader);
+  at_input_add_handler("GF", "TeX raster font (native)", input_gf_reader);
 
   return ((0 << 1) || install_input_magick_readers());
 }

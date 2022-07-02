@@ -100,8 +100,9 @@ int install_input_magick_readers(void)
 #ifdef HAVE_GRAPHICSMAGICK
   info = GetMagickInfo("*", &exception);
   while (info) {
-    if (info->name && info->description)
+    if (info->name && info->description && strcasecmp(info->name, "tga")) {
       at_input_add_handler_full(info->name, info->description, input_magick_reader, 0, info->name, NULL);
+    }
     info = info->next;
   }
 #else
