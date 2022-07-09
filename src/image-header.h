@@ -1,3 +1,11 @@
+/*
+ * SPDX-FileCopyrightText: © 2000-2001 Martin Weber
+ * SPDX-FileCopyrightText: © 2001 Masatake YAMATO
+ * SPDX-FileCopyrightText: © 2017 Peter Lemenkov
+ *
+ * SPDX-License-Identifier: LGPL-2.1-or-later
+ */
+
 /* image-header.h: declarations for a generic image header. */
 
 #ifndef IMAGE_HEADER_H

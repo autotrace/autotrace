@@ -1,6 +1,8 @@
-# de.po for autotrace
 # Copyright (C) 2002 Martin Weber
-# Martin Weber <martweb@gmx.net>, 2002
+# SPDX-FileCopyrightText: © 2003 Martin Weber
+# SPDX-FileCopyrightText: © 2003 Masatake YAMATO
+#
+# SPDX-License-Identifier: LGPL-2.1-or-later
 msgid ""
 msgstr ""
 "Project-Id-Version: autotrace 0.31.2\n"

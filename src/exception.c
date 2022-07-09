@@ -1,3 +1,11 @@
+/*
+ * SPDX-FileCopyrightText: © 2002 Martin Weber
+ * SPDX-FileCopyrightText: © 2002-2003 Masatake YAMATO
+ * SPDX-FileCopyrightText: © 2017-2025 Peter Lemenkov
+ *
+ * SPDX-License-Identifier: LGPL-2.1-or-later
+ */
+
 #include "exception.h"
 
 at_exception_type at_exception_new(at_msg_func client_func, gpointer client_data)

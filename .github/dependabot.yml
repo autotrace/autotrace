@@ -1,3 +1,7 @@
+# SPDX-FileCopyrightText: © 2023 Peter Lemenkov
+#
+# SPDX-License-Identifier: CC0-1.0
+
 # See: https://docs.github.com/code-security/dependabot/dependabot-version-updates/configuration-options-for-the-dependabot.yml-file#about-the-dependabotyml-file
 version: 2
 

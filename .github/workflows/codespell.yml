@@ -1,3 +1,8 @@
+# SPDX-FileCopyrightText: © 2023 Peter Lemenkov
+# SPDX-FileCopyrightText: © 2025 dependabot[bot]
+#
+# SPDX-License-Identifier: CC0-1.0
+
 # GitHub Action to automate the identification of common misspellings in text files.
 # https://github.com/codespell-project/actions-codespell
 # https://github.com/codespell-project/codespell

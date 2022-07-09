@@ -1,3 +1,11 @@
+# SPDX-FileCopyrightText: © 2000 Martin Weber
+# SPDX-FileCopyrightText: © 2000 Peter Cucka
+# SPDX-FileCopyrightText: © 2000-2004 Masatake YAMATO
+# SPDX-FileCopyrightText: © 2004 Henning Makholm
+# SPDX-FileCopyrightText: © 2017-2022 Peter Lemenkov
+#
+# SPDX-License-Identifier: CC0-1.0
+
 *.diff
 *.eps
 *.gz

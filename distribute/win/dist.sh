@@ -1,4 +1,9 @@
 #! /bin/bash
+
+# SPDX-FileCopyrightText: © 2018-2019 Jürgen Weigert
+#
+# SPDX-License-Identifier: LGPL-2.1-or-later
+
 # Make a windows binary
 
 disttop=$(readlink -e $(dirname $0))	# abspath(dir)

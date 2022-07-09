@@ -1,3 +1,11 @@
+/*
+ * SPDX-FileCopyrightText: © 2000-2001 Martin Weber
+ * SPDX-FileCopyrightText: © 2002 Masatake YAMATO
+ * SPDX-FileCopyrightText: © 2017-2025 Peter Lemenkov
+ *
+ * SPDX-License-Identifier: LGPL-2.1-or-later
+ */
+
 /* logreport.c: showing information to the user. */
 
 #include "logreport.h"

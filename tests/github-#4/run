@@ -1,5 +1,9 @@
 #!/bin/sh
 
+# SPDX-FileCopyrightText: © 2018-2022 Peter Lemenkov
+#
+# SPDX-License-Identifier: CC0-1.0
+
 . "`dirname "$0"`/../functions"
 
 DIR=$1
