@@ -1,3 +1,4 @@
+[![Coverity passed](https://scan.coverity.com/projects/18456/badge.svg)](https://scan.coverity.com/projects/autotrace-autotrace)
 [![Build Status](https://github.com/autotrace/autotrace/actions/workflows/test.yml/badge.svg)](https://github.com/autotrace/autotrace/actions?query=workflows%3Atest)
 
 
