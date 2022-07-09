@@ -1,5 +1,6 @@
 [![Coverity passed](https://scan.coverity.com/projects/18456/badge.svg)](https://scan.coverity.com/projects/autotrace-autotrace)
-[![Build Status](https://github.com/autotrace/autotrace/actions/workflows/test.yml/badge.svg)](https://github.com/autotrace/autotrace/actions?query=workflows%3Atest)
+[![Build status on Linux](https://github.com/autotrace/autotrace/actions/workflows/linux_test.yml/badge.svg)](https://github.com/autotrace/autotrace/actions?query=workflows%3Alinux_test)
+[![Build status on Mac OS X](https://github.com/autotrace/autotrace/actions/workflows/macosx_test.yml/badge.svg)](https://github.com/autotrace/autotrace/actions?query=workflows%3Amacosx_test)
 
 
 AutoTrace

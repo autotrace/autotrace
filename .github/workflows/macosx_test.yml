@@ -1,0 +1,33 @@
+# This is a basic workflow to help you get started with Actions
+
+name: Testing on Mac OS X
+
+# Controls when the action will run.
+on:
+  # Triggers the workflow on push or pull request events but only for the main branch
+  push:
+    branches: [master]
+
+env:
+  # Allows you to run this workflow manually from the Actions tab
+  workflow_dispatch:
+
+# A workflow run is made up of one or more jobs that can run sequentially or in parallel
+jobs:
+  build_all:
+    runs-on: macOS-latest
+    steps:
+      # Checks-out your repository under $GITHUB_WORKSPACE, so your job can access it
+      - uses: actions/checkout@v2
+      # Runs a single command using the runners shell
+      - name: build and run tests packages with all featured readers
+        run: |
+            brew update
+            perl -MCPAN -e "install XML::Parser"
+            perl -e "require XML::Parser"
+            for pkg in graphicsmagick pstoedit libpng exiv2 libtiff libjpeg libxml2 bzip2 freetype gettext intltool glib libtool autoconf automake pkg-config; do brew install $pkg || brew upgrade $pkg; done
+            ./autogen.sh
+            ./configure
+            make
+            make check
+        shell: bash
