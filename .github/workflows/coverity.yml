@@ -12,11 +12,10 @@ jobs:
     steps:
     - uses: actions/checkout@v2
     - name: prebuilt step
-    - run: |
-            sudo apt update
-            sudo apt install -y libgraphicsmagick1-dev libpng-dev libexiv2-dev libtiff-dev libjpeg-dev libxml2-dev libbz2-dev libfreetype6-dev libpstoedit-dev autoconf automake libtool intltool autopoint
-            ./autogen.sh
-            ./configure
+    - run: sudo apt update
+    - run: sudo apt install -y libgraphicsmagick1-dev libpng-dev libexiv2-dev libtiff-dev libjpeg-dev libxml2-dev libbz2-dev libfreetype6-dev libpstoedit-dev autoconf automake libtool intltool autopoint
+    - run: ./autogen.sh
+    - run: ./configure
 
     - uses: vapier/coverity-scan-action@v1
     - name: actual check
