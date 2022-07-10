@@ -28,11 +28,6 @@
 /* Pointers to functions based on input format.  (-input-format)  */
 static at_bitmap_reader *input_reader = NULL;
 
-/* Return NAME with any leading path stripped off.  This returns a
-   pointer into NAME.  For example, `basename ("/foo/bar.baz")'
-   returns "bar.baz".  */
-static char *get_basename(char *name);
-
 /* The name of the file we're going to write.  (-output-file) */
 
 static char *output_name = (char *)"";
@@ -95,7 +90,7 @@ int main(int argc, char *argv[])
   if (output_name != NULL && input_name != NULL && 0 == strcasecmp(output_name, input_name))
     FATAL(_("Input and output file may not be the same\n"));
 
-  if ((input_rootname = remove_suffix(get_basename(input_name))) == NULL)
+  if ((input_rootname = remove_suffix(g_basename(input_name))) == NULL)
     FATAL(_("Not a valid input file name %s"), input_name);
 
   /* BUG: Sometimes input_rootname points to the heap, sometimes to
@@ -406,20 +401,6 @@ static char *read_command_line(int argc, char *argv[], at_fitting_opts_type * fi
     /* Else it was just a flag; getopt has already done the assignment.  */
   }
   FINISH_COMMAND_LINE();
-}
-
-/* Return NAME with any leading path stripped off.  This returns a
-   pointer into NAME.  For example, `basename ("/foo/bar.baz")'
-   returns "bar.baz".  */
-
-static char *get_basename(char *name)
-{
-#ifdef WIN32
-  char *base = strrchr(name, '\\');
-#else
-  char *base = strrchr(name, '/');
-#endif
-  return base ? base + 1 : name;
 }
 
 /* Convert hex char to integer */
