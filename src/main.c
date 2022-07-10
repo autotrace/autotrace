@@ -63,8 +63,7 @@ int main(int argc, char *argv[])
   at_fitting_opts_type *fitting_opts;
   at_input_opts_type *input_opts;
   at_output_opts_type *output_opts;
-  char *input_name, *input_rootname;
-  char *dumpfile_name = NULL;
+  char *input_name;
   at_splines_type *splines;
   at_bitmap *bitmap;
   FILE *output_file;
@@ -89,16 +88,6 @@ int main(int argc, char *argv[])
 
   if (output_name != NULL && input_name != NULL && 0 == strcasecmp(output_name, input_name))
     FATAL(_("Input and output file may not be the same\n"));
-
-  if ((input_rootname = remove_suffix(g_basename(input_name))) == NULL)
-    FATAL(_("Not a valid input file name %s"), input_name);
-
-  /* BUG: Sometimes input_rootname points to the heap, sometimes to
-     the stack, so it can't safely be freed. */
-/*
-  if (input_rootname != input_name)
-    free (input_rootname);
-*/
 
   /* Set input_reader if it is not set in command line args */
   if (!input_reader)
@@ -143,15 +132,24 @@ int main(int argc, char *argv[])
 
   /* Dump loaded bitmap if needed */
   if (dumping_bitmap) {
+    char *dumpfile_name = NULL;
+    char *input_rootname = NULL;
+    char *basename = g_path_get_basename(input_name);
+    if ((input_rootname = remove_suffix(basename)) == NULL)
+      FATAL(_("Not a valid input file name %s"), input_name);
+
     if (at_bitmap_get_planes(bitmap) == 1)
       dumpfile_name = g_strconcat(input_rootname, ".dump.pgm", NULL);
     else
       dumpfile_name = g_strconcat(input_rootname, ".dump.ppm", NULL);
+    g_free(basename); // No longer needed. And we don't need to free dumpfile_name - it's just a pointer to bytes in basename.
     dump_file = fopen(dumpfile_name, "wb");
     if (dump_file == NULL) {
       perror(dumpfile_name);
+      g_free(dumpfile_name);
       exit(errno);
     }
+    g_free(dumpfile_name); // No longer needed
     if (at_bitmap_get_planes(bitmap) == 1)
       fprintf(dump_file, "%s\n", "P5");
     else
