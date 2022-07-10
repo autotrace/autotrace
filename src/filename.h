@@ -27,15 +27,6 @@ Foundation, Inc., 675 Mass Ave, Cambridge, MA 02139, USA.  */
    the one after the `.'); otherwise, return NULL.  */
 extern gchar *find_suffix(gchar * name);
 
-/* If NAME has a suffix, simply return it; otherwise, return
-   `NAME.SUFFIX'.  */
-extern gchar *extend_filename(gchar * name, gchar * suffix);
-
-/* Return S with the suffix SUFFIX, removing any suffix already present.
-   For example, `make_suffix ("/foo/bar.baz", "karl")' returns
-   `/foo/bar.karl'.  Returns a string allocated with malloc.  */
-extern gchar *make_suffix(gchar * s, gchar * suffix);
-
 /* Return NAME with any suffix removed.  */
 extern gchar *remove_suffix(gchar * name);
 
