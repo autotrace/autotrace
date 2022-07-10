@@ -1,5 +1,5 @@
 /* filename.h: Function manipulate file names
-   Was: find-suffix, extend-fname, make-suffix, remove-suffix  */
+   Was: find-suffix, remove-suffix */
 
 /* remove-suffx.h: declarations for shared routines.
 
