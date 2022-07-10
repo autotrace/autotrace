@@ -149,9 +149,9 @@ int main(int argc, char *argv[])
   /* Dump loaded bitmap if needed */
   if (dumping_bitmap) {
     if (at_bitmap_get_planes(bitmap) == 1)
-      dumpfile_name = extend_filename(input_rootname, "dump.pgm");
+      dumpfile_name = g_strconcat(input_rootname, ".dump.pgm", NULL);
     else
-      dumpfile_name = extend_filename(input_rootname, "dump.ppm");
+      dumpfile_name = g_strconcat(input_rootname, ".dump.ppm", NULL);
     dump_file = fopen(dumpfile_name, "wb");
     if (dump_file == NULL) {
       perror(dumpfile_name);

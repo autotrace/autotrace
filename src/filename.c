@@ -1,6 +1,5 @@
 /* filename.c: Function manipulate file names
-   Was: find-suffix, extend-fname, make-suffix, remove-suffx
-   substring */
+   Was: find-suffix, make-suffix, remove-suffix, substring */
 
 /* remove-suffx.c: remove any suffix.
 
@@ -44,15 +43,6 @@ gchar *find_suffix(gchar * name)
 
   /* If the name is `foo' or `/foo.bar/baz', we have no extension.  */
   return dot_pos == NULL || dot_pos < slash_pos ? NULL : dot_pos + 1;
-}
-
-gchar *extend_filename(gchar * name, gchar * default_suffix)
-{
-  gchar *new_s;
-  gchar *suffix = find_suffix(name);
-
-  new_s = suffix == NULL ? g_strconcat(name, ".", default_suffix) : name;
-  return new_s;
 }
 
 gchar *remove_suffix(gchar * s)
