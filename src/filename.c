@@ -1,6 +1,6 @@
 /* filename.c: Function manipulate file names
    Was: find-suffix, extend-fname, make-suffix, remove-suffx
-   substring, concat3 */
+   substring */
 
 /* remove-suffx.c: remove any suffix.
 
@@ -27,13 +27,11 @@ Foundation, Inc., 675 Mass Ave, Cambridge, MA 02139, USA.  */
 #include "filename.h"
 #include "xstd.h"
 #include <string.h>
+#include <glib.h>
 
 /* Return a fresh copy of SOURCE[START..LIMIT], or NULL if LIMIT<START.
    If LIMIT>strlen(START), it is reassigned. */
 static gchar *substring(gchar * source, const unsigned start, const unsigned limit);
-
-/* Return a fresh copy of S1 followed by S2, et al.  */
-static gchar *concat3(gchar *, gchar *, gchar *);
 
 gchar *find_suffix(gchar * name)
 {
@@ -53,7 +51,7 @@ gchar *extend_filename(gchar * name, gchar * default_suffix)
   gchar *new_s;
   gchar *suffix = find_suffix(name);
 
-  new_s = suffix == NULL ? concat3(name, ".", default_suffix) : name;
+  new_s = suffix == NULL ? g_strconcat(name, ".", default_suffix) : name;
   return new_s;
 }
 
@@ -63,7 +61,7 @@ gchar *make_suffix(gchar * s, gchar * new_suffix)
   gchar *old_suffix = find_suffix(s);
 
   if (old_suffix == NULL)
-    new_s = concat3(s, ".", new_suffix);
+    new_s = g_strconcat(s, ".", new_suffix);
   else {
     size_t length_through_dot = old_suffix - s;
 
@@ -107,15 +105,4 @@ static gchar *substring(gchar * source, const unsigned start, const unsigned lim
   result[this_char - start] = 0;
 
   return result;
-}
-
-static gchar *concat3(gchar * s1, gchar * s2, gchar * s3)
-{
-  gchar *answer;
-  XMALLOC(answer, strlen(s1) + strlen(s2) + strlen(s3) + 1);
-  strcpy(answer, s1);
-  strcat(answer, s2);
-  strcat(answer, s3);
-
-  return answer;
 }
