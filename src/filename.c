@@ -31,11 +31,7 @@ Foundation, Inc., 675 Mass Ave, Cambridge, MA 02139, USA.  */
 gchar *find_suffix(gchar * name)
 {
   gchar *dot_pos = strrchr(name, '.');
-#ifdef WIN32
-  gchar *slash_pos = strrchr(name, '\\');
-#else
-  gchar *slash_pos = strrchr(name, '/');
-#endif
+  gchar *slash_pos = strrchr(name, G_DIR_SEPARATOR);
 
   /* If the name is `foo' or `/foo.bar/baz', we have no extension.  */
   return dot_pos == NULL || dot_pos < slash_pos ? NULL : dot_pos + 1;
