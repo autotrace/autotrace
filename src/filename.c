@@ -55,24 +55,6 @@ gchar *extend_filename(gchar * name, gchar * default_suffix)
   return new_s;
 }
 
-gchar *make_suffix(gchar * s, gchar * new_suffix)
-{
-  gchar *new_s;
-  gchar *old_suffix = find_suffix(s);
-
-  if (old_suffix == NULL)
-    new_s = g_strconcat(s, ".", new_suffix);
-  else {
-    size_t length_through_dot = old_suffix - s;
-
-    XMALLOC(new_s, length_through_dot + strlen(new_suffix) + 1);
-    strncpy(new_s, s, length_through_dot);
-    strcpy(new_s + length_through_dot, new_suffix);
-  }
-
-  return new_s;
-}
-
 gchar *remove_suffix(gchar * s)
 {
   gchar *suffix = find_suffix(s);

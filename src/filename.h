@@ -31,11 +31,6 @@ extern gchar *find_suffix(gchar * name);
    `NAME.SUFFIX'.  */
 extern gchar *extend_filename(gchar * name, gchar * suffix);
 
-/* Return S with the suffix SUFFIX, removing any suffix already present.
-   For example, `make_suffix ("/foo/bar.baz", "karl")' returns
-   `/foo/bar.karl'.  Returns a string allocated with malloc.  */
-extern gchar *make_suffix(gchar * s, gchar * suffix);
-
 /* Return NAME with any suffix removed.  */
 extern gchar *remove_suffix(gchar * name);
 
