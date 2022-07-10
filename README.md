@@ -25,9 +25,9 @@ Some of code was partially derived from limn of GNU fontutils.
 However, almost all code is rewritten.
 
 Platforms
----------
+--------- 
 The program was tested using GNU/Linux, HP UX, Solaris, Windows98,
-Windows NT, Windows 2000, MAC and OS/2 4.0. It compiles with GCC,
+Windows NT, Windows 2000, Mac OS X and OS/2 4.0. It compiles with GCC,
 Borland C++ Builder, Visual C++ and many other compilers.
 
 If you use Visual C++ 6.0 for compilation be sure to have at
