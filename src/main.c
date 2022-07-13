@@ -138,11 +138,11 @@ int main(int argc, char *argv[])
     if ((input_rootname = remove_suffix(basename)) == NULL)
       FATAL(_("Not a valid input file name %s"), input_name);
 
+    g_free(basename); // No longer needed. And we don't need to free dumpfile_name - it's just a pointer to bytes in basename.
     if (at_bitmap_get_planes(bitmap) == 1)
       dumpfile_name = g_strconcat(input_rootname, ".dump.pgm", NULL);
     else
       dumpfile_name = g_strconcat(input_rootname, ".dump.ppm", NULL);
-    g_free(basename); // No longer needed. And we don't need to free dumpfile_name - it's just a pointer to bytes in basename.
     dump_file = fopen(dumpfile_name, "wb");
     if (dump_file == NULL) {
       perror(dumpfile_name);
