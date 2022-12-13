@@ -1,6 +1,4 @@
 [![Coverity passed](https://scan.coverity.com/projects/18456/badge.svg)](https://scan.coverity.com/projects/autotrace-autotrace)
-[![Total alerts](https://img.shields.io/lgtm/alerts/g/autotrace/autotrace.svg?logo=lgtm&logoWidth=18)](https://lgtm.com/projects/g/autotrace/autotrace/alerts/)
-[![Language grade: C/C++](https://img.shields.io/lgtm/grade/cpp/g/autotrace/autotrace.svg?logo=lgtm&logoWidth=18)](https://lgtm.com/projects/g/autotrace/autotrace/context:cpp)
 [![Build status on Linux](https://github.com/autotrace/autotrace/actions/workflows/linux_test.yml/badge.svg)](https://github.com/autotrace/autotrace/actions?query=workflows%3Alinux_test)
 [![Build status on Mac OS X](https://github.com/autotrace/autotrace/actions/workflows/macosx_test.yml/badge.svg)](https://github.com/autotrace/autotrace/actions?query=workflows%3Amacosx_test)
 
