@@ -31,11 +31,11 @@ jobs:
           sudo apt-get update
           sudo apt-get install --yes libgraphicsmagick1-dev libpng-dev libexiv2-dev libtiff-dev libjpeg-dev libxml2-dev libbz2-dev libfreetype6-dev libpstoedit-dev autoconf automake libtool intltool autopoint
 
-      - name: Configure
-        run: ./configure
-
       - name: After Prepare
         run: ./autogen.sh
+
+      - name: Configure
+        run: ./configure
 
       - name: Initialize CodeQL
         uses: github/codeql-action/init@v2
