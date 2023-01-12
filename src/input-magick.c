@@ -29,7 +29,11 @@
 #include <stdlib.h>
 #include <string.h>
 #include <sys/types.h>          /* Needed for correct interpretation of magick/api.h */
+#ifdef HAVE_IMAGEMAGICK7
+#include <MagickCore/MagickCore.h>
+#else
 #include <magick/api.h>
+#endif
 
 static at_bitmap input_magick_reader(gchar * filename, at_input_opts_type * opts, at_msg_func msg_func, gpointer msg_data, gpointer user_data)
 {
@@ -37,24 +41,39 @@ static at_bitmap input_magick_reader(gchar * filename, at_input_opts_type * opts
   ImageInfo *image_info;
   ImageType image_type;
   unsigned int i, j, point, np, runcount;
+  unsigned char red, green, blue;
   at_bitmap bitmap;
+#if defined(HAVE_IMAGEMAGICK7)
+  Quantum q[MaxPixelChannels];
+#else
   PixelPacket p;
   PixelPacket *pixel = &p;
+#endif
+#if defined(HAVE_IMAGEMAGICK7)
+  ExceptionInfo *exception_ptr = AcquireExceptionInfo();
+  MagickCoreGenesis("", MagickFalse);
+#else
   ExceptionInfo exception;
+  ExceptionInfo *exception_ptr = &exception;
   InitializeMagick("");
-  GetExceptionInfo(&exception);
+  GetExceptionInfo(exception_ptr);
+#endif
   image_info = CloneImageInfo((ImageInfo *) NULL);
   (void)strcpy(image_info->filename, filename);
   image_info->antialias = 0;
 
-  image = ReadImage(image_info, &exception);
+  image = ReadImage(image_info, exception_ptr);
   if (image == (Image *) NULL) {
     /* MagickError(exception.severity,exception.reason,exception.description); */
     if (msg_func)
-      msg_func(exception.reason, AT_MSG_FATAL, msg_data);
+      msg_func(exception_ptr->reason, AT_MSG_FATAL, msg_data);
     goto cleanup;
   }
-  image_type = GetImageType(image, &exception);
+#if defined(HAVE_IMAGEMAGICK7)
+  image_type = IdentifyImageType(image, exception_ptr);
+#else
+  image_type = GetImageType(image, exception_ptr);
+#endif
   if (image_type == BilevelType || image_type == GrayscaleType)
     np = 1;
   else
@@ -68,34 +87,57 @@ static at_bitmap input_magick_reader(gchar * filename, at_input_opts_type * opts
       ExceptionInfo exception;
       p = AcquireOnePixel(image, i, j, &exception);
 #elif defined(HAVE_IMAGEMAGICK)
+  #if defined(HAVE_IMAGEMAGICK7)
+      ClearMagickException(exception_ptr);
+      GetOneAuthenticPixel(image, i, j, q, exception_ptr);
+      red = ScaleQuantumToChar(q[RedPixelChannel]);
+      green = ScaleQuantumToChar(q[GreenPixelChannel]);
+      blue = ScaleQuantumToChar(q[BluePixelChannel]);
+  #else
   #if ((MagickLibVersion < 0x0645) || (MagickLibVersion >= 0x0649))
       p = GetOnePixel(image, i, j);
   #else
       GetOnePixel(image, i, j, pixel);
   #endif
+      red = pixel->red;
+      green = pixel->green;
+      blue = pixel->blue;
+  #endif
 #endif
-      AT_BITMAP_BITS(&bitmap)[point++] = pixel->red;  /* if gray: red=green=blue */
+      AT_BITMAP_BITS(&bitmap)[point++] = red;  /* if gray: red=green=blue */
       if (np == 3) {
-        AT_BITMAP_BITS(&bitmap)[point++] = pixel->green;
-        AT_BITMAP_BITS(&bitmap)[point++] = pixel->blue;
+        AT_BITMAP_BITS(&bitmap)[point++] = green;
+        AT_BITMAP_BITS(&bitmap)[point++] = blue;
       }
     }
 
   DestroyImage(image);
 cleanup:
   DestroyImageInfo(image_info);
+#if defined(HAVE_IMAGEMAGICK7)
+  DestroyExceptionInfo(exception_ptr);
+#endif
   return (bitmap);
 }
 
 int install_input_magick_readers(void)
 {
   size_t n = 0;
+#if defined(HAVE_IMAGEMAGICK7)
+  ExceptionInfo *exception_ptr = AcquireExceptionInfo();
+#else
   ExceptionInfo exception;
+  ExceptionInfo *exception_ptr = &exception;
+#endif
   MagickInfo *info;
   const MagickInfo **infos;
+#if defined(HAVE_IMAGEMAGICK7)
+  MagickCoreGenesis("", MagickFalse);
+#else
   InitializeMagick("");
 
-  GetExceptionInfo(&exception);
+  GetExceptionInfo(exception_ptr);
+#endif
 
 #ifdef HAVE_GRAPHICSMAGICK
   info = GetMagickInfo("*", &exception);
@@ -106,7 +148,7 @@ int install_input_magick_readers(void)
     info = info->next;
   }
 #else
-  infos = GetMagickInfoList("*", &n, &exception);
+  infos = GetMagickInfoList("*", &n, exception_ptr);
   for (int i = 0; i < n; i++){
     info = infos[i];
     if (info->name && info->description)
@@ -114,6 +156,6 @@ int install_input_magick_readers(void)
   }
 #endif // HAVE_GRAPHICSMAGICK
 
-  DestroyExceptionInfo(&exception);
+  DestroyExceptionInfo(exception_ptr);
   return 0;
 }
