@@ -94,6 +94,12 @@ else
     )
   fi
   if test "x${with_magick}" = xImageMagick; then
+      PKG_CHECK_MODULES([IMAGEMAGICK7],
+          [ImageMagick >= 7.0.1],
+	 [HAVE_IMAGEMAGICK7=yes
+	  AC_DEFINE(HAVE_IMAGEMAGICK7, 1, [ImageMagick version 7 or higher is available.])
+	 ],[]
+	)
       PKG_CHECK_MODULES([IMAGEMAGICK],
          [ImageMagick >= 5.2.1],
 	 [HAVE_MAGICK=yes
