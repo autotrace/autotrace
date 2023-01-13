@@ -1,2 +1,5 @@
 #pragma once
-char *at_time_string(void);
+
+#include <glib.h>
+
+gchar *at_time_string(void);

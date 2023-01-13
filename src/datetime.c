@@ -1,20 +1,31 @@
-#include <stdlib.h>
-#include <time.h>
-#include <config.h>
 
-char *at_time_string(void)
+/* datetime.c: date and time specific operations
+
+   Copyright (C) 2023 Peter Lemenkov
+
+   This program is free software; you can redistribute it and/or modify
+   it under the terms of the GNU General Public License as published by
+   the Free Software Foundation; either version 2, or (at your option)
+   any later version.
+
+   This program is distributed in the hope that it will be useful,
+   but WITHOUT ANY WARRANTY; without even the implied warranty of
+   MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+   GNU General Public License for more details.
+
+   You should have received a copy of the GNU General Public License
+   along with this program; if not, write to the Free Software
+   Foundation, Inc., 675 Mass Ave, Cambridge, MA 02139, USA.  */
+
+#include <glib.h>
+#include <glib/gprintf.h>
+
+gchar *at_time_string(void)
 {
-  char *time_string = calloc(sizeof(char), 50);
-  time_t t = time(NULL);
-#if HAVE_LOCALTIME_R
-  struct tm newtime;
-
-  localtime_r(&t, &newtime);
-  strftime(time_string, 50, "%c", &newtime);
-#else
-  // the mingw-w64 toolchain does not have localtime_r()
-  strftime(time_string, 50, "%c", localtime(&t));
-#endif
-
-  return time_string;
+	GDateTime *date;
+	gchar *date_string;
+	date = g_date_time_new_now_local ();
+	date_string = g_date_time_format (date, "%a %b %e %H:%M:%S %Y");
+	g_date_time_unref (date);
+	return date_string;
 }
