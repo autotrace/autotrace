@@ -66,7 +66,7 @@ jobs:
       - name: build and run tests package against ImageMagick 7 only
         run: |
             sudo dnf update
-            sudo dnf install -y ImageMagick-devel autoconf automake gcc gcc-c++ gettext-devel glib2-devel intltool libpng-devel libstdc++-devel libtiff-devel libtool make procps-ng pstoedit-devel 
+            sudo dnf install -y ImageMagick-devel autoconf automake gcc gcc-c++ gettext-devel glib2-devel intltool libpng-devel libstdc++-devel libtiff-devel libtool make procps-ng pstoedit-devel
             ./autogen.sh
             ./configure --enable-magick-readers
             make
