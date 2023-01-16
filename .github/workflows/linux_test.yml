@@ -65,7 +65,7 @@ jobs:
       # Runs a single command using the runners shell
       - name: build and run tests package against ImageMagick 7 only
         run: |
-            sudo dnf update
+            sudo dnf update -y
             sudo dnf install -y ImageMagick-devel autoconf automake gcc gcc-c++ gettext-devel glib2-devel intltool libpng-devel libstdc++-devel libtiff-devel libtool make procps-ng pstoedit-devel
             ./autogen.sh
             ./configure --enable-magick-readers
