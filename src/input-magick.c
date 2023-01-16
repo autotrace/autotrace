@@ -86,6 +86,9 @@ static at_bitmap input_magick_reader(gchar * filename, at_input_opts_type * opts
 #ifdef HAVE_GRAPHICSMAGICK
       ExceptionInfo exception;
       p = AcquireOnePixel(image, i, j, &exception);
+      red = pixel->red;
+      green = pixel->green;
+      blue = pixel->blue;
 #elif defined(HAVE_IMAGEMAGICK)
   #if defined(HAVE_IMAGEMAGICK7)
       ClearMagickException(exception_ptr);
