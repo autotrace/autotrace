@@ -56,6 +56,22 @@ jobs:
             make
             make check
 
+  build_with_latest_imagemagick_7:
+    runs-on: ubuntu-latest
+    container: fedora:38
+    steps:
+      # Checks-out your repository under $GITHUB_WORKSPACE, so your job can access it
+      - uses: actions/checkout@v2
+      # Runs a single command using the runners shell
+      - name: build and run tests package against ImageMagick 7 only
+        run: |
+            sudo dnf update
+            sudo dnf install -y ImageMagick-devel autoconf automake gcc gcc-c++ gettext-devel glib2-devel intltool libpng-devel libstdc++-devel libtiff-devel libtool make procps-ng pstoedit-devel 
+            ./autogen.sh
+            ./configure --enable-magick-readers
+            make
+            make check
+
   build_with_latest_graphicsmagick:
     runs-on: ubuntu-latest
     steps:
