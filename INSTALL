@@ -198,9 +198,6 @@ operates.
 2. GraphicsMagick or ImageMagick related issues
 =============================
 
-Autotrace is not compatible with ImageMagick 7 due to extensive API changes.
-You can compile it with GraphicsMagick instead.
-
 If you use Red Hat Linux 7.2 to build autotrace with ImageMagick rpm,
 you will get an error like:
 
