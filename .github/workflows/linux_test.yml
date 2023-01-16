@@ -41,13 +41,13 @@ jobs:
             make check
         shell: bash
 
-  build_with_latest_imagemagick:
+  build_with_latest_imagemagick_6:
     runs-on: ubuntu-latest
     steps:
       # Checks-out your repository under $GITHUB_WORKSPACE, so your job can access it
       - uses: actions/checkout@v2
       # Runs a single command using the runners shell
-      - name: build and run tests package against ImageMagick only
+      - name: build and run tests package against ImageMagick 6 only
         run: |
             sudo apt update
             sudo apt install -y libmagickcore-6.q16-dev libpng-dev libexiv2-dev libtiff-dev libjpeg-dev libxml2-dev libbz2-dev libfreetype6-dev libpstoedit-dev autoconf automake libtool intltool autopoint
