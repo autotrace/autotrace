@@ -603,25 +603,18 @@ static unsigned char *ReadImage(FILE * fd, int width, int height,
   }
 
   if (bpp >= 16) {              /* color image */
-    XMALLOC(image, width * height * 3 * sizeof(unsigned char));
     if (masks[3].mask != 0)
-    {
       channels = 4;
-    }
     else
-    {
       channels = 3;
-    }
   }
   else if (Grey) /* Grey image */
   {
-    XMALLOC(image, width * height * 1 * sizeof(unsigned char));
     channels = 1;
   } else {                      /* indexed image */
-
-    XMALLOC(image, width * height * 1 * sizeof(unsigned char));
     channels = 1;
   }
+  XMALLOC(image, width * height * channels * sizeof(unsigned char));
 
   /* use XCALLOC to initialize the dest row_buf so that unspecified
 	 pixels in RLE bitmaps show up as the zeroth element in the palette.
