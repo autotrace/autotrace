@@ -2,7 +2,7 @@
 #
 # Author: Masatake YAMATO (yamato@redhat.com)
 #
-AC_INIT([autotrace], [0.40.0])
+AC_INIT([autotrace],[0.40.0])
 AC_CONFIG_SRCDIR([src/main.c])
 AM_INIT_AUTOMAKE([subdir-objects])
 AC_CONFIG_MACRO_DIR([m4])
@@ -34,7 +34,7 @@ AC_SUBST(LT_REVISION)
 AC_SUBST(LT_AGE)
 dnl AC_SUBST(LT_CURRENT_MINUS_AGE)
 AC_PROG_CC
-AC_PROG_LIBTOOL
+LT_INIT
 
 PKG_PROG_PKG_CONFIG
 
@@ -89,7 +89,7 @@ else
        MAGICK_LIBRARY=GraphicsMagick
        AC_DEFINE(HAVE_GRAPHICSMAGICK, 1, [GraphicsMagick library is available.])
 			],
-      AC_WARN(GraphicsMagick not available. Falling back to ImageMagick...)
+      AC_MSG_WARN(GraphicsMagick not available. Falling back to ImageMagick...)
       [with_magick=ImageMagick]
     )
   fi
@@ -208,7 +208,8 @@ else
 fi
 
 dnl po/Makefile.in FIXME FIXME FIXME
-AC_OUTPUT([po/Makefile.in Makefile autotrace.pc])
+AC_CONFIG_FILES([po/Makefile.in Makefile autotrace.pc])
+AC_OUTPUT
 
 echo "
 
