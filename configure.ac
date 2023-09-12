@@ -83,13 +83,13 @@ else
   fi
   if test "x${with_magick}" = xGraphicsMagick; then
     PKG_CHECK_MODULES([GRAPHICSMAGICK],
-      [GraphicsMagick >= 1.3],
+      [GraphicsMagick >= 1.3.40],
       [HAVE_MAGICK=yes
        HAVE_GRAPHICSMAGICK=yes
        MAGICK_LIBRARY=GraphicsMagick
        AC_DEFINE(HAVE_GRAPHICSMAGICK, 1, [GraphicsMagick library is available.])
 			],
-      AC_MSG_WARN(GraphicsMagick not available. Falling back to ImageMagick...)
+      AC_MSG_WARN(GraphicsMagick >= 1.3.40 is not available. Falling back to ImageMagick...)
       [with_magick=ImageMagick]
     )
   fi

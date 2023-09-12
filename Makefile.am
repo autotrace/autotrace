@@ -39,11 +39,7 @@ input_png_src=
 endif
 
 if HAVE_MAGICK_READERS
-if HAVE_GRAPHICSMAGICK
-input_native_src=src/input-tga.c src/input-tga.h
-else
 input_native_src=
-endif
 else
 input_native_src=src/input-bmp.c src/input-bmp.h \
 		   src/input-pnm.c src/input-pnm.h \
