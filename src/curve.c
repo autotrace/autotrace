@@ -24,7 +24,7 @@
 
 #include "logreport.h"
 #include "curve.h"
-#include "xstd.h"
+#include <glib.h>
 
 static at_real_coord int_to_real_coord(at_coord);
 
@@ -32,8 +32,7 @@ static at_real_coord int_to_real_coord(at_coord);
 
 curve_type new_curve(void)
 {
-  curve_type curve;
-  XMALLOC(curve, sizeof(struct curve));
+  curve_type curve = g_malloc(sizeof(struct curve));
   curve->point_list = NULL;
   CURVE_LENGTH(curve) = 0;
   CURVE_CYCLIC(curve) = FALSE;
@@ -63,11 +62,11 @@ curve_type copy_most_of_curve(curve_type old_curve)
 void free_curve(curve_type curve)
 {
   if (CURVE_LENGTH(curve) > 0)
-    free(curve->point_list);
+    g_free(curve->point_list);
   if (CURVE_START_TANGENT(curve))
-    free(CURVE_START_TANGENT(curve));
+    g_free(CURVE_START_TANGENT(curve));
   if (CURVE_END_TANGENT(curve))
-    free(CURVE_END_TANGENT(curve));
+    g_free(CURVE_END_TANGENT(curve));
 }
 
 void append_pixel(curve_type curve, at_coord coord)
@@ -78,7 +77,7 @@ void append_pixel(curve_type curve, at_coord coord)
 void append_point(curve_type curve, at_real_coord coord)
 {
   CURVE_LENGTH(curve)++;
-  XREALLOC(curve->point_list, CURVE_LENGTH(curve) * sizeof(point_type));
+  curve->point_list = g_realloc(curve->point_list, CURVE_LENGTH(curve) * sizeof(point_type));
   LAST_CURVE_POINT(curve) = coord;
   /* The t value does not need to be set.  */
 }
@@ -188,11 +187,11 @@ void free_curve_list(curve_list_type * curve_list)
 
   for (this_curve = 0; this_curve < curve_list->length; this_curve++) {
     free_curve(curve_list->data[this_curve]);
-    free(curve_list->data[this_curve]);
+    g_free(curve_list->data[this_curve]);
   }
 
   /* If the character was empty, it won't have any curves.  */
-  free(curve_list->data);
+  g_free(curve_list->data);
 }
 
 /* Add an element to a curve list.  */
@@ -200,7 +199,7 @@ void free_curve_list(curve_list_type * curve_list)
 void append_curve(curve_list_type * curve_list, curve_type curve)
 {
   curve_list->length++;
-  XREALLOC(curve_list->data, curve_list->length * sizeof(curve_type));
+  curve_list->data = g_realloc(curve_list->data, curve_list->length * sizeof(curve_type));
   curve_list->data[curve_list->length - 1] = curve;
 }
 
@@ -229,7 +228,7 @@ void free_curve_list_array(curve_list_array_type * curve_list_array, at_progress
   }
 
   /* If the character was empty, it won't have any curves.  */
-  free(curve_list_array->data);
+  g_free(curve_list_array->data);
 }
 
 /* Add an element to a curve list array.  */
@@ -237,7 +236,7 @@ void free_curve_list_array(curve_list_array_type * curve_list_array, at_progress
 void append_curve_list(curve_list_array_type * curve_list_array, curve_list_type curve_list)
 {
   CURVE_LIST_ARRAY_LENGTH(*curve_list_array)++;
-  XREALLOC(curve_list_array->data, CURVE_LIST_ARRAY_LENGTH(*curve_list_array) * sizeof(curve_list_type));
+  curve_list_array->data = g_realloc(curve_list_array->data, CURVE_LIST_ARRAY_LENGTH(*curve_list_array) * sizeof(curve_list_type));
   LAST_CURVE_LIST_ARRAY_ELT(*curve_list_array) = curve_list;
 }
 

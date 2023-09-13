@@ -134,7 +134,6 @@ libautotrace_la_LDFLAGS = -version-info $(LT_CURRENT):$(LT_REVISION):$(LT_AGE)
 # File not installed and not shared should be in
 # libautotrace_a_SOURCES.
 noinst_HEADERS = src/filename.h                     \
-		src/xstd.h                          \
 		src/logreport.h
 
 autotrace_SOURCES=\

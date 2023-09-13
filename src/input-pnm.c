@@ -31,7 +31,7 @@
 #include "bitmap.h"
 #include "input-pnm.h"
 #include "logreport.h"
-#include "xstd.h"
+#include <glib.h>
 
 #include <math.h>
 #include <ctype.h>
@@ -127,7 +127,7 @@ at_bitmap input_pnm_reader(gchar * filename, at_input_opts_type * opts, at_msg_f
   }
 
   /* allocate the necessary structures */
-  pnminfo = (PNMInfo *) malloc(sizeof(PNMInfo));
+  pnminfo = g_malloc(sizeof(PNMInfo));
 
   scan = NULL;
   /* set error handling */
@@ -212,7 +212,7 @@ cleanup:
   pnmscanner_destroy(scan);
 
   /* free the structures */
-  free(pnminfo);
+  g_free(pnminfo);
 
   /* close the file */
   fclose(fd);
@@ -311,7 +311,7 @@ static void pnm_load_rawpbm(PNMScanner * scan, PNMInfo * info, unsigned char *da
 
   fd = pnmscanner_fd(scan);
   rowlen = (unsigned int)ceil((double)(info->xres) / 8.0);
-  buf = (unsigned char *)malloc(rowlen * sizeof(unsigned char));
+  buf = g_malloc(rowlen * sizeof(unsigned char));
 
   start = 0;
   end = info->yres;
@@ -337,7 +337,7 @@ static void pnm_load_rawpbm(PNMScanner * scan, PNMInfo * info, unsigned char *da
     d += info->xres;
   }
 cleanup:
-  free(buf);
+  g_free(buf);
 }
 
 /**************** FILE SCANNER UTILITIES **************/
@@ -348,9 +348,7 @@ cleanup:
  */
 static PNMScanner *pnmscanner_create(FILE * fd)
 {
-  PNMScanner *s;
-
-  XMALLOC(s, sizeof(PNMScanner));
+  PNMScanner *s = g_malloc(sizeof(PNMScanner));
   s->fd = fd;
   s->inbuf = 0;
   s->eof = !fread(&(s->cur), 1, 1, s->fd);
@@ -362,8 +360,8 @@ static PNMScanner *pnmscanner_create(FILE * fd)
  */
 static void pnmscanner_destroy(PNMScanner * s)
 {
-  free(s->inbuf);
-  free(s);
+  g_free(s->inbuf);
+  g_free(s);
 }
 
 /* pnmscanner_createbuffer ---
@@ -371,7 +369,7 @@ static void pnmscanner_destroy(PNMScanner * s)
  */
 static void pnmscanner_createbuffer(PNMScanner * s, unsigned int bufsize)
 {
-  s->inbuf = (char *)malloc(sizeof(char) * bufsize);
+  s->inbuf = g_malloc(sizeof(char) * bufsize);
   s->inbufsize = bufsize;
   s->inbufpos = 0;
   s->inbufvalidsize = fread(s->inbuf, 1, bufsize, s->fd);

@@ -28,7 +28,7 @@
 #include "types.h"
 #include "bitmap.h"
 #include "logreport.h"
-#include "xstd.h"
+#include <glib.h>
 #include "input-bmp.h"
 
 
@@ -614,13 +614,13 @@ static unsigned char *ReadImage(FILE * fd, int width, int height,
   } else {                      /* indexed image */
     channels = 1;
   }
-  XMALLOC(image, width * height * channels * sizeof(unsigned char));
+  image = g_malloc(width * height * channels * sizeof(unsigned char));
 
-  /* use XCALLOC to initialize the dest row_buf so that unspecified
+  /* use g_malloc0 to initialize the dest row_buf so that unspecified
 	 pixels in RLE bitmaps show up as the zeroth element in the palette.
   */
-  XCALLOC(dest, width * height * channels);
-  XMALLOC (row_buf, rowbytes); 
+  dest = g_malloc0(width * height * channels);
+  row_buf = g_malloc(rowbytes); 
   rowstride = width * channels;
 
   ypos = height - 1;            /* Bitmaps begin in the lower left corner */
@@ -827,7 +827,7 @@ static unsigned char *ReadImage(FILE * fd, int width, int height,
     unsigned char *temp2, *temp3;
     unsigned char index;
     temp2 = temp = image;
-    XMALLOC (image, width * height * 3 * sizeof (unsigned char)); //???
+    image = g_malloc(width * height * 3 * sizeof (unsigned char)); //???
     temp3 = image;
     for (ypos = 0; ypos < height; ypos++) {
       for (xpos = 0; xpos < width; xpos++) {
@@ -839,11 +839,11 @@ static unsigned char *ReadImage(FILE * fd, int width, int height,
         }
       }
     }
-    free(temp);
+    g_free(temp);
   }
 
-  free (row_buf);
-  free(dest);
+  g_free (row_buf);
+  g_free(dest);
   return image;
 }
 

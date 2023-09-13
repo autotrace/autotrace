@@ -25,7 +25,6 @@
 #include "spline.h"
 #include "color.h"
 #include "output-cgm.h"
-#include "xstd.h"
 #include "autotrace.h"
 #include <string.h>
 

@@ -25,7 +25,7 @@
 #include <stdlib.h>
 #include <string.h>
 #include "logreport.h"
-#include "xstd.h"
+#include <glib.h>
 #include "quantize.h"
 
 #define MAXNUMCOLORS 256
@@ -361,7 +361,7 @@ static void select_colors_rgb(QuantizeObj * quantobj, Histogram histogram)
   int i;
 
   /* Allocate workspace for box list */
-  XMALLOC(boxlist, desired * sizeof(box));
+  boxlist = g_malloc(desired * sizeof(box));
 
   /* Initialize one box containing whole space */
   numboxes = 1;
@@ -379,7 +379,7 @@ static void select_colors_rgb(QuantizeObj * quantobj, Histogram histogram)
   /* Compute the representative color for each box, fill colormap */
   for (i = 0; i < numboxes; i++)
     compute_color_rgb(quantobj, histogram, boxlist + i, i);
-  free(boxlist);
+  g_free(boxlist);
 }
 
 /*
@@ -815,12 +815,11 @@ static void median_cut_pass2_rgb(QuantizeObj * quantobj, at_bitmap * image, cons
 
 static QuantizeObj *initialize_median_cut(int num_colors)
 {
-  QuantizeObj *quantobj;
+  QuantizeObj *quantobj = g_malloc(sizeof(QuantizeObj));
+
 
   /* Initialize the data structures */
-  XMALLOC(quantobj, sizeof(QuantizeObj));
-
-  XMALLOC(quantobj->histogram, sizeof(ColorFreq) * HIST_R_ELEMS * HIST_G_ELEMS * HIST_B_ELEMS);
+  quantobj->histogram = g_malloc(sizeof(ColorFreq) * HIST_R_ELEMS * HIST_G_ELEMS * HIST_B_ELEMS);
   quantobj->desired_number_of_colors = num_colors;
 
   return quantobj;
@@ -858,6 +857,6 @@ void quantize(at_bitmap * image, long ncolors, const at_color * bgColor, Quantiz
 
 void quantize_object_free(QuantizeObj * quantobj)
 {
-  free(quantobj->histogram);
-  free(quantobj);
+  g_free(quantobj->histogram);
+  g_free(quantobj);
 }

@@ -27,7 +27,6 @@
 #include "autotrace.h"
 #include "private.h"
 #include "output.h"
-#include "xstd.h"
 #include "filename.h"
 #include <string.h>
 #include <glib.h>

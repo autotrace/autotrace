@@ -34,7 +34,7 @@
 
 #include "input.h"
 
-#include "xstd.h"
+#include <glib.h>
 #include "image-header.h"
 #include "image-proc.h"
 #include "quantize.h"
@@ -50,8 +50,7 @@
 
 at_fitting_opts_type *at_fitting_opts_new(void)
 {
-  at_fitting_opts_type *opts;
-  XMALLOC(opts, sizeof(at_fitting_opts_type));
+  at_fitting_opts_type *opts = g_malloc(sizeof(at_fitting_opts_type));
   *opts = new_fitting_opts();
   return opts;
 }
@@ -72,15 +71,12 @@ at_fitting_opts_type *at_fitting_opts_copy(at_fitting_opts_type * original)
 void at_fitting_opts_free(at_fitting_opts_type * opts)
 {
   free(opts->background_color);
-  free(opts);
+  g_free(opts);
 }
 
 at_input_opts_type *at_input_opts_new(void)
 {
-  at_input_opts_type *opts;
-  XMALLOC(opts, sizeof(at_input_opts_type));
-  opts->background_color = NULL;
-  opts->charcode = 0;
+  at_input_opts_type *opts = g_malloc0(sizeof(at_input_opts_type));
   return opts;
 }
 
@@ -97,13 +93,12 @@ at_input_opts_type *at_input_opts_copy(at_input_opts_type * original)
 void at_input_opts_free(at_input_opts_type * opts)
 {
   free(opts->background_color);
-  free(opts);
+  g_free(opts);
 }
 
 at_output_opts_type *at_output_opts_new(void)
 {
-  at_output_opts_type *opts;
-  XMALLOC(opts, sizeof(at_output_opts_type));
+  at_output_opts_type *opts = g_malloc(sizeof(at_output_opts_type));
   opts->dpi = AT_DEFAULT_DPI;
   return opts;
 }
@@ -117,14 +112,13 @@ at_output_opts_type *at_output_opts_copy(at_output_opts_type * original)
 
 void at_output_opts_free(at_output_opts_type * opts)
 {
-  free(opts);
+  g_free(opts);
 }
 
 at_bitmap *at_bitmap_read(at_bitmap_reader * reader, gchar * filename, at_input_opts_type * opts, at_msg_func msg_func, gpointer msg_data)
 {
   gboolean new_opts = FALSE;
-  at_bitmap *bitmap;
-  XMALLOC(bitmap, sizeof(at_bitmap));
+  at_bitmap *bitmap = g_malloc(sizeof(at_bitmap));
   if (opts == NULL) {
     opts = at_input_opts_new();
     new_opts = TRUE;
@@ -137,8 +131,7 @@ at_bitmap *at_bitmap_read(at_bitmap_reader * reader, gchar * filename, at_input_
 
 at_bitmap *at_bitmap_new(unsigned short width, unsigned short height, unsigned int planes)
 {
-  at_bitmap *bitmap;
-  XMALLOC(bitmap, sizeof(at_bitmap));
+  at_bitmap *bitmap = g_malloc(sizeof(at_bitmap));
   *bitmap = at_bitmap_init(NULL, width, height, planes);
   return bitmap;
 }
@@ -167,7 +160,7 @@ at_bitmap at_bitmap_init(unsigned char *area, unsigned short width, unsigned sho
     if (0 == (width * height))
       bitmap.bitmap = NULL;
     else
-      XCALLOC(bitmap.bitmap, width * height * planes * sizeof(unsigned char));
+      bitmap.bitmap = g_malloc0(width * height * planes * sizeof(unsigned char));
   }
 
   bitmap.width = width;
@@ -178,8 +171,8 @@ at_bitmap at_bitmap_init(unsigned char *area, unsigned short width, unsigned sho
 
 void at_bitmap_free(at_bitmap * bitmap)
 {
-  free(AT_BITMAP_BITS(bitmap));
-  free(bitmap);
+  g_free(bitmap->bitmap);
+  g_free(bitmap);
 }
 
 unsigned short at_bitmap_get_width(const at_bitmap * bitmap)
@@ -233,7 +226,7 @@ at_splines_type *at_splines_new(at_bitmap * bitmap, at_fitting_opts_type * opts,
 at_splines_type *at_splines_new_full(at_bitmap * bitmap, at_fitting_opts_type * opts, at_msg_func msg_func, gpointer msg_data, at_progress_func notify_progress, gpointer progress_data, at_testcancel_func test_cancel, gpointer testcancel_data)
 {
   image_header_type image_header;
-  at_splines_type *splines = NULL;
+  at_splines_type *splines = g_malloc(sizeof(at_splines_type));
   pixel_outline_list_type pixels;
   QuantizeObj *myQuant = NULL;  /* curently not used */
   at_exception_type exp = at_exception_new(msg_func, msg_data);
@@ -292,7 +285,6 @@ at_splines_type *at_splines_new_full(at_bitmap * bitmap, at_fitting_opts_type * 
   FATAL_THEN_CLEANUP_DIST();
   CANCEL_THEN_CLEANUP_DIST();
 
-  XMALLOC(splines, sizeof(at_splines_type));
   *splines = fitted_splines(pixels, opts, dist, image_header.width, image_header.height, &exp, notify_progress, progress_data, test_cancel, testcancel_data);
   FATAL_THEN_CLEANUP_PIXELS();
   CANCEL_THEN_CLEANUP_PIXELS();
@@ -346,7 +338,7 @@ void at_splines_free(at_splines_type * splines)
   free_spline_list_array(splines);
   if (splines->background_color)
     at_color_free(splines->background_color);
-  free(splines);
+  g_free(splines);
 }
 
 const char *at_version(gboolean long_format)

@@ -27,7 +27,7 @@
 #include "spline.h"
 #include "color.h"
 #include "output-dxf.h"
-#include "xstd.h"
+#include <glib.h>
 #include "autotrace.h"
 #include <math.h>
 #include <time.h>
@@ -522,7 +522,7 @@ int bspline_to_lines(xypnt_head_rec * vtx_list /*  */ ,
   if (vtx_list) {
     n = vtx_count + spline_order + 1;
     m = spline_order + 1;
-    XMALLOC(weight, n * m * sizeof(double));
+    weight = g_malloc(n * m * sizeof(double));
 
     for (i = 0; i < vtx_count + spline_order; i++)
       knot[i] = (i < spline_order) ? 0 : (i > vtx_count) ? knot[i - 1] : knot[i - 1] + 1;
@@ -564,7 +564,7 @@ int bspline_to_lines(xypnt_head_rec * vtx_list /*  */ ,
     xypnt_last_pnt(vtx_list, &spline_pnt, &end_of_list);
     xypnt_add_pnt(*new_vtx_list, spline_pnt);
 
-    free(weight);
+    g_free(weight);
   }
 
   return (0);

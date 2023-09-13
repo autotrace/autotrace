@@ -30,7 +30,6 @@
 
 #include "bitmap.h"
 #include "logreport.h"
-#include "xstd.h"
 #include "input-bmp.h"
 
 /* TODO:

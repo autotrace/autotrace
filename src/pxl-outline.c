@@ -10,7 +10,6 @@
 #include "bitmap.h"
 #include "color.h"
 #include "bitmap.h"
-#include "xstd.h"
 #include "pxl-outline.h"
 #include <assert.h>
 
@@ -323,7 +322,7 @@ pixel_outline_list_type find_centerline_pixels(at_bitmap * bitmap, at_color bg_c
           partial_outline = find_one_centerline(bitmap, dir, row, col, marked);
           concat_pixel_outline(&outline, &partial_outline);
           if (partial_outline.data)
-            free(partial_outline.data);
+            g_free(partial_outline.data);
         } else
           col++;
       }
@@ -406,7 +405,7 @@ static pixel_outline_type find_one_centerline(at_bitmap * bitmap, direction_type
 static void append_pixel_outline(pixel_outline_list_type * outline_list, pixel_outline_type outline)
 {
   O_LIST_LENGTH(*outline_list)++;
-  XREALLOC(outline_list->data, outline_list->length * sizeof(pixel_outline_type));
+  outline_list->data = g_realloc(outline_list->data, outline_list->length * sizeof(pixel_outline_type));
   O_LIST_OUTLINE(*outline_list, O_LIST_LENGTH(*outline_list) - 1) = outline;
 }
 
@@ -420,7 +419,7 @@ void free_pixel_outline_list(pixel_outline_list_type * outline_list)
     pixel_outline_type o = outline_list->data[this_outline];
     free_pixel_outline(&o);
   }
-  free(outline_list->data);
+  g_free(outline_list->data);
   outline_list->data = NULL;
   outline_list->length = 0;
 }
@@ -440,7 +439,7 @@ static pixel_outline_type new_pixel_outline(void)
 
 static void free_pixel_outline(pixel_outline_type * outline)
 {
-  free(outline->data);
+  g_free(outline->data);
   outline->data = NULL;
   outline->length = 0;
 }
@@ -460,7 +459,7 @@ static void concat_pixel_outline(pixel_outline_type * o1, const pixel_outline_ty
   O_LENGTH(*o1) += o2_length - 1;
   /* Resize o1 to the sum of the lengths of o1 and o2 minus one (because
      the two lists are assumed to share the same starting pixel). */
-  XREALLOC(o1->data, O_LENGTH(*o1) * sizeof(at_coord));
+  o1->data = g_realloc(o1->data, O_LENGTH(*o1) * sizeof(at_coord));
   /* Shift the contents of o1 to the end of the new array to make room
      to prepend o2. */
   for (src = o1_length - 1, dst = O_LENGTH(*o1) - 1; src >= 0; src--, dst--)
@@ -475,7 +474,7 @@ static void concat_pixel_outline(pixel_outline_type * o1, const pixel_outline_ty
 static void append_outline_pixel(pixel_outline_type * o, at_coord c)
 {
   O_LENGTH(*o)++;
-  XREALLOC(o->data, O_LENGTH(*o) * sizeof(at_coord));
+  o->data = g_realloc(o->data, O_LENGTH(*o) * sizeof(at_coord));
   O_COORDINATE(*o, O_LENGTH(*o) - 1) = c;
 }
 

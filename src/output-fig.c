@@ -22,7 +22,7 @@
 #endif /* Def: HAVE_CONFIG_H */
 
 #include "output-fig.h"
-#include "xstd.h"
+#include <glib.h>
 #include "logreport.h"
 #include "color.h"
 #include "spline.h"
@@ -152,7 +152,7 @@ static void out_fig_splines(FILE * file, spline_list_array_type shape, int llx, 
 */
 
   /*  Need to create hash table for colours */
-  XMALLOC(spline_colours, (sizeof(int) * SPLINE_LIST_ARRAY_LENGTH(shape)));
+  spline_colours = g_malloc(sizeof(int) * SPLINE_LIST_ARRAY_LENGTH(shape));
 
   /* Preload the big 8 */
   fig_col_init();
@@ -185,9 +185,9 @@ static void out_fig_splines(FILE * file, spline_list_array_type shape, int llx, 
     int pointcount = 0, is_spline = 0, j;
     int maxlength = SPLINE_LIST_LENGTH(list) * 5 + 1;
 
-    XMALLOC(pointx, maxlength * sizeof(int));
-    XMALLOC(pointy, maxlength * sizeof(int));
-    XMALLOC(contrl, maxlength * sizeof(gfloat));
+    pointx = g_malloc(maxlength * sizeof(int));
+    pointy = g_malloc(maxlength * sizeof(int));
+    contrl = g_malloc(maxlength * sizeof(gfloat));
 
     if (list.clockwise) {
       fig_colour = FIG_WHITE;
@@ -339,11 +339,11 @@ static void out_fig_splines(FILE * file, spline_list_array_type shape, int llx, 
     if (fig_depth < 0) {
       fig_depth = 0;
     }
-    free(pointx);
-    free(pointy);
-    free(contrl);
+    g_free(pointx);
+    g_free(pointy);
+    g_free(contrl);
   }
-  free(spline_colours);
+  g_free(spline_colours);
   return;
 }
 

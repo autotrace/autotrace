@@ -9,7 +9,6 @@
 #include "cmdline.h"
 #include "getopt.h"
 #include "filename.h"
-#include "xstd.h"
 #include "atou.h"
 #include "input.h"
 
