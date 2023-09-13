@@ -5,7 +5,7 @@
 DIR=$1
 
 # Check whether ImageMagick support is enabled and hence we support XPM
-autotrace -list-input-formats 2>&1 | grep xpm
+autotrace -list-input-formats 2>&1 | grep -q xpm
 RESULT=$?
 
 if [ $RESULT -ne 0 ] ; then
