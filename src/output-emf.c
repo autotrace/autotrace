@@ -745,7 +745,7 @@ static void OutputEmf(FILE* fdes, EMFStats *stats, gchar* name, int width, int h
   WriteEndOfMetafile(fdes);
 
   //delete color table
-  free((void *)color_table);
+  g_free((void *)color_table);
 }
 
 */

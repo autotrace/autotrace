@@ -29,6 +29,7 @@
 #include "types.h"
 #include "bitmap.h"
 #include "despeckle.h"
+#include <glib.h>
 
 /* Calculate Error - compute the error between two colors
  *
@@ -577,7 +578,7 @@ static void despeckle_iteration( /* in */ int level,
   current_size = 1 << level;
   tightness = (int)(noise_max / (1.0 + adaptive_tightness * level));
 
-  mask = (unsigned char *)calloc(width * height, sizeof(unsigned char));
+  mask = g_malloc0(width * height * sizeof(unsigned char));
   for (y = 0; y < height; y++) {
     for (x = 0; x < width; x++) {
       if (mask[y * width + x] == 0) {
@@ -596,7 +597,7 @@ static void despeckle_iteration( /* in */ int level,
     }
   }
 
-  free(mask);
+  g_free(mask);
 }
 
 /* Despeckle Iteration - Despeckle all regions smaller than cur_size pixels
@@ -626,7 +627,7 @@ static void despeckle_iteration_8( /* in */ int level,
   current_size = 1 << level;
   tightness = (int)(noise_max / (1.0 + adaptive_tightness * level));
 
-  mask = (unsigned char *)calloc(width * height, sizeof(unsigned char));
+  mask = g_malloc0(width * height * sizeof(unsigned char));
   for (y = 0; y < height; y++) {
     for (x = 0; x < width; x++) {
       if (mask[y * width + x] == 0) {
@@ -645,7 +646,7 @@ static void despeckle_iteration_8( /* in */ int level,
     }
   }
 
-  free(mask);
+  g_free(mask);
 }
 
 /* Despeckle - Despeckle a 8 or 24 bit image

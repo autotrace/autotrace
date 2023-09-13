@@ -168,7 +168,7 @@ const char **at_output_list_new(void)
 
 void at_output_list_free(const char **list)
 {
-  free((char **)list);
+  g_free((char **)list);
 }
 
 char *at_output_shortlist(void)

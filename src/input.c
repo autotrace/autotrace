@@ -172,7 +172,7 @@ const char **at_input_list_new(void)
 
 void at_input_list_free(const char **list)
 {
-  free((char **)list);
+  g_free((char **)list);
 }
 
 char *at_input_shortlist(void)

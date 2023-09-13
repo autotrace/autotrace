@@ -27,6 +27,7 @@
 #include "output-cgm.h"
 #include "autotrace.h"
 #include <string.h>
+#include <glib.h>
 
 #define CGM_BEGINMETAFILE        0x0020
 #define CGM_BEGINPICTURE         0x0060
@@ -141,11 +142,11 @@ int output_cgm_writer(FILE * cgm_file, gchar * name, int llx, int lly, int urx, 
   write16(cgm_file, CGM_METAFILEVERSION);
   write16(cgm_file, 0x0002);
 
-  des = (char *)malloc(strlen("created by ") + strlen(version_string) + 1);
+  des = g_malloc(strlen("created by ") + strlen(version_string) + 1);
   strcpy(des, "created by ");
   strcat(des, version_string);
   output_metafiledescription(cgm_file, des);
-  free(des);
+  g_free(des);
 
   write16(cgm_file, 0x1166);    /* metafile element list */
   write16(cgm_file, 0x0001);

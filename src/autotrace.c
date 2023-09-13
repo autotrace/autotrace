@@ -70,7 +70,7 @@ at_fitting_opts_type *at_fitting_opts_copy(at_fitting_opts_type * original)
 
 void at_fitting_opts_free(at_fitting_opts_type * opts)
 {
-  free(opts->background_color);
+  g_free(opts->background_color);
   g_free(opts);
 }
 
@@ -92,7 +92,7 @@ at_input_opts_type *at_input_opts_copy(at_input_opts_type * original)
 
 void at_input_opts_free(at_input_opts_type * opts)
 {
-  free(opts->background_color);
+  g_free(opts->background_color);
   g_free(opts);
 }
 
