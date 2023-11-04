@@ -240,7 +240,6 @@ static char *read_command_line(int argc, char *argv[], at_fitting_opts_type * fi
   int g;                        /* `getopt' return code.  */
   int option_index;
   struct option long_options[] = {
-	  {"align-threshold", 1, 0, 0},
 	  {"background-color", 1, 0, 0},
 	  {"debug-arch", 0, 0, 0},
 	  {"debug-bitmap", 0, (int *)&dumping_bitmap, 1},
@@ -266,7 +265,6 @@ static char *read_command_line(int argc, char *argv[], at_fitting_opts_type * fi
 	  {"output-file", 1, 0, 0},
 	  {"output-format", 1, 0, 0},
 	  {"preserve-width", 0, 0, 0},
-	  {"range", 1, 0, 0},
 	  {"remove-adjacent-corners", 0, 0, 0},
 	  {"tangent-surround", 1, 0, 0},
 	  {"report-progress", 0, (int *)&report_progress, 1},
