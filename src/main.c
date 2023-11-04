@@ -241,14 +241,14 @@ static char *read_command_line(int argc, char *argv[], at_fitting_opts_type * fi
   int option_index;
   struct option long_options[] = {
 	  {"background-color", 1, 0, 0},
-	  {"debug-arch", 0, 0, 0},
-	  {"debug-bitmap", 0, (int *)&dumping_bitmap, 1},
 	  {"centerline", 0, 0, 0},
 	  {"charcode", 1, 0, 0},
 	  {"color-count", 1, 0, 0},
 	  {"corner-always-threshold", 1, 0, 0},
 	  {"corner-surround", 1, 0, 0},
 	  {"corner-threshold", 1, 0, 0},
+	  {"debug-arch", 0, 0, 0},
+	  {"debug-bitmap", 0, (int *)&dumping_bitmap, 1},
 	  {"despeckle-level", 1, 0, 0},
 	  {"despeckle-tightness", 1, 0, 0},
 	  {"dpi", 1, 0, 0},
@@ -258,16 +258,16 @@ static char *read_command_line(int argc, char *argv[], at_fitting_opts_type * fi
 	  {"input-format", 1, 0, 0},
 	  {"line-reversion-threshold", 1, 0, 0},
 	  {"line-threshold", 1, 0, 0},
-	  {"list-output-formats", 0, 0, 0},
 	  {"list-input-formats", 0, 0, 0},
+	  {"list-output-formats", 0, 0, 0},
 	  {"log", 0, (int *)&logging, 1},
 	  {"noise-removal", 1, 0, 0},
 	  {"output-file", 1, 0, 0},
 	  {"output-format", 1, 0, 0},
 	  {"preserve-width", 0, 0, 0},
 	  {"remove-adjacent-corners", 0, 0, 0},
-	  {"tangent-surround", 1, 0, 0},
 	  {"report-progress", 0, (int *)&report_progress, 1},
+	  {"tangent-surround", 1, 0, 0},
 	  {"version", 0, (int *)&printed_version, 1},
 	  {"width-weight-factor", 1, 0, 0},
 	  {0, 0, 0, 0}
@@ -326,9 +326,6 @@ static char *read_command_line(int argc, char *argv[], at_fitting_opts_type * fi
     else if (ARGUMENT_IS("despeckle-tightness"))
       fitting_opts->despeckle_tightness = (gfloat) atof(optarg);
 
-    else if (ARGUMENT_IS("noise-removal"))
-      fitting_opts->noise_removal = (gfloat) atof(optarg);
-
     else if (ARGUMENT_IS("dpi"))
       output_opts->dpi = atou(optarg);
 
@@ -355,21 +352,26 @@ static char *read_command_line(int argc, char *argv[], at_fitting_opts_type * fi
         FATAL(_("Input format %s is not supported\n"), optarg);
     }
 
+    else if (ARGUMENT_IS("line-reversion-threshold"))
+      fitting_opts->line_reversion_threshold = (gfloat) atof(optarg);
+
     else if (ARGUMENT_IS("line-threshold"))
       fitting_opts->line_threshold = (gfloat) atof(optarg);
 
-    else if (ARGUMENT_IS("line-reversion-threshold"))
-      fitting_opts->line_reversion_threshold = (gfloat) atof(optarg);
+    else if (ARGUMENT_IS("list-input-formats")) {
+      fprintf(stderr, _("Supported input formats:\n"));
+      input_list_formats(stderr);
+      exit(0);
+    }
 
     else if (ARGUMENT_IS("list-output-formats")) {
       fprintf(stderr, _("Supported output formats:\n"));
       output_list_formats(stderr);
       exit(0);
-    } else if (ARGUMENT_IS("list-input-formats")) {
-      fprintf(stderr, _("Supported input formats:\n"));
-      input_list_formats(stderr);
-      exit(0);
     }
+
+    else if (ARGUMENT_IS("noise-removal"))
+      fitting_opts->noise_removal = (gfloat) atof(optarg);
 
     else if (ARGUMENT_IS("output-file"))
       output_name = optarg;
@@ -378,7 +380,9 @@ static char *read_command_line(int argc, char *argv[], at_fitting_opts_type * fi
       output_writer = at_output_get_handler_by_suffix(optarg);
       if (output_writer == NULL)
         FATAL(_("Output format %s is not supported"), optarg);
-    } else if (ARGUMENT_IS("preserve-width"))
+    }
+
+    else if (ARGUMENT_IS("preserve-width"))
       fitting_opts->preserve_width = TRUE;
 
     else if (ARGUMENT_IS("remove-adjacent-corners"))
