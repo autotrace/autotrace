@@ -286,7 +286,9 @@ static char *read_command_line(int argc, char *argv[], at_fitting_opts_type * fi
     if (ARGUMENT_IS("background-color")) {
       fitting_opts->background_color = at_color_parse(optarg, NULL);
       input_opts->background_color = at_color_copy(fitting_opts->background_color);
-    } else if (ARGUMENT_IS("centerline"))
+    }
+
+    else if (ARGUMENT_IS("centerline"))
       fitting_opts->centerline = TRUE;
 
     else if (ARGUMENT_IS("charcode")) {
