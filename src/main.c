@@ -6,7 +6,6 @@
 
 #include "autotrace.h"
 #include "logreport.h"
-#include "cmdline.h"
 #include "getopt.h"
 #include "filename.h"
 #include "atou.h"
@@ -179,9 +178,11 @@ int main(int argc, char *argv[])
 /* Reading the options.  */
 
 #define USAGE1 "Options:\
-<input_name> must be a supported image file.\n"\
-  GETOPT_USAGE								\
-"\n\
+<input_name> must be a supported image file.\n\
+  You can use '--' or '-' to start an option.\n\
+  You can use any unambiguous abbreviation for an option name.\n\
+  You can separate option names and values with '=' or ' '.\n\
+\n\
 -background-color <hexadecimal>: the color of the background that should\n\
     be ignored, for example FFFFFF; default is no background color.\n\n\
 -centerline: trace a character's centerline, rather than its outline.\n\n\
@@ -270,6 +271,12 @@ static char *read_command_line(int argc, char *argv[], at_fitting_opts_type * fi
 	  {"width-weight-factor", 1, 0, 0},
 	  {0, 0, 0, 0}
   };
+
+/* Test whether getopt found an option ``A''.
+   Assumes the option index is in the variable `option_index', and the
+   option table in a variable `long_options'.  */
+
+#define ARGUMENT_IS(a) (0 == strcasecmp(long_options[option_index].name, a))
 
   while (TRUE) {
 
@@ -387,7 +394,20 @@ static char *read_command_line(int argc, char *argv[], at_fitting_opts_type * fi
 
     /* Else it was just a flag; getopt has already done the assignment.  */
   }
-  FINISH_COMMAND_LINE();
+  /* Just wanted to know the version number?  */
+  if (printed_version && optind == argc) exit (0);
+
+  /* Exactly one (non-empty) argument left?  */
+  if (optind + 1 == argc && *argv[optind] != 0)
+	  return (argv[optind]);
+  else {
+	  fprintf (stderr, "Usage: %s [options] <image_file_name>\n", argv[0]);
+	  fprintf (stderr, "(%s.)\n", optind == argc ? "Missing <image_name>"
+			  : "Too many <image_file_name>s");
+	  fputs ("For more information, use ''-help''.\n", stderr);
+	  exit (1);
+  }
+  return NULL; /* stop warnings */
 }
 
 /* Convert hex char to integer */

@@ -139,8 +139,7 @@ noinst_HEADERS = src/filename.h                     \
 autotrace_SOURCES=\
 		src/atou.c				\
 		src/atou.h				\
-		src/main.c				\
-		src/cmdline.h
+		src/main.c
 
 AM_CPPFLAGS = $(GRAPHICSMAGICK_CFLAGS) $(IMAGEMAGICK_CFLAGS) $(LIBPSTOEDIT_CFLAGS) $(LIBSWF_CFLAGS) $(GLIB2_CFLAGS) -DLOCALEDIR=\""$(datadir)/locale"\"
 
