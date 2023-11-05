@@ -227,7 +227,6 @@ int main(int argc, char *argv[])
 -tangent-surround <unsigned>: number of points on either side of a\n\
     point to consider when computing the tangent at that point; default is 3.\n\n\
 -report-progress: report tracing status in real time.\n\n\
--debug-arch: print the type of cpu.\n\n\
 -debug-bitmap: dump loaded bitmap to <input_name>.bitmap.ppm or pgm.\n\n\
 -version: print the version number of this program.\n\n\
 -width-weight-factor <real>: weight factor for fitting the linewidth.\n\n\
@@ -247,7 +246,6 @@ static char *read_command_line(int argc, char *argv[], at_fitting_opts_type * fi
 	  {"corner-always-threshold", 1, 0, 0},
 	  {"corner-surround", 1, 0, 0},
 	  {"corner-threshold", 1, 0, 0},
-	  {"debug-arch", 0, 0, 0},
 	  {"debug-bitmap", 0, (int *)&dumping_bitmap, 1},
 	  {"despeckle-level", 1, 0, 0},
 	  {"despeckle-tightness", 1, 0, 0},
@@ -307,18 +305,6 @@ static char *read_command_line(int argc, char *argv[], at_fitting_opts_type * fi
 
     else if (ARGUMENT_IS("corner-threshold"))
       fitting_opts->corner_threshold = (gfloat) atof(optarg);
-
-    else if (ARGUMENT_IS("debug-arch")) {
-      int endian = 1;
-      char *str;
-      if (*(char *)&endian)
-        str = "little";
-      else
-        str = "big";
-
-      printf("%lu bit, %s endian\n", sizeof(void *) * 8, str);
-      exit(0);
-    }
 
     else if (ARGUMENT_IS("despeckle-level"))
       fitting_opts->despeckle_level = atou(optarg);
