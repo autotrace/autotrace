@@ -15,6 +15,18 @@ At https://github.com/autotrace/autotrace/releases we provide binary packages fo
 1. Basic Installation
 =====================
 
+   These are autotrace specific preparations:
+Clone or download the repository, change int the toplevel directory of autotrace.
+
+bash autogen.sh
+apt install  libpstoedit-dev
+bash configure
+make
+./autotrace --version	# test if it can print its version, before installing.
+sudo make install
+sudo ldconfig
+
+
    These are generic installation instructions.
 
    The `configure' shell script attempts to guess correct values for
