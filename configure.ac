@@ -72,11 +72,12 @@ AC_ARG_WITH(magick,
    [select library to use for images (options: GraphicsMagick(default) or ImageMagick (<= 5.5.2))])],
    ,[with_magick=GraphicsMagick])
 
-HAVE_MAGICK=no
+HAVE_MAGICK=yes
 HAVE_MAGICK_READERS=no
 MAGICK_LIBRARY=none
 if test x"${with_magick}" = xno; then
-  AC_MSG_WARN([*** GraphicsMagick or ImageMagick input handler is disabled.           ***])
+  AC_MSG_WARN([*** GraphicsMagick or ImageMagick input handler is disabled (NOT RECOMMENDED).           ***])
+  HAVE_MAGICK=no
 else
   if test "x${with_magick}" = xyes; then
     with_magick=GraphicsMagick
@@ -88,7 +89,7 @@ else
        HAVE_GRAPHICSMAGICK=yes
        MAGICK_LIBRARY=GraphicsMagick
        AC_DEFINE(HAVE_GRAPHICSMAGICK, 1, [GraphicsMagick library is available.])
-			],
+	 ],
       AC_MSG_WARN(GraphicsMagick >= 1.3.40 is not available. Falling back to ImageMagick...)
       [with_magick=ImageMagick]
     )
@@ -107,18 +108,18 @@ else
 	  MAGICK_LIBRARY=ImageMagick
 	  AC_DEFINE(HAVE_IMAGEMAGICK, 1, [ImageMagick library is available.])
 	 ],
+	AC_MSG_ERROR([Nor GraphicsMagick neither ImageMagick are available. Try recompiling with --without-magick.])
 	)
   fi
   if test "x${HAVE_MAGICK}" = xyes; then
     AC_DEFINE(HAVE_MAGICK, 1, [GraphicsMagick or ImageMagick library is available or not])
-	AC_ARG_ENABLE(magick-readers,
-		  [  --enable-magick-readers Use *Magick as a reader for BMP/PGM/PNM/PPM/TGA files],
-		  [
+	AC_ARG_ENABLE([magick-readers],
+		      AS_HELP_STRING([--disable-magick-readers], [Don't use *Magick as a reader for BMP/PGM/PNM/PPM/TGA files])
+	)
+	AS_IF([test "x$enable_magick_readers" != "xno"], [
 		   HAVE_MAGICK_READERS=yes
 		   AC_DEFINE(HAVE_MAGICK_READERS, 1, [Use Magick readers for simple formats.])
-		  ],
-		  [ AC_DEFINE(HAVE_MAGICK_READERS, 0, [Use native readers for simple formats.]) ]
-	  )
+	])
   fi
 fi
 
@@ -214,7 +215,7 @@ AC_OUTPUT
 echo "
 
 Configuration:
-	graphics/imagemagick output support:	$HAVE_MAGICK ($MAGICK_LIBRARY)
+	graphics/imagemagick output support:	$HAVE_MAGICK ($MAGICK_LIBRARY) (magick readers only: $HAVE_MAGICK_READERS)
 	libpng output support:			$HAVE_LIBPNG
 	swf output support by ming:		$HAVE_LIBSWF
 	pstoedit output support:		$HAVE_LIBPSTOEDIT
