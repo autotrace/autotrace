@@ -268,7 +268,7 @@ static void get_character_bitmap(gf_char_t * sym)
 
   sym->height = height;
   sym->width = width;
-  sym->bitmap = g_malloc0(width * height);
+  sym->bitmap = g_malloc0((gsize)width * height);
   if (!sym->bitmap) {
     fprintf(stderr, "%s: out of memory\n", sym->font->input_filename);
     exit(-1);
@@ -446,7 +446,7 @@ static void deblank(gf_char_t * sym)
     } else {
       condensed.width = sym->width - white_on_left - white_on_right;
       condensed.height = sym->height - white_on_top - white_on_bottom;
-      condensed.bitmap = g_malloc0(condensed.width * condensed.height);
+      condensed.bitmap = g_malloc0((gsize)condensed.width * condensed.height);
       if (!condensed.bitmap) {
         fprintf(stderr, "%s: out of memory\n", sym->font->input_filename);
         exit(-1);

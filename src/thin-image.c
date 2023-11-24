@@ -118,7 +118,7 @@ void thin_image(at_bitmap * image, const at_color * bg, at_exception_type * exp)
   bm.height = image->height;
   bm.width = image->width;
   bm.np = image->np;
-  bm.bitmap = g_malloc(height * width * spp);
+  bm.bitmap = g_malloc((gsize)height * width * spp);
   memcpy(bm.bitmap, image->bitmap, height * width * spp);
   /* that clones the image */
 

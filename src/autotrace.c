@@ -160,7 +160,7 @@ at_bitmap at_bitmap_init(unsigned char *area, unsigned short width, unsigned sho
     if (0 == (width * height))
       bitmap.bitmap = NULL;
     else
-      bitmap.bitmap = g_malloc0(width * height * planes * sizeof(unsigned char));
+      bitmap.bitmap = g_malloc0((gsize)width * height * planes * sizeof(unsigned char));
   }
 
   bitmap.width = width;

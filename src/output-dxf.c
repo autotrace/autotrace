@@ -522,7 +522,7 @@ int bspline_to_lines(xypnt_head_rec * vtx_list /*  */ ,
   if (vtx_list) {
     n = vtx_count + spline_order + 1;
     m = spline_order + 1;
-    weight = g_malloc(n * m * sizeof(double));
+    weight = g_malloc((gsize)n * m * sizeof(double));
 
     for (i = 0; i < vtx_count + spline_order; i++)
       knot[i] = (i < spline_order) ? 0 : (i > vtx_count) ? knot[i - 1] : knot[i - 1] + 1;
