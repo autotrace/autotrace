@@ -24,7 +24,6 @@
 #include <stdio.h>
 #include <string.h>
 #include "spline.h"
-#include "xstd.h"
 
 #define NUM_SPLINES 8
 #define WriteInitialize(fp) (fputs("IN;",fp))

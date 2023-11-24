@@ -39,11 +39,7 @@ input_png_src=
 endif
 
 if HAVE_MAGICK_READERS
-if HAVE_GRAPHICSMAGICK
-input_native_src=src/input-tga.c src/input-tga.h
-else
 input_native_src=
-endif
 else
 input_native_src=src/input-bmp.c src/input-bmp.h \
 		   src/input-pnm.c src/input-pnm.h \
@@ -138,14 +134,12 @@ libautotrace_la_LDFLAGS = -version-info $(LT_CURRENT):$(LT_REVISION):$(LT_AGE)
 # File not installed and not shared should be in
 # libautotrace_a_SOURCES.
 noinst_HEADERS = src/filename.h                     \
-		src/xstd.h                          \
 		src/logreport.h
 
 autotrace_SOURCES=\
 		src/atou.c				\
 		src/atou.h				\
-		src/main.c				\
-		src/cmdline.h
+		src/main.c
 
 AM_CPPFLAGS = $(GRAPHICSMAGICK_CFLAGS) $(IMAGEMAGICK_CFLAGS) $(LIBPSTOEDIT_CFLAGS) $(LIBSWF_CFLAGS) $(GLIB2_CFLAGS) -DLOCALEDIR=\""$(datadir)/locale"\"
 

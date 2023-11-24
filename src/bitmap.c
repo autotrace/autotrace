@@ -5,4 +5,3 @@
 #endif /* Def: HAVE_CONFIG_H */
 
 #include "bitmap.h"
-#include "xstd.h"

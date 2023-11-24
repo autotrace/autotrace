@@ -27,7 +27,7 @@
 #include "logreport.h"
 #include "types.h"
 #include "bitmap.h"
-#include "xstd.h"
+#include <glib.h>
 #include <string.h>
 
 #define PIXEL_SET(p, new)  ((void)memcpy((p), (new), sizeof(Pixel)))
@@ -118,7 +118,7 @@ void thin_image(at_bitmap * image, const at_color * bg, at_exception_type * exp)
   bm.height = image->height;
   bm.width = image->width;
   bm.np = image->np;
-  XMALLOC(bm.bitmap, height * width * spp);
+  bm.bitmap = g_malloc((gsize)height * width * spp);
   memcpy(bm.bitmap, image->bitmap, height * width * spp);
   /* that clones the image */
 
@@ -180,7 +180,7 @@ void thin_image(at_bitmap * image, const at_color * bg, at_exception_type * exp)
     }
   }
 cleanup:
-  free(bm.bitmap);
+  g_free(bm.bitmap);
 }
 
 void thin3(at_bitmap * image, Pixel colour)
@@ -205,7 +205,7 @@ void thin3(at_bitmap * image, Pixel colour)
   LOG(" Thinning image.....\n ");
   xsize = AT_BITMAP_WIDTH(image);
   ysize = AT_BITMAP_HEIGHT(image);
-  XMALLOC(qb, xsize * sizeof(unsigned char));
+  qb = g_malloc(xsize * sizeof(unsigned char));
   qb[xsize - 1] = 0;            /* Used for lower-right pixel   */
   ptr = (Pixel *) AT_BITMAP_BITS(image);
 
@@ -265,7 +265,7 @@ void thin3(at_bitmap * image, Pixel colour)
     }
     LOG("ThinImage: pass %d, %d pixels deleted\n", pc, count);
   }
-  free(qb);
+  g_free(qb);
 }
 
 void thin1(at_bitmap * image, unsigned char colour)
@@ -291,7 +291,7 @@ void thin1(at_bitmap * image, unsigned char colour)
   LOG(" Thinning image.....\n ");
   xsize = AT_BITMAP_WIDTH(image);
   ysize = AT_BITMAP_HEIGHT(image);
-  XMALLOC(qb, xsize * sizeof(unsigned char));
+  qb = g_malloc(xsize * sizeof(unsigned char));
   qb[xsize - 1] = 0;            /* Used for lower-right pixel   */
   ptr = AT_BITMAP_BITS(image);
 
@@ -349,5 +349,5 @@ void thin1(at_bitmap * image, unsigned char colour)
     }
     LOG("thin1: pass %d, %d pixels deleted\n", pc, count);
   }
-  free(qb);
+  g_free(qb);
 }

@@ -33,7 +33,7 @@
 #include <sys/stat.h>
 
 #include "spline.h"
-#include "xstd.h"
+#include <glib.h>
 
 #ifdef MAX
 #undef MAX
@@ -392,10 +392,7 @@ int find_best_match_color(unsigned char r, unsigned char g, unsigned char b)
 
 pLaserPoint newLaserPoint(void)
 {
-  pLaserPoint p = NULL;
-
-  if ((p = (pLaserPoint) malloc(sizeof(LaserPoint))) == NULL)
-    return (NULL);
+  pLaserPoint p = g_malloc(sizeof(LaserPoint));
 
   p->x = p->y = p->z = 0;
   p->r = p->g = p->b = 0;
@@ -407,10 +404,7 @@ pLaserPoint newLaserPoint(void)
 
 pLaserFrame newLaserFrame(void)
 {
-  pLaserFrame p = NULL;
-
-  if ((p = (pLaserFrame) malloc(sizeof(LaserFrame))) == NULL)
-    return (NULL);
+  pLaserFrame p = g_malloc(sizeof(LaserFrame));
 
   p->next = NULL;
   p->previous = NULL;
@@ -454,10 +448,7 @@ int frame_point_count(LaserFrame * f)
 
 pLaserSequence newLaserSequence(void)
 {
-  pLaserSequence p = NULL;
-
-  if ((p = (pLaserSequence) malloc(sizeof(LaserSequence))) == NULL)
-    return (NULL);
+  pLaserSequence p = g_malloc(sizeof(LaserSequence));
 
   p->frame_count = 0;
   p->frame_first = NULL;
@@ -1004,6 +995,7 @@ static void OutputILDA(FILE * fdes, int llx, int lly, int urx, int ury, spline_l
 
   frameDrawFinish();
   writeILDA(fdes, drawsequence);
+  g_free(drawsequence);
 }
 
 int output_ild_writer(FILE * file, gchar * name, int llx, int lly, int urx, int ury, at_output_opts_type * opts, at_spline_list_array_type shape, at_msg_func msg_func, gpointer msg_data, gpointer user_data)

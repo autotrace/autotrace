@@ -30,6 +30,7 @@
 #include "input-gf.h"
 #include "output-ugs.h"
 #include "bitmap.h"
+#include <glib.h>
 
 #define WHITE		0
 
@@ -267,7 +268,7 @@ static void get_character_bitmap(gf_char_t * sym)
 
   sym->height = height;
   sym->width = width;
-  sym->bitmap = calloc(width, height);
+  sym->bitmap = g_malloc0((gsize)width * height);
   if (!sym->bitmap) {
     fprintf(stderr, "%s: out of memory\n", sym->font->input_filename);
     exit(-1);
@@ -445,7 +446,7 @@ static void deblank(gf_char_t * sym)
     } else {
       condensed.width = sym->width - white_on_left - white_on_right;
       condensed.height = sym->height - white_on_top - white_on_bottom;
-      condensed.bitmap = calloc(condensed.width, condensed.height);
+      condensed.bitmap = g_malloc0((gsize)condensed.width * condensed.height);
       if (!condensed.bitmap) {
         fprintf(stderr, "%s: out of memory\n", sym->font->input_filename);
         exit(-1);
@@ -459,7 +460,7 @@ static void deblank(gf_char_t * sym)
       sym->bbox_min_col += white_on_left;
       sym->bbox_max_col -= white_on_right;
     }
-    free(sym->bitmap);
+    g_free(sym->bitmap);
     sym->bitmap = condensed.bitmap;
   }
 }
@@ -679,7 +680,7 @@ at_bitmap input_gf_reader(gchar * filename, at_input_opts_type * opts, at_msg_fu
       AT_BITMAP_BITS(&bitmap)[ptr++] = PIXEL(sym, j, i);
     }
   }
-  free(sym->bitmap);
+  g_free(sym->bitmap);
   fclose(font->input_file);
   return bitmap;
 }

@@ -6,7 +6,7 @@
 
 #include <assert.h>
 #include <math.h>
-#include "xstd.h"
+#include <glib.h>
 #include "logreport.h"
 #include "image-proc.h"
 
@@ -49,11 +49,11 @@ at_distance_map new_distance_map(at_bitmap * bitmap, unsigned char target_value,
 
   dist.height = h;
   dist.width = w;
-  XMALLOC(dist.d, h * sizeof(float *));
-  XMALLOC(dist.weight, h * sizeof(float *));
+  dist.d = g_malloc(h * sizeof(float *));
+  dist.weight = g_malloc(h * sizeof(float *));
   for (y = 0; y < (signed)h; y++) {
-    XCALLOC(dist.d[y], w * sizeof(float));
-    XMALLOC(dist.weight[y], w * sizeof(float));
+    dist.d[y] = g_malloc0(w * sizeof(float));
+    dist.weight[y] = g_malloc(w * sizeof(float));
   }
 
   if (spp == 3) {
@@ -184,13 +184,13 @@ void free_distance_map(at_distance_map * dist)
 
   if (dist->d != NULL) {
     for (y = 0; y < h; y++)
-      free((gpointer *) dist->d[y]);
-    free((gpointer *) dist->d);
+      g_free((gpointer *) dist->d[y]);
+    g_free((gpointer *) dist->d);
   }
   if (dist->weight != NULL) {
     for (y = 0; y < h; y++)
-      free((gpointer *) dist->weight[y]);
-    free((gpointer *) dist->weight);
+      g_free((gpointer *) dist->weight[y]);
+    g_free((gpointer *) dist->weight);
   }
 }
 
@@ -308,7 +308,7 @@ void binarize(at_bitmap * bitmap)
     for (i = 0; i < npixels; i++, rgb += 3) {
       b[i] = (LUMINANCE(rgb[0], rgb[1], rgb[2]) > GRAY_THRESHOLD ? WHITE : BLACK);
     }
-    XREALLOC(AT_BITMAP_BITS(bitmap), npixels);
+    AT_BITMAP_BITS(bitmap) = g_realloc(AT_BITMAP_BITS(bitmap), npixels);
     AT_BITMAP_PLANES(bitmap) = 1;
   } else {
     WARNING("binarize: %u-plane images are not supported", spp);
@@ -334,7 +334,7 @@ at_bitmap ip_thin(bitmap_type input_b)
   }
 
   /* Process and return a copy of the input image. */
-  XMALLOC(b.bitmap, num_bytes);
+  b.bitmap = g_malloc(num_bytes);
   memcpy(b.bitmap, input_b.bitmap, num_bytes);
 
   /* Set background pixels to zero, foreground pixels to one. */

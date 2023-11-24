@@ -25,7 +25,6 @@
 #include "spline.h"
 #include "color.h"
 #include "output-pdf.h"
-#include "xstd.h"
 #include "autotrace.h"
 #include <time.h>
 #include <math.h>

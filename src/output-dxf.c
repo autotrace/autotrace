@@ -27,7 +27,7 @@
 #include "spline.h"
 #include "color.h"
 #include "output-dxf.h"
-#include "xstd.h"
+#include <glib.h>
 #include "autotrace.h"
 #include <math.h>
 #include <time.h>
@@ -387,7 +387,7 @@ void xypnt_add_pnt(xypnt_head_rec * head_xypnt /*  */ ,
 
   if (!head_xypnt)
     return;
-  temp_point = (struct xypnt_point_t *)calloc(1, sizeof(struct xypnt_point_t));
+  temp_point = g_malloc0(sizeof(struct xypnt_point_t));
   temp_point->point = coord_point;
   temp_point->next_point = NULL;
   if (head_xypnt->first_point == NULL)
@@ -410,7 +410,7 @@ void xypnt_dispose_list(xypnt_head_rec ** head_xypnt /*  */ )
       while (p) {
         old = p;
         p = p->next_point;
-        free(old);
+        g_free(old);
       }
     }
   }
@@ -518,11 +518,11 @@ int bspline_to_lines(xypnt_head_rec * vtx_list /*  */ ,
   xypnt curr_pnt, spline_pnt;
   char end_of_list;
 
-  *new_vtx_list = (struct xypnt_head_t *)calloc(1, sizeof(struct xypnt_head_t));
+  *new_vtx_list = g_malloc0(sizeof(struct xypnt_head_t));
   if (vtx_list) {
     n = vtx_count + spline_order + 1;
     m = spline_order + 1;
-    XMALLOC(weight, n * m * sizeof(double));
+    weight = g_malloc((gsize)n * m * sizeof(double));
 
     for (i = 0; i < vtx_count + spline_order; i++)
       knot[i] = (i < spline_order) ? 0 : (i > vtx_count) ? knot[i - 1] : knot[i - 1] + 1;
@@ -564,7 +564,7 @@ int bspline_to_lines(xypnt_head_rec * vtx_list /*  */ ,
     xypnt_last_pnt(vtx_list, &spline_pnt, &end_of_list);
     xypnt_add_pnt(*new_vtx_list, spline_pnt);
 
-    free(weight);
+    g_free(weight);
   }
 
   return (0);
@@ -636,7 +636,7 @@ static void out_splines(FILE * dxf_file, spline_list_array_type shape)
         pnt_old.xp = lround(startx * RESOLUTION);
         pnt_old.yp = lround(starty * RESOLUTION);
       } else {
-        vec = (struct xypnt_head_t *)calloc(1, sizeof(struct xypnt_head_t));
+        vec = g_malloc0(sizeof(struct xypnt_head_t));
 
         pnt.xp = lround(startx * RESOLUTION);
         pnt.yp = lround(starty * RESOLUTION);
@@ -682,8 +682,8 @@ static void out_splines(FILE * dxf_file, spline_list_array_type shape)
         startx = END_POINT(s).x;
         starty = END_POINT(s).y;
 
-        free(res);
-        free(vec);
+        g_free(res);
+        g_free(vec);
       }
     }
     first_seg = 0;

@@ -2,7 +2,7 @@
 #
 # Author: Masatake YAMATO (yamato@redhat.com)
 #
-AC_INIT([autotrace], [0.40.0])
+AC_INIT([autotrace],[0.40.0])
 AC_CONFIG_SRCDIR([src/main.c])
 AM_INIT_AUTOMAKE([subdir-objects])
 AC_CONFIG_MACRO_DIR([m4])
@@ -34,7 +34,7 @@ AC_SUBST(LT_REVISION)
 AC_SUBST(LT_AGE)
 dnl AC_SUBST(LT_CURRENT_MINUS_AGE)
 AC_PROG_CC
-AC_PROG_LIBTOOL
+LT_INIT
 
 PKG_PROG_PKG_CONFIG
 
@@ -43,7 +43,7 @@ AC_DEFINE_UNQUOTED(AUTOTRACE_WEB, "$AUTOTRACE_WEB", [Project home page])
 
 AM_MAINTAINER_MODE
 
-AM_CONFIG_HEADER(config.h)
+AC_CONFIG_HEADERS(config.h)
 
 AC_PROG_CPP
 dnl AC_PROG_RANLIB
@@ -72,24 +72,25 @@ AC_ARG_WITH(magick,
    [select library to use for images (options: GraphicsMagick(default) or ImageMagick (<= 5.5.2))])],
    ,[with_magick=GraphicsMagick])
 
-HAVE_MAGICK=no
+HAVE_MAGICK=yes
 HAVE_MAGICK_READERS=no
 MAGICK_LIBRARY=none
 if test x"${with_magick}" = xno; then
-  AC_MSG_WARN([*** GraphicsMagick or ImageMagick input handler is disabled.           ***])
+  AC_MSG_WARN([*** GraphicsMagick or ImageMagick input handler is disabled (NOT RECOMMENDED).           ***])
+  HAVE_MAGICK=no
 else
   if test "x${with_magick}" = xyes; then
     with_magick=GraphicsMagick
   fi
   if test "x${with_magick}" = xGraphicsMagick; then
     PKG_CHECK_MODULES([GRAPHICSMAGICK],
-      [GraphicsMagick >= 1.3],
+      [GraphicsMagick >= 1.3.40],
       [HAVE_MAGICK=yes
        HAVE_GRAPHICSMAGICK=yes
        MAGICK_LIBRARY=GraphicsMagick
        AC_DEFINE(HAVE_GRAPHICSMAGICK, 1, [GraphicsMagick library is available.])
-			],
-      AC_WARN(GraphicsMagick not available. Falling back to ImageMagick...)
+	 ],
+      AC_MSG_WARN(GraphicsMagick >= 1.3.40 is not available. Falling back to ImageMagick...)
       [with_magick=ImageMagick]
     )
   fi
@@ -107,18 +108,18 @@ else
 	  MAGICK_LIBRARY=ImageMagick
 	  AC_DEFINE(HAVE_IMAGEMAGICK, 1, [ImageMagick library is available.])
 	 ],
+	AC_MSG_ERROR([Nor GraphicsMagick neither ImageMagick are available. Try recompiling with --without-magick.])
 	)
   fi
   if test "x${HAVE_MAGICK}" = xyes; then
     AC_DEFINE(HAVE_MAGICK, 1, [GraphicsMagick or ImageMagick library is available or not])
-	AC_ARG_ENABLE(magick-readers,
-		  [  --enable-magick-readers Use *Magick as a reader for BMP/PGM/PNM/PPM/TGA files],
-		  [
+	AC_ARG_ENABLE([magick-readers],
+		      AS_HELP_STRING([--disable-magick-readers], [Don't use *Magick as a reader for BMP/PGM/PNM/PPM/TGA files])
+	)
+	AS_IF([test "x$enable_magick_readers" != "xno"], [
 		   HAVE_MAGICK_READERS=yes
 		   AC_DEFINE(HAVE_MAGICK_READERS, 1, [Use Magick readers for simple formats.])
-		  ],
-		  [ AC_DEFINE(HAVE_MAGICK_READERS, 0, [Use native readers for simple formats.]) ]
-	  )
+	])
   fi
 fi
 
@@ -208,12 +209,13 @@ else
 fi
 
 dnl po/Makefile.in FIXME FIXME FIXME
-AC_OUTPUT([po/Makefile.in Makefile autotrace.pc])
+AC_CONFIG_FILES([po/Makefile.in Makefile autotrace.pc])
+AC_OUTPUT
 
 echo "
 
 Configuration:
-	graphics/imagemagick output support:	$HAVE_MAGICK ($MAGICK_LIBRARY)
+	graphics/imagemagick output support:	$HAVE_MAGICK ($MAGICK_LIBRARY) (magick readers only: $HAVE_MAGICK_READERS)
 	libpng output support:			$HAVE_LIBPNG
 	swf output support by ming:		$HAVE_LIBSWF
 	pstoedit output support:		$HAVE_LIBPSTOEDIT

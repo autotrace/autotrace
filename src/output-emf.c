@@ -31,7 +31,7 @@
 #include <stdio.h>
 #include <string.h>
 #include "spline.h"
-#include "xstd.h"
+#include <glib.h>
 
 /* EMF record-number definitions */
 
@@ -108,9 +108,7 @@ static int SearchColor(EMFColorList * head, uint32_t colref)
 
 static void AddColor(EMFColorList ** head, uint32_t colref)
 {
-  EMFColorList *temp;
-
-  XMALLOC(temp, sizeof(EMFColorList));
+  EMFColorList *temp = g_malloc(sizeof(EMFColorList));
 
   temp->colref = colref;
   temp->next = *head;
@@ -122,14 +120,14 @@ static void ColorListToColorTable(EMFColorList ** head, uint32_t ** table, int l
   EMFColorList *temp;
   int i = 0;
 
-  XMALLOC(*table, sizeof(uint32_t) * len);
+  *table = g_malloc(sizeof(uint32_t) * len);
 
   while (*head != NULL) {
     temp = *head;
     *head = (*head)->next;
     (*table)[i] = temp->colref;
     i++;
-    free(temp);
+    g_free(temp);
   }
 }
 
@@ -747,7 +745,7 @@ static void OutputEmf(FILE* fdes, EMFStats *stats, gchar* name, int width, int h
   WriteEndOfMetafile(fdes);
 
   //delete color table
-  free((void *)color_table);
+  g_free((void *)color_table);
 }
 
 */
@@ -970,7 +968,7 @@ static void OutputEmf(FILE * fdes, EMFStats * stats, gchar * name, int width, in
   WriteEndOfMetafile(fdes);
 
   //delete color table
-  free((void *)color_table);
+  g_free(color_table);
 }
 
 int output_emf_writer(FILE * file, gchar * name, int llx, int lly, int urx, int ury, at_output_opts_type * opts, spline_list_array_type shape, at_msg_func msg_func, gpointer msg_data, gpointer user_data)

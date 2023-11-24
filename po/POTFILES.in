@@ -41,6 +41,5 @@ spline.c
 strgicmp.c
 thin-image.c
 vector.c
-xstd.c
 autotrace.h
 

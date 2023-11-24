@@ -32,7 +32,7 @@
 #include "curve.h"
 #include "pxl-outline.h"
 #include "epsilon-equal.h"
-#include "xstd.h"
+#include <glib.h>
 #include <math.h>
 #ifndef FLT_MAX
 #include <limits.h>
@@ -284,7 +284,7 @@ static spline_list_type fit_curve_list(curve_list_type curve_list, fitting_opts_
 
       concat_spline_lists(&curve_list_splines, *curve_splines);
       free_spline_list(*curve_splines);
-      free(curve_splines);
+      g_free(curve_splines);
     }
   }
 
@@ -748,7 +748,7 @@ static void remove_knee_points(curve_type curve, gboolean clockwise)
 
   free_curve(curve);
   *curve = *trimmed_curve;
-  free(trimmed_curve);          /* free_curve? --- Masatake */
+  g_free(trimmed_curve);          /* free_curve? --- Masatake */
 }
 
 /* Smooth the curve by adding in neighboring points.  Do this
@@ -842,7 +842,7 @@ static void filter(curve_type curve, fitting_opts_type * fitting_opts)
       free_curve(curve);
       *curve = *newcurve;
     }
-    free(newcurve);
+    g_free(newcurve);
   }
 
   if (logging)
@@ -1022,7 +1022,7 @@ static spline_list_type *fit_with_least_squares(curve_type curve, fitting_opts_t
     } else {
       concat_spline_lists(spline_list, *left_spline_list);
       free_spline_list(*left_spline_list);
-      free(left_spline_list);
+      g_free(left_spline_list);
     }
 
     if (right_spline_list == NULL) {
@@ -1031,12 +1031,12 @@ static spline_list_type *fit_with_least_squares(curve_type curve, fitting_opts_t
     } else {
       concat_spline_lists(spline_list, *right_spline_list);
       free_spline_list(*right_spline_list);
-      free(right_spline_list);
+      g_free(right_spline_list);
     }
     if (CURVE_END_TANGENT(left_curve))
-      free(CURVE_END_TANGENT(left_curve));
-    free(left_curve);
-    free(right_curve);
+      g_free(CURVE_END_TANGENT(left_curve));
+    g_free(left_curve);
+    g_free(right_curve);
   }
 cleanup:
   return spline_list;
@@ -1077,7 +1077,7 @@ static spline_type fit_one_spline(curve_type curve, at_exception_type * exceptio
   gfloat C[2][2] = { {0.0, 0.0}, {0.0, 0.0} };
   gfloat X[2] = { 0.0, 0.0 };
 
-  XMALLOC(A, CURVE_LENGTH(curve) * 2 * sizeof(vector_type));  /* A dynamically allocated array. */
+  A = g_malloc(CURVE_LENGTH(curve) * 2 * sizeof(vector_type));  /* A dynamically allocated array. */
 
   START_POINT(spline) = CURVE_POINT(curve, 0);
   END_POINT(spline) = LAST_CURVE_POINT(curve);
@@ -1109,7 +1109,7 @@ static spline_type fit_one_spline(curve_type curve, at_exception_type * exceptio
     X[0] += Vdot(temp, Ai[0]);
     X[1] += Vdot(temp, Ai[1]);
   }
-  free(A);
+  g_free(A);
 
   C[1][0] = C[0][1];
 
@@ -1180,7 +1180,7 @@ static void find_tangent(curve_type curve, gboolean to_start_point, gboolean cro
   LOG("  tangent to %s: ", (to_start_point == TRUE) ? "start" : "end");
 
   if (*curve_tangent == NULL) {
-    XMALLOC(*curve_tangent, sizeof(vector_type));
+    *curve_tangent = g_malloc(sizeof(vector_type));
     do {
       tangent = find_half_tangent(curve, to_start_point, &n_points, tangent_surround);
 
@@ -1407,7 +1407,7 @@ static index_list_type new_index_list(void)
 static void free_index_list(index_list_type * index_list)
 {
   if (INDEX_LIST_LENGTH(*index_list) > 0) {
-    free(index_list->data);
+    g_free(index_list->data);
     index_list->data = NULL;
     INDEX_LIST_LENGTH(*index_list) = 0;
   }
@@ -1416,7 +1416,7 @@ static void free_index_list(index_list_type * index_list)
 static void append_index(index_list_type * list, unsigned new_index)
 {
   INDEX_LIST_LENGTH(*list)++;
-  XREALLOC(list->data, INDEX_LIST_LENGTH(*list) * sizeof(unsigned));
+  list->data = g_realloc(list->data, INDEX_LIST_LENGTH(*list) * sizeof(unsigned));
   list->data[INDEX_LIST_LENGTH(*list) - 1] = new_index;
 }
 

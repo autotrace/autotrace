@@ -26,7 +26,6 @@
 #include "color.h"
 #include "output-mif.h"
 #include "logreport.h"
-#include "xstd.h"
 #include "autotrace.h"
 #include <time.h>
 #include <math.h>

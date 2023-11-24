@@ -26,11 +26,11 @@
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
+#include <glib.h>
 /* #include <unistd.h> */
 
 #include "bitmap.h"
 #include "logreport.h"
-#include "xstd.h"
 #include "input-bmp.h"
 
 /* TODO:
@@ -202,7 +202,7 @@ static int rle_fread(unsigned char *buf, int datasize, int nelems, FILE * fp)
     } else {
       /* Allocate the state buffer if we haven't already. */
       if (!statebuf)
-        statebuf = (unsigned char *)malloc(RLE_PACKETSIZE * datasize);
+        statebuf = g_malloc(RLE_PACKETSIZE * datasize);
       p = statebuf;
     }
 
@@ -381,7 +381,7 @@ static at_bitmap ReadImage(FILE * fp, struct tga_header *hdr, at_exception_type 
 
     pelbytes = ROUNDUP_DIVIDE(hdr->colorMapSize, 8);
     colors = length + index;
-    cmap = (unsigned char *)malloc(colors * pelbytes);
+    cmap = g_malloc(colors * pelbytes);
 
     /* Zero the entries up to the beginning of the map. */
     memset(cmap, 0, index * pelbytes);
@@ -396,7 +396,7 @@ static at_bitmap ReadImage(FILE * fp, struct tga_header *hdr, at_exception_type 
     /* If we have an alpha channel, then create a mapping to the alpha
        values. */
     if (pelbytes > 3)
-      alphas = (unsigned char *)malloc(colors);
+      alphas = g_malloc(colors);
 
     k = 0;
     for (j = 0; j < colors * pelbytes; j += pelbytes) {
@@ -430,7 +430,7 @@ static at_bitmap ReadImage(FILE * fp, struct tga_header *hdr, at_exception_type 
 
   /* Maybe we need to reverse the data. */
   if (horzrev || vertrev)
-    buffer = (unsigned char *)malloc(width * height * pelbytes * sizeof(unsigned char));
+    buffer = g_malloc(width * height * pelbytes * sizeof(unsigned char));
   if (rle)
     myfread = rle_fread;
   else
@@ -515,7 +515,7 @@ static at_bitmap ReadImage(FILE * fp, struct tga_header *hdr, at_exception_type 
     at_exception_warning(exp, "TGA: too much input data, ignoring extra datum");
   }
 
-  free(buffer);
+  g_free(buffer);
 
   if (hdr->colorMapType == 1) {
     unsigned char *temp, *temp2, *temp3;
@@ -523,7 +523,7 @@ static at_bitmap ReadImage(FILE * fp, struct tga_header *hdr, at_exception_type 
     int xpos, ypos;
 
     temp2 = temp = image.bitmap;
-    image.bitmap = temp3 = (unsigned char *)malloc(width * height * 3 * sizeof(unsigned char));
+    image.bitmap = temp3 = g_malloc(width * height * 3 * sizeof(unsigned char));
 
     for (ypos = 0; ypos < height; ypos++) {
       for (xpos = 0; xpos < width; xpos++) {
@@ -533,11 +533,11 @@ static at_bitmap ReadImage(FILE * fp, struct tga_header *hdr, at_exception_type 
         *temp3++ = cmap[3 * index + 2];
       }
     }
-    free(temp);
-    free(cmap);
+    g_free(temp);
+    g_free(cmap);
   }
 
-  free(alphas);
+  g_free(alphas);
 
   return image;
 }                               /* read_image */

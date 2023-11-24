@@ -27,7 +27,6 @@
 #include "autotrace.h"
 #include "private.h"
 #include "output.h"
-#include "xstd.h"
 #include "filename.h"
 #include <string.h>
 #include <glib.h>
@@ -169,7 +168,7 @@ const char **at_output_list_new(void)
 
 void at_output_list_free(const char **list)
 {
-  free((char **)list);
+  g_free((char **)list);
 }
 
 char *at_output_shortlist(void)
