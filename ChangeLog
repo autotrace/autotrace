@@ -11,12 +11,12 @@
 	* output-plt.[ch]: New files.
 
 	* module.c: Added plt.
-	
+
 2004-10-14  S. P. Hirshman
 
 	* output-emf.c:
 
-	Added #define ENMT_DELETEOBJECT 40 
+	Added #define ENMT_DELETEOBJECT 40
 	to define DeleteObject in Metafile dc
 
 	Added routine WriteDeleteObject to delete pens/brushes after they
@@ -51,11 +51,11 @@
 	#843475 at sourceforge's patch tracker.
 
 	Jon A. Cruz:
-	Can't forward declare enums                                                                       
-	when compiling with g++ (as when trying to include                                                
-	autotrace or frontline support), it errors out on                                                 
-	typedefs of enums that occurr before the enum                                                     
-	declarations themselves.                                                                          	
+	Can't forward declare enums
+	when compiling with g++ (as when trying to include
+	autotrace or frontline support), it errors out on
+	typedefs of enums that occurr before the enum
+	declarations themselves.
 
 2003-08-17  Masatake YAMATO  <yamato@redhat.com>
 
@@ -95,7 +95,7 @@
 
 	* image-proc.c: Likewise. Use TRUE and FALSE
 	instead of true and false.
-	
+
 	* image-proc.h: Likewise.
 
 	* median.c: Likewise.
@@ -110,7 +110,7 @@
 
 	* output-fig.c: Likewise.
 	(fig_hash): Use at_color_type.c instead
-	of r, g, b. 
+	of r, g, b.
 
 	* output-mif.c: Likewise.
 
@@ -123,7 +123,7 @@
 	* output-svg.c: Likewise.
 
 	* pxl-outline.c: Likewise.
-	Use at_bitmap_get_color instead of GET_COLOR. 
+	Use at_bitmap_get_color instead of GET_COLOR.
 	Use at_bitmap_equal_color.
 
 	* pxl-outline.h: Likewise.
@@ -143,14 +143,14 @@
 
 	* exception.c (at_error_quark): New function.
 
-	* exception.h (AtError, at_error_quark, AT_ERROR): New 
+	* exception.h (AtError, at_error_quark, AT_ERROR): New
 	data type, macro and decl.
 
 	* main.c (read_command_line): Use at_color_parse.
 	hctoi is removed.
 
 	* Makefile.am (autotraceinclude_HEADERS): Added color.h.
-	
+
 2003-07-05  Masatake YAMATO  <yamato@redhat.com>
 
 	* configure.in (AC_MSG_ERROR): Fix a typo.
@@ -159,7 +159,7 @@
 
 	* output-eps.c (output_eps_header): Fix a
 	typo: TRUE -> true, FALSE -> false.
-	
+
 	* types.h (_at_coord): Use gushort.
 	use AT_TYPES_H instead of TYPES_H.
 
@@ -181,10 +181,10 @@
 	(at_address): replaced with gpointer.
 	(at_real): replaced with gfloat.
 	(at_string): replaced with gchar *.
-	
+
 	* exception.h (struct _at_exception_type): Fix a typo.
 
-2003-07-02  Masatake YAMATO  <yamato@redhat.com>	
+2003-07-02  Masatake YAMATO  <yamato@redhat.com>
 
 	* Makefile.am(SUBDIRS): m4 is removed.
 	(ACLOCAL_AMFLAGS): removed.
@@ -201,7 +201,7 @@
 
 	* output-*.[ch] (output_*_writer): added user_data
 	as an argument.
-	
+
 	* output-pstoedit.c: Rewrite.
 
 	* output.c: Rewrite(copied from input.c).
@@ -215,7 +215,7 @@
 	(at_splines_write): use at_splines_write instead
 	of at_output_write_func.
 
-	* input-magick.c (input_magick_reader): moved from 
+	* input-magick.c (input_magick_reader): moved from
 	module.c.
 
 	* input-magick.[ch] (install_input_magick_readers): New
@@ -256,7 +256,7 @@
 	diagnostics "zero determinant of C0*C1"
 	and "assertion error in line 1276 of fit.c".
 
-	* main.c (read_command_line::long_options): Added 
+	* main.c (read_command_line::long_options): Added
 	charcode as an option.
 
 	* module.c: Added gf input.
@@ -290,14 +290,14 @@
 2003-06-08  Masatake YAMATO  <yamato@redhat.com>
 
 	* private.h (struct _at_bitmap_reader): Defined.
-	(at_input_init, at_param_init): Declared.	
+	(at_input_init, at_param_init): Declared.
 
 	* Makefile.am (output_src): Remove typo(+).
 	Suggested by "jakobfrandsen" <jakobfrandsen@yahoo.dk>.
 
 2003-06-07  Mario Kleiner <mario.kleiner@tuebingen.mpg.de>
 
-	* output-mif.c (output_mif_writer): fixed bug in output 
+	* output-mif.c (output_mif_writer): fixed bug in output
 	of spline sample points.
 
 2003-03-10  Martin Weber <martweb@gmx.net>
@@ -310,7 +310,7 @@
 
 2003-02-13  Masatake YAMATO  <yamato@redhat.com>
 
-	* input.c (_at_input_format_entry): Added new field, 
+	* input.c (_at_input_format_entry): Added new field,
 	user_data_destroy_func.
 	included private.h.
 	(at_input_format_new): added data, user_data_destroy_func
@@ -318,11 +318,11 @@
 	(at_input_init): Use g_str_hash and g_str_equal.
 	(at_input_format_free): call user_data_destroy_func.
 	(at_input_add_handler_full): added data, user_data_destroy_func
-	as arguments. 
-	(at_input_add_handler_full): call g_ascii_strdown. 
+	as arguments.
+	(at_input_add_handler_full): call g_ascii_strdown.
 	(at_input_get_handler_by_suffix): return type is changed
 	to at_bitmap_reader.
-	(at_input_get_handler_by_suffix): call g_ascii_strdown. 
+	(at_input_get_handler_by_suffix): call g_ascii_strdown.
 
 	* main.c: included glib.h.
 	at_input_func is used.
@@ -368,7 +368,7 @@
 2003-02-08  Martin Weber <martweb@gmx.net>
 
 	* output.c, output-pov.[c,h]: Added new povray output filter.
-	
+
 2003-02-08  Masatake YAMATO  <yamato@redhat.com>
 
 	* HACKING: Write about ACLOCAL_FLAGS.
@@ -393,7 +393,7 @@
 	  parameter to the despeckle filter.
 
 	* despeckle.txt: Added an explanation about the despeckle filter.
-  	
+
 	* patchestoming02a.txt: Patches for Ming 0.2a from Wolfgang Glunz to
 	  improve the swf export.
 
@@ -411,12 +411,12 @@
 2003-01-23  Masatake YAMATO  <yamato@redhat.com>
 
 	Copied from sodipodi.
-	
+
 	* distro, tools-version.sh: New files.
 	distro comes from distro-0.8.1(http://distro.pipfield.ca/).
 	distro and tools-version.sh should be included only in CVS version
 	of sodipodi.
-	
+
 	* autogen.sh: Call tools-version.sh.
 
 2003-01-23  Masatake YAMATO  <yamato@redhat.com>
@@ -427,14 +427,14 @@
 
 	* acconfig.h: use AUTOTRACE_VERSION instead of VERSION.
 	See my change at 2002-12-19. I forgot commiting.
-	
+
 	* configure.in: Added the 3rd argument for AC_DEFINE_UNQUOTED.
 	Added the 2nd added for AC_DEFINE.
 	Set, define, and subst GETTEXT_PACKAGE.
 	Use AC_CHECK_LIB instead of AC_CHECK_FUNC to check gettext.
 	Added m4/Makefile to AC_OUTPUT. Removed intl/Makefile to AC_OUTPUT.
 	Use AUTOTRACE_VERSION instead of VERSION.
-	
+
 2003-01-20  Martin Weber <martweb@gmx.net>
 
 	* despeckle.c: speedup and fix of bug in gray bitmap despeckle.
@@ -445,11 +445,11 @@
 
 2003-01-19  Martin Weber <martweb@gmx.net>
 
-  	* output-pstoedit.c (pstoedit_suffix_table_init): Fixed memory allocation.
+	* output-pstoedit.c (pstoedit_suffix_table_init): Fixed memory allocation.
 
 2003-01-17  Martin Weber <martweb@gmx.net>
 
-  	* output-pstoedit.c (get_symbolicname, pstoedit_suffix_table_init): 
+	* output-pstoedit.c (get_symbolicname, pstoedit_suffix_table_init):
 	removed heap corruption when using pstoedit.
 
 2003-01-10  Masatake YAMATO  <yamato@redhat.com>
@@ -471,18 +471,18 @@
 
 2003-01-06  Martin Weber <martweb@gmx.net>
 
- 	* output.c: removed heap corruption when using pstoedit.
+	* output.c: removed heap corruption when using pstoedit.
 
 2002-12-18  Martin Weber <martweb@gmx.net>
 
- 	* autotrace.c: fixed problem that , is used instead of . in ouput when
+	* autotrace.c: fixed problem that , is used instead of . in ouput when
 	 using German locale.
 
 2002-12-19  Masatake YAMATO  <yamato@redhat.com>
 
 	* autotrace.c: Likewise.
 
-	* configure.in: Don't use VERSION. This symbol is 
+	* configure.in: Don't use VERSION. This symbol is
 	reserved by VC++. Instead AUTOTRACE_VERSION is used.
 
 2002-11-16  Martin Weber <martweb@gmx.net>
@@ -510,7 +510,7 @@
 	use DEFINE_UNQOTED macro instead of SUBST marco.
 	(AM_GNU_GETTEXT): Gettextiz'ed.
 	(AC_OUTPUT): intl/Makefile and po/Makefile.in are added.
-	
+
 	* main.c: include intl.h and locale.h.
 	(main): set locale.
 	put _() to C strings.
@@ -531,7 +531,7 @@
 	* autotrace.h (enum _at_msg_type): Added
 	AT_MSG_NOT_SET.
 
-	* exception.c (at_exception_got_fatal): 
+	* exception.c (at_exception_got_fatal):
 	return true or false explicitly.
 	(at_exception_new): Don't use GCC C extension.
 
@@ -567,7 +567,7 @@
 
 2002-11-09 Martin Weber <martweb@gmx.net>
 
-	* output-dr2d.c (BuildDRHD::FloatAsIEEEBytes): 
+	* output-dr2d.c (BuildDRHD::FloatAsIEEEBytes):
 	Change the position where the datum is written.
 
 	Message-ID: <3DCBECAB.6198C58D@gmx.net>.
@@ -591,7 +591,7 @@
 
 2002-11-08 Martin Weber <martweb@gmx.net>
 
-	* pxl-outline.c: Big changes again that fix a bug 
+	* pxl-outline.c: Big changes again that fix a bug
 	related to centerline tracing. NOTE: A bug is still existed.
 
 	Message-ID: <3DCAAAD7.F55305EA@gmx.net>.
@@ -615,12 +615,12 @@
 
 2002-11-04  Martin Weber <martweb@gmx.net>
 
-	* fit.c: fix code broken by Masatake at 
+	* fit.c: fix code broken by Masatake at
 	2002-11-04.
-	
+
 2002-11-04  Masatake YAMATO  <yamato@redhat.com>
 
-	* fit.c (new_fitting_opts::error_threshold): 
+	* fit.c (new_fitting_opts::error_threshold):
 	Fix the default value to 2.0.
 
 2002-11-03  Masatake YAMATO  <yamato@redhat.com>
@@ -645,7 +645,7 @@
 
 	* configure.in: Display more messages
 	while checking pstoedit twice.
-	Suggested by Markus Demleitner 
+	Suggested by Markus Demleitner
 	<msdemlei@cl.uni-heidelberg.de>.
 
 2002-10-29  Martin Weber <martweb@gmx.net>
@@ -666,7 +666,7 @@
 2002-10-26  Ralf Stubner <ralf.stubner@physik.uni-erlangen.de>
 
 	* autotrace.c: #include "output-pstoedit.h"
-	with ifdef. 
+	with ifdef.
 
 2002-10-24  Masatake YAMATO  <yamato@redhat.com>
 
@@ -677,25 +677,25 @@
 	* autotrace.dsp (RSC): Version 0.31.
 
 	* autotrace.vcproj: Ditto.
-	
+
 2002-10-23  Martin Weber <martweb@gmx.net>
 
-	* pxl-outline.c (is_valid_dir): 
+	* pxl-outline.c (is_valid_dir):
 	removed comment.
 
 	* NEWS: updated.
-	
+
 	Message-ID: <21731.1035350777@www20.gmx.net>.
-	
+
 2002-10-23  Masatake YAMATO  <yamato@redhat.com>
 
-	* output-pstoedit.c (get_symbolicname) 
+	* output-pstoedit.c (get_symbolicname)
 	(pstoedit_suffix_table_init): free return
 	value of getPstoeditDriverInfo_plainC.
 	(get_symbolicname): returned value is strdup'ed.
 	(output_pstoedit_writer): free symbolicname.
 
-	* output-pstoedit.[ch]: rewrote code that 
+	* output-pstoedit.[ch]: rewrote code that
 	handles suffix.
 
 	* autotrace.c (at_splines_write): Use output_pstoedit_invoke_writer
@@ -713,7 +713,7 @@
 
 2002-10-22  Martin Weber <martweb@gmx.net>
 
-	* pxl-outline.c: Big changes that fix a bug 
+	* pxl-outline.c: Big changes that fix a bug
 	related to centerline tracing.
 
 2002-10-21  Martin Weber <martweb@gmx.net>
@@ -762,15 +762,15 @@
 	is ready for ImageMagick 5.4.9.
 
 	Message-ID: <3DA2FFF4.5D564F9@gmx.net>.
-	
+
 2002-10-08  Martin Weber <martweb@gmx.net>
 
-	* fit.c (split_at_corners, fit_curve_list): 
+	* fit.c (split_at_corners, fit_curve_list):
 	handle very small objects.
 
 	Message-ID: <3DA1C87D.786E8E52@gmx.net>
 	Message-ID: <3DA1DB6F.1DDA16A1@gmx.net>
-	
+
 2002-10-08  Masatake YAMATO  <yamato@redhat.com>
 
 	* autotrace.h (at_doc__width_factor): added
@@ -783,7 +783,7 @@
 
 2002-10-07  Martin Weber <martweb@gmx.net>
 
-	* output-eps.c (out_splines): Now the eps output is 
+	* output-eps.c (out_splines): Now the eps output is
 	interpreted correctly by CorelDraw.
 
 	Message-ID: <3DA063E6.32835C45@gmx.net>.
@@ -825,7 +825,7 @@
 
 2002-10-04  Masatake YAMATO  <yamato@redhat.com>
 
-	* quantize.h: Added a declaration for 
+	* quantize.h: Added a declaration for
 	quantize_object_free.
 
 	* spline.[ch] (new_spline_list_with_spline): Renamed
@@ -852,7 +852,7 @@
 
 	* * (*): used at_exception_type.
 
-	* autotrace.h (at_doc__preserve_width::width_factor): 
+	* autotrace.h (at_doc__preserve_width::width_factor):
 	new member.
 	(struct _at_spline_list_array_type): Likewise.
 	(_, N_): New dummy macro for gettext.
@@ -877,10 +877,10 @@
 
 2002-09-29  Masatake YAMATO  <yamato@redhat.com>
 
-	* input-png.c (read_png): my_bg.gray is 
+	* input-png.c (read_png): my_bg.gray is
 	multiplied by 256.
 
-	* autotrace.c (at_bitmap_read): If opts 
+	* autotrace.c (at_bitmap_read): If opts
 	is null, give dummy to a handler.
 	(at_input_opts_copy): New function.
 
@@ -889,7 +889,7 @@
 
 	* main.c (main): Use new input opts.
 
-	* autotrace.h (at_input_read_func): added a new 
+	* autotrace.h (at_input_read_func): added a new
 	argrument.
 	(at_bitmap_read): added the new argrument.
 
@@ -897,30 +897,30 @@
 
 	* input-png.c (read_png): Use background in the input option
 	if the option is given. Otherwise, use white.
-	
-	* autotrace.c (at_input_opts_new, at_input_opts_free): 
+
+	* autotrace.c (at_input_opts_new, at_input_opts_free):
 	New functions.
 
-	* autotrace.h (struct _at_input_opts_type): New 
+	* autotrace.h (struct _at_input_opts_type): New
 	data type.
 
 2002-09-29  Martin Weber <martweb@gmx.net>
 
-	* pxl-outline.c: I introduced a bug in pxl-outline.c. 
+	* pxl-outline.c: I introduced a bug in pxl-outline.c.
 	change back to the version used in 0.30.5.
 
 	Message-ID: <3D96120F.2780C779@gmx.net>.
-	
+
 2002-09-28  Masatake YAMATO  <yamato@redhat.com>
 
 	* input-png.c (read_png): New function that can
-	handle transparent region (just fill with white). 
+	handle transparent region (just fill with white).
 	(load_image): use read_png.
 
 2002-09-27  Martin Weber <martweb@gmx.net>
 
-	* pxl-outline.c (find_centerline_pixels): During speed up 
-	the code I introduced a bug. Here the fix. 
+	* pxl-outline.c (find_centerline_pixels): During speed up
+	the code I introduced a bug. Here the fix.
 
 	Message-ID: <3D94C2E7.55A7C0C3@gmx.net>.
 
@@ -932,7 +932,7 @@
 	* Makefile.am (EXTRA_DIST): Added output-pstoedit.[ch].
 
 	* configure.in (HAVE_LIBPSTOEDIT): Fix typo.
-	
+
 2002-09-26  Martin Weber <martweb@gmx.net>
 
 	* vector.c: Now also works with C compilers that do not define true and false in the
@@ -950,9 +950,9 @@
 
 2002-09-25  Masatake YAMATO  <yamato@redhat.com>
 
-	* configure.in: use pstoedit.m4 instead of pkg-config. 
+	* configure.in: use pstoedit.m4 instead of pkg-config.
 	showed more message about pstoedit.
-	
+
 2002-09-21  Masatake YAMATO  <yamato@redhat.com>
 
 	* configure.in: added -dl to LIBPSTOEDIT_LIBS.
@@ -969,8 +969,8 @@
 
 	* autotrace.m4: did the same as frontline.m4.
 	$autotrace_exec_prefix or $autotrace_prefix only.
-	$autotrace_config_exec_prefix and $autotrace_config_prefix are 
-	unnecessary variables. 
+	$autotrace_config_exec_prefix and $autotrace_config_prefix are
+	unnecessary variables.
 
 	used --exec_prefix instead of --exec-prefix. This is restriction
 	of autofig. Fix broken a if-condition. Added "bin" to exec_prefix.
@@ -987,7 +987,7 @@
 
 2002-09-20  Martin Weber <martweb@gmx.net>
 
-	* thin-image.c (thin3): This fix corrects some problems 
+	* thin-image.c (thin3): This fix corrects some problems
 	with the thinning of regions that touch the image borders.
 
 	Message-ID: <3D88C750.4AE643A5@gmx.net>.
@@ -1001,7 +1001,7 @@
 
 2002-09-18  Martin Weber <martweb@gmx.net>
 
-	* autotrace.dsp: 
+	* autotrace.dsp:
 
 	* autotrace.vcproj: Updated.
 
@@ -1009,9 +1009,9 @@
 
 2002-09-12  Masatake YAMATO  <yamato@redhat.com>
 
-	Martin suggested me that tmpnam is ANSI C 
+	Martin suggested me that tmpnam is ANSI C
 	function so we don't have to check.
-	
+
 	* acconfig.h: removed HAVE_TMPNAM.
 
 	* configure.in (HAVE_LIBPSTOEDIT): Checked mkstemp
@@ -1023,19 +1023,19 @@
 2002-09-11  Masatake YAMATO  <yamato@redhat.com>
 
 	* output-pstoedit.c (make_temporary_file): New function.
-	(output_pstoedit_writer): used make_temporary_file. 
+	(output_pstoedit_writer): used make_temporary_file.
 
-	* configure.in: checked mkstemp and tmpnam if 
+	* configure.in: checked mkstemp and tmpnam if
 	HAVE_LIBPSTOEDIT is yes.
 
 	* acconfig.h: Added HAVE_MKSTEMP and HAVE_TMPNAM.
 
 2002-09-10  Martin Weber <martweb@gmx.net>
 
-	* input.c (at_input_get_handler_by_suffix): added 
+	* input.c (at_input_get_handler_by_suffix): added
 	cast to the returned value for Visual C++.
 
-	* output-pstoedit.c (output_pstoedit_get_writer): 
+	* output-pstoedit.c (output_pstoedit_get_writer):
 	Likewise.
 
 	Message-ID: <3D7D116C.68950963@gmx.net>.
@@ -1049,7 +1049,7 @@
 	as char * if _VISUALC_ is defined.
 	(output_pstoedit_writer): Use _mktemp instead
 	of mkstemp if _VISUALC_ is defined.
-	(output_pstoedit_writer): do fopen if 
+	(output_pstoedit_writer): do fopen if
 	_VISUALC_ is defined.
 	(output_pstoedit_writer): did fclose instead
 	of close.
@@ -1075,9 +1075,9 @@
 	Use get_last_suffix in all functions in output-pstoedit.c.
 
 2002-09-06  Masatake YAMATO  <yamato@redhat.com>
- 		
+
 	* main.c: removed unnecessary '\n' in FATAL*.
-	
+
 	* output.c (at_output_get_handler_by_suffix): used
 	output_pstoedit_get_writer.
 
@@ -1089,19 +1089,19 @@
 
 	* output-pstoedit.c (get_symbolicname): New function.
 	(remove_tmpfile): Print tmp file names if BO_DEBUG is 1.
-	(output_pstoedit_writer): Use two temporary files to keep 
-	both the command line syntax of autotrace and the 
-	pstoedit API. 
+	(output_pstoedit_writer): Use two temporary files to keep
+	both the command line syntax of autotrace and the
+	pstoedit API.
 	(output_pstoedit_suffix): New variable.
 
 	* output.c (streq): New function.
-	(at_output_get_handler_by_suffix): Call 
+	(at_output_get_handler_by_suffix): Call
 	output_pstoedit_set_last_suffix.
 	(at_output_list_new): Use both suffixes and symbolicnames.
 	(at_output_shortlist): Likewise.
 	(output_is_static_member): Check both suffixes and symbolicnames.
 
-	* output-pstoedit.[ch] (output_pstoedit_set_last_suffix): 
+	* output-pstoedit.[ch] (output_pstoedit_set_last_suffix):
 	New function.
 
 	* main.c (output_list_formats): gave more
@@ -1119,12 +1119,12 @@
 
 2002-07-10  Martin Weber <martweb@gmx.net>
 
-	* output.c (at_spline_list_foreach, at_spline_list_array_foreach): 
+	* output.c (at_spline_list_foreach, at_spline_list_array_foreach):
 	Added "unsigned" to `i`.
 	included strgicmp.h.
 
 	Message-ID: <3D2B3A63.9B8AE188@gmx.net>.
-	
+
 2002-07-09  Masatake YAMATO  <yamato@redhat.com>
 
 	* configure.in: Version 0.30.2.
@@ -1144,7 +1144,7 @@
 
 2002-06-30  Masatake YAMATO  <yamato@redhat.com>
 
-	* output.c (at_*_get_handler_by_suffix): Return 
+	* output.c (at_*_get_handler_by_suffix): Return
 	NULL if suffix is NULL pointer or an empty string.
 
 	* input.c (at_input_list_new): Pass both NULL and "*"
@@ -1161,7 +1161,7 @@
 	as a condition. Use msg_func instead. Use exception.reason
 	instead of exception.description.
 	Initialize image.
-	
+
 	* autotrace.c (make_string): Put '"' around
 	an arg.
 
@@ -1197,42 +1197,42 @@
 
 	* output-pstoedit.[ch]: New files.
 
-	* configure.in(AC_ARG_PROGRAM, AM_SANITY_CHECK,AC_PROG_INSTALL): 
+	* configure.in(AC_ARG_PROGRAM, AM_SANITY_CHECK,AC_PROG_INSTALL):
 	Added.
 	Added experimental pstoedit supports.
 
-	* acconfig.h (HAVE_LIBPSTOEDIT): Added experimental pstoedit 
+	* acconfig.h (HAVE_LIBPSTOEDIT): Added experimental pstoedit
 	supports.
 
 	* Makefile.am (EXTRA_DIST): Added HACKING.
-	(autotrace_LDADD, INCLUDES): Added experimental pstoedit 
+	(autotrace_LDADD, INCLUDES): Added experimental pstoedit
 	supports.
 
 2002-05-12  Masatake YAMATO  <yamato@redhat.com>
 
-	* configure.in: linker messages that warns symbols are multiply defined are 
+	* configure.in: linker messages that warns symbols are multiply defined are
 	suppressed when the host is Darwin.
 	Suggested by Martin Kerscher <kerscher@theorie.physik.uni-muenchen.de>.
-	
+
 	* input.c (at_input_list_new): Pass NULL to GetMagickInfo
 	instead of empty string.
 
 	* output.h (at_output_add_handler): Moved from autotrace.h.
 
 	* Makefile.am: Made output.h installed.
-	
+
 	* spline.h: Use macros newly defined in output.h.
 
 	* output.[ch]: Added macros and functions that supports
 	accessing splines data. Don't include output.h.
 
-	* output-*.h: Use at_spline_list_array_type as a 
+	* output-*.h: Use at_spline_list_array_type as a
 	formal argument instead of spline_list_array_type.
 
 	* output-fig.c: Include spline.h.
 
 	* autotrace.[ch] (at_color_equal): New function.
-	
+
 2002-05-06  Martin Weber <martweb@gmx.net>
 
 	* filename.c (make_suffix): length_through_dot
@@ -1269,7 +1269,7 @@
 	* Makefile.am (output_src): Added output-dr2d.c.
 
 	* output-dr2d.c: Moved the declarations in
-	output-dr2d.h to output-dr2d.c. Added static the 
+	output-dr2d.h to output-dr2d.c. Added static the
 	declarations.
 
 2002-04-30  Martin Weber <martweb@gmx.net>
@@ -1299,17 +1299,17 @@
 
 2002-04-30  Martin Weber <martweb@gmx.net>
 
-	* output-*.*: fixed output generation when option 
+	* output-*.*: fixed output generation when option
 	background-color is active.
 
 	Message-ID: <3CC4602F.75EF9AF7@gmx.net>.
-	
+
 2002-04-28  Masatake YAMATO  <yamato@redhat.com>
 
 	* main.c, fit.c, autotrace.[ch]: Renamed
 	bgColor to background_color.
 
-	* fit.c (spline_linear_enough): Don't 
+	* fit.c (spline_linear_enough): Don't
 	log distance. It is function.
 	In stead, logging dist, at_real var.
 
@@ -1324,10 +1324,10 @@
 
 	* input-magick.c (magick_load_image): Don't use
 	MagickError. Instead use msg_func.
-	
+
 	* autotrace.h (struct _at_fitting_opts_type): Rename
 	`filter_iteration_count' to `filter_iterations' in
-	order to make the field and its associated option name 
+	order to make the field and its associated option name
 	same.
 
 2002-04-16  Masatake YAMATO  <yamato@redhat.com>
@@ -1344,21 +1344,21 @@
 
 	* configure.in (AUTOTRACE_VERSION, AUTOTRACE_MAJOR_VERSION,
 	AUTOTRACE_MINOR_VERSION, AUTOTRACE_MICRO_VERSION,
-	AUTOTRACE_WEB): 
+	AUTOTRACE_WEB):
 	New constants.
-	
+
 2002-04-15  Martin Weber <martweb@gmx.net>
 
-	* fit.c (find_half_tangent): 
-	(find_tangent): Fixed a bug in tangent 
+	* fit.c (find_half_tangent):
+	(find_tangent): Fixed a bug in tangent
 	calculation.
-	
+
 2002-04-15  Masatake YAMATO  <yamato@redhat.com>
 
 	* COPYING.LIB: New file.
 
 	* despeckle.*: Change the license to LGPL.
-	
+
 	* input*.*: Likewise.
 
 	* median.c: Likewise.
@@ -1371,7 +1371,7 @@
 
 2002-04-03  Martin Weber <martweb@gmx.net>
 
-	* exception.[ch] (at_exception_fatal, at_exception_warning): 
+	* exception.[ch] (at_exception_fatal, at_exception_warning):
 	added "const" to the passig parameter.
 
 	* input-png.c (handle_warning, handle_error): Likewise.
@@ -1390,18 +1390,18 @@
 
 	* configure.in: Version 0.30.
 
-	* exception.c (at_exception_new): Fix wrong 
+	* exception.c (at_exception_new): Fix wrong
 	parameter declaration.
 
 2002-04-03  Martin Weber <martweb@gmx.net>
 
-	* exception.h (at_exception_new): Fix wrong 
+	* exception.h (at_exception_new): Fix wrong
 	parameter declaration.
 
 	* input-pnm.c (struct _PNMRowInfo): Removed.
 
 	Message-ID: <3CA9F839.6A4C291C@gmx.net>.
-	
+
 2002-03-30  Martin Weber <martweb@gmx.net>
 
 	* output-swf.c (output_swf_writer): printed
@@ -1427,15 +1427,15 @@
 
 2002-03-30  Martin Weber <martweb@gmx.net>
 
-	* output-emf.c: Removed unnecessary #define, 
-	set pen width to zero when in outline mode. Now checking whether 
+	* output-emf.c: Removed unnecessary #define,
+	set pen width to zero when in outline mode. Now checking whether
 	it should write to stdout only for Windows.
 
 	Message-ID: <3CA4C008.8B921285@gmx.net>.
-	
+
 2002-03-30  Martin Weber <martweb@gmx.net>
 
-	* output-pdf.c (out_splines): Reduced color precision to get 
+	* output-pdf.c (out_splines): Reduced color precision to get
 	smaller files.
 
 	* output-p2e.c (out_splines): Likewise.
@@ -1446,7 +1446,7 @@
 
 	* main.c (main): using binary mode for dumping bitmaps.
 
-	* pxl-outline.c (*): The y values of the outline were always to 
+	* pxl-outline.c (*): The y values of the outline were always to
 	high by one.
 
 	Message-ID: <3CA3853C.629CCFD6@gmx.net> and
@@ -1471,7 +1471,7 @@
 2002-03-28  Martin Weber <martweb@gmx.net>
 
 	* output-emf.c: rewritten with Allen Barnett.
-	
+
 2002-03-28  Masatake YAMATO  <yamato@redhat.com>
 
 	* HACKING (Tool for debugging output):
@@ -1484,19 +1484,19 @@
 
 2002-03-20  Martin Weber <martweb@gmx.net>
 
-	* main.c (main): Moved dumping of the bitmap so that quantize 
+	* main.c (main): Moved dumping of the bitmap so that quantize
 	and despeckle are also in effect.
 
 	Message-ID: <3C9A4462.47488039@gmx.net>.
 
 2002-03-24  Ian MacPhedran <Ian_MacPhedran@engr.USask.Ca>
 
-	* output-fig.c (out_fig_splines): Added a new 
+	* output-fig.c (out_fig_splines): Added a new
 	local variable, fig_spline_close.
 
 2002-03-20  Martin Weber <martweb@gmx.net>
 
-	* output-emf.c (GetEmfStats, GetEmfStats): 
+	* output-emf.c (GetEmfStats, GetEmfStats):
 	Number of records was not counted correctly.
 
 	Message-ID: <15225.1016698302@www11.gmx.net>.
@@ -1510,7 +1510,7 @@
 2002-03-20  Martin Weber <martweb@gmx.net>
 
 	* README updated.
-	
+
 	* TODO: New file.
 
 2002-03-20  Martin Weber <martweb@gmx.net>
@@ -1518,20 +1518,20 @@
 	* output-emf.c: Don't include output.h.
 
 	Message-ID: <24692.1016622657@www46.gmx.net>.
-	
+
 2002-03-20  Masatake YAMATO  <yamato@redhat.com>
 
 	* NEWS: Updated.
-	
+
 	* configure.in: Create a pre release(0.30pre1).
-	
+
 2002-03-20  Martin Weber <martweb@gmx.net>
 
 	* output-emf.c: Include output.h.
 	Fixed bug when boundaries of the splines were larger than the
 	boundaries of the bitmap.
 	* output-cgm.c: removed FLOAT_TO_UI16.
-	
+
 	Message-ID: <3C97B972.12D92E49@gmx.net>.
 
 2002-03-20  Masatake YAMATO  <yamato@redhat.com>
@@ -1543,19 +1543,19 @@
 2002-03-20  Martin Weber <martweb@gmx.net>
 
 	* fit.c (fitted_splines::total): Removed.
-	(*): Remove `_'(underscore) from variable 
+	(*): Remove `_'(underscore) from variable
 	names to avoid conflicting with function
-	name. Initialized local variables to 
+	name. Initialized local variables to
 	avoid compiler warnings.
-	
+
 	* thin-image.c: Put cast to avoid compiler
 	warnings.
-	
+
 	* median.c (generate_histogram_rgb): Added
 	default: to switch-case to avoid compiler
 	warnings.
 	(find_nearby_colors::min_dist): Initialized.
-	
+
 	* vector.c: Rename local var, exp->excep.
 
 	* pxl-outline.c: Make functions static scope.
@@ -1563,18 +1563,18 @@
 	* output-mif.c: Don'e include <time.h>.
 
 	* output-fig.c (fig_col_init): Return nothing.
-	(fig_col_hash): Put parentheses around 
+	(fig_col_hash): Put parentheses around
 	the macro arg.
 	(out_fig_splines): Removed unused variable `i'.
 	(get_fig_colour): &->&&. Make static scope.
 
-	* output-cgm.c: Don't count the return 
+	* output-cgm.c: Don't count the return
 	values of write16.
 
 	* input.c (at_input_shortlist): removed a
 	local var `count'.
-	
-	* input-tga.c (TgaSaveVals, TgaSaveInterface): 
+
+	* input-tga.c (TgaSaveVals, TgaSaveInterface):
 	Removed.
 
 	* input-pnm.c: Rename local var, exp->excep.
@@ -1584,7 +1584,7 @@
 
 	* getopt.c (exchange): Free temp.
 
-	* despeckle.c (despeckle_iteration): Remove 
+	* despeckle.c (despeckle_iteration): Remove
 	a ; that was too much at this place.
 	(despeckle): Rename local var, exp->excep.
 
@@ -1592,7 +1592,7 @@
 	at_string instead of char *.
 
 	Message-ID: <3C926C28.61B6FBB0@gmx.net>.
-	
+
 2002-03-16  Masatake YAMATO  <yamato@redhat.com>
 
 	* autotrace.c (at_bitmap_get_planes): New function.
@@ -1605,19 +1605,19 @@
 2002-03-13  Martin Weber <martweb@gmx.net>
 
 	(Logged by Masatake.)
-	
-	* output-pdf.c (output_pdf_tailor): 
+
+	* output-pdf.c (output_pdf_tailor):
 	Put a space at the end of  OUT_LINE
 	and OUT1.
 
-	* output-pdf.c (output_pdf_writer): 
+	* output-pdf.c (output_pdf_writer):
 	Print warnings if _WINDOWS is defined.
 
 	Message-ID: <3C8C7F1D.ACD14953@gmx.net>.
-	
+
 2002-03-13  Masatake YAMATO  <yamato@redhat.com>
 
-	* output-pdf.c (output_pdf_writer): 
+	* output-pdf.c (output_pdf_writer):
 	removed a garbage that I had put.
 	Suggested by Martin.
 
@@ -1632,7 +1632,7 @@
 	* autotrace.spec.in: copyed from
 	http://www.cs.uu.nl/~hanwen/public/software/autotrace.spec.
 	Contributed by Han-Wen Nienhuys<hanwen@cs.uu.nl>.
-	
+
 	* configure.in: Added autotrace.spec supports.
 
 	* Masatake.am: Likewise.
@@ -1645,13 +1645,13 @@
 
 2002-03-08  Martin Weber <martweb@gmx.net>
 
-	* fit.c (filter): Put the definition 
+	* fit.c (filter): Put the definition
 	of prev_new_point out of the loop.
 
 	(distance): Don't use hypot.
 
 	Message-ID: <3C87B48C.82FAC8CF@gmx.net>.
-	
+
 2002-03-06  Martin Weber <martweb@gmx.net>
 
 	* curve.c: Corrected copyright notice
@@ -1662,13 +1662,13 @@
 
 2002-03-06  Martin Weber <martweb@gmx.net>
 
-	* autotrace.vcproj: Linking with certain ImageMagick 
+	* autotrace.vcproj: Linking with certain ImageMagick
 	versions didn't work correctly.
-	
+
 	* autotrace.dsp: Likewise.
 
 	Message-ID: <3C84F0C1.4C989134@gmx.net>.
-	
+
 2002-03-06  Martin Weber <martweb@gmx.net>
 
 	* fit.c (filter): fixed a bug in the filtering routine.
@@ -1678,7 +1678,7 @@
 
 2002-02-14  Masatake YAMATO  <yamato@redhat.com>
 
-	* autotrace.h (struct _at_fitting_opts_type::despeckle_level): 
+	* autotrace.h (struct _at_fitting_opts_type::despeckle_level):
 	made "unsigned".
 	(struct _at_fitting_opts_type): Corrected wrong comments.
 
@@ -1687,7 +1687,7 @@
 	* vector.c (magnitude): replaced hypot.
 
 	(Message-ID: <14237.1013082801@www56.gmx.net>).
-	
+
 2002-02-06  Masatake YAMATO  <yamato@redhat.com>
 
 	* configure.in (AC_CHECK_LIB): Put '[', ']' to nested macro
@@ -1699,7 +1699,7 @@
 
 2002-02-04  Masatake YAMATO  <yamato@redhat.com>
 
-	* Makefile.am (pkgconfig_DATA, pkgconfigdir): 
+	* Makefile.am (pkgconfig_DATA, pkgconfigdir):
 	Added pkgconfig supprots.
 
 	* configure.in: Likewise.
@@ -1707,7 +1707,7 @@
 	* autotrace.pc.in: New file.
 
 	* main.c (dot_printer): Rewrite.
-	(main): print an input file name and newline when 
+	(main): print an input file name and newline when
 	report_progress is true.
 	(main::progress_stat): Make int.
 	(dot_printer_max_column, dot_printer_char): New defs.
@@ -1751,7 +1751,7 @@
 	* autotrace.dsp: Likewise.
 
 	Message-ID: <3C4C70AF.60741033@gmx.net>.
-	
+
 2002-01-23  Masatake YAMATO  <yamato@redhat.com>
 
 	* main.c (USAGE1::dpi): Write about emf.
@@ -1759,7 +1759,7 @@
 
 2002-01-19  Masatake YAMATO  <yamato@redhat.com>
 
-	* autotrace.c (at_bitmap_init): XMALLOC->XCALLOC 
+	* autotrace.c (at_bitmap_init): XMALLOC->XCALLOC
 	again.
 	I had a mistake at a change in
 	2002-01-05  Masatake YAMATO  <yamato@redhat.com>.
@@ -1785,7 +1785,7 @@
 	new args, msg_func and msg_data.
 	(at_bitmap_read): Likewise.
 	(at_input_read_func,at_output_write_func): Likewise.
-	
+
 2002-01-14  Masatake YAMATO  <yamato@redhat.com>
 
 	* main.c (exception_handler): Append newline to
@@ -1798,7 +1798,7 @@
 
 	* input-bmp.c (ReadImage): Didn't close
 	fd here. Instead closing at bmp_load_image.
-	
+
 2002-01-05  Masatake YAMATO  <yamato@redhat.com>
 
 	* autotrace.c (at_bitmap_init): XMALLOC->XCALLOC.
@@ -1819,12 +1819,12 @@
 	* median.c (quantize): Fatal if wrong planes.
 
 	* quantize.h (quantize): Likewise.
-	
+
 	* fit.c (find_corners): Pass exception context to
 	Vangle.
 
 	* autotrace.c (at_splines_new_full): Use exception
-	in quantize and thin_image. Handle exception after 
+	in quantize and thin_image. Handle exception after
 	find_*_pixels.
 
 	* spline.c (print_spline): Use assert instead of FATAL1.
@@ -1854,12 +1854,12 @@
 
 2002-01-02  Masatake YAMATO  <yamato@redhat.com>
 
-	* autotrace.h (enum _at_msg_type, at_msg_func): 
+	* autotrace.h (enum _at_msg_type, at_msg_func):
 	New type.
 
 	* main.c: Added code to dump loaded bitmap.
 	"--debug-bitmap: dump loaded bitmap to <input_name>.bitmap.\n\"
-	
+
 2001-12-29  Masatake YAMATO  <yamato@redhat.com>
 
 	* main.c (read_command_line): Added debug-arch.
@@ -1871,13 +1871,13 @@
 
 	* input*.[ch]: bitmap_type -> at_bitmap_type.
 	Use at_bitmap_init.
-	
+
 	* autotrace.c (at_bitmap_new): Use at_bitmap_init.
 	(at_bitmap_init): New func.
 
 	* bitmap.c (new_bitmap): Used at_bitmap_init.
 
-	* bitmap.h: Almost all macro definitions 
+	* bitmap.h: Almost all macro definitions
 	used macros defined in input.h.
 	Include input.h.
 
@@ -1921,13 +1921,13 @@
 2001-12-24  Masatake YAMATO  <yamato@redhat.com>
 
 	* fit.[ch] (fitted_splines): Pass width and height.
-	
+
 	* autotrace.[ch] (at_splines_write): Don't pass
 	bbox. Get bbox from splines.
 
-	* main.c (main): Don't pass width and height to 
+	* main.c (main): Don't pass width and height to
 	at_splines_write.
-	
+
 	* autotrace.h (struct _at_fitting_opts_type): Removed
 	comments. Instead defined doc strings.
 	(AT_DEFAULT_DPI): New def.
@@ -1950,7 +1950,7 @@
 	* output-cgm.c: Fix bugs.
 
 	Message-ID: <3C25CDF4.4C0CC024@gmx.net>.
-	
+
 2001-12-23  Masatake YAMATO  <yamato@redhat.com>
 
 	* main.c (main): Use at_splines_write, at_input_shortlist
@@ -1958,7 +1958,7 @@
 
 	* output.h, input.h: Remove declarations. Move them to autotrace.h.
 
-	* input.c (input_format_entry, input_formats): 
+	* input.c (input_format_entry, input_formats):
 	Change the order of fields.
 
 	* bitmap.c: Don't include string.h.
@@ -1975,7 +1975,7 @@
 	(at_coord): Renamed from at_coordinate_type.
 	Remove progress_func and testcancel_func.
 
-	* *: Remove ptypes.h. 
+	* *: Remove ptypes.h.
 
 2001-12-23  Masatake YAMATO  <yamato@redhat.com>
 
@@ -2000,10 +2000,10 @@
 
 2001-12-23  Martin Weber <martweb@gmx.net>
 
-	* main.c (main): corrected bug that binary output was not 
+	* main.c (main): corrected bug that binary output was not
 	written correctly.
 
-	* autotrace.[vcproj,dsp], output.c, output-cgm.[ch], Makefile.am: 
+	* autotrace.[vcproj,dsp], output.c, output-cgm.[ch], Makefile.am:
 	added binary cgm export.
 
 	(Message-ID: <3C250ADC.945F47F8@gmx.net>).
@@ -2030,19 +2030,19 @@
 
 2001-12-23  Martin Weber <martweb@gmx.net>
 
-	* main.c, fit.c, autotrace.[ch]: removed unnecessary 
+	* main.c, fit.c, autotrace.[ch]: removed unnecessary
 	thin option.
 
 	(Message-ID: <3C23097C.64BB84F8@gmx.net>,
 	Message-ID: <3C230A3D.C0F29BE6@gmx.net>)
-	
+
 2001-12-23  Masatake YAMATO  <yamato@redhat.com>
 
 	* input-png.h: string->at_string.
 
 2001-12-23  Martin Weber <martweb@gmx.net>
 
-        * (.*): Remove version num in comments.
+	* (.*): Remove version num in comments.
 	Use at_string instead of string.
 	Change the data type for number.
 	Remove decl of version_string. (e.g. unsigned -> unsigned short)
@@ -2053,7 +2053,7 @@
 
 	* output-emf.c (OutputEmf, GetEmfStats): Initialized last_color.
 
-	* output-dxf.c (output_layer, out_splines, out_splines): 
+	* output-dxf.c (output_layer, out_splines, out_splines):
 	Initialized local vars.
 
 	* main.c (get_percent): Removed.
@@ -2071,7 +2071,7 @@
 	* fit.c (filter_angle, find_curve_vectors): Removed.
 	(fit_with_least_squares): Remove local variable `iteration'.
 
-	* despeckle.c (recolor, despeckle_iteration): 
+	* despeckle.c (recolor, despeckle_iteration):
 	Remove a parameter, `current_size'.
 
 	* autotrace.sln: New file.
@@ -2079,10 +2079,10 @@
 	* autotrace.vcproj: Likewise.
 
 	(Message-ID: <3C23045E.E5636FF5@gmx.net>).
-	
+
 2001-12-18  Per Grahn <pergra@foi.se>
 
-        * output-emf.c (output_emf_writer): added `dpi'.
+	* output-emf.c (output_emf_writer): added `dpi'.
 
 2001-12-19  Masatake YAMATO  <yamato@redhat.com>
 
@@ -2090,21 +2090,21 @@
 	output_get_handler_by_suffix.
 	(main): Use at_output_get_handler.
 	Use suffix of output_name to select output_handler.
-	
+
 	* output.c (output_get_handler): Used suffix.
 
 	* output.[ch] (output_get_handler_by_suffix): New function.
-	
+
 	* autotrace.[ch] (at_output_get_handler_by_suffix): New function.
-	
+
 2001-12-18  Masatake YAMATO  <yamato@redhat.com>
-	
+
 	* Makefile.am (output_src): Added mif.[ch].
 
 2001-12-18  Per Grahn <pergra@foi.se>
 
 	* autotrace.dsp (SOURCE): Added mif.
-	
+
 	* output-mif.[ch]: New files.
 
 	* autotrace.h (at_output_write_func, at_output_write):
@@ -2117,7 +2117,7 @@
 	* output.c (output_formats):  Added mif.
 
 	(Message-ID: <3C1A734D.A11F290A@gmx.net>).
-	
+
 2001-12-18  Martin Weber <martweb@gmx.net>
 
 	* autotrace.dsp: Added swf.
@@ -2125,7 +2125,7 @@
 	* strgicmp.h (strgnicmp, strgnicmp): Added const to params.
 
 	(Message-ID: <3C1A36C4.C098F815@gmx.net>).
-	
+
 2001-12-14  Masatake YAMATO  <yamato@redhat.com>
 
 	* output-swf.c (output_swf_writer): roll back to
@@ -2133,7 +2133,7 @@
 
 	2001-12-01  Martin Weber <martweb@gmx.net>
 
-	Now using file instead of 
+	Now using file instead of
 	name so that it works also to stdout.
 
 	(Message-ID: <3C02BF23.9D19CCC0@gmx.net>).
@@ -2148,7 +2148,7 @@
 2001-12-11  Martin Weber <martweb@gmx.net>
 
 	Now commandline options are no more case sensitive.
-	
+
 	* Makefile.am (autotrace_SOURCES): Added strgicmp.[ch].
 
 	* autotrace.dsp: Likewise.
@@ -2176,7 +2176,7 @@
 
 2001-12-08  Martin Weber <martweb@gmx.net>
 
-	* output.c: 
+	* output.c:
 	* output-dxf.[ch]: DXF output is disabled.
 
 2001-12-08  Masatake YAMATO  <yamato@redhat.com>
@@ -2191,7 +2191,7 @@
 	* input-magick.c: Likewise.
 
 	(Message-ID: <3C0A6916.D7C47C1F@gmx.net>).
-	
+
 2001-12-02  Martin Weber <martweb@gmx.net>
 
 	* types.h: adopted to C++.
@@ -2205,7 +2205,7 @@
 	* README.MING: Write about Visual C++ and libming.*.
 
 	* Makefile.am (EXTRA_DIST): added libming.*.
-	
+
 2001-12-01  Martin Weber <martweb@gmx.net>
 
 	* input-magick.c: Fixed comments.
@@ -2217,14 +2217,14 @@
 	(Message-ID: <3C07E7CB.42BB90D4@gmx.net>).
 
 2001-12-01  Martin Weber <martweb@gmx.net>
-	
+
 	* input.c, input.h, main.c, README: input_list now also lists
 	all formats that are supported by ImageMagick, dynamic generation of
 	input format list.
 
 	(Message-ID: <3C0697FA.F9F1F974@gmx.net> is applied.
 	Message-ID: <3C056389.A35DF08C@gmx.net> is ignored).
-	
+
 2001-12-01  Martin Weber <martweb@gmx.net>
 
 	* output-dxf.h (output_dxf12_writer): New function.
@@ -2237,11 +2237,11 @@
 
 2001-12-01  Martin Weber <martweb@gmx.net>
 
-	* output-swf.c (output_swf_writer): Now using file instead of 
+	* output-swf.c (output_swf_writer): Now using file instead of
 	name so that it works also to stdout.
 
 	(Message-ID: <3C02BF23.9D19CCC0@gmx.net>).
-	
+
 2001-12-01  Martin Weber <martweb@gmx.net>
 
 	* Makefile.am (EXTRA_DIST): Added shape_cubic.c.diff README.MING.
@@ -2249,18 +2249,18 @@
 	* shape_cubic.c.diff: Patch for ming.
 
 	* README.MING: About shape_cubic.c.diff.
-	
+
 	(Message-ID: <3C02B6A9.D9EF762D@gmx.net>, Message-ID: <5962.1006945825@www21.gmx.net>)
 
 2001-11-27  Martin Weber <martweb@gmx.net>
 
-	* output-swf.c (output_swf_writer): Now using file instead of name 
+	* output-swf.c (output_swf_writer): Now using file instead of name
 	so that it works also to stdout.
 	(Message-ID: <3C02BF23.9D19CCC0@gmx.net>).
-	
+
 2001-11-27  Martin Weber <martweb@gmx.net>
 
-	* output-swf.c (output_swf_writer, out_splines): 
+	* output-swf.c (output_swf_writer, out_splines):
 	Removed some warnings.
 	(Message-ID: <3C02B6A9.D9EF762D@gmx.net>).
 
@@ -2276,17 +2276,17 @@
 	* main.c (read_command_line): output format list now freed.
 
 	(Message-ID: <3C02B6D3.7FBF5057@gmx.net>).
-	
+
 2001-11-25  Martin Weber <martweb@gmx.net>
 
-	* output-p2e.c (output_p2e_header, output_p2e_writer): 
+	* output-p2e.c (output_p2e_header, output_p2e_writer):
 	Output that is totally curve free has to be marked.
 
 	(Message-ID: <3C012785.19621140@gmx.net>).
-	
+
 2001-11-25  Martin Weber <martweb@gmx.net>
 
-	* output-dxf.c (out_splines): Removed code that was needed due to 
+	* output-dxf.c (out_splines): Removed code that was needed due to
 	an old bug in AutoTrace.
 
 	* output-epd.c (out_splines): Removed wrong comment.
@@ -2304,7 +2304,7 @@
 	* autotrace.dsp: output-pdf.c and output-pdf.h are added.
 
 	(Message-ID: <3C0112EA.EB49E12A@gmx.net>).
-	
+
 2001-11-25  Masatake YAMATO  <yamato@redhat.com>
 
 	* Makefile.am (output_src): Added output-pdf.[hc].
@@ -2312,13 +2312,13 @@
 2001-11-24  Martin Weber <martweb@gmx.net>
 
 	* output-pdf.[ch]: New files.
-	
-        * output.h (OUTPUT_SUFFIX_LIST): Added pdf.
-	
-        * NEWS: Upadted.
+
+	* output.h (OUTPUT_SUFFIX_LIST): Added pdf.
+
+	* NEWS: Upadted.
 
 	* output.c: Added output_pdf_writer.
-	
+
 	* despeckle.c (despeckle): Use FATAL1
 	instead of WARNING1.
 
@@ -2332,28 +2332,28 @@
 
 2001-11-24  Martin Weber <martweb@gmx.net>
 
-        * despeckle.c: Almost Rewrote.
+	* despeckle.c: Almost Rewrote.
 
 	* output-dxf.c: "ps_file' -> "dxf_file".
 
 	(Message-ID: <3BFD5CBD.8AC681BB@gmx.net>).
-	
+
 2001-11-24  Martin Weber <martweb@gmx.net>
 
 	* output-epd.c: "ps_file"->"epd_file".
 	(output_epd_header): "%%"->"%".
 	(out_splines): swap "S"<->"f" in OUT_LINE.
 
-	(Message-ID: <3BFEA7B6.E4CDB9F5@gmx.net>). 
-	
+	(Message-ID: <3BFEA7B6.E4CDB9F5@gmx.net>).
+
 2001-11-24  Martin Weber <martweb@gmx.net>
 
-	* output-epd.c (out_splines): Fix a 
+	* output-epd.c (out_splines): Fix a
 	bugs in output formats.
 	"*U"->"h", "B"->"S".
 	Divied each color components by 255.
 	(Message-ID: <3BFD3CA5.EA11A99C@gmx.net>).
-	
+
 2001-11-24  Masatake YAMATO  <yamato@redhat.com>
 
 	* Makefile.am (output_src): Added output-epd.[ch].
@@ -2365,7 +2365,7 @@
 	* output.c (output_formats): output_epd_writer is added.
 
 	(Message-ID: <3BFC27DC.DE9DE0E7@gmx.net>)
-	
+
 2001-11-21  Martin Weber <martweb@gmx.net>
 
 	* output.h (OUTPUT_SUFFIX_LIST): Removed dxf12.
@@ -2376,22 +2376,22 @@
 	* autotrace.dsp: Updated.
 
 	(Message-ID: <3BFC1CA5.996CD642@gmx.net>)
-	
+
 2001-11-21  Martin Weber <martweb@gmx.net>
 
 	* READM, THANKS, NEWS: Updated.
 	(Message-ID: <3BFBEB8D.E493F888@gmx.net>)
-	
+
 2001-11-21  Masatake YAMATO  <yamato@redhat.com>
 
 	* main.c (main): Set fitting_opts->centerline.
 
 	* fit.c (fitted_splines, new_fitting_opts): set value for
 	new field `centerline'.
-	
+
 	* autotrace.[ch] (at_centerline):  removed.
-	(struct _at_spline_list_array_type, struct _at_fitting_opts_type): 
-	new field `centerline' is added. 
+	(struct _at_spline_list_array_type, struct _at_fitting_opts_type):
+	new field `centerline' is added.
 
 	* output-*.[ch]: at_centerline is removed.
 	Use shape.centerline instead.
@@ -2401,19 +2401,19 @@
 	* ptypes.h: New file.
 
 	* Makefile.am: Added ptypes.h.
-	
+
 	* types.h: Added "at_" as prefix to all type names.
 
 	* *.[ch]: Include ptypes.h.
 
 2001-11-19  Martin Weber  <martweb@gmx.net>
 
-	* pxl-outline.c (find_one_outline): Fixed that sometimes the first 
-	point of the outline is wrong 
+	* pxl-outline.c (find_one_outline): Fixed that sometimes the first
+	point of the outline is wrong
 
 2001-11-19  Dan Mills <dmills@spamblock.demon.co.uk>
 
-	* fit.c (split_at_corners): 
+	* fit.c (split_at_corners):
 	 Here is a patch for another autotrace bug which caused some images
 	 to seemingly hang when processed with the thin option.
 
@@ -2424,8 +2424,8 @@
 	 Using signed math overcomes this problem.
 
 2001-11-19  Martin Weber  <martweb@gmx.net>
-	
-	* pxl-outline.c (find_outline_pixels): improved 
+
+	* pxl-outline.c (find_outline_pixels): improved
 	background handling.
 
 2001-11-19  Masatake YAMATO  <yamato@redhat.com>
@@ -2443,22 +2443,22 @@
 
 2001-11-19  Martin Weber  <martweb@gmx.net>
 
-	* fit.c (filter): Temporary solution for not 
+	* fit.c (filter): Temporary solution for not
 	totally collapsing a curve with repeated filtering.
 
 2001-11-17  Martin Weber  <martweb@gmx.net>
-	
+
 	* fit.c (fit_with_least_squares):
 	Force closed splines to be split.
 
 2001-11-17  Martin Weber  <martweb@gmx.net>
-	
+
 	* fit.c (find_half_tangent): fixed a problem in calculation of
 	halftangent with cyclic curves.
 
 2001-11-11  Masatake YAMATO  <yamato@redhat.com>
 
-	* pxl-outline.c (find_outline_pixels): 
+	* pxl-outline.c (find_outline_pixels):
 	(find_centerline_pixels): Put cancel points.
 
 	* main.c (main): Use at_splines_new_full.
@@ -2473,7 +2473,7 @@
 
 	* autotrace.[hc] (at_splines_new_full): New function.
 	at_splines_new_with_progress is removed.
-	at_splines_new_full is almost the same as 
+	at_splines_new_full is almost the same as
 	`at_splines_new_with_progress' but has cancel points.
 
 2001-11-09  Masatake YAMATO  <yamato@redhat.com>
@@ -2485,28 +2485,28 @@
 
 2001-10-14  Martin Weber  <martweb@gmx.net>
 
-        * output-dxf.c: adopted so it could also be compiled as C++
-	
+	* output-dxf.c: adopted so it could also be compiled as C++
+
 2001-10-14  Martin Weber  <martweb@gmx.net>
 
-        * NEWS: Upated
+	* NEWS: Upated
 
 	* README (version): Updated
 
 	* THANKS: Updated.
 
 	* autotrace.dsp (SOURCE): Update again.
-	
+
 2001-10-14  Martin Weber  <martweb@gmx.net>
 
-	* autotrace.dsp: adopted to newer versions of ImageMagick. 
+	* autotrace.dsp: adopted to newer versions of ImageMagick.
 
 	* input-magick.c: Likewise.
 
 2001-10-14  Martin Weber  <martweb@gmx.net>
 
 	* output-dxf.h: changed wrong define constant
-	* curve.c, pxl-outline.c, fit.c: removed warning in 
+	* curve.c, pxl-outline.c, fit.c: removed warning in
 	notify_progress for Visual C++
 	* output.c: added output_dxf_writer
 
@@ -2517,7 +2517,7 @@
 2001-10-28  Steffen Politzky <support@durst.de>
 
 	Logged by Masatake YAMATO  <yamato@redhat.com>.
-	
+
 	* output-dxf.[ch]: New files.
 
 2001-10-14  Martin Weber  <martweb@gmx.net>
@@ -2536,19 +2536,19 @@
 
 	* autotrace.c (at_splines_new): Invoke despeckle.
 
-	* autotrace.h (struct _at_fitting_opts_type): 
+	* autotrace.h (struct _at_fitting_opts_type):
 	New members, despeckle_level and despeckle_tightness.
 
 	* fit.c (new_fitting_opts): Initialize
 	despeckle_level and despeckle_tightness.
 
-	* main.c (read_command_line): Use 
+	* main.c (read_command_line): Use
 	fitting_opts->despeckle_tightness and
 	fitting_opts->despeckle_level.
 
 2001-10-11  Martin Weber  <martweb@gmx.net>
 
-        * main.c, despeckle.c, despeckle.h: Added new despeckling code.
+	* main.c, despeckle.c, despeckle.h: Added new despeckling code.
 
 2001-10-12  Masatake YAMATO  <yamato@redhat.com>
 
@@ -2565,7 +2565,7 @@
 	before doing fputs("bC()\n", file).
 
 	(Logged by Masatake)
-	
+
 o2001-09-18  Martin Weber  <martweb@gmx.net>
 
 	* output-eps.c: fixed a small bug in the initialisation of last_color
@@ -2577,7 +2577,7 @@ o2001-09-18  Martin Weber  <martweb@gmx.net>
 
 2001-09-15  Masatake YAMATO  <yamato@redhat.com>
 
-	* autotrace.c (at_home_site): Update the homepage of 
+	* autotrace.c (at_home_site): Update the homepage of
 	autotrace.
 
 	* README: Likewise.
@@ -2609,7 +2609,7 @@ o2001-09-18  Martin Weber  <martweb@gmx.net>
 	* output-p2e.c: Likewise.
 
 	* configure.in: Check malloc.h.
-	These changes are suggested by 
+	These changes are suggested by
 	Peter Cucka<pcucka@anim.dreamworks.com>.
 
 2001-03-25  Masatake YAMATO  <yamato@redhat.com>
@@ -2617,10 +2617,10 @@ o2001-09-18  Martin Weber  <martweb@gmx.net>
 	* configure.in: VERSION 0.27a.
 
 2001-03-24  Masatake YAMATO  <yamato@redhat.com>
-	
+
 	* Makefile.am (autotrace_LDADD): Added -lm.
 	Suggested by "Stefan A. Deutscher" <sad@utk.edu>.
-	(autotrace-config.in): Specify the base file at its 
+	(autotrace-config.in): Specify the base file at its
 	generating rule.
 	Reported by "Stefan A. Deutscher" <sad@utk.edu>.
 
@@ -2642,7 +2642,7 @@ o2001-09-18  Martin Weber  <martweb@gmx.net>
 
 	Message-ID: <3AB7AD7B.CA58CE8A@gmx.net>.
 	* README: Updated.
-	
+
 2001-03-16  Peter Cucka <pcucka@anim.dreamworks.com>
 
 	Message-ID: <3AB26304.182F7AB2@anim.dreamworks.com>:
@@ -2650,13 +2650,13 @@ o2001-09-18  Martin Weber  <martweb@gmx.net>
 	line segment to be added to the end of every open curve.
 
 	* output-er.c: Modified out_splines() to correctly output open
- 	curves, taking into account the above changes to fit.c.
+	curves, taking into account the above changes to fit.c.
 
 2001-03-20  Masatake YAMATO  <yamato@redhat.com>
 
-	* configure.in: Check ImageMagick version is higher 
+	* configure.in: Check ImageMagick version is higher
 	than 5.2.1. Use AC_MSG_WARN instead of AC_MSG_ERROR
-	if ImageMagick is not found. The user can build 
+	if ImageMagick is not found. The user can build
 	autotrace without ImageMagick.
 	This change is required by Martin.
 	Message-ID: <3AB26698.DFC2341D@gmx.net>.
@@ -2664,28 +2664,28 @@ o2001-09-18  Martin Weber  <martweb@gmx.net>
 2001-03-15  Martin Weber <martweb@gmx.net>
 
 	Message-ID: <3AB26698.DFC2341D@gmx.net>.
-	* input-magick.c (magick_load_image): 
+	* input-magick.c (magick_load_image):
 	dropped the support of versions older than 5.2.1.
 
 2001-03-17  Martin Weber <martweb@gmx.net>
 
 	Message-ID: <3AB25B23.27EDD0C1@gmx.net>.
-	* output-emf.c:  Images with width or height > 
+	* output-emf.c:  Images with width or height >
 	655 were distorted.
 
 2001-03-17  Peter Cucka <pcucka@anim.dreamworks.com>
 
-	* pxl-outline.c: Adding some explicit casts of boolean 
-	expressions to 'bool's, to keep the IRIX compiler from 
-	warning about an "enumerated type mixed with another type". 
+	* pxl-outline.c: Adding some explicit casts of boolean
+	expressions to 'bool's, to keep the IRIX compiler from
+	warning about an "enumerated type mixed with another type".
 	(Logged by Masatake)
-	
+
 2001-03-16  Masatake YAMATO  <yamato@redhat.com>
 
 	Applied a patch from Martin.
 	Message-ID: <3AB12888.E31072DC@gmx.net>.
-	* output-emf.c: Now I fixed a bug in output-emf.c and 
-	adopted it so that the generated emf files are compatible 
+	* output-emf.c: Now I fixed a bug in output-emf.c and
+	adopted it so that the generated emf files are compatible
 	to CorelDraw 9.
 
 2001-03-15  Masatake YAMATO  <yamato@redhat.com>
@@ -2700,14 +2700,14 @@ o2001-09-18  Martin Weber  <martweb@gmx.net>
 2001-03-14  Masatake YAMATO  <yamato@redhat.com>
 
 	* configure.in: Check zlib.
-	Print the required version of libpng. Suggested by 
+	Print the required version of libpng. Suggested by
 	Martin. Message-ID: <3AABC7D4.1E7CDAA@gmx.net>.
 
 2001-03-13  Masatake YAMATO  <yamato@redhat.com>
 
 	Applied a patch from Martin.
 	Message-ID: <3AAD4C14.6072AD3C@gmx.net>.
-	
+
 	* input-magick.c (magick_load_image): Improved supports
 	for various version of libmagick.
 
@@ -2715,8 +2715,8 @@ o2001-09-18  Martin Weber  <martweb@gmx.net>
 
 	Applied a patch from Martin.
 	Message-ID: <3AAD4C65.AB2EAF23@gmx.net>.
-	
-	* autotrace.dsp: Updated. Reduced the size of the exe file 
+
+	* autotrace.dsp: Updated. Reduced the size of the exe file
 	without reducing speed.
 
 2001-03-12  Masatake YAMATO  <yamato@redhat.com>
@@ -2755,13 +2755,13 @@ o2001-09-18  Martin Weber  <martweb@gmx.net>
 
 	Applied a patch from Martin.
 	Message-ID: <18838.984036759@www23.gmx.net>
-	
+
 	* NEWS: Updated.
 
 2001-03-08  Masatake YAMATO  <yamato@redhat.com>
 
 	* NEWS: Write the place where you can libming.
-	
+
 	* output-swf.h: Use triangle brackets instead of
 	double quotes to include ming.h.
 
@@ -2775,7 +2775,7 @@ o2001-09-18  Martin Weber  <martweb@gmx.net>
 2001-03-08  Masatake YAMATO  <yamato@redhat.com>
 
 	Kevin O' Gorman <k_ogorman@kompass.ie> updates swf output.
-	
+
 	* output.h: Added ".swf".
 
 	* output.c: Addd swf handler.
@@ -2786,12 +2786,12 @@ o2001-09-18  Martin Weber  <martweb@gmx.net>
 
 2001-03-07  Masatake YAMATO  <yamato@redhat.com>
 
-	* spline.h (LINEARTYPE): 
-	(QUADRATICTYPE): 
-	(CUBICTYPE): 
-	(PARALLELELLIPSETYPE): 
-	(ELLIPSETYPE): 
-	(CIRCLETYPE): Aliases for the members of 
+	* spline.h (LINEARTYPE):
+	(QUADRATICTYPE):
+	(CUBICTYPE):
+	(PARALLELELLIPSETYPE):
+	(ELLIPSETYPE):
+	(CIRCLETYPE): Aliases for the members of
 	_at_polynomial_degree.
 
 	* autotrace.h (_at_polynomial_degree): Added AT_ prefix
@@ -2807,28 +2807,28 @@ o2001-09-18  Martin Weber  <martweb@gmx.net>
 
 	* main.c: Likewise.
 
- 	Applied a patch from Martin.
+	Applied a patch from Martin.
 	Message-ID: <3AA129B5.FE736C40@gmx.net>.
-	
+
 	* main.c: Replaced static bool thin; by static bool thin = false;
 	in main.c otherwise there is no initialization.
-	
+
 2001-03-07  Masatake YAMATO  <yamato@redhat.com>
 
 	* types.h (struct): Remove dimensions_type.
 	(DIMENSIONS_HEIGHT): Likewise.
 	(DIMENSIONS_WIDTH): Likewise.
 
- 	Applied patches from Martin.
+	Applied patches from Martin.
 	Message-ID: <3AA12454.6AF6FD69@gmx.net>.
-	
+
 	* autotrace.h (struct _at_bitmap_type): Remove dimensions_type.
 
- 	* bitmap.c (new_bitmap): Likewise.
+	* bitmap.c (new_bitmap): Likewise.
 
 	* bitmap.h: Likewise.
 
- 	* median.c: Likewise.
+	* median.c: Likewise.
 
 	* input-magick.c: Likewise.
 
@@ -2847,20 +2847,20 @@ o2001-09-18  Martin Weber  <martweb@gmx.net>
 
 	Applied patches from Martin.
 	Message-ID: <3AA11A4B.BD319064@gmx.net>.
-	
+
 	* autotrace.dsp: Removed usefull.h and median.h.
 
 	* Makefile.am (libautotrace_a_SOURCES): Remove median.h.
 
 	* types.h: Removed unnecessary #ifdef __cplusplus.
 
- 	* usefull.h: File is removed.
+	* usefull.h: File is removed.
 
 	* Makefile.am (noinst_HEADERS): usefull.h is removed.
 
- 	* fit.c: Likewise.
+	* fit.c: Likewise.
 
- 	* output-er.c: Likewise.
+	* output-er.c: Likewise.
 
 2001-03-02  Masatake YAMATO  <yamato@redhat.com>
 
@@ -2872,7 +2872,7 @@ o2001-09-18  Martin Weber  <martweb@gmx.net>
 
 2001-02-28  Masatake YAMATO  <yamato@redhat.com>
 
- 	Applied a patch from Martin.
+	Applied a patch from Martin.
 
 	* output-emf.c: Now supports centerline.
 
@@ -2880,55 +2880,55 @@ o2001-09-18  Martin Weber  <martweb@gmx.net>
 
 	* NEWS: Write about dxf.
 
- 	Applied a patch from Martin.
+	Applied a patch from Martin.
 
-	* NEWS: Updated.	
+	* NEWS: Updated.
 
 	* output.c: Don't include output-dxf.h and
 	output-dxf12.h.
 
 2001-02-26  Masatake YAMATO  <yamato@redhat.com>
 
- 	Applied a patch from Martin.
-	
+	Applied a patch from Martin.
+
 	* output.c: Remove dxf supports.
 
- 	* Makefile.am (output_src): Likewise.
+	* Makefile.am (output_src): Likewise.
 
 	* autotrace.dsw: Updated.
 
 	* autotrace.dsp: Likewise.
-	
+
 2001-02-25  Masatake YAMATO  <yamato@redhat.com>
 
 	Applied two patches from Martin.
 
 	* output-p2e.c: Now supports centerline.
 
- 	* output-sk.c: Likewise.
+	* output-sk.c: Likewise.
 
-	* output-svg.c: Likewise.	
+	* output-svg.c: Likewise.
 
 2001-02-25 Ian MacPhedran <Ian_MacPhedran@engr.USask.Ca>
 
 	* output-fig.c: Updated.
 	Added support for the "centerline" option
 	Added code to reduce the number of FIG "levels" produced
- 
+
 2001-02-24  Masatake YAMATO  <yamato@redhat.com>
 
 	Applied patches from Martin.
-	
-	* output-eps.c: Made the centerline eps output 
+
+	* output-eps.c: Made the centerline eps output
 	compatible to CorelDraw.
 
 	Applied patches from Martin.
 
-	* thin-image.c: 
-	Made it C++ compatible again (replaced delete by todelete) and 
+	* thin-image.c:
+	Made it C++ compatible again (replaced delete by todelete) and
 	removed some warnings.
 
- 	* output-er.c: Made it C++ compatible, replaced malloc my 
+	* output-er.c: Made it C++ compatible, replaced malloc my
 	XMALLOC and removed some unnecessary code.
 
 	* pxl-outline.c: Moved edge.h to pxl-outline.c, some cleanup and
@@ -2949,7 +2949,7 @@ o2001-09-18  Martin Weber  <martweb@gmx.net>
 	* autogen.sh: Check whether autofig is existed or not.
 
 	Applied patches from Martin.
-	-- I removed some compiler warnings in color.h 
+	-- I removed some compiler warnings in color.h
 	and pxl-outline.c. Also I have a new autotrace.dsp.
 
 	* pxl-outline.c: Updated.
@@ -2959,16 +2959,16 @@ o2001-09-18  Martin Weber  <martweb@gmx.net>
 	* autotrace.dsp: Updated.
 
 2001-02-23  Masatake YAMATO  <yamato@redhat.com>
-	
+
 	* configure.in: Set version to 0.27pre.
 
 	* output-eps.c (out_splines): Use at_centerline.
 
 	* main.c (main): Use at_centerline.
 	(centerline): static scope.
-	
+
 	* autotrace.[hc] (at_centerline): New varaible.
-	
+
 2001-02-22  Masatake YAMATO  <yamato@redhat.com>
 
 	* output.h (OUTPUT_SUFFIX_LIST): Added "er".
@@ -3036,7 +3036,7 @@ o2001-09-18  Martin Weber  <martweb@gmx.net>
 		two bugs that caused problems with border pixels.  Replaced
 		hard-coded BACKGROUND color with an optional parameter.
 
-	* thin-image.h: Added optional background color parameter to 
+	* thin-image.h: Added optional background color parameter to
 		thin_image().
 
 	* vector.c: Rewrote normalize() to not abort if the vector is
@@ -3045,32 +3045,32 @@ o2001-09-18  Martin Weber  <martweb@gmx.net>
 	* xstd.c: Modified xfopen() and xfclose() to allow reads from stdin.
 
 2001-02-21  Masatake YAMATO  <yamato@redhat.com>
-		
+
 	[Patches from from Martin.]
 
 	* THANKS: Updated contributors.
 
 	* types.h: Fixed a bug when compiling with C++.
 
- 	* Makefile.am (EXTRA_DIST): Added vc++6.0.txt 
+	* Makefile.am (EXTRA_DIST): Added vc++6.0.txt
 	autotrace.dsp autotrace.dsw.
 
 2001-02-19  Masatake YAMATO  <yamato@redhat.com>
 
 	Applied patches from Martin.
-	* main.c(read_command_line): removed bad 
+	* main.c(read_command_line): removed bad
 	initialisation of opts
 
-        * input.c(input_get_handler_by_suffix): Removed warning.
+	* input.c(input_get_handler_by_suffix): Removed warning.
 	magick_load_image is casted to input_read.
 
-        * input-tga.c: removed unistd.h because it does not 
+	* input-tga.c: removed unistd.h because it does not
 	compile with Windows.
 
 2001-01-20  Masatake YAMATO  <yamato@redhat.com>
 
 	* input-magick.c: Applied a patch from Martin.
-	Added special care for 
+	Added special care for
 	(MagickLibVersion >= 0x500) && (MagickLibVersion <= 0x525).
 
 2001-01-10  Masatake YAMATO  <yamato@redhat.com>
@@ -3080,14 +3080,14 @@ o2001-09-18  Martin Weber  <martweb@gmx.net>
 
 2000-12-02  Masatake YAMATO  <yamato@redhat.com>
 
-	Following two changes are suggested 
+	Following two changes are suggested
 	by Brian V. Smith <bvsmith@epb1.lbl.gov>.
-	
+
 	* input-magick.c (magick_load_image): Invoke
 	GetExceptionInfo if MagickLibVersion > 0x500.
-	
+
 	* input-tga.c: Include unistd.h.
-	
+
 2000-12-01  Masatake YAMATO  <yamato@redhat.com>
 
 	* Merge branch TOWARD_RELEASE_0_26->RELEASE_0_26.
@@ -3104,11 +3104,11 @@ o2001-09-18  Martin Weber  <martweb@gmx.net>
 
 	* main.c (read_command_line): Use at_color_new.
 
-	* autotrace.[ch] (at_fitting_opts_copy): 
+	* autotrace.[ch] (at_fitting_opts_copy):
 	(at_color_new):
 	(at_color_free):
 	(at_color_copy): New functions.
-		
+
 2000-11-20  Masatake YAMATO  <yamato@redhat.com>
 
 	* HACKING: Write about autofig.
@@ -3124,13 +3124,13 @@ o2001-09-18  Martin Weber  <martweb@gmx.net>
 
 	* autotrace.c (at_home_site): New function.
 
-	* Makefile.am (autotraceinclude_HEADERS): Only 
+	* Makefile.am (autotraceinclude_HEADERS): Only
 	types.h and autotrace.h are installed.
 
 2000-11-18  Masatake YAMATO  <yamato@redhat.com>
 
-	* Makefile.am (autotraceinclude_HEADERS): 
-	Added image-header.h. 
+	* Makefile.am (autotraceinclude_HEADERS):
+	Added image-header.h.
 	(noinst_HEADERS): Added xstd.h, epsilon-equal.h,
 	logreport.h, usefull.h, message.h.
 	(libautotrace_a_SOURCES): Added quantize.h and
@@ -3146,19 +3146,19 @@ o2001-09-18  Martin Weber  <martweb@gmx.net>
 
 2000-11-17  Masatake YAMATO  <yamato@redhat.com>
 
-	Make codes C++-clean. Suggested by 
+	Make codes C++-clean. Suggested by
 	Glunz Wolfgang <Wolfgang.Glunz@icn.siemens.de>
-	and 
+	and
 	Reini Urban <rurban@sbox.tu-graz.ac.at>.
-	
-	* autotrace.h: Added an extern "C". 
+
+	* autotrace.h: Added an extern "C".
 
 	* fit.c (remove_adjacent_corners): Rename new to
 	new_list.
 
-	* getopt.h: Added an extern "C". 
+	* getopt.h: Added an extern "C".
 
-	* thin-image.c (delete_map): Renamed from `delete'. 
+	* thin-image.c (delete_map): Renamed from `delete'.
 	(thin_image): Add a cast to return value of malloc.
 	(thin): Likewise.
 	(thin): Use delete_map.
@@ -3185,7 +3185,7 @@ o2001-09-18  Martin Weber  <martweb@gmx.net>
 	* input.c (input_format_entry): Added descr field.
 	(input_list): New function.
 	(input_list_formats): Move to main.
-	
+
 	* fit.h (fitting_opts_type): Added new field `thin'.
 
 	* fit.c (new_fitting_opts): Initialize thin.
@@ -3195,26 +3195,26 @@ o2001-09-18  Martin Weber  <martweb@gmx.net>
 	* Makefile.am (autotrace_SOURCES): Added autotrace.[ch].
 
 	* fit.c: Apply a patch from martin.
-	"I fixed a bug in fit.c that sometimes causes an endless 
+	"I fixed a bug in fit.c that sometimes causes an endless
 	loop in AutoTrace."
 
 	* main.c: Don't include main.h.
 	Include image-header.h.
 
 	* Makefile.am (autotrace_SOURCES): Remove main.h.
-	
+
 	* main.c(input_reader): Renamed from load_image.
 	Use type input_read.
 	(input_extension): Removed unused variable
-	(set_input_format): 
+	(set_input_format):
 	(set_input_format_by_suffix): Removed.
 	Use input_get_handler* instead.
 	(main): Check `input_reader' is set or not before
-	set. 
+	set.
 	Set output format and open output before oput input.
 	Close output.
 	Call free_bitmap instead of calling free directly.
-	(image_header):	 Make the scope of `image_header' to 
+	(image_header):	 Make the scope of `image_header' to
 	main local from global.
 
 	* THANKS: New file.
@@ -3256,28 +3256,28 @@ o2001-09-18  Martin Weber  <martweb@gmx.net>
 	...
 2000-10-11  Enrico Persiani <e.persiani@bo.nettuno.it>
 
-	* output-emf.c: 
+	* output-emf.c:
 
 	1. Improved output efficiency by grouping shapes of the same color
-	2. Corrected an ERROR on filling shapes with holes 
+	2. Corrected an ERROR on filling shapes with holes
 	3. If the user tries to output EMF on stdout, an error message is
 	sent to stderr
-	
+
 2000-10-11  MenTaLguY <mental@rydia.net>
 
 	(This log entry is written by Masatake YAMATO).
-	
+
 	* Makefile.am (EXTRA_DIST): Added input-png.*.
-	(input_png_src): Likewise. 
+	(input_png_src): Likewise.
 
 	* configure.in: Added png check code.
 	Masatake YAMATO also added STAGE1 check.
 
-	* input-png.[hc]: New files.	
+	* input-png.[hc]: New files.
 
 2000-10-11  Masatake YAMATO  <yamato@redhat.com>
 
- 	* main.c: Include input.h only.
+	* main.c: Include input.h only.
 	(input_extension): Comment out unused variable.
 	(set_*_input_format): Removed. Use input_get_handler* instead.
 	(INPUT_SUFFIX_LIST): Move to input.h.
@@ -3291,24 +3291,24 @@ o2001-09-18  Martin Weber  <martweb@gmx.net>
 	* output.h (OUTPUT_SUFFIX_LIST): Move definition from
 	main.c.
 
-	* version.c(version_string): Append VERSION defined 
+	* version.c(version_string): Append VERSION defined
 	in configure.in.
 
 	* input.[hc]: New file.
 	  input.[hc] is based on a patch from "MenTaLguY"
-	  <mental@rydia.net>.	
+	  <mental@rydia.net>.
 
 2000-10-04  Masatake YAMATO  <yamato@redhat.com>
 
-	* output-emf.c: Revised by 
+	* output-emf.c: Revised by
 	Enrico Persiani <persiani at students.cs.unibo.it>.
 
-	  1. Fixed a bug that caused crashes when the output 
+	  1. Fixed a bug that caused crashes when the output
 	  was redirected to stdout
 
 	  2. Cleaned the code from unused variable definitions
 
-	  3. Removed a data-type (EMFPoint) and a function (write8) 
+	  3. Removed a data-type (EMFPoint) and a function (write8)
 	  not used by the main conversion code.
 
 2000-10-03  Masatake YAMATO  <yamato@redhat.com>
@@ -3327,10 +3327,10 @@ o2001-09-18  Martin Weber  <martweb@gmx.net>
 	(OUTPUT_SUFFIX_LIST): New constant.
 	(OUTPUT_SUFFIX_LIST): Added emf as a new output format.
 
-	* output-emf.[hc]: New files from 
+	* output-emf.[hc]: New files from
 	  Enrico Persiani <persiani at students.cs.unibo.it>.
 
-	
+
 2000-10-01  Masatake YAMATO  <yamato@redhat.com>
 
 	* xmem.h: Replaced with new one which is sent from Martin.
@@ -3358,7 +3358,7 @@ o2001-09-18  Martin Weber  <martweb@gmx.net>
 	from Martin.
 
 	* input-tga.[hc]: New file from Martin.
- 	(ReadImage): Initialize pels with 0 instead of NULL.
+	(ReadImage): Initialize pels with 0 instead of NULL.
 	Initialize image.bitmap after local variable declarations.
 
 2000-09-26  Masatake YAMATO  <yamato@redhat.com>
@@ -3373,21 +3373,21 @@ o2001-09-18  Martin Weber  <martweb@gmx.net>
 	  Date: 22 Sep 2000 20:06:17 +0200
 
 
-	* main.c: Applied a patch from <Johannes.Schindelin@gmx.de> 
+	* main.c: Applied a patch from <Johannes.Schindelin@gmx.de>
 	for Magick input support. See blocks surrounded by HAVE_MAGICK.
 	(SUFFIX_LIST): New macro definition.
 
- 	* input-magick.[ch]: Magick input plug donated by 
+	* input-magick.[ch]: Magick input plug donated by
 	<Johannes.Schindelin@gmx.de>.
-	
+
 	* configure.in(MAGICK_CONFIG): Check Magick-config.
 
 	* Makefile.am(HAVE_MAGICK): New condition.
 
-	* output-eps.c: Applied a patch from 
+	* output-eps.c: Applied a patch from
 	Bernhard Herzog <herzog@online.de>.
-		
-          Message-ID: <m3og1g7brh.fsf@greebo.nodomain.de>
+
+	  Message-ID: <m3og1g7brh.fsf@greebo.nodomain.de>
 	  Subject: Re: [AutoTrace] autotrace 0.23
 	  From: Bernhard Herzog <herzog@online.de>
 	  To: autotrace@egroups.com
@@ -3401,11 +3401,11 @@ o2001-09-18  Martin Weber  <martweb@gmx.net>
 	* curve.c (log_curve): Likewise.
 	(log_entire_curve): Likewise.
 
- 	* xmem.h (XREALLOC): Likewise.
-		
+	* xmem.h (XREALLOC): Likewise.
+
 	* .cvsignore: Added .deps, autotrace, config.cache, config.log,
 	config.status and Makefile.
-	
+
 
 	* Makefile.am (AUTOMAKE_OPTIONS): Added AUTOMAKE_OPTIONS.
 
