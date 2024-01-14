@@ -1,0 +1,49 @@
+# SPDX-FileCopyrightText: © 2024 Peter Lemenkov
+#
+# SPDX-License-Identifier: CC0-1.0
+#
+name: Testing on Windows
+
+on:
+  push:
+    branches: [master]
+  pull_request:
+    branches:
+      - '*'
+
+jobs:
+  test_windows:
+    runs-on: windows-latest
+    name: Build and test on Windows (MSYS2/MinGW64)
+
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Setup MSYS2
+        uses: msys2/setup-msys2@v2
+        with:
+          msystem: MINGW64
+          update: true
+          install: >-
+            base-devel
+            git
+            intltool
+            mingw-w64-x86_64-autotools
+            mingw-w64-x86_64-gettext-tools
+            mingw-w64-x86_64-glib2
+            mingw-w64-x86_64-imagemagick
+            mingw-w64-x86_64-libpng
+            mingw-w64-x86_64-pkgconf
+            mingw-w64-x86_64-toolchain
+            procps
+
+      - name: Build AutoTrace
+        shell: msys2 {0}
+        run: |
+          ./autogen.sh
+          ./configure --enable-magick-readers --without-pstoedit
+          make
+
+      - name: Run tests
+        shell: msys2 {0}
+        run: make check
