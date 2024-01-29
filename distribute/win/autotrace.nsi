@@ -20,7 +20,7 @@ ShowInstDetails show
 Icon "autotrace.ico"
 
 ; The file to write
-OutFile "autotrace-${VERSION}-setup.exe"
+OutFile "autotrace-${VERSION}-${FLAVOUR}-setup.exe"
 
 ; The default installation directory
 ;InstallDir $EXEDIR
@@ -48,11 +48,19 @@ Section "" ;No components page, name is not important
 
   ; Put file there
   File /oname=autotrace.exe "../../autotrace.exe"
-  File /oname=libffi-6.dll   "3rdparty/libffi-6.dll"
+  File /oname=iconv.dll "3rdparty/iconv.dll"
+  File /oname=libffi-8.dll "3rdparty/libffi-8.dll"
+!If ${FLAVOUR} == "win32"
+  File /oname=libgcc_s_dw2-1.dll "3rdparty/libgcc_s_dw2-1.dll"
+!EndIf
+  File /oname=libglib-2.0-0.dll "3rdparty/libglib-2.0-0.dll"
+  File /oname=libgobject-2.0-0.dll "3rdparty/libgobject-2.0-0.dll"
   File /oname=libintl-8.dll  "3rdparty/libintl-8.dll"
-  File /oname=libiconv-2.dll "3rdparty/libiconv-2.dll"
+  File /oname=libpcre2-8-0.dll "3rdparty/libpcre2-8-0.dll"
   File /oname=libpng16-16.dll "3rdparty/libpng16-16.dll"
-  File /oname=libglib-2.0-0.dll    "glib-2/bin/libglib-2.0-0.dll"
-  File /oname=libgobject-2.0-0.dll "glib-2/bin/libgobject-2.0-0.dll"
+!If ${FLAVOUR} == "win32"
+  File /oname=libwinpthread-1.dll "3rdparty/libwinpthread-1.dll"
+!EndIf
+  File /oname=zlib1.dll "3rdparty/zlib1.dll"
 
 SectionEnd ; end the section
