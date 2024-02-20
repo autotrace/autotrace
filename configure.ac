@@ -85,7 +85,8 @@ else
   if test "x${with_magick}" = xGraphicsMagick; then
     PKG_CHECK_MODULES([GRAPHICSMAGICK],
       [GraphicsMagick >= 1.3.40],
-      [HAVE_MAGICK=yes
+      [REQUIRES_PRIVATE="${REQUIRES_PRIVATE}GraphicsMagick >= 1.3.40 "
+       HAVE_MAGICK=yes
        HAVE_GRAPHICSMAGICK=yes
        MAGICK_LIBRARY=GraphicsMagick
        AC_DEFINE(HAVE_GRAPHICSMAGICK, 1, [GraphicsMagick library is available.])
@@ -97,13 +98,15 @@ else
   if test "x${with_magick}" = xImageMagick; then
       PKG_CHECK_MODULES([IMAGEMAGICK7],
           [ImageMagick >= 7.0.1],
-	 [HAVE_IMAGEMAGICK7=yes
+	 [REQUIRES_PRIVATE="${REQUIRES_PRIVATE}ImageMagick >= 7.0.1 "
+          HAVE_IMAGEMAGICK7=yes
 	  AC_DEFINE(HAVE_IMAGEMAGICK7, 1, [ImageMagick version 7 or higher is available.])
 	 ],[]
 	)
       PKG_CHECK_MODULES([IMAGEMAGICK],
          [ImageMagick >= 5.2.1],
-	 [HAVE_MAGICK=yes
+	 [REQUIRES_PRIVATE="${REQUIRES_PRIVATE}ImageMagick >= 5.2.1 "
+          HAVE_MAGICK=yes
 	  HAVE_IMAGEMAGICK=yes
 	  MAGICK_LIBRARY=ImageMagick
 	  AC_DEFINE(HAVE_IMAGEMAGICK, 1, [ImageMagick library is available.])
@@ -140,6 +143,7 @@ HAVE_LIBPNG=no
 if test "x${with_png}" = xyes; then
 	PKG_CHECK_MODULES([LIBPNG],[libpng],
 		  [
+                   REQUIRES_PRIVATE="${REQUIRES_PRIVATE}libpng "
 		   HAVE_LIBPNG=yes
 		   AC_DEFINE(HAVE_LIBPNG,1,[PNG library is available or not])
 		   ],
@@ -165,6 +169,7 @@ if test "${swf_header_found}" = yes ; then
 	PKG_CHECK_MODULES([LIBSWF],
 			  [libming],
 			  [
+                           REQUIRES_PRIVATE="${REQUIRES_PRIVATE}libming "
 			   HAVE_LIBSWF=yes
 			   AC_DEFINE(HAVE_LIBSWF,1,[SWF library is available or not])
 			   ],
@@ -187,6 +192,7 @@ if test "x${with_pstoedit}" = xyes; then
 	PKG_CHECK_MODULES([LIBPSTOEDIT],
 			  [pstoedit >= 3.32.0],
 			  [
+                           REQUIRES_PRIVATE="${REQUIRES_PRIVATE}pstoedit >= 3.32.0 "
 			   HAVE_LIBPSTOEDIT=yes
 			   AC_DEFINE(HAVE_LIBPSTOEDIT,1,[pstoedit library is available or not])
 			   ],
@@ -210,6 +216,7 @@ fi
 
 dnl po/Makefile.in FIXME FIXME FIXME
 AC_CONFIG_FILES([po/Makefile.in Makefile autotrace.pc])
+AC_SUBST([REQUIRES_PRIVATE])
 AC_OUTPUT
 
 echo "
