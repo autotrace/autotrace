@@ -71,6 +71,22 @@ jobs:
             make
             make check
 
+  build_with_pstoedit_4_00:
+    runs-on: ubuntu-latest
+    container: fedora:39
+    steps:
+      # Checks-out your repository under $GITHUB_WORKSPACE, so your job can access it
+      - uses: actions/checkout@v4
+      # Runs a single command using the runners shell
+      - name: build and run tests package against pstoedit 4.00
+        run: |
+            sudo dnf update -y
+            sudo dnf install -y ImageMagick-devel autoconf automake gcc gcc-c++ gettext-devel glib2-devel intltool libpng-devel libstdc++-devel libtiff-devel libtool make pkgconf-pkg-config procps-ng pstoedit-devel which
+            ./autogen.sh
+            ./configure --enable-magick-readers
+            make
+            make check
+
   build_with_latest_graphicsmagick:
     runs-on: ubuntu-latest
     steps:
