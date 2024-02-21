@@ -14,7 +14,7 @@ env:
 
 # A workflow run is made up of one or more jobs that can run sequentially or in parallel
 jobs:
-  build_all:
+  build_with_graphicsmagick:
     runs-on: macOS-latest
     steps:
       # Checks-out your repository under $GITHUB_WORKSPACE, so your job can access it
@@ -23,9 +23,10 @@ jobs:
       - name: build and run tests packages with all featured readers
         run: |
             brew update
+            # Required for intltool and you cannot just brew install perl-xml-parser (formulae broken?)
             perl -MCPAN -e "install XML::Parser"
             perl -e "require XML::Parser"
-            for pkg in graphicsmagick pstoedit libpng exiv2 libtiff libjpeg libxml2 bzip2 freetype gettext intltool glib libtool autoconf automake pkg-config; do brew install $pkg || brew upgrade $pkg; done
+            brew install graphicsmagick pstoedit libpng gettext intltool glib libtool autoconf automake pkg-config
             ./autogen.sh
             ./configure
             make
