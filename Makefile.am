@@ -127,7 +127,18 @@ autotraceinclude_HEADERS=\
 		src/exception.h \
 		src/color.h
 
-libautotrace_la_LDFLAGS = -version-info $(LT_CURRENT):$(LT_REVISION):$(LT_AGE)
+libautotrace_la_LDFLAGS = \
+	-version-info 				\
+	$(LT_CURRENT):$(LT_REVISION):$(LT_AGE) 	\
+	$(GRAPHICSMAGICK_LIBS)			\
+	$(IMAGEMAGICK_LIBS)			\
+	$(LIBPNG_LIBS)				\
+	$(LIBSWF_LIBS)				\
+	$(LIBPSTOEDIT_LIBS)			\
+	$(GLIB2_LIBS)				\
+	$(POPT_LIBS)				\
+	$(INTLLIBS)				\
+	-lm
 
 #
 # noinst_HEADERS: headers shared between lib and bin.
@@ -143,17 +154,8 @@ autotrace_SOURCES=\
 
 AM_CPPFLAGS = $(GRAPHICSMAGICK_CFLAGS) $(IMAGEMAGICK_CFLAGS) $(LIBPSTOEDIT_CFLAGS) $(LIBSWF_CFLAGS) $(GLIB2_CFLAGS) -DLOCALEDIR=\""$(datadir)/locale"\"
 
-autotrace_LDADD =				\
-		libautotrace.la			\
-		$(GRAPHICSMAGICK_LIBS)		\
-		$(IMAGEMAGICK_LIBS)		\
-		$(LIBPNG_LIBS)		\
-		$(LIBSWF_LIBS)		\
-		$(LIBPSTOEDIT_LIBS)		\
-		$(GLIB2_LIBS)			\
-		$(POPT_LIBS)			\
-		$(INTLLIBS)			\
-		-lm
+autotrace_LDFLAGS = $(GLIB2_LIBS)
+autotrace_LDADD = libautotrace.la
 
 pkgconfigdir = $(libdir)/pkgconfig
 pkgconfig_DATA= autotrace.pc
