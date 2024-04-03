@@ -1,55 +1,57 @@
 [![Coverity passed](https://scan.coverity.com/projects/18456/badge.svg)](https://scan.coverity.com/projects/autotrace-autotrace)
 [![Build status on Linux](https://github.com/autotrace/autotrace/actions/workflows/linux_test.yml/badge.svg)](https://github.com/autotrace/autotrace/actions?query=workflows%3Alinux_test)
-[![Build status on Mac OS X](https://github.com/autotrace/autotrace/actions/workflows/macosx_test.yml/badge.svg)](https://github.com/autotrace/autotrace/actions?query=workflows%3Amacosx_test)
+[![Build status on macOS](https://github.com/autotrace/autotrace/actions/workflows/macosx_test.yml/badge.svg)](https://github.com/autotrace/autotrace/actions?query=workflows%3Amacosx_test)
 
 
 AutoTrace
 =========
 
-AutoTrace is a utility for converting bitmap into vector graphics.
+AutoTrace is a utility for converting bitmaps into vector graphics.
 
 Features
 --------
 - tracing outline and midline
 - color reduction and despeckling
-- supports a lot of input and output format
+- supports a lot of input and output formats
 
 Licenses
 --------
-The program can be used under the GNU General Public License.
+The program can be used under the GNU General Public License (GPL), either
+version 2 of the License, or (at your option) any later version.
 
 The input and output functions (`input-*.[ch]` and `output-*.[ch]`)
-can also be used under the GNU Lesser General Public License(LGPL).
+can also be used under the GNU Lesser General Public License (LGPL),
+either version 2.1 of the License, or (at your option) any later version.
 
 Some of code was partially derived from limn of GNU fontutils.
-However, almost all code is rewritten.
+However, almost all code has been rewritten.
 
 Platforms
 --------- 
-The program was tested using GNU/Linux, HP UX, Solaris, Windows98,
-Windows NT, Windows 2000, Mac OS X and OS/2 4.0. It compiles with GCC,
-Borland C++ Builder, Visual C++ and many other compilers.
+The program was tested using GNU/Linux, HP-UX, Solaris, Windows 98,
+Windows NT, Windows 2000, macOS, and OS/2 4.0. It compiles with GCC,
+Borland C++ Builder, Visual C++, and many other compilers.
 
 If you use Visual C++ 6.0 for compilation be sure to have at
-least SP 5 otherwise you could get Memory access violations due to
+least SP 5 otherwise you could get memory access violations due to
 a bug in earlier versions.
 
 Requirements
 ------------
 AutoTrace can be compiled standalone, then it can import pnm, pbm,
-pgm, ppm, bmp and tga files. If you have installed
+pgm, ppm, bmp, and tga files. If you have installed
 [libpng](http://www.libpng.org/pub/png/libpng.html) you can also read png
-files and with ImageMagick a very broad range of input formats is
-available.
+files and with ImageMagick or GraphicsMagick a very broad range of input
+formats is available.
 
 You will need at least libpng 1.0.6 and ImageMagick 5.2.1.  Most
-output formats like dxf, emf, eps, ai, er, fig, svg, epd, dr2d and sk
+output formats like dxf, emf, eps, ai, er, fig, svg, epd, dr2d, and sk
 are directly integrated in AutoTrace, but if you need swf export you
-need to install [Ming](http://www.opaque.net/ming/). Also you can
-export to the p2e format. This format can be converted by
-[pstoedit](www.pstoedit.net) to a large number of other formats. If you have
-installed the latest pstoedit (3.32 or newer), autotrace uses pstoedit
-directly. However, direct pstoedit support is not stable enough. 
+need to install [Ming](https://github.com/libming/libming).  Also you can
+export to the p2e format.  This format can be converted by
+[pstoedit](http://www.pstoedit.net) to a large number of other formats.
+If you have installed the latest pstoedit (3.32 or newer), AutoTrace uses
+pstoedit directly.  However, direct pstoedit support is not stable enough.
 See INSTALL file for more detail.
 
 Installation
@@ -58,9 +60,9 @@ See the file `INSTALL`.
 
 Usage
 -----
-Program comes from two parts: command and library.
+AutoTrace comes in two parts: a command-line program and a library.
 
-Here the options you can use in the command:
+Here are the options you can use in the command-line program:
 
     Usage: autotrace [options] <input_file_name>
     Options:<input_file_name> must be a supported image file.
@@ -151,10 +153,10 @@ Here the options you can use in the command:
     You can get the source code of autotrace from 
     https://github.com/autotrace/autotrace
 
-The library is named libautotrace. About the usage of the library
-see `autotrace.h`.
+The library is named libautotrace. To learn about the usage of the
+library see `autotrace.h`.
 Here is a sample program that uses libautotrace.
-To compile, invoke following commands (on posix):
+To compile, invoke the following commands (on POSIX):
 
     gcc sample.c `pkg-config --libs autotrace` `pkg-config --cflags autotrace`
 
@@ -178,7 +180,7 @@ To compile, invoke following commands (on posix):
 
 GUI Frontend
 ------------
-Frontline, a Gtk+/Gnome based GUI frontend, was under development until 2002.
+Frontline, a Gtk+/Gnome-based GUI frontend, was under development until 2002.
 See https://github.com/autotrace/frontline
 
 
