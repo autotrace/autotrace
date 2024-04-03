@@ -1,4 +1,4 @@
-# configure.in for frontline
+# configure.ac for autotrace
 #
 # Author: Masatake YAMATO (yamato@redhat.com)
 #
@@ -69,7 +69,7 @@ dnl GraphicsMagick
 dnl
 AC_ARG_WITH(magick,
   [AS_HELP_STRING([--with-magick=LIB],
-   [select library to use for images (options: GraphicsMagick(default) or ImageMagick (<= 5.5.2))])],
+   [select library to use for images (options: GraphicsMagick (default) or ImageMagick (<= 5.5.2))])],
    ,[with_magick=GraphicsMagick])
 
 HAVE_MAGICK=yes
@@ -108,7 +108,7 @@ else
 	  MAGICK_LIBRARY=ImageMagick
 	  AC_DEFINE(HAVE_IMAGEMAGICK, 1, [ImageMagick library is available.])
 	 ],
-	AC_MSG_ERROR([Nor GraphicsMagick neither ImageMagick are available. Try recompiling with --without-magick.])
+	AC_MSG_ERROR([Neither GraphicsMagick nor ImageMagick are available. Try recompiling with --without-magick.])
 	)
   fi
   if test "x${HAVE_MAGICK}" = xyes; then
@@ -133,7 +133,7 @@ dnl LIBPNG
 dnl
 
 AC_ARG_WITH(png,
-[  --with-png  compile with png(default)
+[  --with-png  compile with png (default)
   --without-png  compile without png],,with_png=yes)
 
 HAVE_LIBPNG=no
@@ -141,11 +141,11 @@ if test "x${with_png}" = xyes; then
 	PKG_CHECK_MODULES([LIBPNG],[libpng],
 		  [
 		   HAVE_LIBPNG=yes
-		   AC_DEFINE(HAVE_LIBPNG,1,[PNG library is available or not])
+		   AC_DEFINE(HAVE_LIBPNG,1,[Define to 1 if the PNG library is available])
 		   ],
 		   [
 		    AC_MSG_WARN([*** Cannot find libpng.            ***])
-		    AC_MSG_WARN([*** Png input handler is disabled. ***])
+		    AC_MSG_WARN([*** PNG input handler is disabled. ***])
 		    ]
 		  )
 else
@@ -166,7 +166,7 @@ if test "${swf_header_found}" = yes ; then
 			  [libming],
 			  [
 			   HAVE_LIBSWF=yes
-			   AC_DEFINE(HAVE_LIBSWF,1,[SWF library is available or not])
+			   AC_DEFINE(HAVE_LIBSWF,1,[Define to 1 if the SWF library is available])
 			   ],
 			  )
 else
@@ -181,14 +181,14 @@ dnl
 
 HAVE_LIBPSTOEDIT=no
 AC_ARG_WITH(pstoedit,
-[  --with-pstoedit link with pstoedit library(default)
-  --without-pstoedit link without pstoedit library],,with_pstoedit=yes)
+[  --with-pstoedit link with pstoedit library (default)
+  --without-pstoedit do not link with pstoedit library],,with_pstoedit=yes)
 if test "x${with_pstoedit}" = xyes; then
 	PKG_CHECK_MODULES([LIBPSTOEDIT],
 			  [pstoedit >= 3.32.0],
 			  [
 			   HAVE_LIBPSTOEDIT=yes
-			   AC_DEFINE(HAVE_LIBPSTOEDIT,1,[pstoedit library is available or not])
+			   AC_DEFINE(HAVE_LIBPSTOEDIT,1,[Define to 1 if the pstoedit library is available])
 			   ],
 			  )
 else
