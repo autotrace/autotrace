@@ -18,6 +18,7 @@ brew install graphicsmagick pstoedit libpng
 git clone https://github.com/autotrace/autotrace.git
 cd autotrace
 ./autogen.sh
+./configure
 make
 make install
 ```
