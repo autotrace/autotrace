@@ -20,6 +20,6 @@ cd autotrace
 ./autogen.sh
 ./configure
 make -j$(sysctl -n hw.activecpu)
-make install
+sudo make install
 ```
 
