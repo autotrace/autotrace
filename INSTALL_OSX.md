@@ -1,8 +1,8 @@
 At https://github.com/autotrace/autotrace/releases we provide binary packages for some systems. Please check them out first. If that works, you can skip all the rest of the build instructions here.
 
-Build on OSX
-============
-On OSX only GraphicsMagick is supported.
+Build on macOS
+==============
+On macOS only GraphicsMagick is supported.
 
 for a minimal make, you can run build without GraphicsMagick or pstoedit
 support.  Which is probably a good idea anyway, as long as we have known
