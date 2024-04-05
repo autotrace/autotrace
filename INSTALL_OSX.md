@@ -19,7 +19,7 @@ git clone https://github.com/autotrace/autotrace.git
 cd autotrace
 ./autogen.sh
 ./configure
-make
+make -j$(sysctl -n hw.activecpu)
 make install
 ```
 
