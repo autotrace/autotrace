@@ -7,7 +7,7 @@
 cd `dirname "$0"`
 
 # Cleanup test remnants.
-find . -name '*.log' | xargs --no-run-if-empty -d\\n rm -v
+find . -name '*.log' -print -delete
 echo
 
 # Export custom location Autotrace binary if supplied.
