@@ -27,7 +27,7 @@ elif [ "$(uname)" = Darwin ]; then
   (cd mac && sh ./dist.sh $PKG_NAME $PKG_VER)
 else
   echo "................................................................"
-  echo "ERROR: unknown system, neither Ubunut nor MacOS."
+  echo "ERROR: unknown system, neither Ubuntu nor macOS."
   exit 1
 fi
 
