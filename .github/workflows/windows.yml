@@ -6,9 +6,8 @@ name: Building for Windows
 on:
   # Triggers the workflow on push or pull request events but only for the main branch
   push:
-    tags:
-      - '*'           # Push events to every tag not containing /
-
+    branches:
+         - '*'
 env:
   DEB_DH_SHLIBDEPS_ARGS_ALL: "--dpkg-shlibdeps-params=--ignore-missing-info"
 
@@ -28,42 +27,21 @@ jobs:
             mkdir -p distribute/win/3rdparty
 
       - name: Regenerate common ./configure script
-        run: ./autogen.sh
-
-      - name: Cross-compile and make installer for Win32
-        run: |
-            mingw32-configure --without-magick --without-pstoedit
-            make
-
-            # Install dependencies
-            for dll in iconv.dll libffi-8.dll libgcc_s_dw2-1.dll libglib-2.0-0.dll libgobject-2.0-0.dll libintl-8.dll libpcre2-8-0.dll libpng16-16.dll libwinpthread-1.dll zlib1.dll
-            do
-              cp -afv /usr/i686-w64-mingw32/sys-root/mingw/bin/$dll distribute/win/3rdparty/$dll
-            done
-
-            makensis -DVERSION=${{ github.ref_name }}-$(date +%Y%m%d) -DFLAVOUR=win32 distribute/win/autotrace.nsi
-            ls -la distribute/win
+        run: sh autogen.sh
 
       - name: Cross-compile and make installer for Win64
         run: |
             mingw64-configure --without-magick --without-pstoedit
             make
+            makensis -DVERSION=$(date +%Y%m%d) -DFLAVOUR=win64 distribute/win/autotrace.nsi
 
-            # Install dependencies
-            for dll in iconv.dll libffi-8.dll libglib-2.0-0.dll libgobject-2.0-0.dll libintl-8.dll libpcre2-8-0.dll libpng16-16.dll zlib1.dll
-            do
-              cp -afv /usr/x86_64-w64-mingw32/sys-root/mingw/bin/$dll distribute/win/3rdparty/$dll
-            done
+      - name: Cross-compile and make installer for Win32
+        run: |
+            mingw32-configure --without-magick --without-pstoedit
+            make -B
+            makensis -DVERSION=$(date +%Y%m%d) -DFLAVOUR=win32 distribute/win/autotrace.nsi
 
-            makensis -DVERSION=${{ github.ref_name }}-$(date +%Y%m%d) -DFLAVOUR=win32 distribute/win/autotrace.nsi
-            ls -la distribute/win
-
-      - uses: svenstaro/upload-release-action@v2
+      - uses: actions/upload-artifact@v4.3.0
         with:
-          file_glob: true
-          file: distribute/win/autotrace-*-setup.exe
-
-#      - uses: actions/upload-artifact@v4.3.0
-#        with:
-#          name: windows-installers
-#          path: distribute/win/autotrace-*-setup.exe
+          name: win32-installer
+          path: distribute/win/autotrace-*-setup.exe
