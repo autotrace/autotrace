@@ -47,20 +47,20 @@ Section "" ;No components page, name is not important
   SetOutPath $INSTDIR
 
   ; Put file there
-  File /oname=autotrace.exe "../../autotrace.exe"
-  File /oname=iconv.dll "3rdparty/iconv.dll"
-  File /oname=libffi-8.dll "3rdparty/libffi-8.dll"
-!If ${FLAVOUR} == "win32"
-  File /oname=libgcc_s_dw2-1.dll "3rdparty/libgcc_s_dw2-1.dll"
+  File /oname=autotrace.exe "../../.libs/autotrace.exe"
+!If ${FLAVOUR} == "win64"
+  File /oname=libgobject-2.0-0.dll "/usr/local/bin/libgobject-2.0-0.dll"
+  File /oname=libglib-2.0-0.dll "/usr/local/bin/libglib-2.0-0.dll"
+  File /oname=libffi-7.dll "/usr/local/bin/libffi-7.dll"
+  File /oname=libintl-8.dll "/usr/local/bin/libintl-8.dll"
 !EndIf
-  File /oname=libglib-2.0-0.dll "3rdparty/libglib-2.0-0.dll"
-  File /oname=libgobject-2.0-0.dll "3rdparty/libgobject-2.0-0.dll"
-  File /oname=libintl-8.dll  "3rdparty/libintl-8.dll"
-  File /oname=libpcre2-8-0.dll "3rdparty/libpcre2-8-0.dll"
-  File /oname=libpng16-16.dll "3rdparty/libpng16-16.dll"
 !If ${FLAVOUR} == "win32"
-  File /oname=libwinpthread-1.dll "3rdparty/libwinpthread-1.dll"
+  File /oname=libgobject-2.0-0.dll "/usr/local/bin/libgobject-2.0-0.dll"
+  File /oname=libglib-2.0-0.dll "/usr/local/bin/libglib-2.0-0.dll"
+  File /oname=libffi-7.dll "/usr/local/bin/libffi-7.dll"
+  File /oname=libintl-8.dll "/usr/local/bin/libintl-8.dll"
+  File /oname=libgcc_s_dw2-1.dll "/usr/i686-w64-mingw32/bin/libgcc_s_dw2-1.dll"
+  File /oname=libwinpthread-1.dll "/usr/i686-w64-mingw32/bin/libwinpthread-1.dll"
 !EndIf
-  File /oname=zlib1.dll "3rdparty/zlib1.dll"
 
 SectionEnd ; end the section

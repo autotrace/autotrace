@@ -1,0 +1,429 @@
+# This is a basic workflow to help you get started with Actions
+
+name: Building for Windows
+
+# Controls when the action will run.
+on:
+  # Triggers the workflow on push or pull request events but only for the main branch
+  push:
+    branches:
+         - '*'
+
+# A workflow run is made up of one or more jobs that can run sequentially or in parallel
+jobs:
+  build_win32_64_installer:
+    runs-on: ubuntu-latest
+    container: alpine:edge
+    steps:
+      # Runs a single command using the runners shell
+      - name: Install all dependencies for Win32 and Win64
+        run: |
+            apk add autoconf automake gettext-dev git glib-dev intltool libtool make meson mingw-w64-gcc pkgconf
+
+      - uses: actions/checkout@v4
+        name: clone autotrace
+
+      - name: Build nsis TARGET_ARCH=amd64
+        run: |
+            mkdir deps
+            cd deps
+            git clone --depth 1 https://github.com/kichik/nsis.git
+            cd nsis
+            mkdir deps
+            cd deps
+            git clone --depth 1 https://github.com/madler/zlib.git
+            cd zlib
+            make -f win32/Makefile.gcc PREFIX=x86_64-w64-mingw32- BINARY_PATH=/usr/x86_64-w64-mingw32/bin INCLUDE_PATH=/usr/x86_64-w64-mingw32/include LIBRARY_PATH=/usr/x86_64-w64-mingw32/lib
+            cd ..
+            #building libiconv prevents NSISRT_Initialize failed!
+            git clone --depth 1 https://git.savannah.gnu.org/git/libiconv.git
+            cd libiconv
+            git clone --depth 1 https://git.savannah.gnu.org/git/gnulib.git
+            apk add g++ coreutils patch gperf groff
+            sh autogen.sh
+            sh configure --prefix=/usr/local
+            make
+            make install
+            
+            cd ../..
+
+            git apply --reject --whitespace=fix<<'EOF'
+            --- a/SConstruct
+            +++ b/SConstruct
+            @@ -519,6 +519,8 @@ if 'ZLIB_W32' in defenv:
+             			]
+             		)
+             	))
+            +	if defenv['ZLIB_W32_INC']:
+            +		defenv['ZLIB_W32_INC'] = os.path.abspath(defenv['ZLIB_W32_INC'])
+             	# Search for import library of zlib for mingw or VisualC
+             	for importlib in ['libzdll.a', 'libz.dll.a', 'zdll.lib']:
+             		defenv['ZLIB_W32_LIB'] = os.path.dirname(str(
+            @@ -530,6 +532,7 @@ if 'ZLIB_W32' in defenv:
+             			)
+             		))
+             		if defenv['ZLIB_W32_LIB']:
+            +			defenv['ZLIB_W32_LIB'] = os.path.abspath(defenv['ZLIB_W32_LIB'])
+             			break
+             	defenv['ZLIB_W32_DLL'] = defenv.FindFile('zlib1.dll', 
+             		[defenv['ZLIB_W32'], defenv['ZLIB_W32_LIB']])
+            EOF
+            git apply --reject --whitespace=fix<<'EOF'
+            --- a/Source/SConscript
+            +++ b/Source/SConscript
+            @@ -77,6 +77,8 @@ AddZLib(env, env['PLATFORM'], 'install-compiler')
+            
+             env.Append(CPPDEFINES = ['MAKENSIS'])
+             env.Append(CPPDEFINES = ['_WIN32_IE=0x0500'])
+            +TARGET_ARCH_enum_dict ={'x86':'TARGET_X86UNICODE', 'amd64':'TARGET_AMD64', 'arm64':'TARGET_ARM64'}
+            +env.Append(CPPDEFINES = [f'TARGET_ARCH_ENUM={TARGET_ARCH_enum_dict[env['TARGET_ARCH']]}'])
+            
+             ##### Set PCH
+            
+            --- a/Source/build.cpp
+            +++ b/Source/build.cpp
+            @@ -129,14 +129,8 @@ CEXEBuild::CEXEBuild(signed char pponly, bool warnaserror) :
+               definedlist.add(_T("NSIS_VERSION"), NSIS_VERSION);
+               definedlist.add(_T("NSIS_PACKEDVERSION"), NSIS_PACKEDVERSION);
+            
+            -  m_target_type=TARGET_X86UNICODE;
+            -#ifdef _WIN32
+            -  if (sizeof(void*) > 4) m_target_type = TARGET_AMD64; // BUGBUG: scons 'TARGET_ARCH' should specify the default
+            -#endif
+            -#ifdef _M_ARM64
+            -  m_target_type = TARGET_ARM64; // BUGBUG: scons 'TARGET_ARCH' should specify the default
+            -#endif
+            -  build_unicode=TARGET_X86ANSI != m_target_type;
+            +  m_target_type=TARGET_ARCH_ENUM;
+            +  build_unicode=true;
+               build_lockedunicodetarget=false;
+            
+               // automatically generated header file containing all defines
+            EOF
+            git apply --reject --whitespace=fix<<'EOF'
+            --- a/Contrib/System/SConscript
+            +++ b/Contrib/System/SConscript
+            @@ -51,7 +51,7 @@ elif (not msvc) and conf.TryCompile(src_ascpp, '.sx'):
+             	files += ['Source/'+filename+'CPP.sx']
+             else:
+             	print('WARNING: System.dll: unable to find assembler for '+filename+'.S')
+            -conf.Finish()
+            +env = conf.Finish()
+             
+             BuildPlugin(
+             	target,
+            --- a/Docs/src/bin/halibut/SConscript
+            +++ b/Docs/src/bin/halibut/SConscript
+            @@ -21,7 +21,7 @@ files = Split("""
+             
+             Import('env AddAvailableLibs')
+             
+            -AddAvailableLibs(env, ['rt'])
+            +env = AddAvailableLibs(env, ['rt'])
+             
+             halibut = env.Program(target, files)
+             
+            --- a/SCons/Config/gnu
+            +++ b/SCons/Config/gnu
+            @@ -113,7 +113,7 @@ stub_env.Append(LINKFLAGS = ['$MAP_FLAG'])          # generate map file
+             conf = FlagsConfigure(stub_env)
+             conf.CheckCompileFlag('-fno-tree-loop-distribute-patterns')  # GCC 10: Don't generate msvcrt!memmove calls (bug #1248)
+             conf.CheckLinkFlag('-Wl,--disable-reloc-section') # binutils 2.36, ld will include a .reloc section by default (bug #1283)
+            -conf.Finish()
+            +stub_env = conf.Finish()
+             stub_env.Append(LINKFLAGS = ['$NODEFLIBS_FLAG'])    # no standard libraries
+             
+             stub_uenv = stub_env.Clone()
+            @@ -136,7 +136,7 @@ conf = FlagsConfigure(makensis_env)
+             conf.CheckLinkFlag('$MAP_FLAG')                   # generate map file
+             if not defenv['DEBUG'] and defenv['STRIP'] and defenv['STRIP_CP']:
+             	TestStrip(conf)                                 # strip
+            -conf.Finish()
+            +makensis_env = conf.Finish()
+             
+             ### plugin environment
+             
+            @@ -177,7 +177,7 @@ cp_util_env.Append(CCFLAGS = ['-fno-strict-aliasing']) # not safe for strict ali
+             
+             conf = FlagsConfigure(cp_util_env)
+             conf.CheckLinkFlag('$MAP_FLAG')                   # generate map file
+            -conf.Finish()
+            +cp_util_env = conf.Finish()
+             
+             ### util environment
+             
+            @@ -198,14 +198,14 @@ util_env.Append(LINKFLAGS = ['$ALIGN_FLAG'])        # 512 bytes align
+             conf = FlagsConfigure(util_env)
+             if not defenv['DEBUG'] and defenv['STRIP'] and defenv['STRIP_W32']:
+             	util_env.Append(LINKFLAGS = ['-s'])                   # strip
+            -conf.Finish()
+            +util_env = conf.Finish()
+             
+             ### cross-platform util environment adjustments
+             
+             conf = FlagsConfigure(cp_util_env)
+             if not defenv['DEBUG'] and defenv['STRIP'] and defenv['STRIP_CP']:
+             	TestStrip(conf)                                 # strip
+            -conf.Finish()
+            +cp_util_env = conf.Finish()
+             
+             ### test environment
+             
+            @@ -213,7 +213,7 @@ test_env = defenv.Clone()
+             test_env['STDCALL'] = ''                                # avoid warnings
+             test_env.Append(CPPPATH = ['#$BUILD_CONFIG'])
+             conf = FlagsConfigure(test_env)
+            -conf.Finish()
+            +test_env = conf.Finish()
+             
+             ### weird GCC requirements
+             
+            @@ -312,7 +312,7 @@ if conf.CheckRequirement('memcpy', memcpy_test):
+             if conf.CheckRequirement('memset', memset_test):
+             	add_file('memset.c')
+             
+            -conf.Finish()
+            +cenv = conf.Finish()
+             
+             #
+             # Some platforms, like FreeBSD, require -pthread flag to be passed
+            @@ -321,7 +321,7 @@ conf.Finish()
+             
+             conf = FlagsConfigure(makensis_env)
+             conf.CheckLinkFlag('-pthread', codeprepend = code_failonmswin)
+            -conf.Finish()
+            +makensis_env = conf.Finish()
+             
+             #
+             # GCC doesn't define __BIG_ENDIAN__ or __LITTLE_ENDIAN__, so manually check
+            @@ -352,14 +352,14 @@ conf = defenv.Configure(custom_tests = { 'CheckBigEndian' : check_big_endian })
+             if conf.CheckBigEndian():
+             	makensis_env.Append(CPPDEFINES = ['__BIG_ENDIAN__'])
+             	test_env.Append(CPPDEFINES = ['__BIG_ENDIAN__'])
+            -conf.Finish()
+            +defenv = conf.Finish()
+             
+             if makensis_env['PLATFORM'] == 'hpux':
+             	makensis_env.Append(CPPDEFINES = ['NSIS_HPUX_ALLOW_UNALIGNED_DATA_ACCESS'])
+             	makensis_conf = makensis_env.Configure()
+             	makensis_conf.CheckLib("unalign")
+             	makensis_conf.CheckLib("hppa")
+            -	makensis_conf.Finish()
+            +	makensis_env = makensis_conf.Finish()
+             
+             ### print version info
+             stub_env.Execute('$CC --version')
+            --- a/SCons/Config/hpc++
+            +++ b/SCons/Config/hpc++
+            @@ -109,7 +109,7 @@ if makensis_env['PLATFORM'] == 'hpux':
+             	makensis_conf.CheckLib("unalign")
+             	makensis_conf.CheckLib("hppa")
+             
+            -makensis_conf.Finish()
+            +makensis_env = makensis_conf.Finish()
+             
+             ### plugin environment
+             
+            --- a/SCons/Config/ms
+            +++ b/SCons/Config/ms
+            @@ -105,7 +105,7 @@ if float(defenv['MSVS_VERSION'].replace('Exp','')) < 8.0:
+                   print("*** Couldn't find a good version of libcp.lib")
+                   Exit(2)
+             
+            -conf.Finish()
+            +confenv = conf.Finish()
+             
+             # Linking to msvcr?0.dll (/MD) might require a manifest
+             
+            @@ -122,7 +122,7 @@ if msvs_version >= 7.0:
+                     import os
+                     result = os.path.exists('%s.manifest' % conf.lastTarget)
+                 defenv['MSVCRT_NEEDSMANIFEST'] = result
+            -conf.Finish()
+            +confenv = conf.Finish()
+             
+             # SCons 3.0.5 started including /nologo for rc.exe but it's not always supported
+             
+            @@ -130,7 +130,7 @@ confenv = defenv.Clone()
+             conf = confenv.Configure()
+             if not conf.TryAction('$RCCOM', '', '.rc')[0]:
+                 defenv['RCFLAGS'] = ''
+            -conf.Finish()
+            +confenv = conf.Finish()
+             
+             ### unicode
+             tdefenv = defenv.Clone()
+            @@ -292,7 +292,7 @@ if not conf.TryLink(int64test, '.c'):
+             	stub_env.Append(CPPDEFINES = ['_NSIS_NO_INT64_SHR'])
+             	stub_uenv.Append(CPPDEFINES = ['_NSIS_NO_INT64_SHR'])
+             
+            -conf.Finish()
+            +stub_env = conf.Finish()
+             
+             #
+             # MSVC 2005 requires the memset CRT function to be present
+            @@ -312,7 +312,7 @@ if conf.CheckRequirement('memcpy', memcpy_test):
+             	stub_env.Append(CPPDEFINES = ['_NSIS_NODEFLIB_CRTMEMCPY'])
+             	stub_uenv.Append(CPPDEFINES = ['_NSIS_NODEFLIB_CRTMEMCPY'])
+             
+            -conf.Finish()
+            +defenv = conf.Finish()
+             
+             ### return
+             
+            --- a/SCons/utils.py
+            +++ b/SCons/utils.py
+            @@ -36,7 +36,7 @@ def AddAvailableLibs(env, libs):
+             	for lib in libs:
+             		conf.CheckLib(lib)
+             
+            -	conf.Finish()
+            +	return conf.Finish()
+             
+             def AddZLib(env, platform, alias='install-utils'):
+             	"""
+            @@ -67,6 +67,7 @@ def AddZLib(env, platform, alias='install-utils'):
+             			Exit(1)
+             
+             		env = conf.Finish()
+            +	return env
+             
+             
+             def GetAvailableLibs(env, libs):
+            --- a/SConstruct
+            +++ b/SConstruct
+            @@ -788,7 +788,7 @@ def BuildUtilEnv(defines = None, flags = None, libs = None,
+             
+             	if libs and 'z' in libs:
+             		libs.remove('z')
+            -		AddZLib(env, platform)
+            +		env = AddZLib(env, platform)
+             
+             	if platform == 'win32':
+             		if cli:
+            --- a/Source/SConscript
+            +++ b/Source/SConscript
+            @@ -70,8 +70,8 @@ if env['PLATFORM'] == 'win32':
+             	# on freebsd, libversion.a exists and gives trouble if linked
+             	libs += ['version']
+             
+            -AddAvailableLibs(env, libs)
+            -AddZLib(env, env['PLATFORM'], 'install-compiler')
+            +env = AddAvailableLibs(env, libs)
+            +env = AddZLib(env, env['PLATFORM'], 'install-compiler')
+             
+             ##### Defines
+             
+            --- a/Source/Tests/SConscript
+            +++ b/Source/Tests/SConscript
+            @@ -95,8 +95,8 @@ if env['PLATFORM'] == 'win32':
+             	# on freebsd, libversion.a exists and gives trouble if linked
+             	extralibs += ['version']
+             
+            -AddAvailableLibs(env, extralibs)
+            -AddZLib(env, env['PLATFORM'])
+            +env = AddAvailableLibs(env, extralibs)
+            +env = AddZLib(env, env['PLATFORM'])
+             
+             # compile using msvcrt (that's how cppunit.lib is built)
+             if 'msvc' in env['TOOLS'] or 'mstoolkit' in env['TOOLS']:
+            @@ -111,7 +111,7 @@ env.Append(CPPDEFINES = ['COMPRESS_MF_BT'])
+             # test for CppUnit
+             conf = env.Configure()
+             cppunit = conf.CheckLibWithHeader(cppunitlibs, 'cppunit/extensions/HelperMacros.h', 'C++')
+            -conf.Finish()
+            +env = conf.Finish()
+             
+             if cppunit:
+             
+            EOF
+
+            apk add scons
+            scons TARGET_ARCH=amd64 ZLIB_W32=deps/zlib install
+
+      - name: Build glib using x86_64-w64-mingw32
+        run: |
+            cd deps
+            git clone --depth 1 --recurse-submodules https://gitlab.gnome.org/GNOME/glib.git
+            cd glib
+
+            #https://docs.gtk.org/glib/cross-compiling.html
+            cat>x86_64-w64-mingw32.txt<<EOF
+            [binaries]
+            c = 'x86_64-w64-mingw32-gcc'
+            cpp = 'x86_64-w64-mingw32-g++'
+            ar = 'x86_64-w64-mingw32-ar'
+            ld = 'x86_64-w64-mingw32-ld'
+            objcopy = 'x86_64-w64-mingw32-objcopy'
+            strip = 'x86_64-w64-mingw32-strip'
+            pkgconfig = 'x86_64-w64-mingw32-pkg-config'
+            windres = 'x86_64-w64-mingw32-windres'
+
+            [host_machine]
+            system = 'windows'
+            cpu_family = 'x86_64'
+            cpu = 'x86_64'
+            endian = 'little'
+            EOF
+
+            meson setup --cross-file x86_64-w64-mingw32.txt x86_64-w64-mingw32-build
+            meson compile -C x86_64-w64-mingw32-build
+            meson install -C x86_64-w64-mingw32-build
+
+      - name: Regenerate common ./configure script
+        run: sh autogen.sh
+
+      - name: Cross-compile and make installer for Win64
+        run: |
+            sh configure --host x86_64-w64-mingw32 --without-magick --without-pstoedit
+            make
+            makensis -DVERSION=$(date +%Y%m%d) -DFLAVOUR=win64 distribute/win/autotrace.nsi
+
+      - name: Build nsis TARGET_ARCH=x86
+        run: |
+            apk add i686-mingw-w64-gcc
+            cd deps/nsis/deps/zlib
+            make -f win32/Makefile.gcc PREFIX=i686-w64-mingw32- BINARY_PATH=/usr/i686-w64-mingw32/bin INCLUDE_PATH=/usr/i686-w64-mingw32/include LIBRARY_PATH=/usr/i686-w64-mingw32/lib -B
+            cd ../..
+            scons TARGET_ARCH=x86 ZLIB_W32=deps/zlib install
+
+      - name: Build glib using i686-w64-mingw32
+        run: |
+            cd deps/glib
+
+            cat>i686-w64-mingw32.txt<<EOF
+            [binaries]
+            c = 'i686-w64-mingw32-gcc'
+            cpp = 'i686-w64-mingw32-g++'
+            ar = 'i686-w64-mingw32-ar'
+            ld = 'i686-w64-mingw32-ld'
+            objcopy = 'i686-w64-mingw32-objcopy'
+            strip = 'i686-w64-mingw32-strip'
+            pkgconfig = 'i686-w64-mingw32-pkg-config'
+            windres = 'i686-w64-mingw32-windres'
+
+            [host_machine]
+            system = 'windows'
+            cpu_family = 'x86'
+            cpu = 'i686'
+            endian = 'little'
+            EOF
+
+            meson setup --cross-file i686-w64-mingw32.txt i686-w64-mingw32-build
+            meson compile -C i686-w64-mingw32-build
+            meson install -C i686-w64-mingw32-build
+
+      - name: Cross-compile and make installer for Win32
+        run: |
+            sh configure --host i686-w64-mingw32 --without-magick --without-pstoedit
+            make -B
+            makensis -DVERSION=$(date +%Y%m%d) -DFLAVOUR=win32 distribute/win/autotrace.nsi
+
+      - name: install nodejs
+        run: |
+            apk add nodejs
+
+      - uses: actions/upload-artifact@v4.3.0
+        with:
+          name: win32-installer
+          path: distribute/win/autotrace-*-setup.exe
