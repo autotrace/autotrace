@@ -25,7 +25,14 @@ OutFile "autotrace-${VERSION}-${FLAVOUR}-setup.exe"
 ; The default installation directory
 ;InstallDir $EXEDIR
 ; Do not use PROGRAMFILES, that is for 32bit code only!
-InstallDir $PROGRAMFILES64\AutoTrace
+!If ${FLAVOUR} == "win64"
+  Target amd64-unicode
+  InstallDir $PROGRAMFILES64\AutoTrace
+!endif
+!If ${FLAVOUR} == "win32"
+  Target x86-unicode
+  InstallDir $PROGRAMFILES\AutoTrace
+!endif
 
 ; Request application privileges for Windows Vista
 ; RequestExecutionLevel user
