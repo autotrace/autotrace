@@ -25,7 +25,14 @@ OutFile "autotrace-${VERSION}-${FLAVOUR}-setup.exe"
 ; The default installation directory
 ;InstallDir $EXEDIR
 ; Do not use PROGRAMFILES, that is for 32bit code only!
-InstallDir $PROGRAMFILES64\AutoTrace
+!If ${FLAVOUR} == "win64"
+  Target amd64-unicode
+  InstallDir $PROGRAMFILES64\AutoTrace
+!endif
+!If ${FLAVOUR} == "win32"
+  Target x86-unicode
+  InstallDir $PROGRAMFILES\AutoTrace
+!endif
 
 ; Request application privileges for Windows Vista
 ; RequestExecutionLevel user
@@ -47,20 +54,30 @@ Section "" ;No components page, name is not important
   SetOutPath $INSTDIR
 
   ; Put file there
-  File /oname=autotrace.exe "../../autotrace.exe"
-  File /oname=iconv.dll "3rdparty/iconv.dll"
-  File /oname=libffi-8.dll "3rdparty/libffi-8.dll"
-!If ${FLAVOUR} == "win32"
-  File /oname=libgcc_s_dw2-1.dll "3rdparty/libgcc_s_dw2-1.dll"
+  File /oname=autotrace.exe "../../.libs/autotrace.exe"
+!If ${FLAVOUR} == "win64"
+  File /oname=iconv.dll "/usr/x86_64-w64-mingw32/sys-root/mingw/bin/iconv.dll"
+  File /oname=libffi-8.dll "/usr/x86_64-w64-mingw32/sys-root/mingw/bin/libffi-8.dll"
+  File /oname=libglib-2.0-0.dll "/usr/x86_64-w64-mingw32/sys-root/mingw/bin/libglib-2.0-0.dll"
+  File /oname=libgobject-2.0-0.dll "/usr/x86_64-w64-mingw32/sys-root/mingw/bin/libgobject-2.0-0.dll"
+  File /oname=libintl-8.dll "/usr/x86_64-w64-mingw32/sys-root/mingw/bin/libintl-8.dll"
+  File /oname=libpcre2-8-0.dll "/usr/x86_64-w64-mingw32/sys-root/mingw/bin/libpcre2-8-0.dll"
+  File /oname=libpng16-16.dll "/usr/x86_64-w64-mingw32/sys-root/mingw/bin/libpng16-16.dll"
+  File /oname=libssp-0.dll "/usr/x86_64-w64-mingw32/sys-root/mingw/bin/libssp-0.dll"
+  File /oname=zlib1.dll "/usr/x86_64-w64-mingw32/sys-root/mingw/bin/zlib1.dll"
 !EndIf
-  File /oname=libglib-2.0-0.dll "3rdparty/libglib-2.0-0.dll"
-  File /oname=libgobject-2.0-0.dll "3rdparty/libgobject-2.0-0.dll"
-  File /oname=libintl-8.dll  "3rdparty/libintl-8.dll"
-  File /oname=libpcre2-8-0.dll "3rdparty/libpcre2-8-0.dll"
-  File /oname=libpng16-16.dll "3rdparty/libpng16-16.dll"
 !If ${FLAVOUR} == "win32"
-  File /oname=libwinpthread-1.dll "3rdparty/libwinpthread-1.dll"
+  File /oname=iconv.dll "/usr/i686-w64-mingw32/sys-root/mingw/bin/iconv.dll"
+  File /oname=libffi-8.dll "/usr/i686-w64-mingw32/sys-root/mingw/bin/libffi-8.dll"
+  File /oname=libglib-2.0-0.dll "/usr/i686-w64-mingw32/sys-root/mingw/bin/libglib-2.0-0.dll"
+  File /oname=libgobject-2.0-0.dll "/usr/i686-w64-mingw32/sys-root/mingw/bin/libgobject-2.0-0.dll"
+  File /oname=libintl-8.dll "/usr/i686-w64-mingw32/sys-root/mingw/bin/libintl-8.dll"
+  File /oname=libpcre2-8-0.dll "/usr/i686-w64-mingw32/sys-root/mingw/bin/libpcre2-8-0.dll"
+  File /oname=libpng16-16.dll "/usr/i686-w64-mingw32/sys-root/mingw/bin/libpng16-16.dll"
+  File /oname=libssp-0.dll "/usr/i686-w64-mingw32/sys-root/mingw/bin/libssp-0.dll"
+  File /oname=zlib1.dll "/usr/i686-w64-mingw32/sys-root/mingw/bin/zlib1.dll"
+  File /oname=libgcc_s_dw2-1.dll "/usr/i686-w64-mingw32/sys-root/mingw/bin/libgcc_s_dw2-1.dll"
+  File /oname=libwinpthread-1.dll "/usr/i686-w64-mingw32/sys-root/mingw/bin/libwinpthread-1.dll"
 !EndIf
-  File /oname=zlib1.dll "3rdparty/zlib1.dll"
 
 SectionEnd ; end the section
