@@ -2,7 +2,7 @@
 #
 # Author: Masatake YAMATO (yamato@redhat.com)
 #
-AC_INIT([autotrace],[0.40.0])
+AC_INIT([autotrace],[0.31.10])
 AC_CONFIG_SRCDIR([src/main.c])
 AM_INIT_AUTOMAKE([subdir-objects])
 AC_CONFIG_MACRO_DIR([m4])
