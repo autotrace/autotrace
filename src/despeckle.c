@@ -100,10 +100,10 @@ static int find_size( /* in */ unsigned char *index,
   if (y < 0 || y >= height || mask[y * width + x] == 1 || bitmap[3 * (y * width + x)] != index[0] || bitmap[3 * (y * width + x) + 1] != index[1] || bitmap[3 * (y * width + x) + 2] != index[2])
     return 0;
 
-  for (x1 = x; x1 >= 0 && bitmap[3 * (y * width + x1)] == index[0] && bitmap[3 * (y * width + x1) + 1] == index[1] && bitmap[3 * (y * width + x1) + 2] == index[2] && mask[y * width + x] != 1; x1--) ;
+  for (x1 = x; x1 >= 0 && bitmap[3 * (y * width + x1)] == index[0] && bitmap[3 * (y * width + x1) + 1] == index[1] && bitmap[3 * (y * width + x1) + 2] == index[2] && mask[y * width + x1] != 1; x1--) ;
   x1++;
 
-  for (x2 = x; x2 < width && bitmap[3 * (y * width + x2)] == index[0] && bitmap[3 * (y * width + x2) + 1] == index[1] && bitmap[3 * (y * width + x2) + 2] == index[2] && mask[y * width + x] != 1; x2++) ;
+  for (x2 = x; x2 < width && bitmap[3 * (y * width + x2)] == index[0] && bitmap[3 * (y * width + x2) + 1] == index[1] && bitmap[3 * (y * width + x2) + 2] == index[2] && mask[y * width + x2] != 1; x2++) ;
   x2--;
 
   count = x2 - x1 + 1;
@@ -145,10 +145,10 @@ static int find_size_8( /* in */ unsigned char *index,
   if (y < 0 || y >= height || mask[y * width + x] == 1 || bitmap[(y * width + x)] != index[0])
     return 0;
 
-  for (x1 = x; x1 >= 0 && bitmap[(y * width + x1)] == index[0] && mask[y * width + x] != 1; x1--) ;
+  for (x1 = x; x1 >= 0 && bitmap[(y * width + x1)] == index[0] && mask[y * width + x1] != 1; x1--) ;
   x1++;
 
-  for (x2 = x; x2 < width && bitmap[(y * width + x2)] == index[0] && mask[y * width + x] != 1; x2++) ;
+  for (x2 = x; x2 < width && bitmap[(y * width + x2)] == index[0] && mask[y * width + x2] != 1; x2++) ;
   x2--;
 
   count = x2 - x1 + 1;
