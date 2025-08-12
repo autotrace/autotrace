@@ -19,7 +19,7 @@ jobs:
     container: fedora:38
     steps:
       # Checks-out your repository under $GITHUB_WORKSPACE, so your job can access it
-      - uses: actions/checkout@v4
+      - uses: actions/checkout@v5
       # Runs a single command using the runners shell
       - name: Install all dependencies for Win32 and Win64
         run: |
