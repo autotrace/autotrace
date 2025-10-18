@@ -38,7 +38,6 @@ jobs:
             ./configure
             make
             make check
-        shell: bash
 
   build_with_latest_imagemagick_6:
     runs-on: ubuntu-22.04
