@@ -19,18 +19,12 @@
 
 /* mail comments and suggestions to kovar@t-online.de */
 
-#ifdef HAVE_CONFIG_H
-#include "config.h"
-#endif /* Def: HAVE_CONFIG_H */
-
-#include "types.h"
 #include "spline.h"
 #include "color.h"
 #include "output-dxf.h"
 #include <glib.h>
 #include "autotrace.h"
 #include <math.h>
-#include <time.h>
 #include <string.h>
 
 /* Output macros.  */

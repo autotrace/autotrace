@@ -4,7 +4,8 @@
 #define IMAGE_PROC_H
 
 #include "bitmap.h"
-#include "color.h"
+#include "exception.h"
+#include <glib.h>
 
 typedef struct {
   unsigned height, width;

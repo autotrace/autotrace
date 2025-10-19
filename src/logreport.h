@@ -3,9 +3,8 @@
 #ifndef LOGREPORT_H
 #define LOGREPORT_H
 
+#include <glib.h>
 #include <stdio.h>
-#include "types.h"
-#include <stdlib.h>
 
 #ifdef _EXPORTING
 #define DECLSPEC __declspec(dllexport)

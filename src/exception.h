@@ -4,7 +4,6 @@
 #define AT_EXCEPTION_H
 
 #include "autotrace.h"
-#include "types.h"
 #include <glib.h>
 
 #ifdef __cplusplus

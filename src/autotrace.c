@@ -29,7 +29,6 @@
 #include "exception.h"
 
 #include "fit.h"
-#include "bitmap.h"
 #include "spline.h"
 
 #include "input.h"
@@ -42,8 +41,6 @@
 #include "despeckle.h"
 
 #include <locale.h>
-#include <time.h>
-#include <stdlib.h>
 #include <string.h>
 
 #define AT_DEFAULT_DPI 72

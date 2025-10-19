@@ -11,10 +11,8 @@
 #include "atou.h"
 #include "input.h"
 
-#include <string.h>
 #include <strings.h>
 #include <assert.h>
-#include <math.h>
 #include <errno.h>
 
 #undef N_

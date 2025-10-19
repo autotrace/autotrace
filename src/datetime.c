@@ -18,7 +18,6 @@
    Foundation, Inc., 675 Mass Ave, Cambridge, MA 02139, USA.  */
 
 #include <glib.h>
-#include <glib/gprintf.h>
 
 gchar *at_time_string(void)
 {

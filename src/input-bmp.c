@@ -17,16 +17,10 @@
    Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111-1307
    USA. */
 
-#ifdef HAVE_CONFIG_H
-#include "config.h"
-#endif /* Def: HAVE_CONFIG_H */
-
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
 
-#include "types.h"
-#include "bitmap.h"
 #include "logreport.h"
 #include <glib.h>
 #include "input-bmp.h"

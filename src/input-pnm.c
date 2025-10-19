@@ -23,10 +23,6 @@
  * does not contain any code from the netpbm or pbmplus distributions.
  */
 
-#ifdef HAVE_CONFIG_H
-#include "config.h"
-#endif /* Def: HAVE_CONFIG_H */
-
 #include "types.h"
 #include "bitmap.h"
 #include "input-pnm.h"

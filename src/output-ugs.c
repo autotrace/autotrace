@@ -17,14 +17,8 @@
    Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111-1307
    USA. */
 
-#ifdef HAVE_CONFIG_H
-#include "config.h"
-#endif /* Def: HAVE_CONFIG_H */
-
 #include "spline.h"
-#include "color.h"
 #include "output-ugs.h"
-#include "logreport.h"
 #include <math.h>
 
 long ugs_design_pixels;         /*  A design size of font in pixels. */

@@ -21,7 +21,6 @@
 #define OUTPUT_PDF_H
 
 #include <stdio.h>
-#include "types.h"
 #include "spline.h"
 
 #include "output.h"

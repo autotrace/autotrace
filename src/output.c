@@ -20,10 +20,6 @@
 
 /* TODO: Unify output codes and input codes. */
 
-#ifdef HAVE_CONFIG_H
-#include "config.h"
-#endif /* Def: HAVE_CONFIG_H */
-
 #include "autotrace.h"
 #include "private.h"
 #include "output.h"

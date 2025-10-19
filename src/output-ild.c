@@ -18,19 +18,11 @@
    Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111-1307
    USA. */
 
-#ifdef HAVE_CONFIG_H
-#include "config.h"
-#endif /* Def: HAVE_CONFIG_H */
-
 #undef ILD_DEBUG
 #undef ANCHOR_DEBUG
 
-#include <fcntl.h>
-#include <math.h>
 #include <stdio.h>
 #include <string.h>
-#include <sys/types.h>
-#include <sys/stat.h>
 
 #include "spline.h"
 #include <glib.h>

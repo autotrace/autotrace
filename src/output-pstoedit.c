@@ -17,20 +17,12 @@
    Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111-1307
    USA. */
 
-#ifdef HAVE_CONFIG_H
-#include "config.h"
-#endif /* Def: HAVE_CONFIG_H */
-
 #include "autotrace.h"
-#include "output-pstoedit.h"
-#include "output-p2e.h"
-#include "filename.h"
+#include "output.h"
 
 #include <pstoedit/pstoedit.h>
 #include <stdio.h>
-#include <stdlib.h>
 #include <string.h>
-#include <errno.h>
 
 /* #define OUTPUT_PSTOEDIT_DEBUG */
 

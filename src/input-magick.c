@@ -23,12 +23,8 @@
 
 #include "input.h"
 #include "input-magick.h"
-#include "bitmap.h"
 
-#include <stdio.h>
-#include <stdlib.h>
 #include <string.h>
-#include <sys/types.h>          /* Needed for correct interpretation of magick/api.h */
 #ifdef HAVE_IMAGEMAGICK7
 #include <MagickCore/MagickCore.h>
 #else

@@ -1,7 +1,3 @@
-#ifdef HAVE_CONFIG_H
-#include "config.h"
-#endif /* Def: HAVE_CONFIG_H */
-
 #include "exception.h"
 
 at_exception_type at_exception_new(at_msg_func client_func, gpointer client_data)

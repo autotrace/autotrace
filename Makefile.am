@@ -85,7 +85,6 @@ output_src=src/output-eps.c src/output-eps.h \
 libautotrace_la_SOURCES =\
                 $(input_src) $(output_src) \
 		src/fit.c \
-		src/bitmap.c \
 		src/spline.c \
 		src/curve.c \
 		src/epsilon-equal.c \

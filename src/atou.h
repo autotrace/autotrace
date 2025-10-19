@@ -3,7 +3,7 @@
 #ifndef ATOU_H
 #define ATOU_H
 
-#include "types.h"
+#include <glib.h>
 unsigned atou(gchar * s);
 
 #endif /* not ATOU_H */
