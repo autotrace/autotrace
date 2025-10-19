@@ -20,7 +20,6 @@
 #ifndef DESPECKLE_H
 #define DESPECKLE_H
 
-#include "types.h"
 #include "bitmap.h"
 #include "exception.h"
 

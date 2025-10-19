@@ -18,16 +18,11 @@
   along with this program; if not, write to the Free Software
   Foundation, Inc., 675 Mass Ave, Cambridge, MA 02139, USA. */
 
-#ifdef HAVE_CONFIG_H
-#include "config.h"
-#endif /* Def: HAVE_CONFIG_H */
-
 #include "intl.h"
 #include "color.h"
 #include "exception.h"
 
 #include <string.h>
-#include <stdlib.h>
 
 at_color *at_color_new(unsigned char r, unsigned char g, unsigned char b)
 {

@@ -19,19 +19,12 @@
 
 /* TODO: bitmap functions */
 
-#ifdef HAVE_CONFIG_H
-#include "config.h"
-#endif /* Def: HAVE_CONFIG_H */
-
 #include <stdio.h>
-#include <stdlib.h>
 #include <string.h>
 #include <glib.h>
-/* #include <unistd.h> */
 
 #include "bitmap.h"
 #include "logreport.h"
-#include "input-bmp.h"
 
 /* TODO:
    - Handle loading images that aren't 8 bits per channel.

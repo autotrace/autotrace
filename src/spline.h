@@ -4,7 +4,6 @@
 #ifndef SPLINE_H
 #define SPLINE_H
 
-#include <stdio.h>
 #include "autotrace.h"
 #include "output.h"
 

@@ -1,21 +1,13 @@
 /* vector.c: vector/point operations. */
 
-#ifdef HAVE_CONFIG_H
-#include "config.h"
-#endif /* Def: HAVE_CONFIG_H */
-
 #include "vector.h"
-#include "logreport.h"
 #include "epsilon-equal.h"
 #include <math.h>
 #include <errno.h>
-#include <assert.h>
 #include <string.h>
+#include <glib.h>
 
 static gfloat acos_d(gfloat, at_exception_type * excep);
-
-#define _USE_MATH_DEFINES
-#include <math.h>
 
 /* Given the point COORD, return the corresponding vector.  */
 
@@ -256,5 +248,5 @@ static gfloat acos_d(gfloat v, at_exception_type * excep)
     return 0.0;
   }
 
-  return a * (gfloat) 180.0 / (gfloat) M_PI;
+  return a * (gfloat) 180.0 / (gfloat) G_PI;
 }

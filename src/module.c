@@ -22,7 +22,7 @@
 #ifdef HAVE_CONFIG_H
 #include "config.h"
 #endif /* Def: HAVE_CONFIG_H */
-#include "intl.h"
+#include <stddef.h>
 
 #include "private.h"
 
@@ -46,6 +46,7 @@ int install_input_magick_readers(void)
 }
 #endif /* HAVE_MAGICK */
 
+#include "output.h"
 #include "output-eps.h"
 #include "output-er.h"
 #include "output-p2e.h"

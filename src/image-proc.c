@@ -1,11 +1,6 @@
 /* image-proc.c: image processing routines */
 
-#ifdef HAVE_CONFIG_H
-#include "config.h"
-#endif /* Def: HAVE_CONFIG_H */
-
 #include <assert.h>
-#include <math.h>
 #include <glib.h>
 #include "logreport.h"
 #include "image-proc.h"

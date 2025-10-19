@@ -17,16 +17,10 @@
    Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111-1307
    USA. */
 
-#ifdef HAVE_CONFIG_H
-#include "config.h"
-#endif /* Def: HAVE_CONFIG_H */
-
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
 
-#include "types.h"
-#include "bitmap.h"
 #include "logreport.h"
 #include <glib.h>
 #include "input-bmp.h"
@@ -132,7 +126,7 @@ setMasksDefault (unsigned short        biBitCnt,
 static long ToL(unsigned char *);
 static short ToS(unsigned char *);
 static int ReadColorMap(FILE *, unsigned char[256][3], int, int, gboolean *, at_exception_type *);
-static gboolean ReadChannelMasks(unsigned int *, Bitmap_Channel *, unsigned int);
+static gboolean ReadChannelMasks(unsigned long *, Bitmap_Channel *, unsigned int);
 static unsigned char *ReadImage(FILE *, int, int, unsigned char[256][3], int, int, int, int, gboolean, const Bitmap_Channel *, at_exception_type *);
 
 at_bitmap input_bmp_reader(gchar * filename, at_input_opts_type * opts, at_msg_func msg_func, gpointer msg_data, gpointer user_data)
@@ -517,7 +511,7 @@ cleanup:
 }
 
 static gboolean
-ReadChannelMasks(unsigned int       *tmp,
+ReadChannelMasks(unsigned long       *tmp,
 	Bitmap_Channel *masks,
 	unsigned int          channels)
 {
@@ -528,7 +522,7 @@ ReadChannelMasks(unsigned int       *tmp,
 		unsigned int mask;
 		int    nbits, offset, bit;
 
-		mask = tmp[i];
+		mask = (unsigned int)tmp[i];
 		masks[i].mask = mask;
 		nbits = 0;
 		offset = -1;

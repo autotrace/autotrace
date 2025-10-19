@@ -18,19 +18,11 @@
    Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111-1307
    USA. */
 
-#ifdef HAVE_CONFIG_H
-#include "config.h"
-#endif /* Def: HAVE_CONFIG_H */
-
 #undef ILD_DEBUG
 #undef ANCHOR_DEBUG
 
-#include <fcntl.h>
-#include <math.h>
 #include <stdio.h>
 #include <string.h>
-#include <sys/types.h>
-#include <sys/stat.h>
 
 #include "spline.h"
 #include <glib.h>
@@ -780,7 +772,7 @@ double getAngle(double b1x, double b1y, double b2x, double b2y)
     acosa = 1.0;
   if (acosa < -1.0)
     acosa = -1.0;
-  return acos(acosa) * 180.0 / M_PI;
+  return acos(acosa) * 180.0 / G_PI;
 }
 
 void insertAnchorPoints()

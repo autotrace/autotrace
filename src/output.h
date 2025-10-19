@@ -21,7 +21,6 @@
 #define OUTPUT_H
 #include <stdio.h>
 #include "autotrace.h"
-#include "types.h"
 #include "exception.h"
 #include <glib.h>
 
