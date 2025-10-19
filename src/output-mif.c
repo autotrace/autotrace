@@ -30,6 +30,7 @@
 #include <time.h>
 #include <math.h>
 #include <string.h>
+#include <glib.h>
 
 typedef struct {
   char *tag;
@@ -126,7 +127,7 @@ int output_mif_writer(FILE * ps_file, gchar * name, int llx, int lly, int urx, i
         break;
 
     if (i >= n_ctbl) {
-      col_tbl[n_ctbl].tag = strdup(colorstring(curr_color.r, curr_color.g, curr_color.b));
+      col_tbl[n_ctbl].tag = g_strdup(colorstring(curr_color.r, curr_color.g, curr_color.b));
       col_tbl[n_ctbl].c = curr_color;
       n_ctbl++;
       if (n_ctbl > 255)

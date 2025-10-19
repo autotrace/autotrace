@@ -780,7 +780,7 @@ double getAngle(double b1x, double b1y, double b2x, double b2y)
     acosa = 1.0;
   if (acosa < -1.0)
     acosa = -1.0;
-  return acos(acosa) * 180.0 / M_PI;
+  return acos(acosa) * 180.0 / G_PI;
 }
 
 void insertAnchorPoints()

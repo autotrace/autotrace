@@ -36,6 +36,20 @@ dnl AC_SUBST(LT_CURRENT_MINUS_AGE)
 AC_PROG_CC
 LT_INIT
 
+# Try to set C17 standard
+AC_MSG_CHECKING([for C17 support])
+OLD_CFLAGS="$CFLAGS"
+CFLAGS="$CFLAGS -std=c17"
+AC_COMPILE_IFELSE(
+    [AC_LANG_PROGRAM([[]], [[]])],
+    [AC_MSG_RESULT([yes])],
+    [AC_MSG_RESULT([no])
+     AC_MSG_ERROR([C17 support is required but not available])]
+)
+
+# Make C17 standard required
+AC_SUBST([AM_CFLAGS], ["-std=c17"])
+
 PKG_PROG_PKG_CONFIG
 
 AUTOTRACE_WEB=https://github.com/autotrace/autotrace

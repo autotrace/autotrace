@@ -132,7 +132,7 @@ gboolean unusable_writer_p(const gchar * suffix)
 static FILE *make_temporary_file(char *template, char *mode)
 {
   int tmpfd;
-  tmpfd = mkstemp(template);
+  tmpfd = g_mkstemp(template);
   if (tmpfd < 0)
     return NULL;
   return fdopen(tmpfd, mode);

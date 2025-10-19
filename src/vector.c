@@ -11,6 +11,7 @@
 #include <errno.h>
 #include <assert.h>
 #include <string.h>
+#include <glib.h>
 
 static gfloat acos_d(gfloat, at_exception_type * excep);
 
@@ -256,5 +257,5 @@ static gfloat acos_d(gfloat v, at_exception_type * excep)
     return 0.0;
   }
 
-  return a * (gfloat) 180.0 / (gfloat) M_PI;
+  return a * (gfloat) 180.0 / (gfloat) G_PI;
 }
