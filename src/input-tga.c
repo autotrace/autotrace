@@ -19,12 +19,12 @@
 
 /* TODO: bitmap functions */
 
+#include "autotrace.h"
+#include "input.h"
+#include "logreport.h"
+#include <glib.h>
 #include <stdio.h>
 #include <string.h>
-#include <glib.h>
-
-#include "bitmap.h"
-#include "logreport.h"
 
 /* TODO:
    - Handle loading images that aren't 8 bits per channel.

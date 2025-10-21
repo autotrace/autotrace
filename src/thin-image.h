@@ -27,8 +27,9 @@
  * in "Graphics Gems IV", Academic Press, 1994
  */
 
-#include "bitmap.h"
+#include "autotrace.h"
 #include "color.h"
+#include "input.h"
 #include "exception.h"
 
 void thin_image(at_bitmap * image, const at_color * bg_color, at_exception_type * exp);

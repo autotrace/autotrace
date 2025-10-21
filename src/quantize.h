@@ -17,9 +17,11 @@
    Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111-1307
    USA. */
 
-#include "bitmap.h"
+#include "autotrace.h"
 #include "color.h"
 #include "exception.h"
+#include "input.h"
+#include <stdio.h>
 
 #ifndef QUANTIZE_H
 #define QUANTIZE_H

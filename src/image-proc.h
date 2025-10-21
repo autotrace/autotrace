@@ -3,8 +3,9 @@
 #ifndef IMAGE_PROC_H
 #define IMAGE_PROC_H
 
-#include "bitmap.h"
+#include "autotrace.h"
 #include "exception.h"
+#include "input.h"
 #include <glib.h>
 
 typedef struct {
