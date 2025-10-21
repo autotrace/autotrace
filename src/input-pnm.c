@@ -23,14 +23,14 @@
  * does not contain any code from the netpbm or pbmplus distributions.
  */
 
-#include "types.h"
-#include "bitmap.h"
+#include "autotrace.h"
 #include "input-pnm.h"
+#include "input.h"
 #include "logreport.h"
-#include <glib.h>
-
-#include <math.h>
 #include <ctype.h>
+#include <glib.h>
+#include <math.h>
+#include <stdio.h>
 
 /* Declare local data types
  */

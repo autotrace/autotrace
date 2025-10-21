@@ -20,8 +20,10 @@
 #ifndef DESPECKLE_H
 #define DESPECKLE_H
 
-#include "bitmap.h"
+#include "autotrace.h"
 #include "exception.h"
+#include "input.h"
+#include <glib.h>
 
 /* Despeckle - Despeckle a 8 or 24 bit image
  *
