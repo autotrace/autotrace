@@ -25,9 +25,9 @@ Foundation, Inc., 675 Mass Ave, Cambridge, MA 02139, USA.  */
 
 /* If NAME has a suffix, return a pointer to its first character (i.e.,
    the one after the `.'); otherwise, return NULL.  */
-extern gchar *find_suffix(gchar * name);
+gchar *find_suffix(const gchar * name);
 
 /* Return NAME with any suffix removed.  */
-extern gchar *remove_suffix(gchar * name);
+gchar *remove_suffix(const gchar * name);
 
 #endif /* Not def: FILENAME_H */
