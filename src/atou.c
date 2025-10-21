@@ -1,15 +1,16 @@
 /* atou.c: like atoi, but if the number is negative, abort. */
 
-#include "logreport.h"
 #include "atou.h"
-#include <stdlib.h>
+#include "logreport.h"
+#include <glib.h>
 
-unsigned atou(gchar * s)
+unsigned atou(const gchar *s)
 {
-  int i = atoi(s);
+	guint64 val;
 
-  if (i < 0)
-    FATAL("I expected a positive number, not %d", i);
+	if (!g_ascii_string_to_unsigned(s, 10, 0, UINT_MAX, &val, NULL)) {
+		FATAL("Invalid unsigned integer: '%s'", s);
+	}
 
-  return (unsigned)i;
+	return (unsigned)val;
 }

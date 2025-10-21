@@ -4,6 +4,6 @@
 #define ATOU_H
 
 #include <glib.h>
-unsigned atou(gchar * s);
+unsigned atou(const gchar * s);
 
 #endif /* not ATOU_H */
