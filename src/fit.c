@@ -231,9 +231,9 @@ static spline_list_type fit_curve_list(curve_list_type curve_list, fitting_opts_
   /* We filter all the curves in CURVE_LIST at once; otherwise, we would
      look at an unfiltered curve when computing tangents.  */
 
-  LOG("\nFiltering curves:\n");
+  DEBUG("\nFiltering curves:\n");
   for (this_curve = 0; this_curve < curve_list.length; this_curve++) {
-    LOG("#%u: ", this_curve);
+    DEBUG("#%u: ", this_curve);
     filter(CURVE_LIST_ELT(curve_list, this_curve), fitting_opts);
   }
 
@@ -269,8 +269,7 @@ static spline_list_type fit_curve_list(curve_list_type curve_list, fitting_opts_
       LOG("Fitted splines for curve #%u:\n", this_curve);
       for (this_spline = 0; this_spline < SPLINE_LIST_LENGTH(*curve_splines); this_spline++) {
         LOG("  %u: ", this_spline);
-        if (logging)
-          print_spline(SPLINE_LIST_ELT(*curve_splines, this_spline));
+        print_spline(SPLINE_LIST_ELT(*curve_splines, this_spline));
       }
 
       /* After fitting, we may need to change some would-be lines
@@ -284,12 +283,10 @@ static spline_list_type fit_curve_list(curve_list_type curve_list, fitting_opts_
     }
   }
 
-  if (logging) {
-    LOG("\nFitted splines are:\n");
-    for (this_spline = 0; this_spline < SPLINE_LIST_LENGTH(curve_list_splines); this_spline++) {
-      LOG("  %u: ", this_spline);
-      print_spline(SPLINE_LIST_ELT(curve_list_splines, this_spline));
-    }
+  LOG("\nFitted splines are:\n");
+  for (this_spline = 0; this_spline < SPLINE_LIST_LENGTH(curve_list_splines); this_spline++) {
+    LOG("  %u: ", this_spline);
+    print_spline(SPLINE_LIST_ELT(curve_list_splines, this_spline));
   }
 cleanup:
   return curve_list_splines;
@@ -841,8 +838,7 @@ static void filter(curve_type curve, fitting_opts_type * fitting_opts)
     g_free(newcurve);
   }
 
-  if (logging)
-    log_curve(curve, FALSE);
+  log_curve(curve, FALSE);
 }
 
 /* This routine returns the curve fitted to a straight line in a very
@@ -863,10 +859,8 @@ static spline_list_type *fit_with_line(curve_type curve)
   /* Make sure that this line is never changed to a cubic.  */
   SPLINE_LINEARITY(line) = 0;
 
-  if (logging) {
-    LOG("  ");
-    print_spline(line);
-  }
+  LOG("  ");
+  print_spline(line);
 
   return new_spline_list_with_spline(line);
 }
@@ -913,10 +907,8 @@ static spline_list_type *fit_with_least_squares(curve_type curve, fitting_opts_t
     else
       LOG("  fitted to spline:\n");
 
-    if (logging) {
-      LOG("    ");
-      print_spline(spline);
-    }
+    LOG("    ");
+    print_spline(spline);
 
     if (SPLINE_DEGREE(spline) == LINEARTYPE)
       break;
@@ -1153,8 +1145,7 @@ static void set_initial_parameter_values(curve_type curve)
   for (p = 1; p < CURVE_LENGTH(curve); p++)
     CURVE_T(curve, p) = CURVE_T(curve, p) / LAST_CURVE_T(curve);
 
-  if (logging)
-    log_entire_curve(curve);
+  log_entire_curve(curve);
 }
 
 /* Find an approximation to the tangent to an endpoint of CURVE (to the

@@ -4,28 +4,19 @@
 #define LOGREPORT_H
 
 #include <glib.h>
-#include <stdio.h>
 
-#ifdef _EXPORTING
-#define DECLSPEC __declspec(dllexport)
-#elif _IMPORTING
-#define DECLSPEC __declspec(dllimport)
-#else
-#define DECLSPEC
-#endif
+#define LOG_DOMAIN "autotrace"
 
-/* Whether to write a log */
-extern gboolean logging;
+/* Simple macros using GLib logging */
+#define DEBUG(...)   g_debug(__VA_ARGS__)
+#define LOG(...)     g_message(__VA_ARGS__)
+#define WARNING(...) g_warning(__VA_ARGS__)
+#define FATAL(...)   g_error(__VA_ARGS__)
 
-#define LOG(...)								\
-  do { if (logging) fprintf (stdout, __VA_ARGS__); } while (0)
+/* Initialize logging system - call once at program startup */
+void init_logging(void);
 
-/* Define common sorts of messages.  */
-
-#define FATAL(...)							\
-  do { fputs ("fatal: ", stderr); LOG("fatal: "); fprintf (stderr, __VA_ARGS__); LOG (__VA_ARGS__); fputs (".\n", stderr); exit (1); } while (0)
-
-#define WARNING(...)							\
-  do { fputs ("warning: ", stderr); LOG ("warning: "); fprintf (stderr, __VA_ARGS__); LOG (__VA_ARGS__); fputs (".\n", stderr); } while (0)
+/* Set log level: "error", "warning", "info", "debug" */
+void set_log_level(const gchar *level);
 
 #endif /* not LOGREPORT_H */

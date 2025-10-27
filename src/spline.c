@@ -2,6 +2,7 @@
 
 #include "types.h"
 #include "spline.h"
+#include "logreport.h"
 #include "vector.h"
 #include <assert.h>
 
@@ -12,10 +13,10 @@ void print_spline(spline_type s)
   assert(SPLINE_DEGREE(s) == LINEARTYPE || SPLINE_DEGREE(s) == CUBICTYPE);
 
   if (SPLINE_DEGREE(s) == LINEARTYPE)
-    fprintf(stdout, "(%.3f,%.3f)--(%.3f,%.3f).\n", START_POINT(s).x, START_POINT(s).y, END_POINT(s).x, END_POINT(s).y);
+    DEBUG("(%.3f,%.3f)--(%.3f,%.3f).\n", START_POINT(s).x, START_POINT(s).y, END_POINT(s).x, END_POINT(s).y);
 
   else if (SPLINE_DEGREE(s) == CUBICTYPE)
-    fprintf(stdout, "(%.3f,%.3f)..ctrls(%.3f,%.3f)&(%.3f,%.3f)..(%.3f,%.3f).\n", START_POINT(s).x, START_POINT(s).y, CONTROL1(s).x, CONTROL1(s).y, CONTROL2(s).x, CONTROL2(s).y, END_POINT(s).x, END_POINT(s).y);
+    DEBUG("(%.3f,%.3f)..ctrls(%.3f,%.3f)&(%.3f,%.3f)..(%.3f,%.3f).\n", START_POINT(s).x, START_POINT(s).y, CONTROL1(s).x, CONTROL1(s).y, CONTROL2(s).x, CONTROL2(s).y, END_POINT(s).x, END_POINT(s).y);
 }
 
 /* Evaluate the spline S at a given T value.  This is an implementation

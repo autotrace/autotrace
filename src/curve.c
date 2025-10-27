@@ -85,12 +85,12 @@ void append_point(curve_type curve, at_real_coord coord)
 
 #define NUM_TO_PRINT 3
 
-#define LOG_CURVE_POINT(c, p, print_t)					\
+#define DEBUG_CURVE_POINT(c, p, print_t)					\
   do									\
     {									\
-      LOG ("(%.3f,%.3f)", CURVE_POINT (c, p).x, CURVE_POINT (c, p).y);	\
+      DEBUG ("(%.3f,%.3f)", CURVE_POINT (c, p).x, CURVE_POINT (c, p).y);	\
       if (print_t)							\
-        LOG ("/%.2f", CURVE_T (c, p));					\
+        DEBUG ("/%.2f", CURVE_T (c, p));					\
     }									\
   while (0)
 
@@ -98,42 +98,42 @@ void log_curve(curve_type curve, gboolean print_t)
 {
   unsigned this_point;
 
-  LOG("curve id = %lx:\n", (unsigned long)(uintptr_t)curve);
-  LOG("  length = %u.\n", CURVE_LENGTH(curve));
+  DEBUG("curve id = %lx:\n", (unsigned long)(uintptr_t)curve);
+  DEBUG("  length = %u.\n", CURVE_LENGTH(curve));
   if (CURVE_CYCLIC(curve))
-    LOG("  cyclic.\n");
+    DEBUG("  cyclic.\n");
 
   /* It should suffice to check just one of the tangents for being null
      -- either they both should be, or neither should be.  */
   if (CURVE_START_TANGENT(curve) != NULL)
-    LOG("  tangents = (%.3f,%.3f) & (%.3f,%.3f).\n", CURVE_START_TANGENT(curve)->dx, CURVE_START_TANGENT(curve)->dy, CURVE_END_TANGENT(curve)->dx, CURVE_END_TANGENT(curve)->dy);
+    DEBUG("  tangents = (%.3f,%.3f) & (%.3f,%.3f).\n", CURVE_START_TANGENT(curve)->dx, CURVE_START_TANGENT(curve)->dy, CURVE_END_TANGENT(curve)->dx, CURVE_END_TANGENT(curve)->dy);
 
-  LOG("  ");
+  DEBUG("  ");
 
   /* If the curve is short enough, don't use ellipses.  */
   if (CURVE_LENGTH(curve) <= NUM_TO_PRINT * 2) {
     for (this_point = 0; this_point < CURVE_LENGTH(curve); this_point++) {
-      LOG_CURVE_POINT(curve, this_point, print_t);
-      LOG(" ");
+      DEBUG_CURVE_POINT(curve, this_point, print_t);
+      DEBUG(" ");
 
       if (this_point != CURVE_LENGTH(curve) - 1 && (this_point + 1) % NUM_TO_PRINT == 0)
-        LOG("\n  ");
+        DEBUG("\n  ");
     }
   } else {
     for (this_point = 0; this_point < NUM_TO_PRINT && this_point < CURVE_LENGTH(curve); this_point++) {
-      LOG_CURVE_POINT(curve, this_point, print_t);
-      LOG(" ");
+      DEBUG_CURVE_POINT(curve, this_point, print_t);
+      DEBUG(" ");
     }
 
-    LOG("...\n   ...");
+    DEBUG("...\n   ...");
 
     for (this_point = CURVE_LENGTH(curve) - NUM_TO_PRINT; this_point < CURVE_LENGTH(curve); this_point++) {
-      LOG(" ");
-      LOG_CURVE_POINT(curve, this_point, print_t);
+      DEBUG(" ");
+      DEBUG_CURVE_POINT(curve, this_point, print_t);
     }
   }
 
-  LOG(".\n");
+  DEBUG(".\n");
 }
 
 /* Like `log_curve', but write the whole thing.  */
@@ -142,25 +142,25 @@ void log_entire_curve(curve_type curve)
 {
   unsigned this_point;
 
-  LOG("curve id = %lx:\n", (unsigned long)(uintptr_t)curve);
-  LOG("  length = %u.\n", CURVE_LENGTH(curve));
+  DEBUG("curve id = %lx:\n", (unsigned long)(uintptr_t)curve);
+  DEBUG("  length = %u.\n", CURVE_LENGTH(curve));
   if (CURVE_CYCLIC(curve))
-    LOG("  cyclic.\n");
+    DEBUG("  cyclic.\n");
 
   /* It should suffice to check just one of the tangents for being null
      -- either they both should be, or neither should be.  */
   if (CURVE_START_TANGENT(curve) != NULL)
-    LOG("  tangents = (%.3f,%.3f) & (%.3f,%.3f).\n", CURVE_START_TANGENT(curve)->dx, CURVE_START_TANGENT(curve)->dy, CURVE_END_TANGENT(curve)->dx, CURVE_END_TANGENT(curve)->dy);
+    DEBUG("  tangents = (%.3f,%.3f) & (%.3f,%.3f).\n", CURVE_START_TANGENT(curve)->dx, CURVE_START_TANGENT(curve)->dy, CURVE_END_TANGENT(curve)->dx, CURVE_END_TANGENT(curve)->dy);
 
-  LOG(" ");
+  DEBUG(" ");
 
   for (this_point = 0; this_point < CURVE_LENGTH(curve); this_point++) {
-    LOG(" ");
-    LOG_CURVE_POINT(curve, this_point, TRUE);
+    DEBUG(" ");
+    DEBUG_CURVE_POINT(curve, this_point, TRUE);
     /* Compiler warning `Condition is always true' can be ignored */
   }
 
-  LOG(".\n");
+  DEBUG(".\n");
 }
 
 /* Return an initialized but empty curve list.  */
