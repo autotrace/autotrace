@@ -69,6 +69,9 @@ int main(int argc, char *argv[])
   at_progress_func progress_reporter = NULL;
   int progress_stat = 0;
 
+  /* Initialize logging first */
+  init_logging();
+
   autotrace_init();
 
 #ifdef ENABLE_NLS
@@ -258,7 +261,7 @@ static char *read_command_line(int argc, char *argv[], at_fitting_opts_type * fi
 	  {"line-threshold", 1, 0, 0},
 	  {"list-input-formats", 0, 0, 0},
 	  {"list-output-formats", 0, 0, 0},
-	  {"log", 0, (int *)&logging, 1},
+	  {"log", 0, 0, 0},
 	  {"noise-removal", 1, 0, 0},
 	  {"output-file", 1, 0, 0},
 	  {"output-format", 1, 0, 0},
@@ -345,6 +348,9 @@ static char *read_command_line(int argc, char *argv[], at_fitting_opts_type * fi
       if (!input_reader)
         FATAL(_("Input format %s is not supported\n"), optarg);
     }
+
+    else if (ARGUMENT_IS("log"))
+      set_log_level(optarg);
 
     else if (ARGUMENT_IS("line-reversion-threshold"))
       fitting_opts->line_reversion_threshold = (gfloat) atof(optarg);
