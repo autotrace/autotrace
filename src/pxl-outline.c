@@ -1,11 +1,13 @@
 /* pxl-outline.c: find the outlines of a bitmap image; each outline is made up of one or more pixels;
    and each pixel participates via one or more edges. */
 
-#include "logreport.h"
-#include "types.h"
-#include "bitmap.h"
+#include "autotrace.h"
 #include "color.h"
+#include "input.h"
+#include "logreport.h"
 #include "pxl-outline.h"
+#include "types.h"
+#include <stdio.h>
 
 /* We consider each pixel to consist of four edges, and we travel along
    edges, instead of through pixel centers.  This is necessary for those
