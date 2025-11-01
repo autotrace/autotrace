@@ -214,10 +214,10 @@ dnl
 dnl GLib2
 dnl
 
-PKG_CHECK_MODULES(GLIB2, glib-2.0 >= 2.0  gmodule-2.0 >= 2.0 gthread-2.0 >= 2.0 gobject-2.0 >= 2.0, 
-	          glib_ok=yes, glib_ok=no)
+PKG_CHECK_MODULES(GLIB2, glib-2.0 >= 2.44 gmodule-2.0 >= 2.44 gthread-2.0 >= 2.44 gobject-2.0 >= 2.44,
+                  glib_ok=yes, glib_ok=no)
 if test "x${glib_ok}" != "xyes"; then
-   AC_MSG_ERROR([cannot find glib-2.0])
+   AC_MSG_ERROR([cannot find glib-2.0 >= 2.44 (required for g_autoptr support)])
 else
    :
 fi

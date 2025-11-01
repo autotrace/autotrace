@@ -19,7 +19,6 @@
 
 #include "spline.h"
 #include "output-er.h"
-#include "datetime.h"
 #include <glib.h>
 
 #define NUM_CORRESP_POINTS 4
@@ -29,12 +28,10 @@
 
 static int output_er_header(FILE * er_file, gchar * name, int llx, int lly, int urx, int ury)
 {
-  gchar *time;
+  g_autoptr(GDateTime) date = g_date_time_new_now_local();
+  g_autofree gchar *time = g_date_time_format(date, "%a %b %e %H:%M:%S %Y");
 
-  fprintf(er_file, "#Elastic Reality Shape File\n\n#Date: %s\n\n", time = at_time_string());
-
-  g_free(time);
-
+  fprintf(er_file, "#Elastic Reality Shape File\n\n#Date: %s\n\n", time);
   fprintf(er_file, "ImageSize = {\n\tWidth = %d\n\tHeight = %d\n}\n\n", urx - llx, ury - lly);
 
   return 0;

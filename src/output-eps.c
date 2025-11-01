@@ -21,7 +21,6 @@
 #include "color.h"
 #include "output-eps.h"
 #include "autotrace.h"
-#include "datetime.h"
 #include <math.h>
 #include <glib.h>
 
@@ -72,17 +71,17 @@
 
 static int output_eps_header(FILE * ps_file, gchar * name, int llx, int lly, int urx, int ury)
 {
-  gchar *time;
+  g_autoptr(GDateTime) date = g_date_time_new_now_local();
+  g_autofree gchar *time = g_date_time_format(date, "%a %b %e %H:%M:%S %Y");
 
   OUT_LINE("%!PS-Adobe-3.0 EPSF-3.0");
   OUT("%%%%Creator: Adobe Illustrator by %s\n", at_version(TRUE));
   OUT("%%%%Title: %s\n", name);
-  OUT("%%%%CreationDate: %s\n", time = at_time_string());
+  OUT("%%%%CreationDate: %s\n", time);
   OUT("%%%%BoundingBox: %d %d %d %d\n", llx, lly, urx, ury);
   OUT_LINE("%%DocumentData: Clean7Bit");
   OUT_LINE("%%EndComments");
 
-  g_free(time);
   /* Prolog to define Illustrator commands.
    *
    * The s and S commands are not used at the moment and could be

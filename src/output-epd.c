@@ -22,7 +22,6 @@
 #include "color.h"
 #include "output-epd.h"
 #include "autotrace.h"
-#include "datetime.h"
 #include <math.h>
 #include <glib.h>
 
@@ -73,15 +72,14 @@
 
 static int output_epd_header(FILE * epd_file, gchar * name, int llx, int lly, int urx, int ury)
 {
-  gchar *time;
+  g_autoptr(GDateTime) date = g_date_time_new_now_local();
+  g_autofree gchar *time = g_date_time_format(date, "%a %b %e %H:%M:%S %Y");
 
   OUT_LINE("%EPD-1.0");
   OUT("%% Created by %s\n", at_version(TRUE));
   OUT("%% Title: %s\n", name);
-  OUT("%% CreationDate: %s\n", time = at_time_string());
+  OUT("%% CreationDate: %s\n", time);
   OUT("%%BBox(%d,%d,%d,%d)\n", llx, lly, urx, ury);
-
-  g_free(time);
 
   return 0;
 }
