@@ -23,18 +23,30 @@ Foundation, Inc., 675 Mass Ave, Cambridge, MA 02139, USA.  */
 #include <string.h>
 #include <glib.h>
 
-gchar *find_suffix(gchar * name)
+gchar *find_suffix(const gchar *filename)
 {
-  gchar *dot_pos = strrchr(name, '.');
-  gchar *slash_pos = strrchr(name, G_DIR_SEPARATOR);
+    g_autofree gchar *basename = g_path_get_basename(filename);
+    gchar *dot_pos = strrchr(basename, '.');
 
-  /* If the name is `foo' or `/foo.bar/baz', we have no extension.  */
-  return dot_pos == NULL || dot_pos < slash_pos ? NULL : dot_pos + 1;
+    if (dot_pos == NULL || dot_pos == basename) {
+        g_free(basename);
+        return NULL;
+    }
+
+    gchar *suffix = g_strdup(dot_pos + 1);
+    return suffix;
 }
 
-gchar *remove_suffix(gchar * s)
+gchar *remove_suffix(const gchar *filename)
 {
-  gchar *suffix = find_suffix(s);
+    gchar *basename = g_path_get_basename(filename);
+    gchar *dot_pos = strrchr(basename, '.');
 
-  return suffix == NULL ? s : suffix - 2 - s < 0 ? NULL : g_strndup(s, (unsigned)(suffix - 2 - s));
+    if (dot_pos == NULL || dot_pos == basename) {
+        // No extension or file starts with dot (like .bashrc)
+        return basename;
+    }
+
+    *dot_pos = '\0';  // Truncate at the dot
+    return basename;
 }
