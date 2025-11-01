@@ -20,9 +20,47 @@
 #include "autotrace.h"
 #include "output.h"
 
-#include <pstoedit/pstoedit.h>
 #include <stdio.h>
 #include <string.h>
+
+/* Forward declare pstoedit's plain C API functions.
+ *
+ * We cannot include <pstoedit/pstoedit.h> from C code because it contains
+ * C++ declarations (std::ostream, etc.) that break C compilation. This has
+ * always been an issue, though older pstoedit versions or GCC may have been
+ * more lenient. Forward declaring just the C functions we need avoids the
+ * C++ dependency entirely.
+ */
+
+/* Driver description structure */
+struct DriverDescription_S {
+        const char *    symbolicname;
+        const char *    explanation;
+        const char *    suffix;
+        const char *    additionalInfo;
+        int                     backendSupportsSubPaths;
+        int                     backendSupportsCurveto;
+        int                 backendSupportsMerging;
+        int                 backendSupportsText;
+        int                 backendSupportsImages;
+        int                     backendSupportsMultiplePages;
+    int             formatGroup;
+};
+
+
+extern int pstoedit_plainC(
+    const char * infile,
+    const char * outfile,
+    const char * outputFormat,
+    const char * options
+);
+
+
+extern int pstoedit_checkversion(unsigned int callersversion);
+
+extern void* getPstoeditDriverInfo_plainC(void);
+
+extern void clearPstoeditDriverInfo_plainC(void* ptr);
 
 /* #define OUTPUT_PSTOEDIT_DEBUG */
 
@@ -47,18 +85,6 @@ static int output_pstoedit_writer(FILE * file, gchar * name, int llx, int lly, i
   const gchar *symbolicname = (const gchar *)user_data;
   FILE *tmpfile;
   int result = 0;
-  int c;
-
-  int argc;
-#define CMD_INDEX         0
-#define SYMBOLICNAME_FLAG_INDEX 1
-#define SYMBOLICNAME_VAL_INDEX  2
-#define BO_FLAG_INDEX     3
-#define INPUT_INDEX       4
-#define OUTPUT_INDEX      5
-  const char *argv[] = { "pstoedit", "-f", 0, "-bo", 0, 0 };
-
-  argc = sizeof(argv) / sizeof(char *);
 
   tmpfile = make_temporary_file(tmpfile_name_p2e, "w");
   if (NULL == tmpfile) {
@@ -81,19 +107,13 @@ static int output_pstoedit_writer(FILE * file, gchar * name, int llx, int lly, i
   }
 
   /*
-   * bo file -> specified formatted file
+   * bo file -> specified formatted file via pstoedit
    */
-  argv[SYMBOLICNAME_VAL_INDEX] = symbolicname;
-  argv[INPUT_INDEX] = tmpfile_name_p2e;
-  argv[OUTPUT_INDEX] = tmpfile_name_pstoedit;
-  pstoedit_plainC(argc, argv, NULL);
+  pstoedit_plainC(tmpfile_name_p2e,           /* input file */
+                  tmpfile_name_pstoedit,      /* output file */
+                  symbolicname,               /* output format */
+                  "-bo");                     /* options */
 
-  /*
-   * specified formatted file(tmpfile_name_pstoedit) -> file
-   */
-  /* fseek(tmpfile, 0, SEEK_SET); */
-  while (EOF != (c = fgetc(tmpfile)))
-    fputc(c, file);
   fclose(tmpfile);
 
 remove_tmp_pstoedit:
@@ -134,7 +154,14 @@ int install_output_pstoedit_writers(void)
 {
   struct DriverDescription_S *dd_start, *dd_tmp;
 
-  pstoedit_checkversion(pstoeditdllversion);
+/* Minimum pstoedit version we require (3.01).
+ * We need clearPstoeditDriverInfo_plainC which was added in version 301.
+ * Note: pstoeditdllversion has static linkage in pstoedit.h and cannot
+ * be referenced from C code.
+ */
+#define REQUIRED_PSTOEDIT_VERSION 0x301
+
+  pstoedit_checkversion(REQUIRED_PSTOEDIT_VERSION);
   dd_start = getPstoeditDriverInfo_plainC();
 
   if (dd_start) {
