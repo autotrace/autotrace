@@ -19,6 +19,7 @@
 
 #include "autotrace.h"
 #include "output.h"
+#include "logreport.h"
 
 #include <stdio.h>
 #include <string.h>
@@ -33,28 +34,39 @@
  */
 
 /* Driver description structure */
-struct DriverDescription_S {
-        const char *    symbolicname;
-        const char *    explanation;
-        const char *    suffix;
-        const char *    additionalInfo;
-        int                     backendSupportsSubPaths;
-        int                     backendSupportsCurveto;
-        int                 backendSupportsMerging;
-        int                 backendSupportsText;
-        int                 backendSupportsImages;
-        int                     backendSupportsMultiplePages;
-    int             formatGroup;
+/* Version 3.x struct (no formatGroup) */
+struct DriverDescription_S_v3 {
+    const char *symbolicname;
+    const char *explanation;
+    const char *suffix;
+    const char *additionalInfo;
+    int backendSupportsSubPaths;
+    int backendSupportsCurveto;
+    int backendSupportsMerging;
+    int backendSupportsText;
+    int backendSupportsImages;
+    int backendSupportsMultiplePages;
 };
 
+/* Version 4.x struct (with formatGroup) */
+struct DriverDescription_S_v4 {
+    const char *symbolicname;
+    const char *explanation;
+    const char *suffix;
+    const char *additionalInfo;
+    int backendSupportsSubPaths;
+    int backendSupportsCurveto;
+    int backendSupportsMerging;
+    int backendSupportsText;
+    int backendSupportsImages;
+    int backendSupportsMultiplePages;
+    int formatGroup;
+};
 
-extern int pstoedit_plainC(
-    const char * infile,
-    const char * outfile,
-    const char * outputFormat,
-    const char * options
-);
-
+extern int pstoedit_plainC(int argc,
+                    const char * const argv[],
+                    const char * const psinterpreter  /* if 0, then pstoedit will look for one using whichpi() */
+                   );
 
 extern int pstoedit_checkversion(unsigned int callersversion);
 
@@ -69,6 +81,8 @@ static int output_pstoedit_writer(FILE * file, gchar * name, int llx, int lly, i
 static gboolean unusable_writer_p(const gchar * name);
 
 static FILE *make_temporary_file(char *template, char *mode);
+
+static gboolean is_pstoedit_v4 = FALSE;
 
 /* This output routine uses two temporary files to keep the
    both the command line syntax of autotrace and the
@@ -85,6 +99,16 @@ static int output_pstoedit_writer(FILE * file, gchar * name, int llx, int lly, i
   const gchar *symbolicname = (const gchar *)user_data;
   FILE *tmpfile;
   int result = 0;
+  int c;
+  int argc = 6;
+  const char *argv[] = {
+    "pstoedit",              // argv[0] - program name
+    "-f",                    // format flag
+    symbolicname,
+    "-bo",                   // backend options flag
+    tmpfile_name_p2e,        // input file
+    tmpfile_name_pstoedit    // output file
+  };
 
   tmpfile = make_temporary_file(tmpfile_name_p2e, "w");
   if (NULL == tmpfile) {
@@ -107,13 +131,16 @@ static int output_pstoedit_writer(FILE * file, gchar * name, int llx, int lly, i
   }
 
   /*
-   * bo file -> specified formatted file via pstoedit
+   * bo file -> specified formatted file
    */
-  pstoedit_plainC(tmpfile_name_p2e,           /* input file */
-                  tmpfile_name_pstoedit,      /* output file */
-                  symbolicname,               /* output format */
-                  "-bo");                     /* options */
+  pstoedit_plainC(argc, argv, NULL);
 
+  /*
+   * specified formatted file(tmpfile_name_pstoedit) -> file
+   */
+  /* fseek(tmpfile, 0, SEEK_SET); */
+  while (EOF != (c = fgetc(tmpfile)))
+    fputc(c, file);
   fclose(tmpfile);
 
 remove_tmp_pstoedit:
@@ -134,7 +161,11 @@ gboolean unusable_writer_p(const gchar * suffix)
       || 0 == strcmp(suffix, "spsc")
       || 0 == strcmp(suffix, "debug")
       || 0 == strcmp(suffix, "dump")
-      || 0 == strcmp(suffix, "ps2as"))
+      || 0 == strcmp(suffix, "ps2as")
+      /* plot-* drivers crash with segfault */
+      || 0 == strcmp(suffix, "svg")
+      || 0 == strcmp(suffix, "ai")
+    )
     return TRUE;
   else
     return FALSE;
@@ -150,32 +181,48 @@ static FILE *make_temporary_file(char *template, char *mode)
   return fdopen(tmpfd, mode);
 }
 
+/* Helper to advance pointer by correct struct size */
+static inline void* dd_next(void *ptr) {
+    if (is_pstoedit_v4)
+        return (struct DriverDescription_S_v4*)ptr + 1;
+    else
+        return (struct DriverDescription_S_v3*)ptr + 1;
+}
+
+/* Generic pointer that works for both versions - fields we use are in same positions */
+typedef struct DriverDescription_S_v3 DriverDescription_S;
+
 int install_output_pstoedit_writers(void)
 {
-  struct DriverDescription_S *dd_start, *dd_tmp;
+  DriverDescription_S *dd_start, *dd_tmp;
 
 /* Minimum pstoedit version we require (3.01).
  * We need clearPstoeditDriverInfo_plainC which was added in version 301.
  * Note: pstoeditdllversion has static linkage in pstoedit.h and cannot
  * be referenced from C code.
  */
-#define REQUIRED_PSTOEDIT_VERSION 0x301
 
-  pstoedit_checkversion(REQUIRED_PSTOEDIT_VERSION);
+  if (pstoedit_checkversion(401U))
+    is_pstoedit_v4 = TRUE;
+  else if (pstoedit_checkversion(301U))
+    is_pstoedit_v4 = FALSE;
+  else
+    FATAL("pstoedit version 3.01 or higher is required for pstoedit output.\n");
+
   dd_start = getPstoeditDriverInfo_plainC();
 
   if (dd_start) {
     dd_tmp = dd_start;
     while (dd_tmp->symbolicname) {
       if (unusable_writer_p(dd_tmp->suffix)) {
-        dd_tmp++;
-        continue;
+        dd_tmp = dd_next(dd_tmp);
+	continue;
       }
       if (!at_output_get_handler_by_suffix(dd_tmp->suffix))
-        at_output_add_handler_full(dd_tmp->suffix, dd_tmp->explanation, output_pstoedit_writer, 0, g_strdup(dd_tmp->symbolicname), g_free);
+	at_output_add_handler_full(dd_tmp->suffix, dd_tmp->explanation, output_pstoedit_writer, 0, g_strdup(dd_tmp->symbolicname), g_free);
       if (!at_output_get_handler_by_suffix(dd_tmp->symbolicname))
-        at_output_add_handler_full(dd_tmp->symbolicname, dd_tmp->explanation, output_pstoedit_writer, 0, g_strdup(dd_tmp->symbolicname), g_free);
-      dd_tmp++;
+	at_output_add_handler_full(dd_tmp->symbolicname, dd_tmp->explanation, output_pstoedit_writer, 0, g_strdup(dd_tmp->symbolicname), g_free);
+      dd_tmp = dd_next(dd_tmp);
     }
   }
   clearPstoeditDriverInfo_plainC(dd_start);
