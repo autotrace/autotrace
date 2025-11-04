@@ -1,0 +1,12 @@
+#!/bin/sh
+
+. "`dirname "$0"`/../functions"
+
+DIR=$1
+
+autotrace -output-file $DIR/trace01.svg -output-format plot-svg -report-progress -input-format BMP $DIR/trace01.bmp
+RESULT=$?
+
+if [ $RESULT -ne 0 ]; then
+    expected_fail
+fi
