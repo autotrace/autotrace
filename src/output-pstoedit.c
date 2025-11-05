@@ -94,8 +94,8 @@ static gboolean is_pstoedit_v4 = FALSE;
 static int output_pstoedit_writer(FILE * file, gchar * name, int llx, int lly, int urx, int ury, at_output_opts_type * opts, at_spline_list_array_type shape, at_msg_func msg_func, gpointer msg_data, gpointer user_data)
 {
   at_spline_writer *p2e_writer = NULL;
-  char tmpfile_name_p2e[] = "/tmp/at-bo-XXXXXX";
-  char tmpfile_name_pstoedit[] = "/tmp/at-fo-XXXXXX";
+  g_autofree gchar *tmpfile_name_p2e = NULL;
+  g_autofree gchar *tmpfile_name_pstoedit = NULL;
   const gchar *symbolicname = (const gchar *)user_data;
   FILE *tmpfile;
   int result = 0;
