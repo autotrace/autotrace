@@ -349,13 +349,12 @@ static void compute_color_rgb(QuantizeObj * quantobj, Histogram histogram, boxpt
 static void select_colors_rgb(QuantizeObj * quantobj, Histogram histogram)
 /* Master routine for color selection */
 {
-  boxptr boxlist;
   int numboxes;
   int desired = quantobj->desired_number_of_colors;
   int i;
 
   /* Allocate workspace for box list */
-  boxlist = g_malloc(desired * sizeof(box));
+  g_autofree boxptr boxlist = g_malloc(desired * sizeof(box));
 
   /* Initialize one box containing whole space */
   numboxes = 1;
@@ -373,7 +372,6 @@ static void select_colors_rgb(QuantizeObj * quantobj, Histogram histogram)
   /* Compute the representative color for each box, fill colormap */
   for (i = 0; i < numboxes; i++)
     compute_color_rgb(quantobj, histogram, boxlist + i, i);
-  g_free(boxlist);
 }
 
 /*

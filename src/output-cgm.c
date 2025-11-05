@@ -129,7 +129,6 @@ static gboolean output_metafiledescription(FILE * fdes, const char *string)
 int output_cgm_writer(FILE * cgm_file, gchar * name, int llx, int lly, int urx, int ury, at_output_opts_type * opts, spline_list_array_type shape, at_msg_func msg_func, gpointer msg_data, gpointer user_data)
 {
   unsigned this_list;
-  char *des;
   const char *version_string = at_version(TRUE);
 
   output_beginmetafilename(cgm_file, name);
@@ -137,11 +136,10 @@ int output_cgm_writer(FILE * cgm_file, gchar * name, int llx, int lly, int urx, 
   write16(cgm_file, CGM_METAFILEVERSION);
   write16(cgm_file, 0x0002);
 
-  des = g_malloc(strlen("created by ") + strlen(version_string) + 1);
+  g_autofree char *des = g_malloc(strlen("created by ") + strlen(version_string) + 1);
   strcpy(des, "created by ");
   strcat(des, version_string);
   output_metafiledescription(cgm_file, des);
-  g_free(des);
 
   write16(cgm_file, 0x1166);    /* metafile element list */
   write16(cgm_file, 0x0001);

@@ -297,7 +297,6 @@ static void pnm_load_raw(PNMScanner * scan, PNMInfo * info, unsigned char *data,
 
 static void pnm_load_rawpbm(PNMScanner * scan, PNMInfo * info, unsigned char *data, at_exception_type * excep)
 {
-  unsigned char *buf;
   unsigned char curbyte;
   unsigned char *d;
   unsigned int x, i;
@@ -307,7 +306,7 @@ static void pnm_load_rawpbm(PNMScanner * scan, PNMInfo * info, unsigned char *da
 
   fd = pnmscanner_fd(scan);
   rowlen = (unsigned int)ceil((double)(info->xres) / 8.0);
-  buf = g_malloc(rowlen * sizeof(unsigned char));
+  g_autofree unsigned char *buf = g_malloc(rowlen * sizeof(unsigned char));
 
   start = 0;
   end = info->yres;
@@ -318,7 +317,7 @@ static void pnm_load_rawpbm(PNMScanner * scan, PNMInfo * info, unsigned char *da
     if (rowlen != fread(buf, 1, rowlen, fd)) {
       LOG("pnm filter: error reading file\n");
       at_exception_fatal(excep, "pnm filter: error reading file");
-      goto cleanup;
+      return;
     }
     bufpos = 0;
     curbyte = buf[0];
@@ -332,8 +331,6 @@ static void pnm_load_rawpbm(PNMScanner * scan, PNMInfo * info, unsigned char *da
 
     d += info->xres;
   }
-cleanup:
-  g_free(buf);
 }
 
 /**************** FILE SCANNER UTILITIES **************/
