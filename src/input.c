@@ -183,6 +183,7 @@ char *at_input_shortlist(void)
   /* remove final ", " */
   g_return_val_if_fail(list[length - 2] == ',', NULL);
   list[length - 2] = '\0';
+  return list;
 }
 
 static void input_list_set(gpointer key, gpointer value, gpointer user_data)
