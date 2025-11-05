@@ -1059,7 +1059,7 @@ static spline_type fit_one_spline(curve_type curve, at_exception_type * exceptio
   spline_type spline;
   vector_type start_vector, end_vector;
   unsigned i;
-  vector_type *A;
+  g_autofree vector_type *A = NULL;
   vector_type t1_hat = *CURVE_START_TANGENT(curve);
   vector_type t2_hat = *CURVE_END_TANGENT(curve);
   gfloat C[2][2] = { {0.0, 0.0}, {0.0, 0.0} };
@@ -1097,7 +1097,6 @@ static spline_type fit_one_spline(curve_type curve, at_exception_type * exceptio
     X[0] += Vdot(temp, Ai[0]);
     X[1] += Vdot(temp, Ai[1]);
   }
-  g_free(A);
 
   C[1][0] = C[0][1];
 

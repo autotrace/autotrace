@@ -140,7 +140,6 @@ static void out_fig_splines(FILE * file, spline_list_array_type shape, int llx, 
   unsigned this_list;
 /*    int fig_colour, fig_depth, i; */
   int fig_colour, fig_fill, fig_width, fig_subt, fig_spline_close, i;
-  int *spline_colours;
 
 /*
 	add an array of colours for splines (one for each group)
@@ -148,7 +147,7 @@ static void out_fig_splines(FILE * file, spline_list_array_type shape, int llx, 
 */
 
   /*  Need to create hash table for colours */
-  spline_colours = g_malloc(sizeof(int) * SPLINE_LIST_ARRAY_LENGTH(shape));
+  g_autofree int *spline_colours = g_malloc(sizeof(int) * SPLINE_LIST_ARRAY_LENGTH(shape));
 
   /* Preload the big 8 */
   fig_col_init();
@@ -175,15 +174,13 @@ static void out_fig_splines(FILE * file, spline_list_array_type shape, int llx, 
     unsigned this_spline;
     spline_list_type list = SPLINE_LIST_ARRAY_ELT(shape, this_list);
 
-/*	store the spline points in two arrays, control weights in another */
-    int *pointx, *pointy;
-    gfloat *contrl;
     int pointcount = 0, is_spline = 0, j;
     int maxlength = SPLINE_LIST_LENGTH(list) * 5 + 1;
 
-    pointx = g_malloc(maxlength * sizeof(int));
-    pointy = g_malloc(maxlength * sizeof(int));
-    contrl = g_malloc(maxlength * sizeof(gfloat));
+/*	store the spline points in two arrays, control weights in another */
+    g_autofree int *pointx = g_malloc(maxlength * sizeof(int));
+    g_autofree int *pointy = g_malloc(maxlength * sizeof(int));
+    g_autofree gfloat *contrl = g_malloc(maxlength * sizeof(gfloat));
 
     if (list.clockwise) {
       fig_colour = FIG_WHITE;
@@ -335,12 +332,7 @@ static void out_fig_splines(FILE * file, spline_list_array_type shape, int llx, 
     if (fig_depth < 0) {
       fig_depth = 0;
     }
-    g_free(pointx);
-    g_free(pointy);
-    g_free(contrl);
   }
-  g_free(spline_colours);
-  return;
 }
 
 int output_fig_writer(FILE * file, gchar * name, int llx, int lly, int urx, int ury, at_output_opts_type * opts, spline_list_array_type shape, at_msg_func msg_func, gpointer msg_data, gpointer user_data)

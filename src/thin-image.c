@@ -103,6 +103,7 @@ void thin_image(at_bitmap * image, const at_color * bg, at_exception_type * exp)
    * trades time for pathological case memory.....*/
   long m, n, num_pixels;
   at_bitmap bm;
+  g_autofree unsigned char *bm_data = NULL;  // Autofree pointer
   unsigned int spp = AT_BITMAP_PLANES(image), width = AT_BITMAP_WIDTH(image), height = AT_BITMAP_HEIGHT(image);
 
   if (bg)
@@ -111,7 +112,8 @@ void thin_image(at_bitmap * image, const at_color * bg, at_exception_type * exp)
   bm.height = image->height;
   bm.width = image->width;
   bm.np = image->np;
-  bm.bitmap = g_malloc((gsize)height * width * spp);
+  bm_data = g_malloc((gsize)height * width * spp);
+  bm.bitmap = bm_data;  // Point struct member to autofree'd memory
   memcpy(bm.bitmap, image->bitmap, height * width * spp);
   /* that clones the image */
 
@@ -169,11 +171,9 @@ void thin_image(at_bitmap * image, const at_color * bg, at_exception_type * exp)
     {
       LOG("thin_image: %u-plane images are not supported", spp);
       at_exception_fatal(exp, "thin_image: wrong plane images are passed");
-      goto cleanup;
+      break;
     }
   }
-cleanup:
-  g_free(bm.bitmap);
 }
 
 void thin3(at_bitmap * image, Pixel colour)
@@ -187,7 +187,7 @@ void thin3(at_bitmap * image, Pixel colour)
   unsigned int count = 1;       /* Deleted pixel count          */
   unsigned int p, q;            /* Neighborhood maps of adjacent */
   /* cells                        */
-  unsigned char *qb;            /* Neighborhood maps of previous */
+  g_autofree unsigned char *qb = NULL; /* Neighborhood maps of previous */
   /* scanline                     */
   unsigned int m;               /* Deletion direction mask      */
 
@@ -258,7 +258,6 @@ void thin3(at_bitmap * image, Pixel colour)
     }
     LOG("ThinImage: pass %d, %d pixels deleted\n", pc, count);
   }
-  g_free(qb);
 }
 
 void thin1(at_bitmap * image, unsigned char colour)
@@ -272,7 +271,7 @@ void thin1(at_bitmap * image, unsigned char colour)
   unsigned int count = 1;       /* Deleted pixel count          */
   unsigned int p, q;            /* Neighborhood maps of adjacent */
   /* cells                        */
-  unsigned char *qb;            /* Neighborhood maps of previous */
+  g_autofree unsigned char *qb = NULL; /* Neighborhood maps of previous */
   /* scanline                     */
   unsigned int m;               /* Deletion direction mask      */
 
@@ -342,5 +341,4 @@ void thin1(at_bitmap * image, unsigned char colour)
     }
     LOG("thin1: pass %d, %d pixels deleted\n", pc, count);
   }
-  g_free(qb);
 }

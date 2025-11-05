@@ -508,7 +508,7 @@ int bspline_to_lines(xypnt_head_rec * vtx_list /*  */ ,
                      int spline_resolution /*  */ )
 {
   int i, j, knot_index, number_of_segments, knot[MAX_VERTICES + 1], n, m;
-  double spline_step, total_length, t, spline_pnt_x, spline_pnt_y, r, *weight;
+  double spline_step, total_length, t, spline_pnt_x, spline_pnt_y, r;
   xypnt curr_pnt, spline_pnt;
   char end_of_list;
 
@@ -516,7 +516,7 @@ int bspline_to_lines(xypnt_head_rec * vtx_list /*  */ ,
   if (vtx_list) {
     n = vtx_count + spline_order + 1;
     m = spline_order + 1;
-    weight = g_malloc((gsize)n * m * sizeof(double));
+    g_autofree double *weight = g_malloc((gsize)n * m * sizeof(double));
 
     for (i = 0; i < vtx_count + spline_order; i++)
       knot[i] = (i < spline_order) ? 0 : (i > vtx_count) ? knot[i - 1] : knot[i - 1] + 1;
@@ -557,8 +557,6 @@ int bspline_to_lines(xypnt_head_rec * vtx_list /*  */ ,
     }
     xypnt_last_pnt(vtx_list, &spline_pnt, &end_of_list);
     xypnt_add_pnt(*new_vtx_list, spline_pnt);
-
-    g_free(weight);
   }
 
   return (0);

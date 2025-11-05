@@ -561,7 +561,6 @@ static void despeckle_iteration( /* in */ int level,
                                 /* in */ int height,
                                 /* in/out */ unsigned char *bitmap)
 {
-  unsigned char *mask;
   int x, y;
   int current_size;
   int tightness;
@@ -570,7 +569,7 @@ static void despeckle_iteration( /* in */ int level,
   current_size = 1 << level;
   tightness = (int)(noise_max / (1.0 + adaptive_tightness * level));
 
-  mask = g_malloc0((gsize)width * height * sizeof(unsigned char));
+  g_autofree unsigned char *mask = g_malloc0((gsize)width * height * sizeof(unsigned char));
   for (y = 0; y < height; y++) {
     for (x = 0; x < width; x++) {
       if (mask[y * width + x] == 0) {
@@ -588,8 +587,6 @@ static void despeckle_iteration( /* in */ int level,
       }
     }
   }
-
-  g_free(mask);
 }
 
 /* Despeckle Iteration - Despeckle all regions smaller than cur_size pixels
@@ -610,7 +607,6 @@ static void despeckle_iteration_8( /* in */ int level,
                                   /* in */ int height,
                                   /* in/out */ unsigned char *bitmap)
 {
-  unsigned char *mask;
   int x, y;
   int current_size;
   int tightness;
@@ -619,7 +615,7 @@ static void despeckle_iteration_8( /* in */ int level,
   current_size = 1 << level;
   tightness = (int)(noise_max / (1.0 + adaptive_tightness * level));
 
-  mask = g_malloc0((gsize)width * height * sizeof(unsigned char));
+  g_autofree unsigned char *mask = g_malloc0((gsize)width * height * sizeof(unsigned char));
   for (y = 0; y < height; y++) {
     for (x = 0; x < width; x++) {
       if (mask[y * width + x] == 0) {
@@ -637,8 +633,6 @@ static void despeckle_iteration_8( /* in */ int level,
       }
     }
   }
-
-  g_free(mask);
 }
 
 /* Despeckle - Despeckle a 8 or 24 bit image
