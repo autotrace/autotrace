@@ -1,0 +1,14 @@
+#!/bin/sh
+
+. "`dirname "$0"`/../functions"
+
+DIR=$1
+
+autotrace -output-file $DIR/trace01.pdf -output-format pdf -report-progress -input-format BMP $DIR/trace01.bmp
+RESULT=$?
+rm -f $DIR/trace01.pdf
+
+if [ $RESULT -ne 0 ]; then
+    fail
+fi
+ok

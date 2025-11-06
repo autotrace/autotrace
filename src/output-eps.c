@@ -33,7 +33,12 @@
 #define OUT(...) fprintf(ps_file, __VA_ARGS__)
 
 /* These macros just output their arguments.  */
-#define OUT_REAL(r) fprintf(ps_file, r == lround(r) ? "%.0f " : "%.3f ", r)
+#define OUT_REAL(r)                                                                                \
+  do {                                                                                             \
+    double _r = (r);                                                                               \
+    double _frac = fabs(_r - round(_r));                                                           \
+    fprintf(ps_file, _frac < 0.0001 ? "%.0f " : "%.3f ", _r);                                      \
+  } while (0)
 
 /* For a PostScript command with two real arguments, e.g., lineto.  OP
    should be a constant string.  */

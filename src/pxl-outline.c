@@ -236,7 +236,7 @@ pixel_outline_list_type find_centerline_pixels(at_bitmap *bitmap, at_color bg_co
                                                gpointer testcancel_data, at_exception_type *exp)
 {
   pixel_outline_list_type outline_list;
-  signed short row, col;
+  unsigned int row, col;
   at_bitmap *marked = at_bitmap_new(AT_BITMAP_WIDTH(bitmap), AT_BITMAP_HEIGHT(bitmap), 1);
   unsigned int max_progress = AT_BITMAP_HEIGHT(bitmap) * AT_BITMAP_WIDTH(bitmap);
 

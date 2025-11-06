@@ -60,13 +60,25 @@
   } while (0)
 
 /* This should be used for outputting a string S on a line by itself.  */
-#define SOUT_LINE(s) sprintf(temp, "%s\n", s), *length += strlen(temp)
+#define SOUT_LINE(s)                                                                               \
+  do {                                                                                             \
+    g_autofree gchar *_tmp = g_strdup_printf("%s\n", s);                                           \
+    *length += strlen(_tmp);                                                                       \
+  } while (0)
 
 /* These output their arguments, preceded by the indentation.  */
-#define SOUT(...) sprintf(temp, __VA_ARGS__), *length += strlen(temp)
+#define SOUT(...)                                                                                  \
+  do {                                                                                             \
+    g_autofree gchar *_tmp = g_strdup_printf(__VA_ARGS__);                                         \
+    *length += strlen(_tmp);                                                                       \
+  } while (0)
 
 /* These macros just output their arguments.  */
-#define SOUT_REAL(r) sprintf(temp, r == lround(r) ? "%.0f " : "%.3f ", r), *length += strlen(temp)
+#define SOUT_REAL(r)                                                                               \
+  do {                                                                                             \
+    g_autofree gchar *_tmp = g_strdup_printf((r) == lround(r) ? "%.0f " : "%.3f ", (r));           \
+    *length += strlen(_tmp);                                                                       \
+  } while (0)
 
 /* For a PostScript command with two real arguments, e.g., lineto.  OP
    should be a constant string.  */
@@ -174,7 +186,6 @@ static int output_pdf_tailor(FILE *pdf_file, size_t length, int llx, int lly, in
 
 static void out_splines(FILE *pdf_file, spline_list_array_type shape, size_t *length)
 {
-  char temp[40];
   unsigned this_list;
   spline_list_type list;
 
