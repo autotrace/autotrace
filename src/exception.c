@@ -9,12 +9,12 @@ at_exception_type at_exception_new(at_msg_func client_func, gpointer client_data
   return e;
 }
 
-gboolean at_exception_got_fatal(at_exception_type * exception)
+gboolean at_exception_got_fatal(at_exception_type *exception)
 {
   return (exception->msg_type == AT_MSG_FATAL) ? TRUE : FALSE;
 }
 
-void at_exception_fatal(at_exception_type * exception, const gchar * message)
+void at_exception_fatal(at_exception_type *exception, const gchar *message)
 {
   if (!exception)
     return;
@@ -24,7 +24,7 @@ void at_exception_fatal(at_exception_type * exception, const gchar * message)
   }
 }
 
-void at_exception_warning(at_exception_type * exception, const gchar * message)
+void at_exception_warning(at_exception_type *exception, const gchar *message)
 {
   if (!exception)
     return;

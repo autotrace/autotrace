@@ -98,10 +98,14 @@ static int install_input_readers(void)
 #if !HAVE_MAGICK_READERS
   at_input_add_handler("BMP", "Microsoft Windows bitmap image (native)", input_bmp_reader);
   at_input_add_handler("TGA", "Truevision Targa image (native, 8 bit only)", input_tga_reader);
-  at_input_add_handler_full("PBM", "Portable bitmap format (native)", input_pnm_reader, 0, "PBM", NULL);
-  at_input_add_handler_full("PGM", "Portable graymap format (native)", input_pnm_reader, 0, "PGM", NULL);
-  at_input_add_handler_full("PNM", "Portable anymap format (native)", input_pnm_reader, 0, "PNM", NULL);
-  at_input_add_handler_full("PPM", "Portable pixmap format (native)", input_pnm_reader, 0, "PPM", NULL);
+  at_input_add_handler_full("PBM", "Portable bitmap format (native)", input_pnm_reader, 0, "PBM",
+                            NULL);
+  at_input_add_handler_full("PGM", "Portable graymap format (native)", input_pnm_reader, 0, "PGM",
+                            NULL);
+  at_input_add_handler_full("PNM", "Portable anymap format (native)", input_pnm_reader, 0, "PNM",
+                            NULL);
+  at_input_add_handler_full("PPM", "Portable pixmap format (native)", input_pnm_reader, 0, "PPM",
+                            NULL);
 #endif /* HAVE_MAGICK_READERS */
 
   at_input_add_handler("GF", "TeX raster font (native)", input_gf_reader);

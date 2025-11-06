@@ -31,22 +31,23 @@
 #define FIG_Y(y) (int)(((ury - y) * 15.0) + 300.0)
 
 /* the basic colours */
-#define FIG_BLACK	0
-#define FIG_BLUE	1
-#define FIG_GREEN	2
-#define FIG_CYAN	3
-#define FIG_RED		4
-#define FIG_MAGENTA	5
-#define FIG_YELLOW	6
-#define FIG_WHITE	7
+#define FIG_BLACK 0
+#define FIG_BLUE 1
+#define FIG_GREEN 2
+#define FIG_CYAN 3
+#define FIG_RED 4
+#define FIG_MAGENTA 5
+#define FIG_YELLOW 6
+#define FIG_WHITE 7
 
 static gfloat bezpnt(gfloat, gfloat, gfloat, gfloat, gfloat);
-static void out_fig_splines(FILE *, spline_list_array_type, int, int, int, int, at_exception_type *);
+static void out_fig_splines(FILE *, spline_list_array_type, int, int, int, int,
+                            at_exception_type *);
 static int get_fig_colour(at_color, at_exception_type *);
 static void fig_col_init(void);
 
 /* colour information */
-#define fig_col_hash(col_typ)  ( ( (col_typ).r & 255 ) + ( (col_typ).g & 161 ) + ( (col_typ).b & 127 ) )
+#define fig_col_hash(col_typ) (((col_typ).r & 255) + ((col_typ).g & 161) + ((col_typ).b & 127))
 
 static struct {
   unsigned int colour;
@@ -75,8 +76,9 @@ static void fig_new_depth()
     glob_min_x = loc_min_x;
     glo_bbox_flag = 1;
   } else {
-    if ((loc_max_y <= glob_min_y) || (loc_min_y >= glob_max_y) || (loc_max_x <= glob_min_x) || (loc_min_x >= glob_max_x)) {
-/* outside global bounds, increase global box */
+    if ((loc_max_y <= glob_min_y) || (loc_min_y >= glob_max_y) || (loc_max_x <= glob_min_x) ||
+        (loc_min_x >= glob_max_x)) {
+      /* outside global bounds, increase global box */
       if (loc_max_y > glob_max_y)
         glob_max_y = loc_max_y;
       if (loc_min_y < glob_min_y)
@@ -86,13 +88,13 @@ static void fig_new_depth()
       if (loc_min_x < glob_min_x)
         glob_min_x = loc_min_x;
     } else {
-/* inside global bounds, decrease depth and create new bounds */
+      /* inside global bounds, decrease depth and create new bounds */
       glob_max_y = loc_max_y;
       glob_min_y = loc_min_y;
       glob_max_x = loc_max_x;
       glob_min_x = loc_min_x;
       if (fig_depth)
-        fig_depth--;            /* don't let it get < 0 */
+        fig_depth--; /* don't let it get < 0 */
     }
   }
   loc_bbox_flag = 0;
@@ -124,27 +126,29 @@ static gfloat bezpnt(gfloat t, gfloat z1, gfloat z2, gfloat z3, gfloat z4)
 {
   gfloat temp, t1;
   /* Determine ordinate on Bezier curve at length "t" on curve */
-  if (t < (gfloat) 0.0) {
-    t = (gfloat) 0.0;
+  if (t < (gfloat)0.0) {
+    t = (gfloat)0.0;
   }
-  if (t > (gfloat) 1.0) {
-    t = (gfloat) 1.0;
+  if (t > (gfloat)1.0) {
+    t = (gfloat)1.0;
   }
-  t1 = ((gfloat) 1.0 - t);
-  temp = t1 * t1 * t1 * z1 + (gfloat) 3.0 *t * t1 * t1 * z2 + (gfloat) 3.0 *t * t * t1 * z3 + t * t * t * z4;
+  t1 = ((gfloat)1.0 - t);
+  temp = t1 * t1 * t1 * z1 + (gfloat)3.0 * t * t1 * t1 * z2 + (gfloat)3.0 * t * t * t1 * z3 +
+         t * t * t * z4;
   return (temp);
 }
 
-static void out_fig_splines(FILE * file, spline_list_array_type shape, int llx, int lly, int urx, int ury, at_exception_type * exp)
+static void out_fig_splines(FILE *file, spline_list_array_type shape, int llx, int lly, int urx,
+                            int ury, at_exception_type *exp)
 {
   unsigned this_list;
-/*    int fig_colour, fig_depth, i; */
+  /*    int fig_colour, fig_depth, i; */
   int fig_colour, fig_fill, fig_width, fig_subt, fig_spline_close, i;
 
-/*
-	add an array of colours for splines (one for each group)
-	create palette hash
-*/
+  /*
+          add an array of colours for splines (one for each group)
+          create palette hash
+  */
 
   /*  Need to create hash table for colours */
   g_autofree int *spline_colours = g_malloc(sizeof(int) * SPLINE_LIST_ARRAY_LENGTH(shape));
@@ -155,16 +159,18 @@ static void out_fig_splines(FILE * file, spline_list_array_type shape, int llx, 
   /*  Load the colours from the splines */
   for (this_list = 0; this_list < SPLINE_LIST_ARRAY_LENGTH(shape); this_list++) {
     spline_list_type list = SPLINE_LIST_ARRAY_ELT(shape, this_list);
-    at_color curr_color = (list.clockwise && shape.background_color != NULL) ? *(shape.background_color) : list.color;
+    at_color curr_color =
+        (list.clockwise && shape.background_color != NULL) ? *(shape.background_color) : list.color;
     spline_colours[this_list] = get_fig_colour(curr_color, exp);
   }
   /* Output colours */
   if (LAST_FIG_COLOUR > 32) {
     for (i = 32; i < LAST_FIG_COLOUR; i++) {
-      fprintf(file, "0 %d #%.2x%.2x%.2x\n", i, fig_colour_map[i].c.r, fig_colour_map[i].c.g, fig_colour_map[i].c.b);
+      fprintf(file, "0 %d #%.2x%.2x%.2x\n", i, fig_colour_map[i].c.r, fig_colour_map[i].c.g,
+              fig_colour_map[i].c.b);
     }
   }
-/*	Each "spline list" in the array appears to be a group of splines */
+  /*	Each "spline list" in the array appears to be a group of splines */
   fig_depth = SPLINE_LIST_ARRAY_LENGTH(shape) + 20;
   if (fig_depth > 999) {
     fig_depth = 999;
@@ -177,7 +183,7 @@ static void out_fig_splines(FILE * file, spline_list_array_type shape, int llx, 
     int pointcount = 0, is_spline = 0, j;
     int maxlength = SPLINE_LIST_LENGTH(list) * 5 + 1;
 
-/*	store the spline points in two arrays, control weights in another */
+    /*	store the spline points in two arrays, control weights in another */
     g_autofree int *pointx = g_malloc(maxlength * sizeof(int));
     g_autofree int *pointy = g_malloc(maxlength * sizeof(int));
     g_autofree gfloat *contrl = g_malloc(maxlength * sizeof(gfloat));
@@ -196,7 +202,7 @@ static void out_fig_splines(FILE * file, spline_list_array_type shape, int llx, 
       if (pointcount == 0) {
         pointx[pointcount] = FIG_X(START_POINT(s).x);
         pointy[pointcount] = FIG_Y(START_POINT(s).y);
-        contrl[pointcount] = (gfloat) 0.0;
+        contrl[pointcount] = (gfloat)0.0;
         fig_addtobbox(START_POINT(s).x, START_POINT(s).y);
         pointcount++;
       }
@@ -205,22 +211,24 @@ static void out_fig_splines(FILE * file, spline_list_array_type shape, int llx, 
       if (SPLINE_DEGREE(s) == LINEARTYPE) {
         pointx[pointcount] = FIG_X(END_POINT(s).x);
         pointy[pointcount] = FIG_Y(END_POINT(s).y);
-        contrl[pointcount] = (gfloat) 0.0;
+        contrl[pointcount] = (gfloat)0.0;
         fig_addtobbox(START_POINT(s).x, START_POINT(s).y);
         pointcount++;
-      } else {                  /* Assume Bezier like spline */
+      } else { /* Assume Bezier like spline */
 
         /* Convert approximated bezier to interpolated X Spline */
         gfloat temp;
-        for (temp = (gfloat) 0.2; temp < (gfloat) 0.9; temp += (gfloat) 0.2) {
-          pointx[pointcount] = FIG_X(bezpnt(temp, START_POINT(s).x, CONTROL1(s).x, CONTROL2(s).x, END_POINT(s).x));
-          pointy[pointcount] = FIG_Y(bezpnt(temp, START_POINT(s).y, CONTROL1(s).y, CONTROL2(s).y, END_POINT(s).y));
-          contrl[pointcount] = (gfloat) - 1.0;
+        for (temp = (gfloat)0.2; temp < (gfloat)0.9; temp += (gfloat)0.2) {
+          pointx[pointcount] =
+              FIG_X(bezpnt(temp, START_POINT(s).x, CONTROL1(s).x, CONTROL2(s).x, END_POINT(s).x));
+          pointy[pointcount] =
+              FIG_Y(bezpnt(temp, START_POINT(s).y, CONTROL1(s).y, CONTROL2(s).y, END_POINT(s).y));
+          contrl[pointcount] = (gfloat)-1.0;
           pointcount++;
         }
         pointx[pointcount] = FIG_X(END_POINT(s).x);
         pointy[pointcount] = FIG_Y(END_POINT(s).y);
-        contrl[pointcount] = (gfloat) 0.0;
+        contrl[pointcount] = (gfloat)0.0;
         fig_addtobbox(START_POINT(s).x, START_POINT(s).y);
         fig_addtobbox(CONTROL1(s).x, CONTROL1(s).y);
         fig_addtobbox(CONTROL2(s).x, CONTROL2(s).y);
@@ -241,7 +249,8 @@ static void out_fig_splines(FILE * file, spline_list_array_type shape, int llx, 
     }
     if (is_spline != 0) {
       fig_new_depth();
-      fprintf(file, "3 %d 0 %d %d %d %d 0 %d 0.00 0 0 0 %d\n", fig_spline_close, fig_width, fig_colour, fig_colour, fig_depth, fig_fill, pointcount);
+      fprintf(file, "3 %d 0 %d %d %d %d 0 %d 0.00 0 0 0 %d\n", fig_spline_close, fig_width,
+              fig_colour, fig_colour, fig_depth, fig_fill, pointcount);
       /* Print out points */
       j = 0;
       for (i = 0; i < pointcount; i++) {
@@ -281,20 +290,22 @@ static void out_fig_splines(FILE * file, spline_list_array_type shape, int llx, 
         if ((pointx[0] == pointx[1]) && (pointy[0] == pointy[1])) {
           /* Point */
           fig_new_depth();
-          fprintf(file, "2 1 0 1 %d %d %d 0 -1 0.000 0 0 -1 0 0 1\n", fig_colour, fig_colour, fig_depth);
+          fprintf(file, "2 1 0 1 %d %d %d 0 -1 0.000 0 0 -1 0 0 1\n", fig_colour, fig_colour,
+                  fig_depth);
           fprintf(file, "\t%d %d\n", pointx[0], pointy[0]);
         } else {
           /* Line segment? */
           fig_new_depth();
-          fprintf(file, "2 1 0 1 %d %d %d 0 -1 0.000 0 0 -1 0 0 2\n", fig_colour, fig_colour, fig_depth);
+          fprintf(file, "2 1 0 1 %d %d %d 0 -1 0.000 0 0 -1 0 0 2\n", fig_colour, fig_colour,
+                  fig_depth);
           fprintf(file, "\t%d %d %d %d\n", pointx[0], pointy[0], pointx[1], pointy[1]);
         }
       } else {
-        if ((pointcount == 3) && (pointx[0] == pointx[2])
-            && (pointy[0] == pointy[2])) {
+        if ((pointcount == 3) && (pointx[0] == pointx[2]) && (pointy[0] == pointy[2])) {
           /* Line segment? */
           fig_new_depth();
-          fprintf(file, "2 1 0 1 %d %d %d 0 -1 0.000 0 0 -1 0 0 2\n", fig_colour, fig_colour, fig_depth);
+          fprintf(file, "2 1 0 1 %d %d %d 0 -1 0.000 0 0 -1 0 0 2\n", fig_colour, fig_colour,
+                  fig_depth);
           fprintf(file, "\t%d %d %d %d\n", pointx[0], pointy[0], pointx[1], pointy[1]);
         } else {
           if ((pointx[0] != pointx[pointcount - 1]) || (pointy[0] != pointy[pointcount - 1])) {
@@ -308,7 +319,8 @@ static void out_fig_splines(FILE * file, spline_list_array_type shape, int llx, 
             }
           }
           fig_new_depth();
-          fprintf(file, "2 %d 0 %d %d %d %d 0 %d 0.00 0 0 0 0 0 %d\n", fig_subt, fig_width, fig_colour, fig_colour, fig_depth, fig_fill, pointcount);
+          fprintf(file, "2 %d 0 %d %d %d %d 0 %d 0.00 0 0 0 0 0 %d\n", fig_subt, fig_width,
+                  fig_colour, fig_colour, fig_depth, fig_fill, pointcount);
           /* Print out points */
           j = 0;
           for (i = 0; i < pointcount; i++) {
@@ -328,29 +340,31 @@ static void out_fig_splines(FILE * file, spline_list_array_type shape, int llx, 
         }
       }
     }
-/*	fig_depth--; */
+    /*	fig_depth--; */
     if (fig_depth < 0) {
       fig_depth = 0;
     }
   }
 }
 
-int output_fig_writer(FILE * file, gchar * name, int llx, int lly, int urx, int ury, at_output_opts_type * opts, spline_list_array_type shape, at_msg_func msg_func, gpointer msg_data, gpointer user_data)
+int output_fig_writer(FILE *file, gchar *name, int llx, int lly, int urx, int ury,
+                      at_output_opts_type *opts, spline_list_array_type shape, at_msg_func msg_func,
+                      gpointer msg_data, gpointer user_data)
 {
   at_exception_type exp = at_exception_new(msg_func, msg_data);
-/*	Output header	*/
+  /*	Output header	*/
   fprintf(file, "#FIG 3.2\nLandscape\nCenter\nInches\nLetter\n100.00\nSingle\n-2\n1200 2\n");
 
-/*	Output data	*/
+  /*	Output data	*/
   out_fig_splines(file, shape, llx, lly, urx, ury, &exp);
   return 0;
 }
 
 /*
-	Create hash number
-	At hash number -> set fig number
-	If fig number already used, go to next fig number (alternate)
-	if alternate is 0, set next unused fig number
+        Create hash number
+        At hash number -> set fig number
+        If fig number already used, go to next fig number (alternate)
+        if alternate is 0, set next unused fig number
 */
 
 static void fig_col_init(void)
@@ -410,13 +424,13 @@ static void fig_col_init(void)
  * If unknown, create a new colour index and return that.
  */
 
-static int get_fig_colour(at_color this_colour, at_exception_type * exp)
+static int get_fig_colour(at_color this_colour, at_exception_type *exp)
 {
   int hash, i, this_ind;
 
   hash = fig_col_hash(this_colour);
 
-/*  Special case: black _IS_ zero: */
+  /*  Special case: black _IS_ zero: */
   if ((hash == 0) && (at_color_equal(&(fig_colour_map[0].c), &this_colour))) {
     return (0);
   }
@@ -436,7 +450,7 @@ static int get_fig_colour(at_color this_colour, at_exception_type * exp)
   } else {
     i = 0;
     this_ind = fig_hash[hash].colour;
-figcolloop:
+  figcolloop:
     /* If colour match return current colour */
     if (at_color_equal(&(fig_colour_map[this_ind].c), &this_colour)) {
       return (this_ind);

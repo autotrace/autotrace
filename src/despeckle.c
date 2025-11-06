@@ -78,7 +78,7 @@ static int calc_error_8(unsigned char *color1, unsigned char *color2)
  *   Number of adjacent pixels found having the same color
  */
 
-static int find_size( /* in */ unsigned char *index,
+static int find_size(/* in */ unsigned char *index,
                      /* in */ int x,
                      /* in */ int y,
                      /* in */ int width,
@@ -89,13 +89,22 @@ static int find_size( /* in */ unsigned char *index,
   int count;
   int x1, x2;
 
-  if (y < 0 || y >= height || mask[y * width + x] == 1 || bitmap[3 * (y * width + x)] != index[0] || bitmap[3 * (y * width + x) + 1] != index[1] || bitmap[3 * (y * width + x) + 2] != index[2])
+  if (y < 0 || y >= height || mask[y * width + x] == 1 || bitmap[3 * (y * width + x)] != index[0] ||
+      bitmap[3 * (y * width + x) + 1] != index[1] || bitmap[3 * (y * width + x) + 2] != index[2])
     return 0;
 
-  for (x1 = x; x1 >= 0 && bitmap[3 * (y * width + x1)] == index[0] && bitmap[3 * (y * width + x1) + 1] == index[1] && bitmap[3 * (y * width + x1) + 2] == index[2] && mask[y * width + x] != 1; x1--) ;
+  for (x1 = x; x1 >= 0 && bitmap[3 * (y * width + x1)] == index[0] &&
+               bitmap[3 * (y * width + x1) + 1] == index[1] &&
+               bitmap[3 * (y * width + x1) + 2] == index[2] && mask[y * width + x] != 1;
+       x1--)
+    ;
   x1++;
 
-  for (x2 = x; x2 < width && bitmap[3 * (y * width + x2)] == index[0] && bitmap[3 * (y * width + x2) + 1] == index[1] && bitmap[3 * (y * width + x2) + 2] == index[2] && mask[y * width + x] != 1; x2++) ;
+  for (x2 = x; x2 < width && bitmap[3 * (y * width + x2)] == index[0] &&
+               bitmap[3 * (y * width + x2) + 1] == index[1] &&
+               bitmap[3 * (y * width + x2) + 2] == index[2] && mask[y * width + x] != 1;
+       x2++)
+    ;
   x2--;
 
   count = x2 - x1 + 1;
@@ -123,7 +132,7 @@ static int find_size( /* in */ unsigned char *index,
  *   Number of adjacent pixels found having the same color
  */
 
-static int find_size_8( /* in */ unsigned char *index,
+static int find_size_8(/* in */ unsigned char *index,
                        /* in */ int x,
                        /* in */ int y,
                        /* in */ int width,
@@ -137,10 +146,12 @@ static int find_size_8( /* in */ unsigned char *index,
   if (y < 0 || y >= height || mask[y * width + x] == 1 || bitmap[(y * width + x)] != index[0])
     return 0;
 
-  for (x1 = x; x1 >= 0 && bitmap[(y * width + x1)] == index[0] && mask[y * width + x] != 1; x1--) ;
+  for (x1 = x; x1 >= 0 && bitmap[(y * width + x1)] == index[0] && mask[y * width + x] != 1; x1--)
+    ;
   x1++;
 
-  for (x2 = x; x2 < width && bitmap[(y * width + x2)] == index[0] && mask[y * width + x] != 1; x2++) ;
+  for (x2 = x; x2 < width && bitmap[(y * width + x2)] == index[0] && mask[y * width + x] != 1; x2++)
+    ;
   x2--;
 
   count = x2 - x1 + 1;
@@ -171,7 +182,7 @@ static int find_size_8( /* in */ unsigned char *index,
  *   Closest index != index and the error between the two colors squared
  */
 
-static void find_most_similar_neighbor( /* in */ unsigned char *index,
+static void find_most_similar_neighbor(/* in */ unsigned char *index,
                                        /* in/out */ unsigned char **closest_index,
                                        /* in/out */ int *error_amt,
                                        /* in */ int x,
@@ -203,10 +214,18 @@ static void find_most_similar_neighbor( /* in */ unsigned char *index,
     return;
   }
 
-  for (x1 = x; x1 >= 0 && bitmap[3 * (y * width + x1)] == index[0] && bitmap[3 * (y * width + x1) + 1] == index[1] && bitmap[3 * (y * width + x1) + 2] == index[2]; x1--) ;
+  for (x1 = x;
+       x1 >= 0 && bitmap[3 * (y * width + x1)] == index[0] &&
+       bitmap[3 * (y * width + x1) + 1] == index[1] && bitmap[3 * (y * width + x1) + 2] == index[2];
+       x1--)
+    ;
   x1++;
 
-  for (x2 = x; x2 < width && bitmap[3 * (y * width + x2)] == index[0] && bitmap[3 * (y * width + x2) + 1] == index[1] && bitmap[3 * (y * width + x2) + 2] == index[2]; x2++) ;
+  for (x2 = x;
+       x2 < width && bitmap[3 * (y * width + x2)] == index[0] &&
+       bitmap[3 * (y * width + x2) + 1] == index[1] && bitmap[3 * (y * width + x2) + 2] == index[2];
+       x2++)
+    ;
   x2--;
 
   if (x1 > 0) {
@@ -231,8 +250,10 @@ static void find_most_similar_neighbor( /* in */ unsigned char *index,
     mask[y * width + x] = 2;
 
   for (x = x1; x <= x2; x++) {
-    find_most_similar_neighbor(index, closest_index, error_amt, x, y - 1, width, height, bitmap, mask);
-    find_most_similar_neighbor(index, closest_index, error_amt, x, y + 1, width, height, bitmap, mask);
+    find_most_similar_neighbor(index, closest_index, error_amt, x, y - 1, width, height, bitmap,
+                               mask);
+    find_most_similar_neighbor(index, closest_index, error_amt, x, y + 1, width, height, bitmap,
+                               mask);
   }
 }
 
@@ -252,7 +273,7 @@ static void find_most_similar_neighbor( /* in */ unsigned char *index,
  *   Closest index != index and the error between the two colors squared
  */
 
-static void find_most_similar_neighbor_8( /* in */ unsigned char *index,
+static void find_most_similar_neighbor_8(/* in */ unsigned char *index,
                                          /* in/out */ unsigned char **closest_index,
                                          /* in/out */ int *error_amt,
                                          /* in */ int x,
@@ -284,10 +305,12 @@ static void find_most_similar_neighbor_8( /* in */ unsigned char *index,
     return;
   }
 
-  for (x1 = x; x1 >= 0 && bitmap[(y * width + x1)] == index[0]; x1--) ;
+  for (x1 = x; x1 >= 0 && bitmap[(y * width + x1)] == index[0]; x1--)
+    ;
   x1++;
 
-  for (x2 = x; x2 < width && bitmap[(y * width + x2)] == index[0]; x2++) ;
+  for (x2 = x; x2 < width && bitmap[(y * width + x2)] == index[0]; x2++)
+    ;
   x2--;
 
   if (x1 > 0) {
@@ -312,8 +335,10 @@ static void find_most_similar_neighbor_8( /* in */ unsigned char *index,
     mask[y * width + x] = 2;
 
   for (x = x1; x <= x2; x++) {
-    find_most_similar_neighbor_8(index, closest_index, error_amt, x, y - 1, width, height, bitmap, mask);
-    find_most_similar_neighbor_8(index, closest_index, error_amt, x, y + 1, width, height, bitmap, mask);
+    find_most_similar_neighbor_8(index, closest_index, error_amt, x, y - 1, width, height, bitmap,
+                                 mask);
+    find_most_similar_neighbor_8(index, closest_index, error_amt, x, y + 1, width, height, bitmap,
+                                 mask);
   }
 }
 
@@ -326,7 +351,7 @@ static void find_most_similar_neighbor_8( /* in */ unsigned char *index,
  *   24 bit pixbuf and its mask (used to prevent backtracking)
  */
 
-static void fill( /* in */ unsigned char *to_index,
+static void fill(/* in */ unsigned char *to_index,
                  /* in */ int x,
                  /* in */ int y,
                  /* in */ int width,
@@ -339,9 +364,11 @@ static void fill( /* in */ unsigned char *to_index,
   if (y < 0 || y >= height || mask[y * width + x] != 2)
     return;
 
-  for (x1 = x; x1 >= 0 && mask[y * width + x1] == 2; x1--) ;
+  for (x1 = x; x1 >= 0 && mask[y * width + x1] == 2; x1--)
+    ;
   x1++;
-  for (x2 = x; x2 < width && mask[y * width + x2] == 2; x2++) ;
+  for (x2 = x; x2 < width && mask[y * width + x2] == 2; x2++)
+    ;
   x2--;
 
   assert(x1 >= 0 && x2 < width);
@@ -368,7 +395,7 @@ static void fill( /* in */ unsigned char *to_index,
  *   8 bit pixbuf and its mask (used to prevent backtracking)
  */
 
-static void fill_8( /* in */ unsigned char *to_index,
+static void fill_8(/* in */ unsigned char *to_index,
                    /* in */ int x,
                    /* in */ int y,
                    /* in */ int width,
@@ -381,9 +408,11 @@ static void fill_8( /* in */ unsigned char *to_index,
   if (y < 0 || y >= height || mask[y * width + x] != 2)
     return;
 
-  for (x1 = x; x1 >= 0 && mask[y * width + x1] == 2; x1--) ;
+  for (x1 = x; x1 >= 0 && mask[y * width + x1] == 2; x1--)
+    ;
   x1++;
-  for (x2 = x; x2 < width && mask[y * width + x2] == 2; x2++) ;
+  for (x2 = x; x2 < width && mask[y * width + x2] == 2; x2++)
+    ;
   x2--;
 
   assert(x1 >= 0 && x2 < width);
@@ -405,7 +434,7 @@ static void fill_8( /* in */ unsigned char *to_index,
  *   its mask (used to prevent backtracking)
  */
 
-static void ignore( /* in */ int x,
+static void ignore(/* in */ int x,
                    /* in */ int y,
                    /* in */ int width,
                    /* in */ int height,
@@ -416,9 +445,11 @@ static void ignore( /* in */ int x,
   if (y < 0 || y >= height || mask[y * width + x] != 1)
     return;
 
-  for (x1 = x; x1 >= 0 && mask[y * width + x1] == 1; x1--) ;
+  for (x1 = x; x1 >= 0 && mask[y * width + x1] == 1; x1--)
+    ;
   x1++;
-  for (x2 = x; x2 < width && mask[y * width + x2] == 1; x2++) ;
+  for (x2 = x; x2 < width && mask[y * width + x2] == 1; x2++)
+    ;
   x2--;
 
   assert(x1 >= 0 && x2 < width);
@@ -450,7 +481,7 @@ static void ignore( /* in */ int x,
  *   FALSE - feature wasn't recolored
  */
 
-static gboolean recolor( /* in */ double adaptive_tightness,
+static gboolean recolor(/* in */ double adaptive_tightness,
                         /* in */ int x,
                         /* in */ int y,
                         /* in */ int width,
@@ -506,7 +537,7 @@ static gboolean recolor( /* in */ double adaptive_tightness,
  *   FALSE - feature wasn't recolored
  */
 
-static gboolean recolor_8( /* in */ double adaptive_tightness,
+static gboolean recolor_8(/* in */ double adaptive_tightness,
                           /* in */ int x,
                           /* in */ int y,
                           /* in */ int width,
@@ -554,7 +585,7 @@ static gboolean recolor_8( /* in */ double adaptive_tightness,
  *   The 24 bit pixbuf is despeckled
  */
 
-static void despeckle_iteration( /* in */ int level,
+static void despeckle_iteration(/* in */ int level,
                                 /* in */ double adaptive_tightness,
                                 /* in */ double noise_max,
                                 /* in */ int width,
@@ -600,7 +631,7 @@ static void despeckle_iteration( /* in */ int level,
  *   The 8 bit pixbuf is despeckled
  */
 
-static void despeckle_iteration_8( /* in */ int level,
+static void despeckle_iteration_8(/* in */ int level,
                                   /* in */ double adaptive_tightness,
                                   /* in */ double noise_max,
                                   /* in */ int width,
@@ -660,11 +691,11 @@ static void despeckle_iteration_8( /* in */ int level,
  *   The bitmap is despeckled.
  */
 
-void despeckle( /* in/out */ at_bitmap * bitmap,
+void despeckle(/* in/out */ at_bitmap *bitmap,
                /* in */ int level,
                /* in */ gfloat tightness,
                /* in */ gfloat noise_removal,
-               /* exception handling */ at_exception_type * excep)
+               /* exception handling */ at_exception_type *excep)
 {
   int i, planes, max_level;
   short width, height;
@@ -692,5 +723,4 @@ void despeckle( /* in/out */ at_bitmap * bitmap,
     at_exception_fatal(excep, "despeckle: wrong plane images are passed");
     return;
   }
-
 }

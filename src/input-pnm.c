@@ -36,46 +36,50 @@
  */
 
 typedef struct _PNMScanner {
-  FILE *fd;                     /* The file descriptor of the file being read */
-  char cur;                     /* The current character in the input stream */
-  int eof;                      /* Have we reached end of file? */
-  char *inbuf;                  /* Input buffer - initially 0 */
-  int inbufsize;                /* Size of input buffer */
-  int inbufvalidsize;           /* Size of input buffer with valid data */
-  int inbufpos;                 /* Position in input buffer */
+  FILE *fd;           /* The file descriptor of the file being read */
+  char cur;           /* The current character in the input stream */
+  int eof;            /* Have we reached end of file? */
+  char *inbuf;        /* Input buffer - initially 0 */
+  int inbufsize;      /* Size of input buffer */
+  int inbufvalidsize; /* Size of input buffer with valid data */
+  int inbufpos;       /* Position in input buffer */
 } PNMScanner;
 
 typedef struct _PNMInfo {
-  unsigned int xres, yres;      /* The size of the image */
-  int maxval;                   /* For ascii image files, the max value
-                                 * which we need to normalize to */
-  int np;                       /* Number of image planes (0 for pbm) */
-  int asciibody;                /* 1 if ascii body, 0 if raw body */
+  unsigned int xres, yres; /* The size of the image */
+  int maxval;              /* For ascii image files, the max value
+                            * which we need to normalize to */
+  int np;                  /* Number of image planes (0 for pbm) */
+  int asciibody;           /* 1 if ascii body, 0 if raw body */
   /* Routine to use to load the pnm body */
-  void (*loader) (PNMScanner *, struct _PNMInfo *, unsigned char *, at_exception_type * excep);
+  void (*loader)(PNMScanner *, struct _PNMInfo *, unsigned char *, at_exception_type *excep);
 } PNMInfo;
 
-#define BUFLEN 512              /* The input buffer size for data returned
-                                 * from the scanner.  Note that lines
-                                 * aren't allowed to be over 256 characters
-                                 * by the spec anyways so this shouldn't
-                                 * be an issue. */
+#define BUFLEN                                                                                     \
+  512 /* The input buffer size for data returned                                                   \
+       * from the scanner.  Note that lines                                                        \
+       * aren't allowed to be over 256 characters                                                  \
+       * by the spec anyways so this shouldn't                                                     \
+       * be an issue. */
 
 /* Declare some local functions.
  */
 
-static void pnm_load_ascii(PNMScanner * scan, PNMInfo * info, unsigned char *pixel_rgn, at_exception_type * excep);
-static void pnm_load_raw(PNMScanner * scan, PNMInfo * info, unsigned char *pixel_rgn, at_exception_type * excep);
-static void pnm_load_rawpbm(PNMScanner * scan, PNMInfo * info, unsigned char *pixel_rgn, at_exception_type * excep);
+static void pnm_load_ascii(PNMScanner *scan, PNMInfo *info, unsigned char *pixel_rgn,
+                           at_exception_type *excep);
+static void pnm_load_raw(PNMScanner *scan, PNMInfo *info, unsigned char *pixel_rgn,
+                         at_exception_type *excep);
+static void pnm_load_rawpbm(PNMScanner *scan, PNMInfo *info, unsigned char *pixel_rgn,
+                            at_exception_type *excep);
 
-static void pnmscanner_destroy(PNMScanner * s);
-static void pnmscanner_createbuffer(PNMScanner * s, unsigned int bufsize);
-static void pnmscanner_getchar(PNMScanner * s);
-static void pnmscanner_eatwhitespace(PNMScanner * s);
-static void pnmscanner_gettoken(PNMScanner * s, unsigned char *buf, unsigned int bufsize);
-static void pnmscanner_getsmalltoken(PNMScanner * s, unsigned char *buf);
+static void pnmscanner_destroy(PNMScanner *s);
+static void pnmscanner_createbuffer(PNMScanner *s, unsigned int bufsize);
+static void pnmscanner_getchar(PNMScanner *s);
+static void pnmscanner_eatwhitespace(PNMScanner *s);
+static void pnmscanner_gettoken(PNMScanner *s, unsigned char *buf, unsigned int bufsize);
+static void pnmscanner_getsmalltoken(PNMScanner *s, unsigned char *buf);
 
-static PNMScanner *pnmscanner_create(FILE * fd);
+static PNMScanner *pnmscanner_create(FILE *fd);
 
 #define pnmscanner_eof(s) ((s)->eof)
 #define pnmscanner_fd(s) ((s)->fd)
@@ -85,27 +89,20 @@ static struct struct_pnm_types {
   int np;
   int asciibody;
   int maxval;
-  void (*loader) (PNMScanner *, struct _PNMInfo *, unsigned char *pixel_rgn, at_exception_type * excep);
-} pnm_types[] = {
-  {
-  '1', 0, 1, 1, pnm_load_ascii},  /* ASCII PBM */
-  {
-  '2', 1, 1, 255, pnm_load_ascii},  /* ASCII PGM */
-  {
-  '3', 3, 1, 255, pnm_load_ascii},  /* ASCII PPM */
-  {
-  '4', 0, 0, 1, pnm_load_rawpbm}, /* RAW   PBM */
-  {
-  '5', 1, 0, 255, pnm_load_raw},  /* RAW   PGM */
-  {
-  '6', 3, 0, 255, pnm_load_raw},  /* RAW   PPM */
-  {
-  0, 0, 0, 0, NULL}
-};
+  void (*loader)(PNMScanner *, struct _PNMInfo *, unsigned char *pixel_rgn,
+                 at_exception_type *excep);
+} pnm_types[] = {{'1', 0, 1, 1, pnm_load_ascii},   /* ASCII PBM */
+                 {'2', 1, 1, 255, pnm_load_ascii}, /* ASCII PGM */
+                 {'3', 3, 1, 255, pnm_load_ascii}, /* ASCII PPM */
+                 {'4', 0, 0, 1, pnm_load_rawpbm},  /* RAW   PBM */
+                 {'5', 1, 0, 255, pnm_load_raw},   /* RAW   PGM */
+                 {'6', 3, 0, 255, pnm_load_raw},   /* RAW   PPM */
+                 {0, 0, 0, 0, NULL}};
 
-at_bitmap input_pnm_reader(gchar * filename, at_input_opts_type * opts, at_msg_func msg_func, gpointer msg_data, gpointer user_data)
+at_bitmap input_pnm_reader(gchar *filename, at_input_opts_type *opts, at_msg_func msg_func,
+                           gpointer msg_data, gpointer user_data)
 {
-  char buf[BUFLEN];             /* buffer for random things like scanning */
+  char buf[BUFLEN]; /* buffer for random things like scanning */
   PNMInfo *pnminfo;
   PNMScanner *volatile scan;
   int ctr;
@@ -183,7 +180,7 @@ at_bitmap input_pnm_reader(gchar * filename, at_input_opts_type * opts, at_msg_f
     goto cleanup;
   }
 
-  if (pnminfo->np != 0) {       /* pbm's don't have a maxval field */
+  if (pnminfo->np != 0) { /* pbm's don't have a maxval field */
     pnmscanner_gettoken(scan, (unsigned char *)buf, BUFLEN);
     if (pnmscanner_eof(scan)) {
       LOG("pnm filter: premature end of file\n");
@@ -192,15 +189,15 @@ at_bitmap input_pnm_reader(gchar * filename, at_input_opts_type * opts, at_msg_f
     }
 
     pnminfo->maxval = isdigit(*buf) ? atoi(buf) : 0;
-    if ((pnminfo->maxval <= 0)
-        || (pnminfo->maxval > 255 && !pnminfo->asciibody)) {
+    if ((pnminfo->maxval <= 0) || (pnminfo->maxval > 255 && !pnminfo->asciibody)) {
       LOG("pnm filter: invalid maxval while loading\n");
       at_exception_fatal(&excep, "pnm filter: invalid maxval while loading");
       goto cleanup;
     }
   }
 
-  bitmap = at_bitmap_init(NULL, (unsigned short)pnminfo->xres, (unsigned short)pnminfo->yres, (pnminfo->np) ? (pnminfo->np) : 1);
+  bitmap = at_bitmap_init(NULL, (unsigned short)pnminfo->xres, (unsigned short)pnminfo->yres,
+                          (pnminfo->np) ? (pnminfo->np) : 1);
   pnminfo->loader(scan, pnminfo, AT_BITMAP_BITS(&bitmap), &excep);
 
 cleanup:
@@ -216,7 +213,8 @@ cleanup:
   return (bitmap);
 }
 
-static void pnm_load_ascii(PNMScanner * scan, PNMInfo * info, unsigned char *data, at_exception_type * excep)
+static void pnm_load_ascii(PNMScanner *scan, PNMInfo *info, unsigned char *data,
+                           at_exception_type *excep)
 {
   unsigned char *d;
   unsigned int x;
@@ -256,8 +254,8 @@ static void pnm_load_ascii(PNMScanner * scan, PNMInfo * info, unsigned char *dat
           d[b] = (*buf == '0') ? 0xff : 0x00;
           break;
         default:
-          d[b] = (unsigned char)(255.0 * (((double)(isdigit(*buf) ? atoi(buf) : 0))
-                                          / (double)(info->maxval)));
+          d[b] = (unsigned char)(255.0 * (((double)(isdigit(*buf) ? atoi(buf) : 0)) /
+                                          (double)(info->maxval)));
         }
       }
 
@@ -265,7 +263,8 @@ static void pnm_load_ascii(PNMScanner * scan, PNMInfo * info, unsigned char *dat
     }
 }
 
-static void pnm_load_raw(PNMScanner * scan, PNMInfo * info, unsigned char *data, at_exception_type * excep)
+static void pnm_load_raw(PNMScanner *scan, PNMInfo *info, unsigned char *data,
+                         at_exception_type *excep)
 {
   unsigned char *d;
   unsigned int x, i;
@@ -286,7 +285,7 @@ static void pnm_load_raw(PNMScanner * scan, PNMInfo * info, unsigned char *data,
       return;
     }
 
-    if (info->maxval != 255) {  /* Normalize if needed */
+    if (info->maxval != 255) { /* Normalize if needed */
       for (x = 0; x < info->xres * info->np; x++)
         d[x] = (unsigned char)(255.0 * (double)(d[x]) / (double)(info->maxval));
     }
@@ -295,7 +294,8 @@ static void pnm_load_raw(PNMScanner * scan, PNMInfo * info, unsigned char *data,
   }
 }
 
-static void pnm_load_rawpbm(PNMScanner * scan, PNMInfo * info, unsigned char *data, at_exception_type * excep)
+static void pnm_load_rawpbm(PNMScanner *scan, PNMInfo *info, unsigned char *data,
+                            at_exception_type *excep)
 {
   unsigned char curbyte;
   unsigned char *d;
@@ -339,7 +339,7 @@ static void pnm_load_rawpbm(PNMScanner * scan, PNMInfo * info, unsigned char *da
  *    Creates a new scanner based on a file descriptor.  The
  *    look ahead buffer is one character initially.
  */
-static PNMScanner *pnmscanner_create(FILE * fd)
+static PNMScanner *pnmscanner_create(FILE *fd)
 {
   PNMScanner *s = g_malloc(sizeof(PNMScanner));
   s->fd = fd;
@@ -351,7 +351,7 @@ static PNMScanner *pnmscanner_create(FILE * fd)
 /* pnmscanner_destroy ---
  *    Destroys a scanner and its resources.  Doesn't close the fd.
  */
-static void pnmscanner_destroy(PNMScanner * s)
+static void pnmscanner_destroy(PNMScanner *s)
 {
   g_free(s->inbuf);
   g_free(s);
@@ -360,7 +360,7 @@ static void pnmscanner_destroy(PNMScanner * s)
 /* pnmscanner_createbuffer ---
  *    Creates a buffer so we can do buffered reads.
  */
-static void pnmscanner_createbuffer(PNMScanner * s, unsigned int bufsize)
+static void pnmscanner_createbuffer(PNMScanner *s, unsigned int bufsize)
 {
   s->inbuf = g_malloc(sizeof(char) * bufsize);
   s->inbufsize = bufsize;
@@ -371,7 +371,7 @@ static void pnmscanner_createbuffer(PNMScanner * s, unsigned int bufsize)
 /* pnmscanner_gettoken ---
  *    Gets the next token, eating any leading whitespace.
  */
-static void pnmscanner_gettoken(PNMScanner * s, unsigned char *buf, unsigned int bufsize)
+static void pnmscanner_gettoken(PNMScanner *s, unsigned char *buf, unsigned int bufsize)
 {
   unsigned int ctr = 0;
 
@@ -386,7 +386,7 @@ static void pnmscanner_gettoken(PNMScanner * s, unsigned char *buf, unsigned int
 /* pnmscanner_getsmalltoken ---
  *    Gets the next char, eating any leading whitespace.
  */
-static void pnmscanner_getsmalltoken(PNMScanner * s, unsigned char *buf)
+static void pnmscanner_getsmalltoken(PNMScanner *s, unsigned char *buf)
 {
   pnmscanner_eatwhitespace(s);
   if (!(s->eof) && !isspace(s->cur) && (s->cur != '#')) {
@@ -398,7 +398,7 @@ static void pnmscanner_getsmalltoken(PNMScanner * s, unsigned char *buf)
 /* pnmscanner_getchar ---
  *    Reads a character from the input stream
  */
-static void pnmscanner_getchar(PNMScanner * s)
+static void pnmscanner_getchar(PNMScanner *s)
 {
   if (s->inbuf) {
     s->cur = s->inbuf[s->inbufpos++];
@@ -417,15 +417,15 @@ static void pnmscanner_getchar(PNMScanner * s)
  *    Eats up whitespace from the input and returns when done or eof.
  *    Also deals with comments.
  */
-static void pnmscanner_eatwhitespace(PNMScanner * s)
+static void pnmscanner_eatwhitespace(PNMScanner *s)
 {
   int state = 0;
 
   while (!(s->eof) && (state != -1)) {
     switch (state) {
-    case 0:                    /* in whitespace */
+    case 0: /* in whitespace */
       if (s->cur == '#') {
-        state = 1;              /* goto comment */
+        state = 1; /* goto comment */
         pnmscanner_getchar(s);
       } else if (!isspace(s->cur))
         state = -1;
@@ -433,9 +433,9 @@ static void pnmscanner_eatwhitespace(PNMScanner * s)
         pnmscanner_getchar(s);
       break;
 
-    case 1:                    /* in comment */
+    case 1: /* in comment */
       if (s->cur == '\n')
-        state = 0;              /* goto whitespace */
+        state = 0; /* goto whitespace */
       pnmscanner_getchar(s);
       break;
     }

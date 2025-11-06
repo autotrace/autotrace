@@ -30,13 +30,13 @@
 #ifdef MAX
 #undef MAX
 #endif
-#define MAX(a,b)			( (a) > (b) ? (a) : (b) )
+#define MAX(a, b) ((a) > (b) ? (a) : (b))
 
 #define _USE_MATH_DEFINES
 #include <math.h>
 
-#define ILDA_3D_DATA  0
-#define ILDA_2D_DATA  1
+#define ILDA_3D_DATA 0
+#define ILDA_2D_DATA 1
 #define ILDA_COLOR_TABLE 2
 #define ILDA_TRUE_COLOR 3
 #define ILDA_COLORS_NUM 256
@@ -89,266 +89,106 @@ typedef LaserSequence *pLaserSequence;
 
 pLaserFrame drawframe = NULL;
 pLaserSequence drawsequence = NULL;
-static unsigned char ilda[4] = { 'I', 'L', 'D', 'A' };
+static unsigned char ilda[4] = {'I', 'L', 'D', 'A'};
 
 // ILDA standard color palette
 static unsigned char ilda_standard_color_palette[256][3] = {
-  {0, 0, 0},                    // Black/blanked (fixed)
-  {255, 255, 255},              // White (fixed)
-  {255, 0, 0},                  // Red (fixed)
-  {255, 255, 0},                // Yellow (fixed)
-  {0, 255, 0},                  // Green (fixed)
-  {0, 255, 255},                // Cyan (fixed)
-  {0, 0, 255},                  // Blue (fixed)
-  {255, 0, 255},                // Magenta (fixed)
-  {255, 128, 128},              // Light red
-  {255, 140, 128},
-  {255, 151, 128},
-  {255, 163, 128},
-  {255, 174, 128},
-  {255, 186, 128},
-  {255, 197, 128},
-  {255, 209, 128},
-  {255, 220, 128},
-  {255, 232, 128},
-  {255, 243, 128},
-  {255, 255, 128},              // Light yellow
-  {243, 255, 128},
-  {232, 255, 128},
-  {220, 255, 128},
-  {209, 255, 128},
-  {197, 255, 128},
-  {186, 255, 128},
-  {174, 255, 128},
-  {163, 255, 128},
-  {151, 255, 128},
-  {140, 255, 128},
-  {128, 255, 128},              // Light green
-  {128, 255, 140},
-  {128, 255, 151},
-  {128, 255, 163},
-  {128, 255, 174},
-  {128, 255, 186},
-  {128, 255, 197},
-  {128, 255, 209},
-  {128, 255, 220},
-  {128, 255, 232},
-  {128, 255, 243},
-  {128, 255, 255},              // Light cyan
-  {128, 243, 255},
-  {128, 232, 255},
-  {128, 220, 255},
-  {128, 209, 255},
-  {128, 197, 255},
-  {128, 186, 255},
-  {128, 174, 255},
-  {128, 163, 255},
-  {128, 151, 255},
-  {128, 140, 255},
-  {128, 128, 255},              // Light blue
-  {140, 128, 255},
-  {151, 128, 255},
-  {163, 128, 255},
-  {174, 128, 255},
-  {186, 128, 255},
-  {197, 128, 255},
-  {209, 128, 255},
-  {220, 128, 255},
-  {232, 128, 255},
-  {243, 128, 255},
-  {255, 128, 255},              // Light magenta
-  {255, 128, 243},
-  {255, 128, 232},
-  {255, 128, 220},
-  {255, 128, 209},
-  {255, 128, 197},
-  {255, 128, 186},
-  {255, 128, 174},
-  {255, 128, 163},
-  {255, 128, 151},
-  {255, 128, 140},
-  {255, 0, 0},                  // Red (cycleable)
-  {255, 23, 0},
-  {255, 46, 0},
-  {255, 70, 0},
-  {255, 93, 0},
-  {255, 116, 0},
-  {255, 139, 0},
-  {255, 162, 0},
-  {255, 185, 0},
-  {255, 209, 0},
-  {255, 232, 0},
-  {255, 255, 0},                //Yellow (cycleable)
-  {232, 255, 0},
-  {209, 255, 0},
-  {185, 255, 0},
-  {162, 255, 0},
-  {139, 255, 0},
-  {116, 255, 0},
-  {93, 255, 0},
-  {70, 255, 0},
-  {46, 255, 0},
-  {23, 255, 0},
-  {0, 255, 0},                  // Green (cycleable)
-  {0, 255, 23},
-  {0, 255, 46},
-  {0, 255, 70},
-  {0, 255, 93},
-  {0, 255, 116},
-  {0, 255, 139},
-  {0, 255, 162},
-  {0, 255, 185},
-  {0, 255, 209},
-  {0, 255, 232},
-  {0, 255, 255},                // Cyan (cycleable)
-  {0, 232, 255},
-  {0, 209, 255},
-  {0, 185, 255},
-  {0, 162, 255},
-  {0, 139, 255},
-  {0, 116, 255},
-  {0, 93, 255},
-  {0, 70, 255},
-  {0, 46, 255},
-  {0, 23, 255},
-  {0, 0, 255},                  // Blue (cycleable)
-  {23, 0, 255},
-  {46, 0, 255},
-  {70, 0, 255},
-  {93, 0, 255},
-  {116, 0, 255},
-  {139, 0, 255},
-  {162, 0, 255},
-  {185, 0, 255},
-  {209, 0, 255},
-  {232, 0, 255},
-  {255, 0, 255},                // Magenta (cycleable)
-  {255, 0, 232},
-  {255, 0, 209},
-  {255, 0, 185},
-  {255, 0, 162},
-  {255, 0, 139},
-  {255, 0, 116},
-  {255, 0, 93},
-  {255, 0, 70},
-  {255, 0, 46},
-  {255, 0, 23},
-  {128, 0, 0},                  // Dark red
-  {128, 12, 0},
-  {128, 23, 0},
-  {128, 35, 0},
-  {128, 47, 0},
-  {128, 58, 0},
-  {128, 70, 0},
-  {128, 81, 0},
-  {128, 93, 0},
-  {128, 105, 0},
-  {128, 116, 0},
-  {128, 128, 0},                // Dark yellow
-  {116, 128, 0},
-  {105, 128, 0},
-  {93, 128, 0},
-  {81, 128, 0},
-  {70, 128, 0},
-  {58, 128, 0},
-  {47, 128, 0},
-  {35, 128, 0},
-  {23, 128, 0},
-  {12, 128, 0},
-  {0, 128, 0},                  // Dark green
-  {0, 128, 12},
-  {0, 128, 23},
-  {0, 128, 35},
-  {0, 128, 47},
-  {0, 128, 58},
-  {0, 128, 70},
-  {0, 128, 81},
-  {0, 128, 93},
-  {0, 128, 105},
-  {0, 128, 116},
-  {0, 128, 128},                // Dark cyan
-  {0, 116, 128},
-  {0, 105, 128},
-  {0, 93, 128},
-  {0, 81, 128},
-  {0, 70, 128},
-  {0, 58, 128},
-  {0, 47, 128},
-  {0, 35, 128},
-  {0, 23, 128},
-  {0, 12, 128},
-  {0, 0, 128},                  // Dark blue
-  {12, 0, 128},
-  {23, 0, 128},
-  {35, 0, 128},
-  {47, 0, 128},
-  {58, 0, 128},
-  {70, 0, 128},
-  {81, 0, 128},
-  {93, 0, 128},
-  {105, 0, 128},
-  {116, 0, 128},
-  {128, 0, 128},                // Dark magenta
-  {128, 0, 116},
-  {128, 0, 105},
-  {128, 0, 93},
-  {128, 0, 81},
-  {128, 0, 70},
-  {128, 0, 58},
-  {128, 0, 47},
-  {128, 0, 35},
-  {128, 0, 23},
-  {128, 0, 12},
-  {255, 192, 192},              // Very light red
-  {255, 64, 64},                // Light-medium red
-  {192, 0, 0},                  // Medium-dark red
-  {64, 0, 0},                   // Very dark red
-  {255, 255, 192},              // Very light yellow
-  {255, 255, 64},               // Light-medium yellow
-  {192, 192, 0},                // Medium-dark yellow
-  {64, 64, 0},                  // Very dark yellow
-  {192, 255, 192},              // Very light green
-  {64, 255, 64},                // Light-medium green
-  {0, 192, 0},                  // Medium-dark green
-  {0, 64, 0},                   // Very dark green
-  {192, 255, 255},              // Very light cyan
-  {64, 255, 255},               // Light-medium cyan
-  {0, 192, 192},                // Medium-dark cyan
-  {0, 64, 64},                  // Very dark cyan
-  {192, 192, 255},              // Very light blue
-  {64, 64, 255},                // Light-medium blue
-  {0, 0, 192},                  // Medium-dark blue
-  {0, 0, 64},                   // Very dark blue
-  {255, 192, 255},              // Very light magenta
-  {255, 64, 255},               // Light-medium magenta
-  {192, 0, 192},                // Medium-dark magenta
-  {64, 0, 64},                  // Very dark magenta
-  {255, 96, 96},                // Medium skin tone
-  {255, 255, 255},              // White (cycleable)
-  {245, 245, 245},
-  {235, 235, 235},
-  {224, 224, 224},              // Very light gray (7/8 intensity)
-  {213, 213, 213},
-  {203, 203, 203},
-  {192, 192, 192},              // Light gray (3/4 intensity)
-  {181, 181, 181},
-  {171, 171, 171},
-  {160, 160, 160},              // Medium-light gray (5/8 int.)
-  {149, 149, 149},
-  {139, 139, 139},
-  {128, 128, 128},              // Medium gray (1/2 intensity)
-  {117, 117, 117},
-  {107, 107, 107},
-  {96, 96, 96},                 // Medium-dark gray (3/8 int.)
-  {85, 85, 85},
-  {75, 75, 75},
-  {64, 64, 64},                 // Dark gray (1/4 intensity)
-  {53, 53, 53},
-  {43, 43, 43},
-  {32, 32, 32},                 // Very dark gray (1/8 intensity)
-  {21, 21, 21},
-  {11, 11, 11},
-  {0, 0, 0}                     // Black
+    {0, 0, 0},       // Black/blanked (fixed)
+    {255, 255, 255}, // White (fixed)
+    {255, 0, 0},     // Red (fixed)
+    {255, 255, 0},   // Yellow (fixed)
+    {0, 255, 0},     // Green (fixed)
+    {0, 255, 255},   // Cyan (fixed)
+    {0, 0, 255},     // Blue (fixed)
+    {255, 0, 255},   // Magenta (fixed)
+    {255, 128, 128}, // Light red
+    {255, 140, 128}, {255, 151, 128}, {255, 163, 128}, {255, 174, 128},
+    {255, 186, 128}, {255, 197, 128}, {255, 209, 128}, {255, 220, 128},
+    {255, 232, 128}, {255, 243, 128}, {255, 255, 128}, // Light yellow
+    {243, 255, 128}, {232, 255, 128}, {220, 255, 128}, {209, 255, 128},
+    {197, 255, 128}, {186, 255, 128}, {174, 255, 128}, {163, 255, 128},
+    {151, 255, 128}, {140, 255, 128}, {128, 255, 128}, // Light green
+    {128, 255, 140}, {128, 255, 151}, {128, 255, 163}, {128, 255, 174},
+    {128, 255, 186}, {128, 255, 197}, {128, 255, 209}, {128, 255, 220},
+    {128, 255, 232}, {128, 255, 243}, {128, 255, 255}, // Light cyan
+    {128, 243, 255}, {128, 232, 255}, {128, 220, 255}, {128, 209, 255},
+    {128, 197, 255}, {128, 186, 255}, {128, 174, 255}, {128, 163, 255},
+    {128, 151, 255}, {128, 140, 255}, {128, 128, 255}, // Light blue
+    {140, 128, 255}, {151, 128, 255}, {163, 128, 255}, {174, 128, 255},
+    {186, 128, 255}, {197, 128, 255}, {209, 128, 255}, {220, 128, 255},
+    {232, 128, 255}, {243, 128, 255}, {255, 128, 255}, // Light magenta
+    {255, 128, 243}, {255, 128, 232}, {255, 128, 220}, {255, 128, 209},
+    {255, 128, 197}, {255, 128, 186}, {255, 128, 174}, {255, 128, 163},
+    {255, 128, 151}, {255, 128, 140}, {255, 0, 0}, // Red (cycleable)
+    {255, 23, 0},    {255, 46, 0},    {255, 70, 0},    {255, 93, 0},
+    {255, 116, 0},   {255, 139, 0},   {255, 162, 0},   {255, 185, 0},
+    {255, 209, 0},   {255, 232, 0},   {255, 255, 0}, // Yellow (cycleable)
+    {232, 255, 0},   {209, 255, 0},   {185, 255, 0},   {162, 255, 0},
+    {139, 255, 0},   {116, 255, 0},   {93, 255, 0},    {70, 255, 0},
+    {46, 255, 0},    {23, 255, 0},    {0, 255, 0}, // Green (cycleable)
+    {0, 255, 23},    {0, 255, 46},    {0, 255, 70},    {0, 255, 93},
+    {0, 255, 116},   {0, 255, 139},   {0, 255, 162},   {0, 255, 185},
+    {0, 255, 209},   {0, 255, 232},   {0, 255, 255}, // Cyan (cycleable)
+    {0, 232, 255},   {0, 209, 255},   {0, 185, 255},   {0, 162, 255},
+    {0, 139, 255},   {0, 116, 255},   {0, 93, 255},    {0, 70, 255},
+    {0, 46, 255},    {0, 23, 255},    {0, 0, 255}, // Blue (cycleable)
+    {23, 0, 255},    {46, 0, 255},    {70, 0, 255},    {93, 0, 255},
+    {116, 0, 255},   {139, 0, 255},   {162, 0, 255},   {185, 0, 255},
+    {209, 0, 255},   {232, 0, 255},   {255, 0, 255}, // Magenta (cycleable)
+    {255, 0, 232},   {255, 0, 209},   {255, 0, 185},   {255, 0, 162},
+    {255, 0, 139},   {255, 0, 116},   {255, 0, 93},    {255, 0, 70},
+    {255, 0, 46},    {255, 0, 23},    {128, 0, 0}, // Dark red
+    {128, 12, 0},    {128, 23, 0},    {128, 35, 0},    {128, 47, 0},
+    {128, 58, 0},    {128, 70, 0},    {128, 81, 0},    {128, 93, 0},
+    {128, 105, 0},   {128, 116, 0},   {128, 128, 0}, // Dark yellow
+    {116, 128, 0},   {105, 128, 0},   {93, 128, 0},    {81, 128, 0},
+    {70, 128, 0},    {58, 128, 0},    {47, 128, 0},    {35, 128, 0},
+    {23, 128, 0},    {12, 128, 0},    {0, 128, 0}, // Dark green
+    {0, 128, 12},    {0, 128, 23},    {0, 128, 35},    {0, 128, 47},
+    {0, 128, 58},    {0, 128, 70},    {0, 128, 81},    {0, 128, 93},
+    {0, 128, 105},   {0, 128, 116},   {0, 128, 128}, // Dark cyan
+    {0, 116, 128},   {0, 105, 128},   {0, 93, 128},    {0, 81, 128},
+    {0, 70, 128},    {0, 58, 128},    {0, 47, 128},    {0, 35, 128},
+    {0, 23, 128},    {0, 12, 128},    {0, 0, 128}, // Dark blue
+    {12, 0, 128},    {23, 0, 128},    {35, 0, 128},    {47, 0, 128},
+    {58, 0, 128},    {70, 0, 128},    {81, 0, 128},    {93, 0, 128},
+    {105, 0, 128},   {116, 0, 128},   {128, 0, 128}, // Dark magenta
+    {128, 0, 116},   {128, 0, 105},   {128, 0, 93},    {128, 0, 81},
+    {128, 0, 70},    {128, 0, 58},    {128, 0, 47},    {128, 0, 35},
+    {128, 0, 23},    {128, 0, 12},    {255, 192, 192}, // Very light red
+    {255, 64, 64},                                     // Light-medium red
+    {192, 0, 0},                                       // Medium-dark red
+    {64, 0, 0},                                        // Very dark red
+    {255, 255, 192},                                   // Very light yellow
+    {255, 255, 64},                                    // Light-medium yellow
+    {192, 192, 0},                                     // Medium-dark yellow
+    {64, 64, 0},                                       // Very dark yellow
+    {192, 255, 192},                                   // Very light green
+    {64, 255, 64},                                     // Light-medium green
+    {0, 192, 0},                                       // Medium-dark green
+    {0, 64, 0},                                        // Very dark green
+    {192, 255, 255},                                   // Very light cyan
+    {64, 255, 255},                                    // Light-medium cyan
+    {0, 192, 192},                                     // Medium-dark cyan
+    {0, 64, 64},                                       // Very dark cyan
+    {192, 192, 255},                                   // Very light blue
+    {64, 64, 255},                                     // Light-medium blue
+    {0, 0, 192},                                       // Medium-dark blue
+    {0, 0, 64},                                        // Very dark blue
+    {255, 192, 255},                                   // Very light magenta
+    {255, 64, 255},                                    // Light-medium magenta
+    {192, 0, 192},                                     // Medium-dark magenta
+    {64, 0, 64},                                       // Very dark magenta
+    {255, 96, 96},                                     // Medium skin tone
+    {255, 255, 255},                                   // White (cycleable)
+    {245, 245, 245}, {235, 235, 235}, {224, 224, 224}, // Very light gray (7/8 intensity)
+    {213, 213, 213}, {203, 203, 203}, {192, 192, 192}, // Light gray (3/4 intensity)
+    {181, 181, 181}, {171, 171, 171}, {160, 160, 160}, // Medium-light gray (5/8 int.)
+    {149, 149, 149}, {139, 139, 139}, {128, 128, 128}, // Medium gray (1/2 intensity)
+    {117, 117, 117}, {107, 107, 107}, {96, 96, 96},    // Medium-dark gray (3/8 int.)
+    {85, 85, 85},    {75, 75, 75},    {64, 64, 64},    // Dark gray (1/4 intensity)
+    {53, 53, 53},    {43, 43, 43},    {32, 32, 32},    // Very dark gray (1/8 intensity)
+    {21, 21, 21},    {11, 11, 11},    {0, 0, 0}        // Black
 };
 
 #ifdef _WINDOWS
@@ -433,7 +273,7 @@ pLaserPoint frame_point_add(pLaserFrame fra)
   return point2;
 };
 
-int frame_point_count(LaserFrame * f)
+int frame_point_count(LaserFrame *f)
 {
   return (f->count);
 }
@@ -482,7 +322,7 @@ pLaserFrame sequence_frame_add(pLaserSequence seq)
 };
 
 /** write 2D/3D Frame to file */
-int writeILDAFrame(FILE * file, LaserFrame * f, int format)
+int writeILDAFrame(FILE *file, LaserFrame *f, int format)
 {
   unsigned char lastr = 0, lastg = 0, lastb = 0;
   unsigned int lastc = 0;
@@ -509,13 +349,13 @@ int writeILDAFrame(FILE * file, LaserFrame * f, int format)
     }
 
     if ((!(point->r || point->g || point->b)) || (point->attrib & POINT_ATTRIB_BLANKED)) {
-      b = 0x40;                 // set blanking bit if blank
+      b = 0x40; // set blanking bit if blank
     } else {
       b = 0x00;
     }
 
     if (points + 1 == cpoints)
-      b += 0x80;                // set last point bit
+      b += 0x80; // set last point bit
 
     cbuffer[0] = point->x >> 8;
     cbuffer[1] = point->x & 255;
@@ -541,7 +381,7 @@ int writeILDAFrame(FILE * file, LaserFrame * f, int format)
 }
 
 /** write new style header */
-int writeILDAHeader(FILE * file, unsigned int format, unsigned int datalength)
+int writeILDAHeader(FILE *file, unsigned int format, unsigned int datalength)
 {
   // write ILDA header
   unsigned char fhbuffer[12];
@@ -562,7 +402,8 @@ int writeILDAHeader(FILE * file, unsigned int format, unsigned int datalength)
 }
 
 /** write old-style frame header */
-int writeILDAFrameHeader(FILE * file, LaserFrame * f, int format, unsigned int frames, unsigned int cframes)
+int writeILDAFrameHeader(FILE *file, LaserFrame *f, int format, unsigned int frames,
+                         unsigned int cframes)
 {
   unsigned int cpoints = 0;
   unsigned char fhbuffer[24];
@@ -597,7 +438,7 @@ int writeILDAFrameHeader(FILE * file, LaserFrame * f, int format, unsigned int f
 }
 
 /** write ILDA True Color information to file */
-int writeILDATrueColor(FILE * file, LaserFrame * f)
+int writeILDATrueColor(FILE *file, LaserFrame *f)
 {
   unsigned char cbuffer[4];
   int cpoints;
@@ -631,7 +472,7 @@ int writeILDATrueColor(FILE * file, LaserFrame * f)
 }
 
 /** write color table to file */
-int writeILDAColorTable(FILE * file)
+int writeILDAColorTable(FILE *file)
 {
   unsigned int i, palette = 0, colors = ILDA_COLORS_NUM;
   unsigned char fhbuffer[24];
@@ -661,7 +502,7 @@ int writeILDAColorTable(FILE * file)
 }
 
 /** write Sequence to ILDA file */
-int writeILDA(FILE * file, LaserSequence * s)
+int writeILDA(FILE *file, LaserSequence *s)
 {
   int format = (write3DFrames) ? ILDA_3D_DATA : ILDA_2D_DATA;
   int frames = 0, cframes, palettes = 0;
@@ -746,10 +587,12 @@ void blankingPathTo(int x, int y)
 void frameDrawInit(int x, int y, unsigned char r, unsigned char g, unsigned char b)
 {
   if (!drawframe)
-    drawframe = sequence_frame_add(drawsequence); // we can't do frameInit here, because we don't know where the first point will be.
+    drawframe = sequence_frame_add(drawsequence); // we can't do frameInit here, because we don't
+                                                  // know where the first point will be.
   if (!frame_point_count(drawframe)) {
-    if (drawframe->previous && ((LaserFrame *) drawframe->previous)->point_last) {
-      blankingPath(((LaserFrame *) drawframe->previous)->point_last->x, ((LaserFrame *) drawframe->previous)->point_last->y, x, y);
+    if (drawframe->previous && ((LaserFrame *)drawframe->previous)->point_last) {
+      blankingPath(((LaserFrame *)drawframe->previous)->point_last->x,
+                   ((LaserFrame *)drawframe->previous)->point_last->y, x, y);
     } else {
       if (fromToZero)
         blankingPath(0, 0, x, y);
@@ -783,18 +626,18 @@ void insertAnchorPoints()
   if ((!p) || (!p->next))
     return;
 
-  dx1 = ((LaserPoint *) p->next)->x - p->x;
-  dy1 = ((LaserPoint *) p->next)->y - p->y;
+  dx1 = ((LaserPoint *)p->next)->x - p->x;
+  dy1 = ((LaserPoint *)p->next)->y - p->y;
   p = p->next;
 
   while (p && p->next) {
 
-    dx = ((LaserPoint *) p->next)->x - p->x;
-    dy = ((LaserPoint *) p->next)->y - p->y;
+    dx = ((LaserPoint *)p->next)->x - p->x;
+    dy = ((LaserPoint *)p->next)->y - p->y;
 
 #ifdef ANCHOR_DEBUG
     printf("x:%d y:%d", p->x, p->y);
-    printf(" x:%d y:%d", ((LaserPoint *) p->next)->x, ((LaserPoint *) p->next)->y);
+    printf(" x:%d y:%d", ((LaserPoint *)p->next)->x, ((LaserPoint *)p->next)->y);
     printf(" dx1: %f dy1:%f dx: %f dy:%f\n", dx1, dy1, dx, dy);
 #endif
 
@@ -855,7 +698,8 @@ void frameDrawFinish()
     insertAnchorPoints();
 }
 
-void drawLine(double x1, double y1, double x2, double y2, unsigned char r1, unsigned char g1, unsigned char b1)
+void drawLine(double x1, double y1, double x2, double y2, unsigned char r1, unsigned char g1,
+              unsigned char b1)
 {
   int i, len, steps;
   double t, lx, ly;
@@ -888,10 +732,10 @@ void drawLine(double x1, double y1, double x2, double y2, unsigned char r1, unsi
     p->b = b1;
     p->attrib = 0;
   }
-
 }
 
-void drawCubicBezier(double x1, double y1, double cx1, double cy1, double cx2, double cy2, double x2, double y2, unsigned char r1, unsigned char g1, unsigned char b1)
+void drawCubicBezier(double x1, double y1, double cx1, double cy1, double cx2, double cy2,
+                     double x2, double y2, unsigned char r1, unsigned char g1, unsigned char b1)
 {
   int len, steps, i;
   double t, lx, ly;
@@ -923,19 +767,20 @@ void drawCubicBezier(double x1, double y1, double cx1, double cy1, double cx2, d
   for (i = 0; i <= steps; i++) {
     t = (double)i / steps;
     p = frame_point_add(drawframe);
-    p->x = clip((1 - t) * (1 - t) * (1 - t) * x1 + cx1 * 3 * t * (1 - t) * (1 - t) + cx2 * 3 * t * t * (1 - t) + x2 * t * t * t);
-    p->y = clip((1 - t) * (1 - t) * (1 - t) * y1 + cy1 * 3 * t * (1 - t) * (1 - t) + cy2 * 3 * t * t * (1 - t) + y2 * t * t * t);
+    p->x = clip((1 - t) * (1 - t) * (1 - t) * x1 + cx1 * 3 * t * (1 - t) * (1 - t) +
+                cx2 * 3 * t * t * (1 - t) + x2 * t * t * t);
+    p->y = clip((1 - t) * (1 - t) * (1 - t) * y1 + cy1 * 3 * t * (1 - t) * (1 - t) +
+                cy2 * 3 * t * t * (1 - t) + y2 * t * t * t);
     p->z = 0;
     p->r = r1;
     p->g = g1;
     p->b = b1;
     p->attrib = 0;
   }
-
 }
 
 /* Parses the spline data and writes out ILDA (*.ILD) formatted file */
-static void OutputILDA(FILE * fdes, int llx, int lly, int urx, int ury, spline_list_array_type shape)
+static void OutputILDA(FILE *fdes, int llx, int lly, int urx, int ury, spline_list_array_type shape)
 {
   unsigned int this_list, this_spline;
   spline_list_type curr_list;
@@ -964,21 +809,27 @@ static void OutputILDA(FILE * fdes, int llx, int lly, int urx, int ury, spline_l
     curr_spline = SPLINE_LIST_ELT(curr_list, 0);
     LastPoint = START_POINT(curr_spline);
 
-    //visit each spline
+    // visit each spline
     for (this_spline = 0; this_spline < SPLINE_LIST_LENGTH(curr_list); this_spline++) {
       curr_spline = SPLINE_LIST_ELT(curr_list, this_spline);
       last_degree = ((int)SPLINE_DEGREE(curr_spline));
 
-      switch ((polynomial_degree) last_degree) {
+      switch ((polynomial_degree)last_degree) {
       case LINEARTYPE:
-        //output Line
-        drawLine((LastPoint.x - ox) * sx, (LastPoint.y - oy) * sy, (END_POINT(curr_spline).x - ox) * sx, (END_POINT(curr_spline).y - oy) * sy, curr_list.color.r, curr_list.color.g, curr_list.color.b);
+        // output Line
+        drawLine((LastPoint.x - ox) * sx, (LastPoint.y - oy) * sy,
+                 (END_POINT(curr_spline).x - ox) * sx, (END_POINT(curr_spline).y - oy) * sy,
+                 curr_list.color.r, curr_list.color.g, curr_list.color.b);
         LastPoint = END_POINT(curr_spline);
         break;
 
       default:
-        //output Bezier curve
-        drawCubicBezier((LastPoint.x - ox) * sx, (LastPoint.y - oy) * sy, (CONTROL1(curr_spline).x - ox) * sx, (CONTROL1(curr_spline).y - oy) * sy, (CONTROL2(curr_spline).x - ox) * sx, (CONTROL2(curr_spline).y - oy) * sy, (END_POINT(curr_spline).x - ox) * sx, (END_POINT(curr_spline).y - oy) * sy, curr_list.color.r, curr_list.color.g, curr_list.color.b);
+        // output Bezier curve
+        drawCubicBezier((LastPoint.x - ox) * sx, (LastPoint.y - oy) * sy,
+                        (CONTROL1(curr_spline).x - ox) * sx, (CONTROL1(curr_spline).y - oy) * sy,
+                        (CONTROL2(curr_spline).x - ox) * sx, (CONTROL2(curr_spline).y - oy) * sy,
+                        (END_POINT(curr_spline).x - ox) * sx, (END_POINT(curr_spline).y - oy) * sy,
+                        curr_list.color.r, curr_list.color.g, curr_list.color.b);
         LastPoint = END_POINT(curr_spline);
         break;
       }
@@ -990,7 +841,9 @@ static void OutputILDA(FILE * fdes, int llx, int lly, int urx, int ury, spline_l
   g_free(drawsequence);
 }
 
-int output_ild_writer(FILE * file, gchar * name, int llx, int lly, int urx, int ury, at_output_opts_type * opts, at_spline_list_array_type shape, at_msg_func msg_func, gpointer msg_data, gpointer user_data)
+int output_ild_writer(FILE *file, gchar *name, int llx, int lly, int urx, int ury,
+                      at_output_opts_type *opts, at_spline_list_array_type shape,
+                      at_msg_func msg_func, gpointer msg_data, gpointer user_data)
 {
 
 #ifdef _WINDOWS
@@ -1016,7 +869,8 @@ int output_ild_writer(FILE * file, gchar * name, int llx, int lly, int urx, int 
   if (file == stdout)
     return 0;
 
-  printf("Wrote %d frame with %d points (%d anchors", sequence_frame_count(drawsequence), frame_point_count(drawframe), inserted_anchor_points);
+  printf("Wrote %d frame with %d points (%d anchors", sequence_frame_count(drawsequence),
+         frame_point_count(drawframe), inserted_anchor_points);
   if (trueColorWrite)
     printf(", True Color Header");
   if (writeTable)

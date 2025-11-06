@@ -50,6 +50,7 @@
  *   The bitmap is despeckled.
  */
 
-extern void despeckle(at_bitmap * bitmap, int level, gfloat tightness, gfloat noise_removal, at_exception_type * exp);
+extern void despeckle(at_bitmap *bitmap, int level, gfloat tightness, gfloat noise_removal,
+                      at_exception_type *exp);
 
 #endif /* not DESPECKLE_H */

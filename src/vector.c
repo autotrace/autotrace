@@ -7,7 +7,7 @@
 #include <string.h>
 #include <glib.h>
 
-static gfloat acos_d(gfloat, at_exception_type * excep);
+static gfloat acos_d(gfloat, at_exception_type *excep);
 
 /* Given the point COORD, return the corresponding vector.  */
 
@@ -36,7 +36,7 @@ at_real_coord vector_to_point(const vector_type v)
 
 gfloat magnitude(const vector_type v)
 {
-  return (gfloat) sqrt(v.dx * v.dx + v.dy * v.dy + v.dz * v.dz);
+  return (gfloat)sqrt(v.dx * v.dx + v.dy * v.dy + v.dz * v.dz);
 }
 
 vector_type normalize(const vector_type v)
@@ -89,7 +89,7 @@ vector_type Vmult_scalar(const vector_type v, const gfloat r)
 /* Given the IN_VECTOR and OUT_VECTOR, return the angle between them in
    degrees, in the range zero to 180.  */
 
-gfloat Vangle(const vector_type in_vector, const vector_type out_vector, at_exception_type * exp)
+gfloat Vangle(const vector_type in_vector, const vector_type out_vector, at_exception_type *exp)
 {
   vector_type v1 = normalize(in_vector);
   vector_type v2 = normalize(out_vector);
@@ -121,8 +121,8 @@ at_coord Vadd_int_point(const at_coord c, const vector_type v)
 {
   at_coord a;
 
-  a.x = (unsigned short)lround((gfloat) c.x + v.dx);
-  a.y = (unsigned short)lround((gfloat) c.y + v.dy);
+  a.x = (unsigned short)lround((gfloat)c.x + v.dx);
+  a.y = (unsigned short)lround((gfloat)c.y + v.dy);
   return a;
 }
 
@@ -130,9 +130,9 @@ vector_type Vabs(const vector_type v)
 {
   vector_type new_v;
 
-  new_v.dx = (gfloat) fabs(v.dx);
-  new_v.dy = (gfloat) fabs(v.dy);
-  new_v.dz = (gfloat) fabs(v.dz);
+  new_v.dx = (gfloat)fabs(v.dx);
+  new_v.dy = (gfloat)fabs(v.dy);
+  new_v.dz = (gfloat)fabs(v.dz);
   return new_v;
 }
 
@@ -177,8 +177,8 @@ vector_type IPsubtract(const at_coord coord1, const at_coord coord2)
 {
   vector_type v;
 
-  v.dx = (gfloat) (coord1.x - coord2.x);
-  v.dy = (gfloat) (coord1.y - coord2.y);
+  v.dx = (gfloat)(coord1.x - coord2.x);
+  v.dy = (gfloat)(coord1.y - coord2.y);
   v.dz = 0.0;
 
   return v;
@@ -232,7 +232,7 @@ gboolean IPequal(const at_coord c1, const at_coord c2)
     return FALSE;
 }
 
-static gfloat acos_d(gfloat v, at_exception_type * excep)
+static gfloat acos_d(gfloat v, at_exception_type *excep)
 {
   gfloat a;
 
@@ -242,11 +242,11 @@ static gfloat acos_d(gfloat v, at_exception_type * excep)
     v = -1.0;
 
   errno = 0;
-  a = (gfloat) acos(v);
+  a = (gfloat)acos(v);
   if (errno == ERANGE || errno == EDOM) {
     at_exception_fatal(excep, strerror(errno));
     return 0.0;
   }
 
-  return a * (gfloat) 180.0 / (gfloat) G_PI;
+  return a * (gfloat)180.0 / (gfloat)G_PI;
 }
