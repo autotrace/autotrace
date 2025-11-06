@@ -27,7 +27,7 @@ extern vector_type normalize(const vector_type);
 extern vector_type Vadd(const vector_type, const vector_type);
 extern gfloat Vdot(const vector_type, const vector_type);
 extern vector_type Vmult_scalar(const vector_type, const gfloat);
-extern gfloat Vangle(const vector_type in, const vector_type out, at_exception_type * exp);
+extern gfloat Vangle(const vector_type in, const vector_type out, at_exception_type *exp);
 
 /* These operations could have been named `P..._vector' just as well as
    V..._point, so we may as well allow both names.  */

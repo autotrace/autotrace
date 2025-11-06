@@ -25,45 +25,45 @@
 #include "output-ugs.h"
 #include <glib.h>
 
-#define WHITE		0
+#define WHITE 0
 
 /*
  * GF opcodes.
  */
-#define POST		248
-#define POST_POST	249
+#define POST 248
+#define POST_POST 249
 
-#define GF_SIGNATURE	223
-#define GF_ID		131
+#define GF_SIGNATURE 223
+#define GF_ID 131
 
-#define BOC		67
-#define BOC1		68
-#define EOC		69
+#define BOC 67
+#define BOC1 68
+#define EOC 69
 
-#define PAINT_0		0
-#define PAINT_63	63
-#define PAINT1		64
-#define PAINT2		65
-#define PAINT3		66
+#define PAINT_0 0
+#define PAINT_63 63
+#define PAINT1 64
+#define PAINT2 65
+#define PAINT3 66
 
-#define SKIP0		70
-#define SKIP1		71
-#define SKIP2		72
-#define SKIP3		73
+#define SKIP0 70
+#define SKIP1 71
+#define SKIP2 72
+#define SKIP3 73
 
-#define NEW_ROW_0	74
-#define NEW_ROW_164	238
+#define NEW_ROW_0 74
+#define NEW_ROW_164 238
 
-#define XXX1		239
-#define XXX2		240
-#define XXX3		241
-#define XXX4		242
-#define YYY		243
+#define XXX1 239
+#define XXX2 240
+#define XXX3 241
+#define XXX4 242
+#define YYY 243
 
-#define NO_OP		244
+#define NO_OP 244
 
-#define CHAR_LOC	245
-#define CHAR_LOC0	246
+#define CHAR_LOC 245
+#define CHAR_LOC0 246
 
 typedef struct _gf_char_t {
   unsigned char charcode;
@@ -101,9 +101,9 @@ typedef struct {
 } gf_char_t;
 
 /* This is the pixel at [ROW,COL]. */
-#define PIXEL(s,r,c)	(s)->bitmap [(r) * (s)->width + (c)]
+#define PIXEL(s, r, c) (s)->bitmap[(r) * (s)->width + (c)]
 
-static unsigned char get_byte(gf_font_t * font)
+static unsigned char get_byte(gf_font_t *font)
 {
   unsigned char b;
 
@@ -114,7 +114,7 @@ static unsigned char get_byte(gf_font_t * font)
   return b;
 }
 
-static unsigned short get_two(gf_font_t * font)
+static unsigned short get_two(gf_font_t *font)
 {
   unsigned short b;
 
@@ -127,7 +127,7 @@ static unsigned short get_two(gf_font_t * font)
  * C does not provide an obvious type for a 24-bit quantity, so we
  * return a 32-bit one.
  */
-static unsigned long get_three(gf_font_t * font)
+static unsigned long get_three(gf_font_t *font)
 {
   unsigned long b;
 
@@ -137,7 +137,7 @@ static unsigned long get_three(gf_font_t * font)
   return b;
 }
 
-static unsigned long get_four(gf_font_t * font)
+static unsigned long get_four(gf_font_t *font)
 {
   unsigned long b;
 
@@ -148,7 +148,7 @@ static unsigned long get_four(gf_font_t * font)
   return b;
 }
 
-static void move_relative(gf_font_t * font, long count)
+static void move_relative(gf_font_t *font, long count)
 {
   if (fseek(font->input_file, count, SEEK_CUR) < 0) {
     fprintf(stderr, "%s: seek error\n", font->input_filename);
@@ -156,7 +156,7 @@ static void move_relative(gf_font_t * font, long count)
   }
 }
 
-static unsigned char get_previous_byte(gf_font_t * font)
+static unsigned char get_previous_byte(gf_font_t *font)
 {
   unsigned char b;
 
@@ -166,7 +166,7 @@ static unsigned char get_previous_byte(gf_font_t * font)
   return b;
 }
 
-static unsigned long get_previous_four(gf_font_t * font)
+static unsigned long get_previous_four(gf_font_t *font)
 {
   unsigned long b;
 
@@ -180,7 +180,7 @@ static unsigned long get_previous_four(gf_font_t * font)
  * Skip all specials, leaving the file pointer at the first non-special.
  * We do not save the specials, though.
  */
-static void skip_specials(gf_font_t * font)
+static void skip_specials(gf_font_t *font)
 {
   for (;;) {
     switch (get_byte(font)) {
@@ -222,7 +222,7 @@ static void skip_specials(gf_font_t * font)
  *
  * Weird, huh?
  */
-static void get_character_bitmap(gf_char_t * sym)
+static void get_character_bitmap(gf_char_t *sym)
 {
   unsigned char c;
 
@@ -230,7 +230,7 @@ static void get_character_bitmap(gf_char_t * sym)
    * they might turn to be negative.
    */
   int height, width, painting_black = 0;
-  int cur_x, cur_y;             /* This will be the GF position. */
+  int cur_x, cur_y; /* This will be the GF position. */
 
   cur_x = sym->bbox_min_col;
   cur_y = sym->bbox_max_row;
@@ -251,9 +251,10 @@ static void get_character_bitmap(gf_char_t * sym)
 
     /* The next non-NO_OP byte should be EOC. */
     while ((c = get_byte(sym->font)) == NO_OP)
-      continue;                 /* do nothing */
+      continue; /* do nothing */
     if (c != EOC) {
-      fprintf(stderr, "%s: expected eoc (for a blank character), found %u\n", sym->font->input_filename, c);
+      fprintf(stderr, "%s: expected eoc (for a blank character), found %u\n",
+              sym->font->input_filename, c);
       exit(-1);
     }
     return;
@@ -272,7 +273,7 @@ static void get_character_bitmap(gf_char_t * sym)
     if (c == EOC)
       break;
 
-    if ( /* PAINT_0 <= c && */ c <= PAINT3) {
+    if (/* PAINT_0 <= c && */ c <= PAINT3) {
       /* No need to test if `PAINT_0 <= c'; it must be,
        * since PAINT_0 is zero and `c' is unsigned.
        */
@@ -281,7 +282,7 @@ static void get_character_bitmap(gf_char_t * sym)
        * or where it is specified as a separate parameter. */
       unsigned length;
 
-      if ( /* PAINT_0 <= c && */ c <= PAINT_63)
+      if (/* PAINT_0 <= c && */ c <= PAINT_63)
         length = c - PAINT_0;
       else {
         switch (c) {
@@ -358,7 +359,8 @@ static void get_character_bitmap(gf_char_t * sym)
       skip_specials(sym->font);
 
     } else {
-      fprintf(stderr, "%s: expected paint or skip or new_row, found %u\n", sym->font->input_filename, c);
+      fprintf(stderr, "%s: expected paint or skip or new_row, found %u\n",
+              sym->font->input_filename, c);
       exit(-1);
     }
   }
@@ -369,10 +371,10 @@ static void get_character_bitmap(gf_char_t * sym)
  * smallest possible, i.e., that the character bitmap does not have
  * blank rows or columns at an edge.  We want to remove such blanks.
  */
-static void deblank(gf_char_t * sym)
+static void deblank(gf_char_t *sym)
 {
   unsigned all_white, white_on_left = 0, white_on_right = 0, white_on_top = 0, white_on_bottom = 0;
-  int c, r;                     /* int in case GF_CHAR is zero pixels wide. */
+  int c, r; /* int in case GF_CHAR is zero pixels wide. */
 
   /* Let's start with blank columns at the left-hand side. */
   all_white = 1;
@@ -458,7 +460,7 @@ static void deblank(gf_char_t * sym)
   }
 }
 
-static int gf_open(gf_font_t * font, char *filename)
+static int gf_open(gf_font_t *font, char *filename)
 {
   unsigned char b, c;
   unsigned long post_ptr;
@@ -485,7 +487,8 @@ static int gf_open(gf_font_t * font, char *filename)
     b = get_previous_byte(font);
   while (b == GF_SIGNATURE);
   if (b != GF_ID) {
-    fprintf(stderr, "%s: invalid signature (expected %u, found %u)\n", font->input_filename, GF_ID, b);
+    fprintf(stderr, "%s: invalid signature (expected %u, found %u)\n", font->input_filename, GF_ID,
+            b);
     return 0;
   }
 
@@ -501,10 +504,11 @@ static int gf_open(gf_font_t * font, char *filename)
   fseek(font->input_file, post_ptr, SEEK_SET);
   b = get_byte(font);
   if (b != POST) {
-    fprintf(stderr, "%s: invalid font structure (expected %u, found %u)\n", font->input_filename, POST, b);
+    fprintf(stderr, "%s: invalid font structure (expected %u, found %u)\n", font->input_filename,
+            POST, b);
     return 0;
   }
-  get_four(font);               /* Ignore the special pointer. */
+  get_four(font); /* Ignore the special pointer. */
 
   font->design_size = get_four(font) / (double)(1L << 20);
   font->checksum = get_four(font);
@@ -551,7 +555,7 @@ static int gf_open(gf_font_t * font, char *filename)
 /*
  * Get any character by its code.
  */
-static int gf_get_char(gf_font_t * font, gf_char_t * sym, unsigned char charcode)
+static int gf_get_char(gf_font_t *font, gf_char_t *sym, unsigned char charcode)
 {
   gf_locator_t *loc;
   unsigned char c, col_delta, row_delta;
@@ -586,14 +590,16 @@ static int gf_get_char(gf_font_t * font, gf_char_t * sym, unsigned char charcode
     if (lcode < 0 || lcode > 255) {
       /* Someone is trying to use a font with character codes
        * that are out of our range. */
-      fprintf(stderr, "%s: invalid character code %ld (expected %d)\n", font->input_filename, lcode, charcode);
+      fprintf(stderr, "%s: invalid character code %ld (expected %d)\n", font->input_filename, lcode,
+              charcode);
       return 0;
     }
     sym->charcode = lcode;
 
     back_pointer = (long)get_four(font);
     if (back_pointer != -1)
-      fprintf(stderr, "%s: warning: character %u has a non-null back pointer (to %#lx)\n", font->input_filename, sym->charcode, back_pointer);
+      fprintf(stderr, "%s: warning: character %u has a non-null back pointer (to %#lx)\n",
+              font->input_filename, sym->charcode, back_pointer);
 
     sym->bbox_min_col = (long)get_four(font);
     sym->bbox_max_col = (long)get_four(font);
@@ -621,7 +627,8 @@ static int gf_get_char(gf_font_t * font, gf_char_t * sym, unsigned char charcode
     return 0;
   }
   if (sym->charcode != charcode) {
-    fprintf(stderr, "%s: warning: character code mismatch, %d != %d\n", font->input_filename, sym->charcode, charcode);
+    fprintf(stderr, "%s: warning: character code mismatch, %d != %d\n", font->input_filename,
+            sym->charcode, charcode);
   }
 
   get_character_bitmap(sym);
@@ -630,7 +637,8 @@ static int gf_get_char(gf_font_t * font, gf_char_t * sym, unsigned char charcode
   return 1;
 }
 
-at_bitmap input_gf_reader(gchar * filename, at_input_opts_type * opts, at_msg_func msg_func, gpointer msg_data, gpointer user_data)
+at_bitmap input_gf_reader(gchar *filename, at_input_opts_type *opts, at_msg_func msg_func,
+                          gpointer msg_data, gpointer user_data)
 {
   at_exception_type exp = at_exception_new(msg_func, msg_data);
   at_bitmap bitmap = at_bitmap_init(NULL, 0, 0, 0);

@@ -24,28 +24,27 @@
 #include <png.h>
 #include "input-png.h"
 
-static png_bytep *read_png(png_structp png_ptr, png_infop info_ptr, at_input_opts_type * opts);
+static png_bytep *read_png(png_structp png_ptr, png_infop info_ptr, at_input_opts_type *opts);
 
 /* for pre-1.0.6 versions of libpng */
 #ifndef png_jmpbuf
-#	define png_jmpbuf(png_ptr) (png_ptr)->jmpbuf
+#define png_jmpbuf(png_ptr) (png_ptr)->jmpbuf
 #endif
 
-static void handle_warning(png_structp png, const gchar * message)
+static void handle_warning(png_structp png, const gchar *message)
 {
   LOG("PNG warning: %s", message);
-  at_exception_warning((at_exception_type *) png_get_error_ptr(png), message);
+  at_exception_warning((at_exception_type *)png_get_error_ptr(png), message);
   /* at_exception_fatal((at_exception_type *)at_png->error_ptr,
      "PNG warning"); */
 }
 
-static void handle_error(png_structp png, const gchar * message)
+static void handle_error(png_structp png, const gchar *message)
 {
   LOG("PNG error: %s", message);
-  at_exception_fatal((at_exception_type *) png_get_error_ptr(png), message);
+  at_exception_fatal((at_exception_type *)png_get_error_ptr(png), message);
   /* at_exception_fatal((at_exception_type *)at_png->error_ptr,
      "PNG error"); */
-
 }
 
 static void finalize_structs(png_structp png, png_infop info, png_infop end_info)
@@ -53,12 +52,14 @@ static void finalize_structs(png_structp png, png_infop info, png_infop end_info
   png_destroy_read_struct(png ? &png : NULL, info ? &info : NULL, end_info ? &end_info : NULL);
 }
 
-static int init_structs(png_structp * png, png_infop * info, png_infop * end_info, at_exception_type * exp)
+static int init_structs(png_structp *png, png_infop *info, png_infop *end_info,
+                        at_exception_type *exp)
 {
   *png = NULL;
   *info = *end_info = NULL;
 
-  *png = png_create_read_struct(PNG_LIBPNG_VER_STRING, exp, (png_error_ptr) handle_error, (png_error_ptr) handle_warning);
+  *png = png_create_read_struct(PNG_LIBPNG_VER_STRING, exp, (png_error_ptr)handle_error,
+                                (png_error_ptr)handle_warning);
 
   if (*png) {
     *info = png_create_info_struct(*png);
@@ -72,13 +73,16 @@ static int init_structs(png_structp * png, png_infop * info, png_infop * end_inf
   return 0;
 }
 
-#define CHECK_ERROR() 	do { if (at_exception_got_fatal(exp))	\
-	  {							\
-	    result = 0;						\
-	    goto cleanup;					\
-	  } } while (0)
+#define CHECK_ERROR()                                                                              \
+  do {                                                                                             \
+    if (at_exception_got_fatal(exp)) {                                                             \
+      result = 0;                                                                                  \
+      goto cleanup;                                                                                \
+    }                                                                                              \
+  } while (0)
 
-static int load_image(at_bitmap * image, FILE * stream, at_input_opts_type * opts, at_exception_type * exp)
+static int load_image(at_bitmap *image, FILE *stream, at_input_opts_type *opts,
+                      at_exception_type *exp)
 {
   png_structp png;
   png_infop info, end_info;
@@ -112,7 +116,8 @@ cleanup:
   return result;
 }
 
-at_bitmap input_png_reader(gchar * filename, at_input_opts_type * opts, at_msg_func msg_func, gpointer msg_data, gpointer user_data)
+at_bitmap input_png_reader(gchar *filename, at_input_opts_type *opts, at_msg_func msg_func,
+                           gpointer msg_data, gpointer user_data)
 {
   FILE *stream;
   at_bitmap image = at_bitmap_init(0, 0, 0, 1);
@@ -138,16 +143,16 @@ static png_bytep *read_image(png_structp png_ptr, png_infop info_ptr)
 
   width = png_get_rowbytes(png_ptr, info_ptr);
   height = png_get_image_height(png_ptr, info_ptr);
-  rows = (png_bytep *) png_malloc(png_ptr, height * sizeof(png_bytep));
+  rows = (png_bytep *)png_malloc(png_ptr, height * sizeof(png_bytep));
   for (y = 0; y < height; y++) {
-    rows[y] = (png_bytep) png_malloc(png_ptr, width);
+    rows[y] = (png_bytep)png_malloc(png_ptr, width);
   }
 
   png_read_image(png_ptr, rows);
   return rows;
 }
 
-static png_bytep *read_png(png_structp png_ptr, png_infop info_ptr, at_input_opts_type * opts)
+static png_bytep *read_png(png_structp png_ptr, png_infop info_ptr, at_input_opts_type *opts)
 {
   png_color_16p original_bg;
   png_color_16 my_bg;
@@ -157,7 +162,9 @@ static png_bytep *read_png(png_structp png_ptr, png_infop info_ptr, at_input_opt
 
   png_set_strip_16(png_ptr);
   png_set_packing(png_ptr);
-  if ((png_get_bit_depth(png_ptr, info_ptr) < 8) || (png_get_color_type(png_ptr, info_ptr) == PNG_COLOR_TYPE_PALETTE) || (png_get_valid(png_ptr, info_ptr, PNG_INFO_tRNS)))
+  if ((png_get_bit_depth(png_ptr, info_ptr) < 8) ||
+      (png_get_color_type(png_ptr, info_ptr) == PNG_COLOR_TYPE_PALETTE) ||
+      (png_get_valid(png_ptr, info_ptr, PNG_INFO_tRNS)))
     png_set_expand(png_ptr);
 
   if (png_get_bKGD(png_ptr, info_ptr, &original_bg)) {
@@ -168,7 +175,9 @@ static png_bytep *read_png(png_structp png_ptr, png_infop info_ptr, at_input_opt
       my_bg.red = 256 * opts->background_color->r;
       my_bg.green = 256 * opts->background_color->g;
       my_bg.blue = 256 * opts->background_color->b;
-      my_bg.gray = 256 * ((opts->background_color->r + opts->background_color->g + opts->background_color->b) / 3);
+      my_bg.gray =
+          256 *
+          ((opts->background_color->r + opts->background_color->g + opts->background_color->b) / 3);
     } else
       /* else, use white */
       my_bg.red = my_bg.green = my_bg.blue = my_bg.gray = 0xFFFF;

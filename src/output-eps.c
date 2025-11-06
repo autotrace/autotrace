@@ -27,49 +27,42 @@
 /* Output macros.  */
 
 /* This should be used for outputting a string S on a line by itself.  */
-#define OUT_LINE(s)							\
-  fprintf (ps_file, "%s\n", s)
+#define OUT_LINE(s) fprintf(ps_file, "%s\n", s)
 
 /* These output their arguments, preceded by the indentation.  */
-#define OUT(...)							\
-  fprintf (ps_file, __VA_ARGS__)
+#define OUT(...) fprintf(ps_file, __VA_ARGS__)
 
 /* These macros just output their arguments.  */
-#define OUT_REAL(r)	fprintf (ps_file, r == lround(r)		\
-                                  ? "%.0f " : "%.3f ", r)
+#define OUT_REAL(r) fprintf(ps_file, r == lround(r) ? "%.0f " : "%.3f ", r)
 
 /* For a PostScript command with two real arguments, e.g., lineto.  OP
    should be a constant string.  */
-#define OUT_COMMAND2(first, second, op)					\
-  do									\
-    {									\
-      OUT_REAL (first);							\
-      OUT_REAL (second);						\
-      OUT (op "\n");						\
-    }									\
-  while (0)
+#define OUT_COMMAND2(first, second, op)                                                            \
+  do {                                                                                             \
+    OUT_REAL(first);                                                                               \
+    OUT_REAL(second);                                                                              \
+    OUT(op "\n");                                                                                  \
+  } while (0)
 
 /* For a PostScript command with six real arguments, e.g., curveto.
    Again, OP should be a constant string.  */
-#define OUT_COMMAND6(first, second, third, fourth, fifth, sixth, op)	\
-  do									\
-    {									\
-      OUT_REAL (first);							\
-      OUT_REAL (second);						\
-      OUT (" ");							\
-      OUT_REAL (third);							\
-      OUT_REAL (fourth);						\
-      OUT (" ");							\
-      OUT_REAL (fifth);							\
-      OUT_REAL (sixth);							\
-      OUT (" " op " \n");						\
-    }									\
-  while (0)
+#define OUT_COMMAND6(first, second, third, fourth, fifth, sixth, op)                               \
+  do {                                                                                             \
+    OUT_REAL(first);                                                                               \
+    OUT_REAL(second);                                                                              \
+    OUT(" ");                                                                                      \
+    OUT_REAL(third);                                                                               \
+    OUT_REAL(fourth);                                                                              \
+    OUT(" ");                                                                                      \
+    OUT_REAL(fifth);                                                                               \
+    OUT_REAL(sixth);                                                                               \
+    OUT(" " op " \n");                                                                             \
+  } while (0)
 
 /* This should be called before the others in this file.  It opens the
    output file `OUTPUT_NAME.ps', and writes some preliminary boilerplate. */
 
-static int output_eps_header(FILE * ps_file, gchar * name, int llx, int lly, int urx, int ury)
+static int output_eps_header(FILE *ps_file, gchar *name, int llx, int lly, int urx, int ury)
 {
   g_autoptr(GDateTime) date = g_date_time_new_now_local();
   g_autofree gchar *time = g_date_time_format(date, "%a %b %e %H:%M:%S %Y");
@@ -105,8 +98,8 @@ static int output_eps_header(FILE * ps_file, gchar * name, int llx, int lly, int
   OUT_LINE("/k { setcmykcolor } bd"); /* must symbol k for CorelDraw 3/4 */
   OUT_LINE("/K { k } bd");
   OUT_LINE("%%EndProlog");
-  OUT_LINE("%%BeginSetup");     /* needed for CorelDraw 3/4 */
-  OUT_LINE("%%EndSetup");       /* needed for CorelDraw 3/4 */
+  OUT_LINE("%%BeginSetup"); /* needed for CorelDraw 3/4 */
+  OUT_LINE("%%EndSetup");   /* needed for CorelDraw 3/4 */
 
   return 0;
 }
@@ -114,12 +107,12 @@ static int output_eps_header(FILE * ps_file, gchar * name, int llx, int lly, int
 /* This outputs the PostScript code which produces the shape in
    SHAPE.  */
 
-static void out_splines(FILE * ps_file, spline_list_array_type shape)
+static void out_splines(FILE *ps_file, spline_list_array_type shape)
 {
   unsigned this_list;
   spline_list_type list;
 
-  at_color last_color = { 0, 0, 0 };
+  at_color last_color = {0, 0, 0};
 
   for (this_list = 0; this_list < SPLINE_LIST_ARRAY_LENGTH(shape); this_list++) {
     unsigned this_spline;
@@ -143,7 +136,8 @@ static void out_splines(FILE * ps_file, spline_list_array_type shape)
       m -= k;
       y -= k;
       /* symbol k is used for CorelDraw 3/4 compatibility */
-      OUT("%.3f %.3f %.3f %.3f %s\n", (double)c / 255.0, (double)m / 255.0, (double)y / 255.0, (double)k / 255.0, (shape.centerline || list.open) ? "K" : "k");
+      OUT("%.3f %.3f %.3f %.3f %s\n", (double)c / 255.0, (double)m / 255.0, (double)y / 255.0,
+          (double)k / 255.0, (shape.centerline || list.open) ? "K" : "k");
       OUT_LINE("*u");
       last_color = list.color;
     }
@@ -155,7 +149,8 @@ static void out_splines(FILE * ps_file, spline_list_array_type shape)
       if (SPLINE_DEGREE(s) == LINEARTYPE)
         OUT_COMMAND2(END_POINT(s).x, END_POINT(s).y, "l");
       else
-        OUT_COMMAND6(CONTROL1(s).x, CONTROL1(s).y, CONTROL2(s).x, CONTROL2(s).y, END_POINT(s).x, END_POINT(s).y, "c");
+        OUT_COMMAND6(CONTROL1(s).x, CONTROL1(s).y, CONTROL2(s).x, CONTROL2(s).y, END_POINT(s).x,
+                     END_POINT(s).y, "c");
     }
     if (SPLINE_LIST_ARRAY_LENGTH(shape) > 0)
       OUT_LINE((shape.centerline || list.open) ? "S" : "f");
@@ -164,7 +159,9 @@ static void out_splines(FILE * ps_file, spline_list_array_type shape)
     OUT_LINE("*U");
 }
 
-int output_eps_writer(FILE * ps_file, gchar * name, int llx, int lly, int urx, int ury, at_output_opts_type * opts, spline_list_array_type shape, at_msg_func msg_func, gpointer msg_data, gpointer user_data)
+int output_eps_writer(FILE *ps_file, gchar *name, int llx, int lly, int urx, int ury,
+                      at_output_opts_type *opts, spline_list_array_type shape, at_msg_func msg_func,
+                      gpointer msg_data, gpointer user_data)
 {
   int result;
 
@@ -172,8 +169,8 @@ int output_eps_writer(FILE * ps_file, gchar * name, int llx, int lly, int urx, i
   if (result != 0)
     return result;
 
-  OUT_LINE("1 setlinecap");       /* set shape of line ends for stroke (0=butt,1=round, 2=square) */
-  OUT_LINE("1 setlinejoin");       /* set shape of corners for stroke (0=miter,1=round, 2=bevel */
+  OUT_LINE("1 setlinecap");  /* set shape of line ends for stroke (0=butt,1=round, 2=square) */
+  OUT_LINE("1 setlinejoin"); /* set shape of corners for stroke (0=miter,1=round, 2=bevel */
 
   out_splines(ps_file, shape);
 

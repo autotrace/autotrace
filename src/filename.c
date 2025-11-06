@@ -25,28 +25,28 @@ Foundation, Inc., 675 Mass Ave, Cambridge, MA 02139, USA.  */
 
 gchar *find_suffix(const gchar *filename)
 {
-    g_autofree gchar *basename = g_path_get_basename(filename);
-    gchar *dot_pos = strrchr(basename, '.');
+  g_autofree gchar *basename = g_path_get_basename(filename);
+  gchar *dot_pos = strrchr(basename, '.');
 
-    if (dot_pos == NULL || dot_pos == basename) {
-        g_free(basename);
-        return NULL;
-    }
+  if (dot_pos == NULL || dot_pos == basename) {
+    g_free(basename);
+    return NULL;
+  }
 
-    gchar *suffix = g_strdup(dot_pos + 1);
-    return suffix;
+  gchar *suffix = g_strdup(dot_pos + 1);
+  return suffix;
 }
 
 gchar *remove_suffix(const gchar *filename)
 {
-    gchar *basename = g_path_get_basename(filename);
-    gchar *dot_pos = strrchr(basename, '.');
+  gchar *basename = g_path_get_basename(filename);
+  gchar *dot_pos = strrchr(basename, '.');
 
-    if (dot_pos == NULL || dot_pos == basename) {
-        // No extension or file starts with dot (like .bashrc)
-        return basename;
-    }
-
-    *dot_pos = '\0';  // Truncate at the dot
+  if (dot_pos == NULL || dot_pos == basename) {
+    // No extension or file starts with dot (like .bashrc)
     return basename;
+  }
+
+  *dot_pos = '\0'; // Truncate at the dot
+  return basename;
 }

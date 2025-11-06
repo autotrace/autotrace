@@ -1,0 +1,47 @@
+BasedOnStyle: LLVM
+Language: Cpp
+IndentWidth: 2
+ColumnLimit: 100
+TabWidth: 8
+UseTab: Never
+
+# Keep return type and function name on same line
+AlwaysBreakAfterReturnType: None
+
+# Braces on same line (K&R style, not GNU)
+BreakBeforeBraces: Linux
+
+# Pointers
+PointerAlignment: Right
+DerivePointerAlignment: false
+
+# Functions
+AllowShortFunctionsOnASingleLine: Empty
+IndentWrappedFunctionNames: false
+
+# Control statements
+AllowShortIfStatementsOnASingleLine: Never
+AllowShortLoopsOnASingleLine: false
+
+# Spacing
+SpaceBeforeParens: ControlStatements
+SpaceInEmptyParentheses: false
+SpacesInCStyleCastParentheses: false
+
+# Alignment
+AlignAfterOpenBracket: Align
+AlignConsecutiveAssignments: false
+AlignConsecutiveDeclarations: false
+AlignOperands: true
+
+# Breaking
+AlwaysBreakBeforeMultilineStrings: false
+BreakBeforeBinaryOperators: None
+BreakStringLiterals: true
+
+# Indentation
+IndentCaseLabels: false
+IndentPPDirectives: None
+
+# Includes
+SortIncludes: false

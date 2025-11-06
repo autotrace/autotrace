@@ -21,7 +21,7 @@
 #include "output-ugs.h"
 #include <math.h>
 
-long ugs_design_pixels;         /*  A design size of font in pixels. */
+long ugs_design_pixels; /*  A design size of font in pixels. */
 
 long ugs_charcode;
 long ugs_advance_width;
@@ -41,7 +41,9 @@ static int compute_determinant(double *det, double a, double b, double c, double
   return 1;
 }
 
-static void cubic_to_quadratic(double ax, double ay, double bx, double by, double cx, double cy, double dx, double dy, double *fx, double *fy, double *ex, double *ey, double *gx, double *gy)
+static void cubic_to_quadratic(double ax, double ay, double bx, double by, double cx, double cy,
+                               double dx, double dy, double *fx, double *fy, double *ex, double *ey,
+                               double *gx, double *gy)
 {
   double t, t1, det, tanx, tany, s, tw1, tw2;
 
@@ -112,7 +114,7 @@ static void cubic_to_quadratic(double ax, double ay, double bx, double by, doubl
 }
 
 #if CUBIC
-static void output_contour(FILE * file, FILE * tracer, unsigned height)
+static void output_contour(FILE *file, FILE *tracer, unsigned height)
 {
   int x, lastx;
 
@@ -152,7 +154,7 @@ static void output_contour(FILE * file, FILE * tracer, unsigned height)
 }
 #endif
 
-static void output_splines(FILE * file, spline_list_array_type shape, int height)
+static void output_splines(FILE *file, spline_list_array_type shape, int height)
 {
   unsigned l, s;
   spline_list_type list;
@@ -274,7 +276,9 @@ static void output_splines(FILE * file, spline_list_array_type shape, int height
   fprintf(file, "\tend contour\n");
 }
 
-int output_ugs_writer(FILE * file, gchar * name, int llx, int lly, int urx, int ury, at_output_opts_type * opts, spline_list_array_type shape, at_msg_func msg_func, gpointer msg_data, gpointer usar_data)
+int output_ugs_writer(FILE *file, gchar *name, int llx, int lly, int urx, int ury,
+                      at_output_opts_type *opts, spline_list_array_type shape, at_msg_func msg_func,
+                      gpointer msg_data, gpointer usar_data)
 {
   /* Write the header.  */
   fprintf(file, "symbol %#lx design-size %ld\n", ugs_charcode, ugs_design_pixels);

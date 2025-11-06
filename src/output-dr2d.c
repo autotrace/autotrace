@@ -103,7 +103,8 @@ static struct Chunk *BuildCMAP(spline_list_array_type shape)
   this_list_length = SPLINE_LIST_ARRAY_LENGTH(shape);
   for (this_list = 0; this_list < this_list_length; this_list++) {
     spline_list_type list = SPLINE_LIST_ARRAY_ELT(shape, this_list);
-    at_color curr_color = (list.clockwise && shape.background_color != NULL) ? *(shape.background_color) : list.color;
+    at_color curr_color =
+        (list.clockwise && shape.background_color != NULL) ? *(shape.background_color) : list.color;
 
     Red = curr_color.r;
     Green = curr_color.g;
@@ -394,7 +395,8 @@ static struct Chunk **GeneratexPLY(struct Chunk *CMAP, spline_list_array_type sh
   this_list_length = SPLINE_LIST_ARRAY_LENGTH(shape);
 
   /* We store three chunks for every spline (one for BBOX, one for ATTR, and one for xPLY) */
-  if ((ChunkList = (struct Chunk **)malloc(sizeof(struct Chunk) * (this_list_length * 3))) == NULL) {
+  if ((ChunkList = (struct Chunk **)malloc(sizeof(struct Chunk) * (this_list_length * 3))) ==
+      NULL) {
     fprintf(stderr, "Insufficient memory to allocate chunk list\n");
     return NULL;
   }
@@ -403,7 +405,8 @@ static struct Chunk **GeneratexPLY(struct Chunk *CMAP, spline_list_array_type sh
   for (this_list = 0; this_list < this_list_length; this_list++) {
     spline_list_type list = SPLINE_LIST_ARRAY_ELT(shape, this_list);
     spline_type first = SPLINE_LIST_ELT(list, 0);
-    at_color curr_color = (list.clockwise && shape.background_color != NULL) ? *(shape.background_color) : list.color;
+    at_color curr_color =
+        (list.clockwise && shape.background_color != NULL) ? *(shape.background_color) : list.color;
 
     StrokeOrFill = (shape.centerline || list.open);
     this_spline_length = SPLINE_LIST_LENGTH(list);
@@ -509,7 +512,7 @@ static void PushPolyIndicator(unsigned char *PolyData, int *PolyPoint, unsigned 
   *PolyPoint = PolyLocal + 4;
 }
 
-static void WriteChunk(FILE * file, struct Chunk *Chunk)
+static void WriteChunk(FILE *file, struct Chunk *Chunk)
 {
   unsigned char SizeBytes[4];
   int Size;
@@ -525,7 +528,7 @@ static void WriteChunk(FILE * file, struct Chunk *Chunk)
   }
 }
 
-static void WriteChunks(FILE * file, struct Chunk **ChunkList, int NumChunks)
+static void WriteChunks(FILE *file, struct Chunk **ChunkList, int NumChunks)
 {
   int WalkChunks;
 
@@ -576,7 +579,9 @@ static void FreeChunks(struct Chunk **ChunkList, int NumChunks)
   }
 }
 
-int output_dr2d_writer(FILE * file, gchar * name, int llx, int lly, int urx, int ury, at_output_opts_type * opts, spline_list_array_type shape, at_msg_func msg_func, gpointer msg_data, gpointer user_data)
+int output_dr2d_writer(FILE *file, gchar *name, int llx, int lly, int urx, int ury,
+                       at_output_opts_type *opts, spline_list_array_type shape,
+                       at_msg_func msg_func, gpointer msg_data, gpointer user_data)
 {
   int width = urx - llx;
   int height = ury - lly;
@@ -611,7 +616,9 @@ int output_dr2d_writer(FILE * file, gchar * name, int llx, int lly, int urx, int
   ChunkList = GeneratexPLY(CMAPChunk, shape, height);
 
   NumSplines = SPLINE_LIST_ARRAY_LENGTH(shape) * 3;
-  FORMSize = 4 + (SizeChunk(DRHDChunk) + 8) + (SizeChunk(PPRFChunk) + 8) + (SizeChunk(LAYRChunk) + 8) + (SizeChunk(DASHChunk) + 8) + (SizeChunk(CMAPChunk) + 8) + TotalSizeChunks(ChunkList, NumSplines);
+  FORMSize = 4 + (SizeChunk(DRHDChunk) + 8) + (SizeChunk(PPRFChunk) + 8) +
+             (SizeChunk(LAYRChunk) + 8) + (SizeChunk(DASHChunk) + 8) + (SizeChunk(CMAPChunk) + 8) +
+             TotalSizeChunks(ChunkList, NumSplines);
 
   IntAsBytes(FORMSize, SizeBytes);
   fprintf(file, "FORM");

@@ -32,7 +32,8 @@ static void check(int v1, int v2, int v3, struct etyp *t);
    distance infinity.  Then compute the gray-weighted distance from
    every non-target point to the nearest target point. */
 
-at_distance_map new_distance_map(at_bitmap * bitmap, unsigned char target_value, gboolean padded, at_exception_type * exp)
+at_distance_map new_distance_map(at_bitmap *bitmap, unsigned char target_value, gboolean padded,
+                                 at_exception_type *exp)
 {
   signed x, y;
   float d, min;
@@ -60,8 +61,9 @@ at_distance_map new_distance_map(at_bitmap * bitmap, unsigned char target_value,
         dist.d[y][x] = (gray == target_value ? 0.0F : 1.0e10F);
         fgray = gray * 0.0039215686F; /* = gray / 255.0F */
         dist.weight[y][x] = 1.0F - fgray;
-/*        dist.weight[y][x] = 1.0F - (fgray * fgray);*/
-/*        dist.weight[y][x] = (fgray < 0.5F ? 1.0F - fgray : -2.0F * fgray * (fgray - 1.0F));*/
+        /*        dist.weight[y][x] = 1.0F - (fgray * fgray);*/
+        /*        dist.weight[y][x] = (fgray < 0.5F ? 1.0F - fgray : -2.0F * fgray * (fgray
+         * - 1.0F));*/
       }
     }
   } else {
@@ -73,8 +75,9 @@ at_distance_map new_distance_map(at_bitmap * bitmap, unsigned char target_value,
         dist.d[y][x] = (gray == target_value ? 0.0F : 1.0e10F);
         fgray = gray * 0.0039215686F; /* = gray / 255.0F */
         dist.weight[y][x] = 1.0F - fgray;
-/*        dist.weight[y][x] = 1.0F - (fgray * fgray);*/
-/*        dist.weight[y][x] = (fgray < 0.5F ? 1.0F - fgray : -2.0F * fgray * (fgray - 1.0F)); */
+        /*        dist.weight[y][x] = 1.0F - (fgray * fgray);*/
+        /*        dist.weight[y][x] = (fgray < 0.5F ? 1.0F - fgray : -2.0F * fgray * (fgray
+         * - 1.0F)); */
       }
     }
   }
@@ -112,7 +115,7 @@ at_distance_map new_distance_map(at_bitmap * bitmap, unsigned char target_value,
       min = dist.d[y][x];
 
       /* upper-left neighbor */
-      d = dist.d[y - 1][x - 1] + (float)M_SQRT2 *dist.weight[y][x];
+      d = dist.d[y - 1][x - 1] + (float)M_SQRT2 * dist.weight[y][x];
       if (d < min)
         min = dist.d[y][x] = d;
 
@@ -128,7 +131,7 @@ at_distance_map new_distance_map(at_bitmap * bitmap, unsigned char target_value,
 
       /* upper-right neighbor (except at the last column) */
       if (x + 1 < (signed)w) {
-        d = dist.d[y - 1][x + 1] + (float)M_SQRT2 *dist.weight[y][x];
+        d = dist.d[y - 1][x + 1] + (float)M_SQRT2 * dist.weight[y][x];
         if (d < min)
           min = dist.d[y][x] = d;
       }
@@ -141,7 +144,7 @@ at_distance_map new_distance_map(at_bitmap * bitmap, unsigned char target_value,
       min = dist.d[y][x];
 
       /* lower-right neighbor */
-      d = dist.d[y + 1][x + 1] + (float)M_SQRT2 *dist.weight[y][x];
+      d = dist.d[y + 1][x + 1] + (float)M_SQRT2 * dist.weight[y][x];
       if (d < min)
         min = dist.d[y][x] = d;
 
@@ -157,7 +160,7 @@ at_distance_map new_distance_map(at_bitmap * bitmap, unsigned char target_value,
 
       /* lower-left neighbor (except at the first column) */
       if (x - 1 >= 0) {
-        d = dist.d[y + 1][x - 1] + (float)M_SQRT2 *dist.weight[y][x];
+        d = dist.d[y + 1][x - 1] + (float)M_SQRT2 * dist.weight[y][x];
         if (d < min)
           min = dist.d[y][x] = d;
       }
@@ -168,7 +171,7 @@ at_distance_map new_distance_map(at_bitmap * bitmap, unsigned char target_value,
 
 /* Free the dynamically-allocated storage associated with a distance map. */
 
-void free_distance_map(at_distance_map * dist)
+void free_distance_map(at_distance_map *dist)
 {
   unsigned y, h;
 
@@ -179,13 +182,13 @@ void free_distance_map(at_distance_map * dist)
 
   if (dist->d != NULL) {
     for (y = 0; y < h; y++)
-      g_free((gpointer *) dist->d[y]);
-    g_free((gpointer *) dist->d);
+      g_free((gpointer *)dist->d[y]);
+    g_free((gpointer *)dist->d);
   }
   if (dist->weight != NULL) {
     for (y = 0; y < h; y++)
-      g_free((gpointer *) dist->weight[y]);
-    g_free((gpointer *) dist->weight);
+      g_free((gpointer *)dist->weight[y]);
+    g_free((gpointer *)dist->weight);
   }
 }
 
@@ -283,7 +286,7 @@ void medial_axis(bitmap_type * bitmap, at_distance_map * dist, const at_color * 
 
 /* Binarize a grayscale or color image. */
 
-void binarize(at_bitmap * bitmap)
+void binarize(at_bitmap *bitmap)
 {
   unsigned i, npixels, spp;
   unsigned char *b;

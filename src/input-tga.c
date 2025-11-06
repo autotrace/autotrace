@@ -31,7 +31,7 @@
 */
 
 /* Round up a division to the nearest integer. */
-#define ROUNDUP_DIVIDE(n,d) (((n) + (d - 1)) / (d))
+#define ROUNDUP_DIVIDE(n, d) (((n) + (d - 1)) / (d))
 
 #define INDEXED 1
 #define INDEXEDA 2
@@ -49,12 +49,12 @@ struct tga_header {
   unsigned char colorMapType;
 
   /* The image type. */
-#define TGA_TYPE_MAPPED      1
-#define TGA_TYPE_COLOR       2
-#define TGA_TYPE_GRAY        3
-#define TGA_TYPE_MAPPED_RLE  9
-#define TGA_TYPE_COLOR_RLE  10
-#define TGA_TYPE_GRAY_RLE   11
+#define TGA_TYPE_MAPPED 1
+#define TGA_TYPE_COLOR 2
+#define TGA_TYPE_GRAY 3
+#define TGA_TYPE_MAPPED_RLE 9
+#define TGA_TYPE_COLOR_RLE 10
+#define TGA_TYPE_GRAY_RLE 11
   unsigned char imageType;
 
   /* Color Map Specification. */
@@ -79,9 +79,9 @@ struct tga_header {
      5:   top-to-bottom ordering
      7-6: zero
    */
-#define TGA_DESC_ABITS      0x0f
+#define TGA_DESC_ABITS 0x0f
 #define TGA_DESC_HORIZONTAL 0x10
-#define TGA_DESC_VERTICAL   0x20
+#define TGA_DESC_VERTICAL 0x20
   unsigned char descriptor;
 };
 
@@ -94,8 +94,9 @@ static struct {
   char null;
 } tga_footer;
 
-static at_bitmap ReadImage(FILE * fp, struct tga_header *hdr, at_exception_type * exp);
-at_bitmap input_tga_reader(gchar * filename, at_input_opts_type * opts, at_msg_func msg_func, gpointer msg_data, gpointer user_data)
+static at_bitmap ReadImage(FILE *fp, struct tga_header *hdr, at_exception_type *exp);
+at_bitmap input_tga_reader(gchar *filename, at_input_opts_type *opts, at_msg_func msg_func,
+                           gpointer msg_data, gpointer user_data)
 {
   FILE *fp;
   struct tga_header hdr;
@@ -110,8 +111,8 @@ at_bitmap input_tga_reader(gchar * filename, at_input_opts_type * opts, at_msg_f
   }
 
   /* Check the footer. */
-  if (fseek(fp, 0L - (sizeof(tga_footer)), SEEK_END)
-      || fread(&tga_footer, sizeof(tga_footer), 1, fp) != 1) {
+  if (fseek(fp, 0L - (sizeof(tga_footer)), SEEK_END) ||
+      fread(&tga_footer, sizeof(tga_footer), 1, fp) != 1) {
     LOG("TGA: Cannot read footer from \"%s\"\n", filename);
     at_exception_fatal(&exp, "TGA: Cannot read footer");
     goto cleanup;
@@ -138,7 +139,7 @@ cleanup:
   return image;
 }
 
-static int std_fread(unsigned char *buf, int datasize, int nelems, FILE * fp)
+static int std_fread(unsigned char *buf, int datasize, int nelems, FILE *fp)
 {
 
   return fread(buf, datasize, nelems, fp);
@@ -147,7 +148,7 @@ static int std_fread(unsigned char *buf, int datasize, int nelems, FILE * fp)
 #define RLE_PACKETSIZE 0x80
 
 /* Decode a bufferful of file. */
-static int rle_fread(unsigned char *buf, int datasize, int nelems, FILE * fp)
+static int rle_fread(unsigned char *buf, int datasize, int nelems, FILE *fp)
 {
   static unsigned char *statebuf = 0;
   static int statelen = 0;
@@ -228,7 +229,7 @@ static int rle_fread(unsigned char *buf, int datasize, int nelems, FILE * fp)
   return nelems;
 }
 
-static at_bitmap ReadImage(FILE * fp, struct tga_header *hdr, at_exception_type * exp)
+static at_bitmap ReadImage(FILE *fp, struct tga_header *hdr, at_exception_type *exp)
 {
   at_bitmap image = at_bitmap_init(0, 0, 0, 1);
   unsigned char *buffer = NULL;
@@ -240,7 +241,7 @@ static at_bitmap ReadImage(FILE * fp, struct tga_header *hdr, at_exception_type 
   int rle, badread;
   int itype, dtype;
   unsigned char *cmap = NULL;
-  int (*myfread) (unsigned char *, int, int, FILE *);
+  int (*myfread)(unsigned char *, int, int, FILE *);
 
   /* Find out whether the image is horizontally or vertically reversed. */
   char horzrev = (char)(hdr->descriptor & TGA_DESC_HORIZONTAL);
@@ -264,7 +265,8 @@ static at_bitmap ReadImage(FILE * fp, struct tga_header *hdr, at_exception_type 
     pbpp = bpp;
 
   if (abpp + pbpp > bpp) {
-    LOG("TGA: %d bit image, %d bit alpha is greater than %d total bits per pixel\n", pbpp, abpp, bpp);
+    LOG("TGA: %d bit image, %d bit alpha is greater than %d total bits per pixel\n", pbpp, abpp,
+        bpp);
     at_exception_warning(exp, "TGA: alpha bit is too great");
 
     /* Assume that alpha bits were set incorrectly. */
@@ -295,7 +297,7 @@ static at_bitmap ReadImage(FILE * fp, struct tga_header *hdr, at_exception_type 
     else
       abpp = 0;
 
-    if (bpp != 8) {             /* We can only cope with 8-bit indices. */
+    if (bpp != 8) { /* We can only cope with 8-bit indices. */
       LOG("TGA: index sizes other than 8 bits are unimplemented\n");
       at_exception_fatal(exp, "TGA: index sizes other than 8 bits are unimplemented");
       return image;
@@ -329,15 +331,15 @@ static at_bitmap ReadImage(FILE * fp, struct tga_header *hdr, at_exception_type 
       dtype = RGB_IMAGE;
     break;
 
-  default:
-    {
-      LOG("TGA: unrecognized image type %d\n", hdr->imageType);
-      at_exception_fatal(exp, "TGA: unrecognized image type");
-      return image;
-    }
+  default: {
+    LOG("TGA: unrecognized image type %d\n", hdr->imageType);
+    at_exception_fatal(exp, "TGA: unrecognized image type");
+    return image;
+  }
   }
 
-  if ((abpp && abpp != 8) || ((itype == RGB || itype == INDEXED) && pbpp != 24) || (itype == GRAY && pbpp != 8)) {
+  if ((abpp && abpp != 8) || ((itype == RGB || itype == INDEXED) && pbpp != 24) ||
+      (itype == GRAY && pbpp != 8)) {
     /* FIXME: We haven't implemented bit-packed fields yet. */
     LOG("TGA: channel sizes other than 8 bits are unimplemented\n");
     at_exception_fatal(exp, "TGA: channel sizes other than 8 bits are unimplemented");
@@ -439,7 +441,7 @@ static at_bitmap ReadImage(FILE * fp, struct tga_header *hdr, at_exception_type 
   if (badread)
     pels = 0;
   else
-    pels = (*myfread) (image.bitmap, bpp, npels, fp);
+    pels = (*myfread)(image.bitmap, bpp, npels, fp);
 
   if (pels != npels) {
     if (!badread) {
@@ -533,4 +535,4 @@ static at_bitmap ReadImage(FILE * fp, struct tga_header *hdr, at_exception_type 
   g_free(alphas);
 
   return image;
-}                               /* read_image */
+} /* read_image */

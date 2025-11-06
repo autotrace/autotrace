@@ -33,8 +33,10 @@ struct _at_input_format_entry {
 };
 
 static GHashTable *at_input_formats = NULL;
-static at_input_format_entry *at_input_format_new(const char *descr, at_input_func reader, gpointer user_data, GDestroyNotify user_data_destroy_func);
-static void at_input_format_free(at_input_format_entry * entry);
+static at_input_format_entry *at_input_format_new(const char *descr, at_input_func reader,
+                                                  gpointer user_data,
+                                                  GDestroyNotify user_data_destroy_func);
+static void at_input_format_free(at_input_format_entry *entry);
 
 /*
  * Helper functions
@@ -54,13 +56,16 @@ int at_input_init(void)
   if (at_input_formats)
     return 1;
 
-  at_input_formats = g_hash_table_new_full(g_str_hash, (GEqualFunc) g_str_equal, g_free, (GDestroyNotify) at_input_format_free);
+  at_input_formats = g_hash_table_new_full(g_str_hash, (GEqualFunc)g_str_equal, g_free,
+                                           (GDestroyNotify)at_input_format_free);
   if (!at_input_formats)
     return 0;
   return 1;
 }
 
-static at_input_format_entry *at_input_format_new(const gchar * descr, at_input_func reader, gpointer user_data, GDestroyNotify user_data_destroy_func)
+static at_input_format_entry *at_input_format_new(const gchar *descr, at_input_func reader,
+                                                  gpointer user_data,
+                                                  GDestroyNotify user_data_destroy_func)
 {
   at_input_format_entry *entry;
   entry = g_malloc(sizeof(at_input_format_entry));
@@ -73,21 +78,22 @@ static at_input_format_entry *at_input_format_new(const gchar * descr, at_input_
   return entry;
 }
 
-static void at_input_format_free(at_input_format_entry * entry)
+static void at_input_format_free(at_input_format_entry *entry)
 {
-  g_free((gpointer) entry->descr);
+  g_free((gpointer)entry->descr);
   if (entry->user_data_destroy_func)
     entry->user_data_destroy_func(entry->reader.data);
   g_free(entry);
-
 }
 
-int at_input_add_handler(const gchar * suffix, const gchar * description, at_input_func reader)
+int at_input_add_handler(const gchar *suffix, const gchar *description, at_input_func reader)
 {
   return at_input_add_handler_full(suffix, description, reader, 0, NULL, NULL);
 }
 
-int at_input_add_handler_full(const gchar * suffix, const gchar * description, at_input_func reader, gboolean override, gpointer user_data, GDestroyNotify user_data_destroy_func)
+int at_input_add_handler_full(const gchar *suffix, const gchar *description, at_input_func reader,
+                              gboolean override, gpointer user_data,
+                              GDestroyNotify user_data_destroy_func)
 {
   gchar *gsuffix;
   const gchar *gdescription;
@@ -98,7 +104,7 @@ int at_input_add_handler_full(const gchar * suffix, const gchar * description, a
   g_return_val_if_fail(description, 0);
   g_return_val_if_fail(reader, 0);
 
-  g_autofree gchar *gsuffix_raw = g_strdup((gchar *) suffix);
+  g_autofree gchar *gsuffix_raw = g_strdup((gchar *)suffix);
   g_return_val_if_fail(gsuffix_raw, 0);
   gsuffix = g_ascii_strdown(gsuffix_raw, strlen(gsuffix_raw));
 
@@ -117,7 +123,7 @@ int at_input_add_handler_full(const gchar * suffix, const gchar * description, a
   return 1;
 }
 
-at_bitmap_reader *at_input_get_handler(gchar * filename)
+at_bitmap_reader *at_input_get_handler(gchar *filename)
 {
   char *ext = find_suffix(filename);
   if (ext == NULL)
@@ -126,7 +132,7 @@ at_bitmap_reader *at_input_get_handler(gchar * filename)
   return at_input_get_handler_by_suffix(ext);
 }
 
-at_bitmap_reader *at_input_get_handler_by_suffix(gchar * suffix)
+at_bitmap_reader *at_input_get_handler_by_suffix(gchar *suffix)
 {
   at_input_format_entry *format;
 

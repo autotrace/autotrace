@@ -31,16 +31,16 @@
 #else
 
 /* scale RGB distances by *2,*3,*1 */
-#define R_SCALE  <<1
-#define G_SCALE  *3
+#define R_SCALE << 1
+#define G_SCALE *3
 #define B_SCALE
 #endif
 
-#define BITS_IN_SAMPLE	8
+#define BITS_IN_SAMPLE 8
 
-#define R_SHIFT	(BITS_IN_SAMPLE - PRECISION_R)
-#define G_SHIFT	(BITS_IN_SAMPLE - PRECISION_G)
-#define B_SHIFT	(BITS_IN_SAMPLE - PRECISION_B)
+#define R_SHIFT (BITS_IN_SAMPLE - PRECISION_R)
+#define G_SHIFT (BITS_IN_SAMPLE - PRECISION_G)
+#define B_SHIFT (BITS_IN_SAMPLE - PRECISION_B)
 
 typedef struct {
   /* The bounds of the box (inclusive); expressed as histogram indexes */
@@ -62,7 +62,8 @@ static void zero_histogram_rgb(Histogram histogram)
         histogram[r * MR + g * MG + b] = 0;
 }
 
-static void generate_histogram_rgb(Histogram histogram, at_bitmap * image, const at_color * ignoreColor)
+static void generate_histogram_rgb(Histogram histogram, at_bitmap *image,
+                                   const at_color *ignoreColor)
 {
   unsigned char *src = image->bitmap;
   int num_elems;
@@ -76,9 +77,8 @@ static void generate_histogram_rgb(Histogram histogram, at_bitmap * image, const
     while (num_elems--) {
       /* If we have an ignorecolor, skip it. */
       if (ignoreColor) {
-        if ((src[0] == ignoreColor->r)
-            && (src[1] == ignoreColor->g)
-            && (src[2] == ignoreColor->b)) {
+        if ((src[0] == ignoreColor->r) && (src[1] == ignoreColor->g) &&
+            (src[2] == ignoreColor->b)) {
           src += 3;
           continue;
         }
@@ -93,12 +93,13 @@ static void generate_histogram_rgb(Histogram histogram, at_bitmap * image, const
     while (--num_elems >= 0) {
       if (ignoreColor && src[num_elems] == ignoreColor->r)
         continue;
-      col = &histogram[(src[num_elems] >> R_SHIFT) * MR + (src[num_elems] >> G_SHIFT) * MG + (src[num_elems] >> B_SHIFT)];
+      col = &histogram[(src[num_elems] >> R_SHIFT) * MR + (src[num_elems] >> G_SHIFT) * MG +
+                       (src[num_elems] >> B_SHIFT)];
       (*col)++;
     }
     break;
   default:
-    /* To avoid compiler warning */ ;
+      /* To avoid compiler warning */;
   }
 }
 
@@ -245,9 +246,9 @@ static int median_cut_rgb(Histogram histogram, boxptr boxlist, int numboxes, int
      */
     b1 = find_biggest_volume(boxlist, numboxes);
 
-    if (b1 == 0)                /* no splittable boxes left! */
+    if (b1 == 0) /* no splittable boxes left! */
       break;
-    b2 = boxlist + numboxes;    /* where new box will go */
+    b2 = boxlist + numboxes; /* where new box will go */
     /* Copy the color bounds to the new box. */
     b2->Rmax = b1->Rmax;
     b2->Gmax = b1->Gmax;
@@ -304,7 +305,7 @@ static int median_cut_rgb(Histogram histogram, boxptr boxlist, int numboxes, int
   return numboxes;
 }
 
-static void compute_color_rgb(QuantizeObj * quantobj, Histogram histogram, boxptr boxp, int icolor)
+static void compute_color_rgb(QuantizeObj *quantobj, Histogram histogram, boxptr boxp, int icolor)
 /* Compute representative color for a box, put it in colormap[icolor] */
 {
   /* Current algorithm: mean weighted by pixels (not colors) */
@@ -346,7 +347,7 @@ static void compute_color_rgb(QuantizeObj * quantobj, Histogram histogram, boxpt
   quantobj->freq[icolor] = total;
 }
 
-static void select_colors_rgb(QuantizeObj * quantobj, Histogram histogram)
+static void select_colors_rgb(QuantizeObj *quantobj, Histogram histogram)
 /* Master routine for color selection */
 {
   int numboxes;
@@ -430,17 +431,17 @@ static void select_colors_rgb(QuantizeObj * quantobj, Histogram histogram)
  */
 
 /* log2(histogram cells in update box) for each axis; this can be adjusted */
-#define BOX_R_LOG  (PRECISION_R-3)
-#define BOX_G_LOG  (PRECISION_G-3)
-#define BOX_B_LOG  (PRECISION_B-3)
+#define BOX_R_LOG (PRECISION_R - 3)
+#define BOX_G_LOG (PRECISION_G - 3)
+#define BOX_B_LOG (PRECISION_B - 3)
 
-#define BOX_R_ELEMS  (1<<BOX_R_LOG) /* # of hist cells in update box */
-#define BOX_G_ELEMS  (1<<BOX_G_LOG)
-#define BOX_B_ELEMS  (1<<BOX_B_LOG)
+#define BOX_R_ELEMS (1 << BOX_R_LOG) /* # of hist cells in update box */
+#define BOX_G_ELEMS (1 << BOX_G_LOG)
+#define BOX_B_ELEMS (1 << BOX_B_LOG)
 
-#define BOX_R_SHIFT  (R_SHIFT + BOX_R_LOG)
-#define BOX_G_SHIFT  (G_SHIFT + BOX_G_LOG)
-#define BOX_B_SHIFT  (B_SHIFT + BOX_B_LOG)
+#define BOX_R_SHIFT (R_SHIFT + BOX_R_LOG)
+#define BOX_G_SHIFT (G_SHIFT + BOX_G_LOG)
+#define BOX_B_SHIFT (B_SHIFT + BOX_B_LOG)
 
 /*
  * The next three routines implement inverse colormap filling.  They could
@@ -450,7 +451,7 @@ static void select_colors_rgb(QuantizeObj * quantobj, Histogram histogram)
  * inner-loop variables.
  */
 
-static int find_nearby_colors(QuantizeObj * quantobj, int minR, int minG, int minB, int *colorlist)
+static int find_nearby_colors(QuantizeObj *quantobj, int minR, int minG, int minB, int *colorlist)
 /* Locate the colormap entries close enough to an update box to be candidates
  * for the nearest entry to some cell(s) in the update box.  The update box
  * is specified by the center coordinates of its first cell.  The number of
@@ -465,7 +466,7 @@ static int find_nearby_colors(QuantizeObj * quantobj, int minR, int minG, int mi
   int centerR, centerG, centerB;
   int i, x, ncolors;
   int minmaxdist, min_dist = 0, max_dist, tdist;
-  int mindist[MAXNUMCOLORS];    /* min distance to colormap entry i */
+  int mindist[MAXNUMCOLORS]; /* min distance to colormap entry i */
 
   /* Compute TRUE coordinates of update box's upper corner and center.
    * Actually we compute the coordinates of the center of the upper-corner
@@ -559,7 +560,7 @@ static int find_nearby_colors(QuantizeObj * quantobj, int minR, int minG, int mi
       }
     }
 
-    mindist[i] = min_dist;      /* save away the results */
+    mindist[i] = min_dist; /* save away the results */
     if (max_dist < minmaxdist)
       minmaxdist = max_dist;
   }
@@ -576,7 +577,8 @@ static int find_nearby_colors(QuantizeObj * quantobj, int minR, int minG, int mi
   return ncolors;
 }
 
-static void find_best_colors(QuantizeObj * quantobj, int minR, int minG, int minB, int numcolors, int *colorlist, int *bestcolor)
+static void find_best_colors(QuantizeObj *quantobj, int minR, int minG, int minB, int numcolors,
+                             int *colorlist, int *bestcolor)
 /* Find the closest colormap entry for each cell in the update box,
   given the list of candidate colors prepared by find_nearby_colors.
   Return the indexes of the closest entries in the bestcolor[] array.
@@ -586,13 +588,13 @@ static void find_best_colors(QuantizeObj * quantobj, int minR, int minG, int min
 {
   int iR, iG, iB;
   int i, icolor;
-  int *bptr;                    /* pointer into bestdist[] array */
-  int *cptr;                    /* pointer into bestcolor[] array */
-  int dist0, dist1;             /* initial distance values */
-  int dist2;                    /* current distance in inner loop */
-  int xx0, xx1;                 /* distance increments */
+  int *bptr;        /* pointer into bestdist[] array */
+  int *cptr;        /* pointer into bestcolor[] array */
+  int dist0, dist1; /* initial distance values */
+  int dist2;        /* current distance in inner loop */
+  int xx0, xx1;     /* distance increments */
   int xx2;
-  int inR, inG, inB;            /* initial values for increments */
+  int inR, inG, inB; /* initial values for increments */
 
   /* This array holds the distance to the nearest-so-far color for each cell */
   int bestdist[BOX_R_ELEMS * BOX_G_ELEMS * BOX_B_ELEMS];
@@ -608,9 +610,9 @@ static void find_best_colors(QuantizeObj * quantobj, int minR, int minG, int min
    */
 
   /* Nominal steps between cell centers ("x" in Thomas article) */
-#define STEP_R  ((1 << R_SHIFT) R_SCALE)
-#define STEP_G  ((1 << G_SHIFT) G_SCALE)
-#define STEP_B  ((1 << B_SHIFT) B_SCALE)
+#define STEP_R ((1 << R_SHIFT) R_SCALE)
+#define STEP_G ((1 << G_SHIFT) G_SCALE)
+#define STEP_B ((1 << B_SHIFT) B_SCALE)
 
   for (i = 0; i < numcolors; i++) {
     icolor = colorlist[i];
@@ -654,18 +656,18 @@ static void find_best_colors(QuantizeObj * quantobj, int minR, int minG, int min
   }
 }
 
-static void fill_inverse_cmap_rgb(QuantizeObj * quantobj, Histogram histogram, int R, int G, int B)
+static void fill_inverse_cmap_rgb(QuantizeObj *quantobj, Histogram histogram, int R, int G, int B)
 /* Fill the inverse-colormap entries in the update box that contains
  histogram cell R/G/B.  (Only that one cell MUST be filled, but
  we can fill as many others as we wish.) */
 {
-  int minR, minG, minB;         /* lower left corner of update box */
+  int minR, minG, minB; /* lower left corner of update box */
   int iR, iG, iB;
-  int *cptr;                    /* pointer into bestcolor[] array */
-  ColorFreq *cachep;            /* pointer into main cache array */
+  int *cptr;         /* pointer into bestcolor[] array */
+  ColorFreq *cachep; /* pointer into main cache array */
   /* This array lists the candidate colormap indexes. */
   int colorlist[MAXNUMCOLORS];
-  int numcolors;                /* number of candidate colors */
+  int numcolors; /* number of candidate colors */
   /* This array holds the actually closest colormap index for each cell. */
   int bestcolor[BOX_R_ELEMS * BOX_G_ELEMS * BOX_B_ELEMS];
 
@@ -691,7 +693,7 @@ static void fill_inverse_cmap_rgb(QuantizeObj * quantobj, Histogram histogram, i
   find_best_colors(quantobj, minR, minG, minB, numcolors, colorlist, bestcolor);
 
   /* Save the best color numbers (plus 1) in the main cache array */
-  R <<= BOX_R_LOG;              /* convert ID back to base cell indexes */
+  R <<= BOX_R_LOG; /* convert ID back to base cell indexes */
   G <<= BOX_G_LOG;
   B <<= BOX_B_LOG;
   cptr = bestcolor;
@@ -706,15 +708,16 @@ static void fill_inverse_cmap_rgb(QuantizeObj * quantobj, Histogram histogram, i
 }
 
 /*  This is pass 1  */
-static void median_cut_pass1_rgb(QuantizeObj * quantobj, at_bitmap * image, const at_color * ignoreColor)
+static void median_cut_pass1_rgb(QuantizeObj *quantobj, at_bitmap *image,
+                                 const at_color *ignoreColor)
 {
   generate_histogram_rgb(quantobj->histogram, image, ignoreColor);
   select_colors_rgb(quantobj, quantobj->histogram);
 }
 
 /* Map some rows of pixels to the output colormapped representation. */
-static void median_cut_pass2_rgb(QuantizeObj * quantobj, at_bitmap * image, const at_color * bgColor)
- /* This version performs no dithering */
+static void median_cut_pass2_rgb(QuantizeObj *quantobj, at_bitmap *image, const at_color *bgColor)
+/* This version performs no dithering */
 {
   Histogram histogram = quantobj->histogram;
   ColorFreq *cachep;
@@ -725,7 +728,7 @@ static void median_cut_pass2_rgb(QuantizeObj * quantobj, at_bitmap * image, cons
   int width = AT_BITMAP_WIDTH(image);
   int height = AT_BITMAP_HEIGHT(image);
   unsigned char *src, *dest;
-  at_color bg_color = { 0xff, 0xff, 0xff };
+  at_color bg_color = {0xff, 0xff, 0xff};
 
   zero_histogram_rgb(histogram);
 
@@ -809,7 +812,6 @@ static QuantizeObj *initialize_median_cut(int num_colors)
 {
   QuantizeObj *quantobj = g_malloc(sizeof(QuantizeObj));
 
-
   /* Initialize the data structures */
   quantobj->histogram = g_malloc(sizeof(ColorFreq) * HIST_R_ELEMS * HIST_G_ELEMS * HIST_B_ELEMS);
   quantobj->desired_number_of_colors = num_colors;
@@ -817,7 +819,8 @@ static QuantizeObj *initialize_median_cut(int num_colors)
   return quantobj;
 }
 
-void quantize(at_bitmap * image, long ncolors, const at_color * bgColor, QuantizeObj ** iQuant, at_exception_type * exp)
+void quantize(at_bitmap *image, long ncolors, const at_color *bgColor, QuantizeObj **iQuant,
+              at_exception_type *exp)
 {
   QuantizeObj *quantobj;
   unsigned int spp = AT_BITMAP_PLANES(image);
@@ -847,7 +850,7 @@ void quantize(at_bitmap * image, long ncolors, const at_color * bgColor, Quantiz
     quantize_object_free(quantobj);
 }
 
-void quantize_object_free(QuantizeObj * quantobj)
+void quantize_object_free(QuantizeObj *quantobj)
 {
   g_free(quantobj->histogram);
   g_free(quantobj);

@@ -35,8 +35,10 @@ struct _at_output_format_entry {
 };
 
 static GHashTable *at_output_formats = NULL;
-static at_output_format_entry *at_output_format_new(const char *descr, at_output_func writer, gpointer user_data, GDestroyNotify user_data_destroy_func);
-static void at_output_format_free(at_output_format_entry * entry);
+static at_output_format_entry *at_output_format_new(const char *descr, at_output_func writer,
+                                                    gpointer user_data,
+                                                    GDestroyNotify user_data_destroy_func);
+static void at_output_format_free(at_output_format_entry *entry);
 
 /*
  * Helper functions
@@ -50,13 +52,16 @@ int at_output_init(void)
   if (at_output_formats)
     return 1;
 
-  at_output_formats = g_hash_table_new_full(g_str_hash, (GEqualFunc) g_str_equal, g_free, (GDestroyNotify) at_output_format_free);
+  at_output_formats = g_hash_table_new_full(g_str_hash, (GEqualFunc)g_str_equal, g_free,
+                                            (GDestroyNotify)at_output_format_free);
   if (!at_output_formats)
     return 0;
   return 1;
 }
 
-static at_output_format_entry *at_output_format_new(const gchar * descr, at_output_func writer, gpointer user_data, GDestroyNotify user_data_destroy_func)
+static at_output_format_entry *at_output_format_new(const gchar *descr, at_output_func writer,
+                                                    gpointer user_data,
+                                                    GDestroyNotify user_data_destroy_func)
 {
   at_output_format_entry *entry;
   entry = g_malloc(sizeof(at_output_format_entry));
@@ -69,21 +74,22 @@ static at_output_format_entry *at_output_format_new(const gchar * descr, at_outp
   return entry;
 }
 
-static void at_output_format_free(at_output_format_entry * entry)
+static void at_output_format_free(at_output_format_entry *entry)
 {
-  g_free((gpointer) entry->descr);
+  g_free((gpointer)entry->descr);
   if (entry->user_data_destroy_func)
     entry->user_data_destroy_func(entry->writer.data);
   g_free(entry);
-
 }
 
-int at_output_add_handler(const gchar * suffix, const gchar * description, at_output_func writer)
+int at_output_add_handler(const gchar *suffix, const gchar *description, at_output_func writer)
 {
   return at_output_add_handler_full(suffix, description, writer, 0, NULL, NULL);
 }
 
-int at_output_add_handler_full(const gchar * suffix, const gchar * description, at_output_func writer, gboolean override, gpointer user_data, GDestroyNotify user_data_destroy_func)
+int at_output_add_handler_full(const gchar *suffix, const gchar *description, at_output_func writer,
+                               gboolean override, gpointer user_data,
+                               GDestroyNotify user_data_destroy_func)
 {
   gchar *gsuffix;
   const gchar *gdescription;
@@ -94,7 +100,7 @@ int at_output_add_handler_full(const gchar * suffix, const gchar * description, 
   g_return_val_if_fail(description, 0);
   g_return_val_if_fail(writer, 0);
 
-  g_autofree gchar *gsuffix_raw = g_strdup((gchar *) suffix);
+  g_autofree gchar *gsuffix_raw = g_strdup((gchar *)suffix);
   g_return_val_if_fail(gsuffix_raw, 0);
   gsuffix = g_ascii_strdown(gsuffix_raw, strlen(gsuffix_raw));
 
@@ -113,7 +119,7 @@ int at_output_add_handler_full(const gchar * suffix, const gchar * description, 
   return 1;
 }
 
-at_spline_writer *at_output_get_handler(gchar * filename)
+at_spline_writer *at_output_get_handler(gchar *filename)
 {
   char *ext = find_suffix(filename);
   if (ext == NULL)
@@ -122,7 +128,7 @@ at_spline_writer *at_output_get_handler(gchar * filename)
   return at_output_get_handler_by_suffix(ext);
 }
 
-at_spline_writer *at_output_get_handler_by_suffix(gchar * suffix)
+at_spline_writer *at_output_get_handler_by_suffix(gchar *suffix)
 {
   at_output_format_entry *format;
 
@@ -215,7 +221,8 @@ static void output_list_strcat(gpointer key, gpointer value, gpointer user_data)
   *list_ptr = list + strlen(key) + 2;
 }
 
-void at_spline_list_foreach(at_spline_list_type * list, AtSplineListForeachFunc func, gpointer user_data)
+void at_spline_list_foreach(at_spline_list_type *list, AtSplineListForeachFunc func,
+                            gpointer user_data)
 {
   unsigned i;
   for (i = 0; i < AT_SPLINE_LIST_LENGTH(list); i++) {
@@ -223,7 +230,8 @@ void at_spline_list_foreach(at_spline_list_type * list, AtSplineListForeachFunc 
   }
 }
 
-void at_spline_list_array_foreach(at_spline_list_array_type * list_array, AtSplineListArrayForeachFunc func, gpointer user_data)
+void at_spline_list_array_foreach(at_spline_list_array_type *list_array,
+                                  AtSplineListArrayForeachFunc func, gpointer user_data)
 {
   unsigned i;
   for (i = 0; i < AT_SPLINE_LIST_ARRAY_LENGTH(list_array); i++) {

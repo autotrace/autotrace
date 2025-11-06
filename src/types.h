@@ -25,18 +25,18 @@
 
 #ifdef __cplusplus
 extern "C" {
-#endif                          /* __cplusplus */
+#endif /* __cplusplus */
 
 /* Cartesian points.  */
-  typedef struct _at_coord {
-    gushort x, y;
-  } at_coord;
+typedef struct _at_coord {
+  gushort x, y;
+} at_coord;
 
-  typedef struct _at_real_coord {
-    gfloat x, y, z;
-  } at_real_coord;
+typedef struct _at_real_coord {
+  gfloat x, y, z;
+} at_real_coord;
 
 #ifdef __cplusplus
 }
-#endif                          /* __cplusplus */
-#endif                          /* not AT_TYPES_H */
+#endif /* __cplusplus */
+#endif /* not AT_TYPES_H */

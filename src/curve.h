@@ -35,28 +35,27 @@ typedef struct curve *curve_type;
 
 /* Get at the coordinates and the t values.  */
 #define CURVE_POINT(c, n) ((c)->point_list[n].coord)
-#define LAST_CURVE_POINT(c) ((c)->point_list[(c)->length-1].coord)
+#define LAST_CURVE_POINT(c) ((c)->point_list[(c)->length - 1].coord)
 #define CURVE_T(c, n) ((c)->point_list[n].t)
-#define LAST_CURVE_T(c) ((c)->point_list[(c)->length-1].t)
+#define LAST_CURVE_T(c) ((c)->point_list[(c)->length - 1].t)
 
 /* This is the length of `point_list'.  */
-#define CURVE_LENGTH(c)  ((c)->length)
+#define CURVE_LENGTH(c) ((c)->length)
 
 /* A curve is ``cyclic'' if it didn't have any corners, after all, so
    the last point is adjacent to the first.  */
-#define CURVE_CYCLIC(c)  ((c)->cyclic)
+#define CURVE_CYCLIC(c) ((c)->cyclic)
 
 /* If the curve is cyclic, the next and previous points should wrap
    around; otherwise, if we get to the end, we return CURVE_LENGTH and
    -1, respectively.  */
-#define CURVE_NEXT(c, n)						\
-  ((n) + 1 >= CURVE_LENGTH (c)						\
-  ? CURVE_CYCLIC (c) ? ((n) + 1) % CURVE_LENGTH (c) : CURVE_LENGTH (c)	\
-  : (n) + 1)
-#define CURVE_PREV(c, n)						\
-  ((signed int) (n) - 1 < 0							\
-  ? CURVE_CYCLIC (c) ? (signed int) CURVE_LENGTH (c) + (signed int) (n) - 1 : -1\
-  : (signed int) (n) - 1)
+#define CURVE_NEXT(c, n)                                                                           \
+  ((n) + 1 >= CURVE_LENGTH(c) ? CURVE_CYCLIC(c) ? ((n) + 1) % CURVE_LENGTH(c) : CURVE_LENGTH(c)    \
+                              : (n) + 1)
+#define CURVE_PREV(c, n)                                                                           \
+  ((signed int)(n) - 1 < 0                                                                         \
+       ? CURVE_CYCLIC(c) ? (signed int)CURVE_LENGTH(c) + (signed int)(n) - 1 : -1                  \
+       : (signed int)(n) - 1)
 
 /* The tangents at the endpoints are computed using the neighboring curves.  */
 #define CURVE_START_TANGENT(c) ((c)->start_tangent)
@@ -96,11 +95,11 @@ typedef struct {
 } curve_list_type;
 
 /* Number of curves in the list.  */
-#define CURVE_LIST_LENGTH(c_l)  ((c_l).length)
+#define CURVE_LIST_LENGTH(c_l) ((c_l).length)
 
 /* Access the individual curves.  */
 #define CURVE_LIST_ELT(c_l, n) ((c_l).data[n])
-#define LAST_CURVE_LIST_ELT(c_l) ((c_l).data[CURVE_LIST_LENGTH (c_l) - 1])
+#define LAST_CURVE_LIST_ELT(c_l) ((c_l).data[CURVE_LIST_LENGTH(c_l) - 1])
 
 /* Says whether the outline that this curve list represents moves
    clockwise or counterclockwise.  */

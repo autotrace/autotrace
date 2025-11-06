@@ -21,21 +21,23 @@
 #include "spline.h"
 
 #define NUM_SPLINES 8
-#define WriteInitialize(fp) (fputs("IN;",fp))
-#define WriteInitPt(fp,left,bottom,right,top) (fprintf(fp,"IP %d %d %d %d;", left,bottom,right,top))
-#define WriteScale(fp,left,right,bottom,top) (fprintf(fp,"SC %d %d %d %d;", left,right,bottom,top))
-#define WritePenDown(fp,x,y) (fprintf(fp,"PD%d %d;", X_FLOAT_TO_UI32(x), Y_FLOAT_TO_UI32(y)))
-#define WritePenUp(fp,x,y) (fprintf(fp,"PU%d %d;", X_FLOAT_TO_UI32(x), Y_FLOAT_TO_UI32(y)))
-#define WriteSelectPen(fp,iColor) (fprintf(fp,"SP%d;",iColor))
+#define WriteInitialize(fp) (fputs("IN;", fp))
+#define WriteInitPt(fp, left, bottom, right, top)                                                  \
+  (fprintf(fp, "IP %d %d %d %d;", left, bottom, right, top))
+#define WriteScale(fp, left, right, bottom, top)                                                   \
+  (fprintf(fp, "SC %d %d %d %d;", left, right, bottom, top))
+#define WritePenDown(fp, x, y) (fprintf(fp, "PD%d %d;", X_FLOAT_TO_UI32(x), Y_FLOAT_TO_UI32(y)))
+#define WritePenUp(fp, x, y) (fprintf(fp, "PU%d %d;", X_FLOAT_TO_UI32(x), Y_FLOAT_TO_UI32(y)))
+#define WriteSelectPen(fp, iColor) (fprintf(fp, "SP%d;", iColor))
 
 #define WDEVPIXEL 1280
 #define HDEVPIXEL 1024
 #define WDEVMLMTR 320
 #define HDEVMLMTR 240
 
-#define SCALE (gfloat) 1.0
+#define SCALE (gfloat)1.0
 
-#define MAKE_COLREF(r,g,b) (((r) & 0x0FF) | (((g) & 0x0FF) << 8) | (((b) & 0x0FF) << 16))
+#define MAKE_COLREF(r, g, b) (((r) & 0x0FF) | (((g) & 0x0FF) << 8) | (((b) & 0x0FF) << 16))
 #define X_FLOAT_TO_UI32(num) ((uint32_t)(num * SCALE))
 #define Y_FLOAT_TO_UI32(num) ((uint32_t)(num * SCALE))
 
@@ -48,10 +50,9 @@ static int GetIndexFromRGBValue(int red, int green, int blue)
   int i, index = 0;
   int psav = 3 * (0xFF * 0xFF), pnew, px, py, pz;
   int nred, ngreen, nblue;
-  const at_color HPGL_COLORS[] = { {0, 0, 0}, {0, 0, 0}, {0xFF, 0, 0},
-  {0, 0xFF, 0}, {0xFF, 0xFF, 0}, {0, 0, 0xFF},
-  {0xB8, 0, 0x80}, {0, 0xFF, 0xFF}, {0xFF, 0x84, 00}
-  };
+  const at_color HPGL_COLORS[] = {{0, 0, 0},       {0, 0, 0},       {0xFF, 0, 0},
+                                  {0, 0xFF, 0},    {0xFF, 0xFF, 0}, {0, 0, 0xFF},
+                                  {0xB8, 0, 0x80}, {0, 0xFF, 0xFF}, {0xFF, 0x84, 00}};
   for (i = 1; i < sizeof(HPGL_COLORS) / sizeof(at_color); i++) {
     nred = HPGL_COLORS[i].r;
     ngreen = HPGL_COLORS[i].g;
@@ -71,7 +72,7 @@ static int GetIndexFromRGBValue(int red, int green, int blue)
   return index;
 }
 
-static void GetSplinePts(at_real_coord * BezierPts, at_real_coord * Splines, int numsplines)
+static void GetSplinePts(at_real_coord *BezierPts, at_real_coord *Splines, int numsplines)
 {
   /*first point == P0; last point = BezierPts[3]
      P1, P2 are the control points
@@ -99,7 +100,7 @@ static void GetSplinePts(at_real_coord * BezierPts, at_real_coord * Splines, int
   c.y = 3 * (BezierPts[2].y - BezierPts[1].y) - b.y;
   d.y = (BezierPts[3].y - BezierPts[0].y) - (b.y + c.y);
 
-  //Assume Splines was allocated externally with enough space
+  // Assume Splines was allocated externally with enough space
   for (count = 0; count < numsplines; count++) {
     t = (float)count / (numsplines - 1);
     if (count == 0)
@@ -113,9 +114,9 @@ static void GetSplinePts(at_real_coord * BezierPts, at_real_coord * Splines, int
   }
 }
 
-static void WriteBezier(FILE * fdes, spline_type sp1, at_real_coord * BeginPt)
+static void WriteBezier(FILE *fdes, spline_type sp1, at_real_coord *BeginPt)
 {
-  //Bezier from begin point
+  // Bezier from begin point
   at_real_coord Splines[NUM_SPLINES];
   at_real_coord BezierPts[4], LastPoint;
   int i;
@@ -134,11 +135,11 @@ static void WriteBezier(FILE * fdes, spline_type sp1, at_real_coord * BeginPt)
   *BeginPt = LastPoint;
 }
 
-static void OutputPlt(FILE * fdes, int llx, int lly, int urx, int ury, spline_list_array_type shape)
+static void OutputPlt(FILE *fdes, int llx, int lly, int urx, int ury, spline_list_array_type shape)
 {
-/*
-    Parses the spline data and writes out HPGL (*.PLT) formatted file
-*/
+  /*
+      Parses the spline data and writes out HPGL (*.PLT) formatted file
+  */
   const int plu_inch = 1016;
   const int LOGXPIXELS = 120;
 
@@ -155,11 +156,12 @@ static void OutputPlt(FILE * fdes, int llx, int lly, int urx, int ury, spline_li
   if (fdes == NULL)
     return;
 
-  //output PLT header and sizing information
+  // output PLT header and sizing information
   WriteInitialize(fdes);
   //            CView *pView=GetNextView(pos);
   //            int LOGXPIXELS = pView->GetDC()->GetDeviceCaps(LOGPIXELSX);
-  WriteInitPt(fdes, (uint32_t) (Scale * llx), (uint32_t) (Scale * lly), (uint32_t) (Scale * urx), (uint32_t) (Scale * ury));
+  WriteInitPt(fdes, (uint32_t)(Scale * llx), (uint32_t)(Scale * lly), (uint32_t)(Scale * urx),
+              (uint32_t)(Scale * ury));
   WriteScale(fdes, llx, urx, lly, ury);
 
   LastPoint.x = 0;
@@ -173,31 +175,31 @@ static void OutputPlt(FILE * fdes, int llx, int lly, int urx, int ury, spline_li
     // output pen selection
     curr_color = MAKE_COLREF(curr_list.color.r, curr_list.color.g, curr_list.color.b);
     if (this_list == 0 || curr_color != last_color) {
-      //set new color
+      // set new color
       red = curr_list.color.r, green = curr_list.color.g, blue = curr_list.color.b;
       index = GetIndexFromRGBValue(red, green, blue);
       WriteSelectPen(fdes, index);
       last_color = curr_color;
     }
-    //output MoveTo first point
+    // output MoveTo first point
     curr_spline = SPLINE_LIST_ELT(curr_list, 0);
     LastPoint = START_POINT(curr_spline);
     WritePenUp(fdes, LastPoint.x, LastPoint.y);
     StartPoint = LastPoint;
 
-    //visit each spline
+    // visit each spline
     for (this_spline = 0; this_spline < SPLINE_LIST_LENGTH(curr_list); this_spline++) {
       curr_spline = SPLINE_LIST_ELT(curr_list, this_spline);
       last_degree = ((int)SPLINE_DEGREE(curr_spline));
 
-      switch ((polynomial_degree) last_degree) {
+      switch ((polynomial_degree)last_degree) {
       case LINEARTYPE:
-        //output Line
+        // output Line
         LastPoint = END_POINT(curr_spline);
         WritePenDown(fdes, LastPoint.x, LastPoint.y);
         break;
       default:
-        //output Bezier curve
+        // output Bezier curve
         WriteBezier(fdes, curr_spline, &LastPoint);
         break;
       }
@@ -205,12 +207,13 @@ static void OutputPlt(FILE * fdes, int llx, int lly, int urx, int ury, spline_li
   }
 
   WritePenUp(fdes, LastPoint.x, LastPoint.y);
-
 }
 
-//PLT output
+// PLT output
 
-int output_plt_writer(FILE * file, gchar * name, int llx, int lly, int urx, int ury, at_output_opts_type * opts, at_spline_list_array_type shape, at_msg_func msg_func, gpointer msg_data, gpointer user_data)
+int output_plt_writer(FILE *file, gchar *name, int llx, int lly, int urx, int ury,
+                      at_output_opts_type *opts, at_spline_list_array_type shape,
+                      at_msg_func msg_func, gpointer msg_data, gpointer user_data)
 {
 #ifdef _WINDOWS
   if (file == stdout) {

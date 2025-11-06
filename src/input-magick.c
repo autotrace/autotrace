@@ -31,7 +31,8 @@
 #include <magick/api.h>
 #endif
 
-static at_bitmap input_magick_reader(gchar * filename, at_input_opts_type * opts, at_msg_func msg_func, gpointer msg_data, gpointer user_data)
+static at_bitmap input_magick_reader(gchar *filename, at_input_opts_type *opts,
+                                     at_msg_func msg_func, gpointer msg_data, gpointer user_data)
 {
   Image *image = NULL;
   ImageInfo *image_info;
@@ -54,12 +55,12 @@ static at_bitmap input_magick_reader(gchar * filename, at_input_opts_type * opts
   InitializeMagick("");
   GetExceptionInfo(exception_ptr);
 #endif
-  image_info = CloneImageInfo((ImageInfo *) NULL);
+  image_info = CloneImageInfo((ImageInfo *)NULL);
   (void)strcpy(image_info->filename, filename);
   image_info->antialias = 0;
 
   image = ReadImage(image_info, exception_ptr);
-  if (image == (Image *) NULL) {
+  if (image == (Image *)NULL) {
     /* MagickError(exception.severity,exception.reason,exception.description); */
     if (msg_func)
       msg_func(exception_ptr->reason, AT_MSG_FATAL, msg_data);
@@ -86,24 +87,24 @@ static at_bitmap input_magick_reader(gchar * filename, at_input_opts_type * opts
       green = pixel->green;
       blue = pixel->blue;
 #elif defined(HAVE_IMAGEMAGICK)
-  #if defined(HAVE_IMAGEMAGICK7)
+#if defined(HAVE_IMAGEMAGICK7)
       ClearMagickException(exception_ptr);
       GetOneAuthenticPixel(image, i, j, q, exception_ptr);
       red = ScaleQuantumToChar(q[RedPixelChannel]);
       green = ScaleQuantumToChar(q[GreenPixelChannel]);
       blue = ScaleQuantumToChar(q[BluePixelChannel]);
-  #else
-  #if ((MagickLibVersion < 0x0645) || (MagickLibVersion >= 0x0649))
+#else
+#if ((MagickLibVersion < 0x0645) || (MagickLibVersion >= 0x0649))
       p = GetOnePixel(image, i, j);
-  #else
+#else
       GetOnePixel(image, i, j, pixel);
-  #endif
+#endif
       red = pixel->red;
       green = pixel->green;
       blue = pixel->blue;
-  #endif
 #endif
-      AT_BITMAP_BITS(&bitmap)[point++] = red;  /* if gray: red=green=blue */
+#endif
+      AT_BITMAP_BITS(&bitmap)[point++] = red; /* if gray: red=green=blue */
       if (np == 3) {
         AT_BITMAP_BITS(&bitmap)[point++] = green;
         AT_BITMAP_BITS(&bitmap)[point++] = blue;
@@ -142,16 +143,18 @@ int install_input_magick_readers(void)
   info = GetMagickInfo("*", &exception);
   while (info) {
     if (info->name && info->description) {
-      at_input_add_handler_full(info->name, info->description, input_magick_reader, 0, info->name, NULL);
+      at_input_add_handler_full(info->name, info->description, input_magick_reader, 0, info->name,
+                                NULL);
     }
     info = info->next;
   }
 #else
   infos = GetMagickInfoList("*", &n, exception_ptr);
-  for (int i = 0; i < n; i++){
+  for (int i = 0; i < n; i++) {
     info = infos[i];
     if (info->name && info->description)
-      at_input_add_handler_full(info->name, info->description, input_magick_reader, 0, info->name, NULL);
+      at_input_add_handler_full(info->name, info->description, input_magick_reader, 0, info->name,
+                                NULL);
   }
 #endif // HAVE_GRAPHICSMAGICK
 

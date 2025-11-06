@@ -75,21 +75,22 @@ static gfloat bezpnt(gfloat t, gfloat z1, gfloat z2, gfloat z3, gfloat z4)
 {
   gfloat temp, t1;
   /* Determine ordinate on Bezier curve at length "t" on curve */
-  if (t < (gfloat) 0.0) {
-    t = (gfloat) 0.0;
+  if (t < (gfloat)0.0) {
+    t = (gfloat)0.0;
   }
-  if (t > (gfloat) 1.0) {
-    t = (gfloat) 1.0;
+  if (t > (gfloat)1.0) {
+    t = (gfloat)1.0;
   }
-  t1 = ((gfloat) 1.0 - t);
-  temp = t1 * t1 * t1 * z1 + (gfloat) 3.0 *t * t1 * t1 * z2 + (gfloat) 3.0 *t * t * t1 * z3 + t * t * t * z4;
+  t1 = ((gfloat)1.0 - t);
+  temp = t1 * t1 * t1 * z1 + (gfloat)3.0 * t * t1 * t1 * z2 + (gfloat)3.0 * t * t * t1 * z3 +
+         t * t * t * z4;
   return (temp);
 }
 
 /*===========================================================================
   Print a point
 ===========================================================================*/
-static void print_coord(FILE * f, gfloat x, gfloat y)
+static void print_coord(FILE *f, gfloat x, gfloat y)
 {
   fprintf(f, "  <Point %.2f %.2f>\n", x * 72.0 / cbox.dpi, (cbox.ury - y + 1) * 72.0 / cbox.dpi);
 }
@@ -97,23 +98,26 @@ static void print_coord(FILE * f, gfloat x, gfloat y)
 /*===========================================================================
   Main conversion routine
 ===========================================================================*/
-int output_mif_writer(FILE * ps_file, gchar * name, int llx, int lly, int urx, int ury, at_output_opts_type * opts, spline_list_array_type shape, at_msg_func msg_func, gpointer msg_data, gpointer user_data)
+int output_mif_writer(FILE *ps_file, gchar *name, int llx, int lly, int urx, int ury,
+                      at_output_opts_type *opts, spline_list_array_type shape, at_msg_func msg_func,
+                      gpointer msg_data, gpointer user_data)
 {
   unsigned this_list;
   int i;
   ColorT col_tbl[256];
   int n_ctbl = 0;
-  at_color curr_color = { 0, 0, 0 };
+  at_color curr_color = {0, 0, 0};
 
   cbox.llx = llx;
   cbox.lly = lly;
   cbox.urx = urx;
   cbox.ury = ury;
-  cbox.dpi = (gfloat) opts->dpi;
+  cbox.dpi = (gfloat)opts->dpi;
 
   for (this_list = 0; this_list < SPLINE_LIST_ARRAY_LENGTH(shape); this_list++) {
     spline_list_type list = SPLINE_LIST_ARRAY_ELT(shape, this_list);
-    curr_color = (list.clockwise && shape.background_color != NULL) ? *(shape.background_color) : list.color;
+    curr_color =
+        (list.clockwise && shape.background_color != NULL) ? *(shape.background_color) : list.color;
 
     for (i = 0; i < n_ctbl; i++)
       if (at_color_equal(&curr_color, &col_tbl[i].c))
@@ -142,11 +146,21 @@ int output_mif_writer(FILE * ps_file, gchar * name, int llx, int lly, int urx, i
     c -= k;
     m -= k;
     y -= k;
-    fprintf(ps_file, " <Color <ColorTag %s><ColorCyan %d><ColorMagenta %d>" "<ColorYellow %d><ColorBlack %d>>\n", col_tbl[i].tag, c * 100 / 255, m * 100 / 255, y * 100 / 255, k * 100 / 255);
+    fprintf(ps_file,
+            " <Color <ColorTag %s><ColorCyan %d><ColorMagenta %d>"
+            "<ColorYellow %d><ColorBlack %d>>\n",
+            col_tbl[i].tag, c * 100 / 255, m * 100 / 255, y * 100 / 255, k * 100 / 255);
   }
   fprintf(ps_file, ">\n");
 
-  fprintf(ps_file, "<Frame\n" " <Pen 15>\n" " <Fill 15>\n" " <PenWidth  0.2 pt>\n" " <Separation 0>\n" " <BRect  0.0 pt 0.0 pt %.1f pt %.1f pt>\n", (urx - llx) * 72.0 / cbox.dpi, (ury - lly) * 72.0 / cbox.dpi);
+  fprintf(ps_file,
+          "<Frame\n"
+          " <Pen 15>\n"
+          " <Fill 15>\n"
+          " <PenWidth  0.2 pt>\n"
+          " <Separation 0>\n"
+          " <BRect  0.0 pt 0.0 pt %.1f pt %.1f pt>\n",
+          (urx - llx) * 72.0 / cbox.dpi, (ury - lly) * 72.0 / cbox.dpi);
 
   for (this_list = 0; this_list < SPLINE_LIST_ARRAY_LENGTH(shape); this_list++) {
     unsigned this_spline;
@@ -159,7 +173,9 @@ int output_mif_writer(FILE * ps_file, gchar * name, int llx, int lly, int urx, i
       if (at_color_equal(&curr_color, &col_tbl[i].c))
         break;
 
-    fprintf(ps_file, " %s\n", (shape.centerline || list.open) ? "<PolyLine <Fill 15><Pen 0>" : "<Polygon <Fill 0><Pen 15>");
+    fprintf(ps_file, " %s\n",
+            (shape.centerline || list.open) ? "<PolyLine <Fill 15><Pen 0>"
+                                            : "<Polygon <Fill 0><Pen 15>");
     fprintf(ps_file, "  <ObColor `%s'>\n", col_tbl[i].tag);
 
     print_coord(ps_file, START_POINT(first).x, START_POINT(first).y);
@@ -171,10 +187,12 @@ int output_mif_writer(FILE * ps_file, gchar * name, int llx, int lly, int urx, i
         print_coord(ps_file, END_POINT(s).x, END_POINT(s).y);
       } else {
         gfloat temp;
-        gfloat dt = (gfloat) (1.0 / 7.0);
+        gfloat dt = (gfloat)(1.0 / 7.0);
         /*smooth = TRUE; */
-        for (temp = dt; fabs(temp - (gfloat) 1.0) > dt; temp += dt) {
-          print_coord(ps_file, bezpnt(temp, START_POINT(s).x, CONTROL1(s).x, CONTROL2(s).x, END_POINT(s).x), bezpnt(temp, START_POINT(s).y, CONTROL1(s).y, CONTROL2(s).y, END_POINT(s).y));
+        for (temp = dt; fabs(temp - (gfloat)1.0) > dt; temp += dt) {
+          print_coord(ps_file,
+                      bezpnt(temp, START_POINT(s).x, CONTROL1(s).x, CONTROL2(s).x, END_POINT(s).x),
+                      bezpnt(temp, START_POINT(s).y, CONTROL1(s).y, CONTROL2(s).y, END_POINT(s).y));
         }
       }
     }

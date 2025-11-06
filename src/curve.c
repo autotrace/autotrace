@@ -85,14 +85,12 @@ void append_point(curve_type curve, at_real_coord coord)
 
 #define NUM_TO_PRINT 3
 
-#define DEBUG_CURVE_POINT(c, p, print_t)					\
-  do									\
-    {									\
-      DEBUG ("(%.3f,%.3f)", CURVE_POINT (c, p).x, CURVE_POINT (c, p).y);	\
-      if (print_t)							\
-        DEBUG ("/%.2f", CURVE_T (c, p));					\
-    }									\
-  while (0)
+#define DEBUG_CURVE_POINT(c, p, print_t)                                                           \
+  do {                                                                                             \
+    DEBUG("(%.3f,%.3f)", CURVE_POINT(c, p).x, CURVE_POINT(c, p).y);                                \
+    if (print_t)                                                                                   \
+      DEBUG("/%.2f", CURVE_T(c, p));                                                               \
+  } while (0)
 
 void log_curve(curve_type curve, gboolean print_t)
 {
@@ -106,7 +104,9 @@ void log_curve(curve_type curve, gboolean print_t)
   /* It should suffice to check just one of the tangents for being null
      -- either they both should be, or neither should be.  */
   if (CURVE_START_TANGENT(curve) != NULL)
-    DEBUG("  tangents = (%.3f,%.3f) & (%.3f,%.3f).\n", CURVE_START_TANGENT(curve)->dx, CURVE_START_TANGENT(curve)->dy, CURVE_END_TANGENT(curve)->dx, CURVE_END_TANGENT(curve)->dy);
+    DEBUG("  tangents = (%.3f,%.3f) & (%.3f,%.3f).\n", CURVE_START_TANGENT(curve)->dx,
+          CURVE_START_TANGENT(curve)->dy, CURVE_END_TANGENT(curve)->dx,
+          CURVE_END_TANGENT(curve)->dy);
 
   DEBUG("  ");
 
@@ -120,14 +120,16 @@ void log_curve(curve_type curve, gboolean print_t)
         DEBUG("\n  ");
     }
   } else {
-    for (this_point = 0; this_point < NUM_TO_PRINT && this_point < CURVE_LENGTH(curve); this_point++) {
+    for (this_point = 0; this_point < NUM_TO_PRINT && this_point < CURVE_LENGTH(curve);
+         this_point++) {
       DEBUG_CURVE_POINT(curve, this_point, print_t);
       DEBUG(" ");
     }
 
     DEBUG("...\n   ...");
 
-    for (this_point = CURVE_LENGTH(curve) - NUM_TO_PRINT; this_point < CURVE_LENGTH(curve); this_point++) {
+    for (this_point = CURVE_LENGTH(curve) - NUM_TO_PRINT; this_point < CURVE_LENGTH(curve);
+         this_point++) {
       DEBUG(" ");
       DEBUG_CURVE_POINT(curve, this_point, print_t);
     }
@@ -150,7 +152,9 @@ void log_entire_curve(curve_type curve)
   /* It should suffice to check just one of the tangents for being null
      -- either they both should be, or neither should be.  */
   if (CURVE_START_TANGENT(curve) != NULL)
-    DEBUG("  tangents = (%.3f,%.3f) & (%.3f,%.3f).\n", CURVE_START_TANGENT(curve)->dx, CURVE_START_TANGENT(curve)->dy, CURVE_END_TANGENT(curve)->dx, CURVE_END_TANGENT(curve)->dy);
+    DEBUG("  tangents = (%.3f,%.3f) & (%.3f,%.3f).\n", CURVE_START_TANGENT(curve)->dx,
+          CURVE_START_TANGENT(curve)->dy, CURVE_END_TANGENT(curve)->dx,
+          CURVE_END_TANGENT(curve)->dy);
 
   DEBUG(" ");
 
@@ -177,7 +181,7 @@ curve_list_type new_curve_list(void)
 
 /* Free a curve list and all the curves it contains.  */
 
-void free_curve_list(curve_list_type * curve_list)
+void free_curve_list(curve_list_type *curve_list)
 {
   unsigned this_curve;
 
@@ -192,7 +196,7 @@ void free_curve_list(curve_list_type * curve_list)
 
 /* Add an element to a curve list.  */
 
-void append_curve(curve_list_type * curve_list, curve_type curve)
+void append_curve(curve_list_type *curve_list, curve_type curve)
 {
   curve_list->length++;
   curve_list->data = g_realloc(curve_list->data, curve_list->length * sizeof(curve_type));
@@ -213,13 +217,17 @@ curve_list_array_type new_curve_list_array(void)
 
 /* Free a curve list array and all the curve lists it contains.  */
 
-void free_curve_list_array(curve_list_array_type * curve_list_array, at_progress_func notify_progress, gpointer client_data)
+void free_curve_list_array(curve_list_array_type *curve_list_array,
+                           at_progress_func notify_progress, gpointer client_data)
 {
   unsigned this_list;
 
   for (this_list = 0; this_list < CURVE_LIST_ARRAY_LENGTH(*curve_list_array); this_list++) {
     if (notify_progress)
-      notify_progress(((gfloat) this_list) / (CURVE_LIST_ARRAY_LENGTH(*curve_list_array) * (gfloat) 3.0) + (gfloat) 0.666, client_data);
+      notify_progress(((gfloat)this_list) /
+                              (CURVE_LIST_ARRAY_LENGTH(*curve_list_array) * (gfloat)3.0) +
+                          (gfloat)0.666,
+                      client_data);
     free_curve_list(&CURVE_LIST_ARRAY_ELT(*curve_list_array, this_list));
   }
 
@@ -229,10 +237,11 @@ void free_curve_list_array(curve_list_array_type * curve_list_array, at_progress
 
 /* Add an element to a curve list array.  */
 
-void append_curve_list(curve_list_array_type * curve_list_array, curve_list_type curve_list)
+void append_curve_list(curve_list_array_type *curve_list_array, curve_list_type curve_list)
 {
   CURVE_LIST_ARRAY_LENGTH(*curve_list_array)++;
-  curve_list_array->data = g_realloc(curve_list_array->data, CURVE_LIST_ARRAY_LENGTH(*curve_list_array) * sizeof(curve_list_type));
+  curve_list_array->data = g_realloc(
+      curve_list_array->data, CURVE_LIST_ARRAY_LENGTH(*curve_list_array) * sizeof(curve_list_type));
   LAST_CURVE_LIST_ARRAY_ELT(*curve_list_array) = curve_list;
 }
 

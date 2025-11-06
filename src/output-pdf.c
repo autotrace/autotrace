@@ -27,89 +27,75 @@
 /* Output macros.  */
 
 /* This should be used for outputting a string S on a line by itself.  */
-#define OUT_LINE(s)                                 \
-  fprintf (pdf_file, "%s\n", s)
+#define OUT_LINE(s) fprintf(pdf_file, "%s\n", s)
 
 /* These output their arguments, preceded by the indentation.  */
-#define OUT(...)                                  \
-  fprintf (pdf_file, __VA_ARGS__)
+#define OUT(...) fprintf(pdf_file, __VA_ARGS__)
 
 /* These macros just output their arguments.  */
-#define OUT_REAL(r)	fprintf (pdf_file, r == lround(r)		\
-                                  ? "%.0f " : "%.3f ", r)
+#define OUT_REAL(r) fprintf(pdf_file, r == lround(r) ? "%.0f " : "%.3f ", r)
 
 /* For a PostScript command with two real arguments, e.g., lineto.  OP
    should be a constant string.  */
-#define OUT_COMMAND2(first, second, op)             \
-  do                                                \
-    {                                               \
-      OUT_REAL (first);                             \
-      OUT_REAL (second);                            \
-      OUT (op "\n");                         \
-    }                                               \
-  while (0)
+#define OUT_COMMAND2(first, second, op)                                                            \
+  do {                                                                                             \
+    OUT_REAL(first);                                                                               \
+    OUT_REAL(second);                                                                              \
+    OUT(op "\n");                                                                                  \
+  } while (0)
 
 /* For a PostScript command with six real arguments, e.g., curveto.
    Again, OP should be a constant string.  */
-#define OUT_COMMAND6(first, second, third, fourth, fifth, sixth, op)	\
-  do                                                \
-    {                                               \
-      OUT_REAL (first);                             \
-      OUT_REAL (second);                            \
-      OUT (" ");                             \
-      OUT_REAL (third);                             \
-      OUT_REAL (fourth);                            \
-      OUT (" ");                             \
-      OUT_REAL (fifth);                             \
-      OUT_REAL (sixth);                             \
-      OUT (" " op " \n");                    \
-    }                                               \
-  while (0)
+#define OUT_COMMAND6(first, second, third, fourth, fifth, sixth, op)                               \
+  do {                                                                                             \
+    OUT_REAL(first);                                                                               \
+    OUT_REAL(second);                                                                              \
+    OUT(" ");                                                                                      \
+    OUT_REAL(third);                                                                               \
+    OUT_REAL(fourth);                                                                              \
+    OUT(" ");                                                                                      \
+    OUT_REAL(fifth);                                                                               \
+    OUT_REAL(sixth);                                                                               \
+    OUT(" " op " \n");                                                                             \
+  } while (0)
 
 /* This should be used for outputting a string S on a line by itself.  */
-#define SOUT_LINE(s)                                 \
-  sprintf (temp, "%s\n", s), *length += strlen(temp)
+#define SOUT_LINE(s) sprintf(temp, "%s\n", s), *length += strlen(temp)
 
 /* These output their arguments, preceded by the indentation.  */
-#define SOUT(...)                                  \
-  sprintf (temp, __VA_ARGS__), *length += strlen(temp)
+#define SOUT(...) sprintf(temp, __VA_ARGS__), *length += strlen(temp)
 
 /* These macros just output their arguments.  */
-#define SOUT_REAL(r)	sprintf (temp, r == lround(r)			\
-                                  ? "%.0f " : "%.3f ", r), *length += strlen(temp)
+#define SOUT_REAL(r) sprintf(temp, r == lround(r) ? "%.0f " : "%.3f ", r), *length += strlen(temp)
 
 /* For a PostScript command with two real arguments, e.g., lineto.  OP
    should be a constant string.  */
-#define SOUT_COMMAND2(first, second, op)             \
-  do                                                \
-    {                                               \
-      SOUT_REAL (first);                             \
-      SOUT_REAL (second);                            \
-      SOUT (op "\n");                         \
-    }                                               \
-  while (0)
+#define SOUT_COMMAND2(first, second, op)                                                           \
+  do {                                                                                             \
+    SOUT_REAL(first);                                                                              \
+    SOUT_REAL(second);                                                                             \
+    SOUT(op "\n");                                                                                 \
+  } while (0)
 
 /* For a PostScript command with six real arguments, e.g., curveto.
    Again, OP should be a constant string.  */
-#define SOUT_COMMAND6(first, second, third, fourth, fifth, sixth, op)	\
-  do                                                \
-    {                                               \
-      SOUT_REAL (first);                             \
-      SOUT_REAL (second);                            \
-      SOUT (" ");                             \
-      SOUT_REAL (third);                             \
-      SOUT_REAL (fourth);                            \
-      SOUT (" ");                             \
-      SOUT_REAL (fifth);                             \
-      SOUT_REAL (sixth);                             \
-      SOUT (" " op " \n");                    \
-    }                                               \
-  while (0)
+#define SOUT_COMMAND6(first, second, third, fourth, fifth, sixth, op)                              \
+  do {                                                                                             \
+    SOUT_REAL(first);                                                                              \
+    SOUT_REAL(second);                                                                             \
+    SOUT(" ");                                                                                     \
+    SOUT_REAL(third);                                                                              \
+    SOUT_REAL(fourth);                                                                             \
+    SOUT(" ");                                                                                     \
+    SOUT_REAL(fifth);                                                                              \
+    SOUT_REAL(sixth);                                                                              \
+    SOUT(" " op " \n");                                                                            \
+  } while (0)
 
 /* This should be called before the others in this file. It opens the
    output file `OUTPUT_NAME.pdf', and writes some preliminary boilerplate. */
 
-static int output_pdf_header(FILE * pdf_file, gchar * name, int llx, int lly, int urx, int ury)
+static int output_pdf_header(FILE *pdf_file, gchar *name, int llx, int lly, int urx, int ury)
 {
   OUT_LINE("%PDF-1.2");
   OUT_LINE("1 0 obj");
@@ -144,7 +130,7 @@ static int output_pdf_header(FILE * pdf_file, gchar * name, int llx, int lly, in
 /* This should be called after the others in this file. It writes some
    last informations. */
 
-static int output_pdf_tailor(FILE * pdf_file, size_t length, int llx, int lly, int urx, int ury)
+static int output_pdf_tailor(FILE *pdf_file, size_t length, int llx, int lly, int urx, int ury)
 {
   char temp[40];
   size_t tmp;
@@ -186,13 +172,13 @@ static int output_pdf_tailor(FILE * pdf_file, size_t length, int llx, int lly, i
 /* This outputs the PDF code which produces the shape in
    SHAPE. */
 
-static void out_splines(FILE * pdf_file, spline_list_array_type shape, size_t * length)
+static void out_splines(FILE *pdf_file, spline_list_array_type shape, size_t *length)
 {
   char temp[40];
   unsigned this_list;
   spline_list_type list;
 
-  at_color last_color = { 0, 0, 0 };
+  at_color last_color = {0, 0, 0};
 
   for (this_list = 0; this_list < SPLINE_LIST_ARRAY_LENGTH(shape); this_list++) {
     unsigned this_spline;
@@ -207,7 +193,8 @@ static void out_splines(FILE * pdf_file, spline_list_array_type shape, size_t * 
         /* In PDF a Stroke (S) or fill (f) causes an implicit closepath (h) -Paul Sladen */
         /* SOUT_LINE("h"); */
       }
-      SOUT("%.3f %.3f %.3f %s\n", (double)list.color.r / 255.0, (double)list.color.g / 255.0, (double)list.color.b / 255.0, (shape.centerline || list.open) ? "RG" : "rg");
+      SOUT("%.3f %.3f %.3f %s\n", (double)list.color.r / 255.0, (double)list.color.g / 255.0,
+           (double)list.color.b / 255.0, (shape.centerline || list.open) ? "RG" : "rg");
       last_color = list.color;
     }
     SOUT_COMMAND2(START_POINT(first).x, START_POINT(first).y, "m");
@@ -218,7 +205,8 @@ static void out_splines(FILE * pdf_file, spline_list_array_type shape, size_t * 
       if (SPLINE_DEGREE(s) == LINEARTYPE)
         SOUT_COMMAND2(END_POINT(s).x, END_POINT(s).y, "l");
       else
-        SOUT_COMMAND6(CONTROL1(s).x, CONTROL1(s).y, CONTROL2(s).x, CONTROL2(s).y, END_POINT(s).x, END_POINT(s).y, "c");
+        SOUT_COMMAND6(CONTROL1(s).x, CONTROL1(s).y, CONTROL2(s).x, CONTROL2(s).y, END_POINT(s).x,
+                      END_POINT(s).y, "c");
     }
   }
   if (SPLINE_LIST_ARRAY_LENGTH(shape) > 0)
@@ -245,7 +233,8 @@ static void out_splines(FILE * pdf_file, spline_list_array_type shape, size_t * 
         /* In PDF a Stroke (S) or fill (f) causes an implicit closepath (h) -Paul Sladen */
         /* OUT_LINE("h"); */
       }
-      OUT("%.3f %.3f %.3f %s\n", (double)list.color.r / 255.0, (double)list.color.g / 255.0, (double)list.color.b / 255.0, (shape.centerline || list.open) ? "RG" : "rg");
+      OUT("%.3f %.3f %.3f %s\n", (double)list.color.r / 255.0, (double)list.color.g / 255.0,
+          (double)list.color.b / 255.0, (shape.centerline || list.open) ? "RG" : "rg");
       last_color = list.color;
     }
     OUT_COMMAND2(START_POINT(first).x, START_POINT(first).y, "m");
@@ -256,17 +245,19 @@ static void out_splines(FILE * pdf_file, spline_list_array_type shape, size_t * 
       if (SPLINE_DEGREE(s) == LINEARTYPE)
         OUT_COMMAND2(END_POINT(s).x, END_POINT(s).y, "l");
       else
-        OUT_COMMAND6(CONTROL1(s).x, CONTROL1(s).y, CONTROL2(s).x, CONTROL2(s).y, END_POINT(s).x, END_POINT(s).y, "c");
+        OUT_COMMAND6(CONTROL1(s).x, CONTROL1(s).y, CONTROL2(s).x, CONTROL2(s).y, END_POINT(s).x,
+                     END_POINT(s).y, "c");
     }
   }
   if (SPLINE_LIST_ARRAY_LENGTH(shape) > 0)
     OUT_LINE((shape.centerline || list.open) ? "S" : "f");
   OUT_LINE("endstream");
   OUT_LINE("endobj");
-
 }
 
-int output_pdf_writer(FILE * pdf_file, gchar * name, int llx, int lly, int urx, int ury, at_output_opts_type * opts, spline_list_array_type shape, at_msg_func msg_func, gpointer msg_data, gpointer user_data)
+int output_pdf_writer(FILE *pdf_file, gchar *name, int llx, int lly, int urx, int ury,
+                      at_output_opts_type *opts, spline_list_array_type shape, at_msg_func msg_func,
+                      gpointer msg_data, gpointer user_data)
 {
   int result;
   size_t length = 0;
