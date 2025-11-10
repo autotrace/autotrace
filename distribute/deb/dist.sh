@@ -17,7 +17,6 @@ fi
 
 
 mkdir -p doc-pak
-cp ../../ChangeLog 	doc-pak/
 cp ../../COPYING	doc-pak/
 cp ../../COPYING.LIB	doc-pak/
 cp ../../README.md	doc-pak/README
