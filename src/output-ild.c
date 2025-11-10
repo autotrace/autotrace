@@ -190,11 +190,11 @@ int rint(double x)
 
 int find_best_match_color(unsigned char r, unsigned char g, unsigned char b)
 {
-  unsigned int i, dmin = 195076, d, ret;
+  unsigned int i, dmin = 195076, d, ret = 0;
   signed int t;
 
   // FIXME inefficent algorithm
-  for (i = 0; i < 255; i++) {
+  for (i = 0; i < 256; i++) {
     t = r - ilda_standard_color_palette[i][0];
     d = t * t;
     t = g - ilda_standard_color_palette[i][1];
