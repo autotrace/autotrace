@@ -119,7 +119,7 @@ static struct Chunk *BuildCMAP(spline_list_array_type shape)
     }
   }
 
-  strncpy(CMAPChunk->ID, "CMAP", 4);
+  memcpy(CMAPChunk->ID, "CMAP", 4);
   CMAPChunk->Size = ListSize * 3;
   CMAPChunk->Data = CMAP;
 
@@ -206,7 +206,7 @@ static struct Chunk *BuildBBOX(spline_list_type list, int height)
   FloatAsIEEEBytes(x2 * XFactor, BBOXData + 8);
   FloatAsIEEEBytes(y2 * YFactor, BBOXData + 12);
 
-  strncpy(BBOXChunk->ID, "BBOX", 4);
+  memcpy(BBOXChunk->ID, "BBOX", 4);
   BBOXChunk->Size = 16;
   BBOXChunk->Data = BBOXData;
 
@@ -241,7 +241,7 @@ static struct Chunk *BuildATTR(at_color colour, int StrokeOrFill, struct Chunk *
   ShortAsBytes(0, ATTRData + 8);
   FloatAsIEEEBytes(LineThickness, ATTRData + 10);
 
-  strncpy(ATTRChunk->ID, "ATTR", 4);
+  memcpy(ATTRChunk->ID, "ATTR", 4);
   ATTRChunk->Size = 14;
   ATTRChunk->Data = ATTRData;
 
@@ -269,7 +269,7 @@ static struct Chunk *BuildDRHD(int x1, int y1, int x2, int y2)
   FloatAsIEEEBytes(x2 * XFactor, DRHDData + 8);
   FloatAsIEEEBytes(y2 * YFactor, DRHDData + 12);
 
-  strncpy(DRHDChunk->ID, "DRHD", 4);
+  memcpy(DRHDChunk->ID, "DRHD", 4);
   DRHDChunk->Size = 16;
   DRHDChunk->Data = DRHDData;
 
@@ -308,7 +308,7 @@ static struct Chunk *BuildPPRF(char *Units, int Portrait, char *PageType, float 
   PPRFPos += strlen(PPRFPos) + 1;
   sprintf(PPRFPos, "GridSize=%f", GridSize);
 
-  strncpy(PPRFChunk->ID, "PPRF", 4);
+  memcpy(PPRFChunk->ID, "PPRF", 4);
   PPRFChunk->Size = ChunkSize;
   PPRFChunk->Data = (unsigned char *)PPRFData;
 
@@ -337,7 +337,7 @@ static struct Chunk *BuildLAYR()
   *(LAYRData + 18) = LF_ACTIVE | LF_DISPLAYED;
   *(LAYRData + 19) = 0;
 
-  strncpy(LAYRChunk->ID, "LAYR", 4);
+  memcpy(LAYRChunk->ID, "LAYR", 4);
   LAYRChunk->Size = 20;
   LAYRChunk->Data = LAYRData;
 
@@ -363,7 +363,7 @@ static struct Chunk *BuildDASH(void)
   ShortAsBytes(1, DASHData);
   ShortAsBytes(0, DASHData + 2);
 
-  strncpy(DASHChunk->ID, "DASH", 4);
+  memcpy(DASHChunk->ID, "DASH", 4);
   DASHChunk->Size = 4;
   DASHChunk->Data = DASHData;
 
@@ -424,7 +424,7 @@ static struct Chunk **GeneratexPLY(struct Chunk *CMAP, spline_list_array_type sh
     }
 
     ChunkList[ListPoint++] = PolyChunk;
-    strncpy(PolyChunk->ID, (StrokeOrFill) ? "OPLY" : "CPLY", 4);
+    memcpy(PolyChunk->ID, (StrokeOrFill) ? "OPLY" : "CPLY", 4);
     PolyChunk->Size = PolySize;
     PolyChunk->Data = PolyData;
 
