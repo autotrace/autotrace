@@ -13,8 +13,7 @@ What's new in AutoTrace 0.31.1?
   source compatibility is broken.
 
 What's new in AutoTrace 0.31.0?
-(This NEWS items are the summary of changed from 0.30.1 to 0.30.8.
- For more detail, see ChangeLog.)
+(This NEWS items are the summary of changed from 0.30.1 to 0.30.8)
 - improved interface between pstoedit and autotrace
 - added library level pstoedit support
 - built autotrace library as a shared library
