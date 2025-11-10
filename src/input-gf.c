@@ -177,8 +177,15 @@ static void skip_specials(gf_font_t *font)
     case XXX2:
       move_relative(font, get_two(font));
       continue;
-    case XXX3:
-      move_relative(font, get_three(font));
+    case XXX3: {
+      unsigned long val = get_three(font);
+      // Ensure value fits in positive signed long
+      if (val > LONG_MAX) {
+        fprintf(stderr, "%s: skip length too large: %lu\n", font->input_filename, val);
+        return;
+      }
+      move_relative(font, val);
+    }
       continue;
     case YYY:
       (void)get_four(font);

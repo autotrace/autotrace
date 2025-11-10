@@ -1068,7 +1068,7 @@ static spline_type fit_one_spline(curve_type curve, at_exception_type *exception
      to `C1' and `C2' in the paper.  */
   gfloat X_C1_det, C0_X_det, C0_C1_det;
   gfloat alpha1, alpha2;
-  spline_type spline;
+  spline_type spline = {0};
   vector_type start_vector, end_vector;
   unsigned i;
   g_autofree vector_type *A = NULL;

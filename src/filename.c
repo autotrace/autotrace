@@ -20,7 +20,6 @@ gchar *find_suffix(const gchar *filename)
   gchar *dot_pos = strrchr(basename, '.');
 
   if (dot_pos == NULL || dot_pos == basename) {
-    g_free(basename);
     return NULL;
   }
 

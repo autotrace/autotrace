@@ -191,7 +191,7 @@ static pixel_outline_type find_one_outline(at_bitmap *bitmap, edge_type original
                                            at_bitmap *marked, gboolean clockwise, gboolean ignore,
                                            at_exception_type *exp)
 {
-  pixel_outline_type outline;
+  pixel_outline_type outline = {0};
   unsigned short row = original_row, col = original_col;
   edge_type edge = original_edge;
   at_coord pos;
@@ -201,6 +201,7 @@ static pixel_outline_type find_one_outline(at_bitmap *bitmap, edge_type original
 
   if (!ignore)
     outline = new_pixel_outline();
+
   at_bitmap_get_color(bitmap, row, col, &outline.color);
 
   do {
