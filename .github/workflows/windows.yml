@@ -1,3 +1,8 @@
+# SPDX-FileCopyrightText: © 2024 Peter Lemenkov
+# SPDX-FileCopyrightText: © 2025 dependabot[bot]
+#
+# SPDX-License-Identifier: CC0-1.0
+
 # This is a basic workflow to help you get started with Actions
 
 name: Building for Windows

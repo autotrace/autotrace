@@ -1,3 +1,15 @@
+/*
+ * SPDX-FileCopyrightText: © 2000-2002 Martin Weber
+ * SPDX-FileCopyrightText: © 2000-2003 Masatake YAMATO
+ * SPDX-FileCopyrightText: © 2001 Dan Mills
+ * SPDX-FileCopyrightText: © 2001 Peter Cucka
+ * SPDX-FileCopyrightText: © 2017-2025 Peter Lemenkov
+ * SPDX-FileCopyrightText: © 2018 Juergen Weigert
+ * SPDX-FileCopyrightText: © 2020 Han Mertens
+ *
+ * SPDX-License-Identifier: LGPL-2.1-or-later
+ */
+
 /* pxl-outline.c: find the outlines of a bitmap image; each outline is made up of one or more
    pixels; and each pixel participates via one or more edges. */
 

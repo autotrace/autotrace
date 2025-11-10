@@ -1,4 +1,11 @@
 #! /bin/bash
+
+# SPDX-FileCopyrightText: © 2018 Juergen Weigert
+# SPDX-FileCopyrightText: © 2018 Jürgen Weigert
+# SPDX-FileCopyrightText: © 2020 Sacha Chua
+#
+# SPDX-License-Identifier: LGPL-2.1-or-later
+
 # Make a debian/ubuntu distribution
 
 name=$1

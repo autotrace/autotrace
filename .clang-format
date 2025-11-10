@@ -1,3 +1,7 @@
+# SPDX-FileCopyrightText: © 2025 Peter Lemenkov
+#
+# SPDX-License-Identifier: CC0-1.0
+
 BasedOnStyle: LLVM
 Language: Cpp
 IndentWidth: 2

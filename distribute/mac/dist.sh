@@ -1,4 +1,9 @@
 #! /bin/sh
+
+# SPDX-FileCopyrightText: © 2018 Juergen Weigert
+#
+# SPDX-License-Identifier: LGPL-2.1-or-later
+
 #
 disttop=$(dirname $0)
 APP_NAME=$1

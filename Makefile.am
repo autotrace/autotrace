@@ -1,3 +1,22 @@
+# SPDX-FileCopyrightText: © 2000 Enrico Persiani
+# SPDX-FileCopyrightText: © 2000 Johannes.Schindelin
+# SPDX-FileCopyrightText: © 2000 MenTaLguY
+# SPDX-FileCopyrightText: © 2000 Peter Cucka
+# SPDX-FileCopyrightText: © 2000-2002 Martin Weber
+# SPDX-FileCopyrightText: © 2000-2004 Masatake YAMATO
+# SPDX-FileCopyrightText: © 2001 David A. Bartold
+# SPDX-FileCopyrightText: © 2001 Kevin O' Gorman
+# SPDX-FileCopyrightText: © 2001 Per Grahn
+# SPDX-FileCopyrightText: © 2001 Steffen Politzky
+# SPDX-FileCopyrightText: © 2002 R. P. C. Rodgers
+# SPDX-FileCopyrightText: © 2005 Robin Adams
+# SPDX-FileCopyrightText: © 2014 Khaled Hosny
+# SPDX-FileCopyrightText: © 2017-2025 Peter Lemenkov
+# SPDX-FileCopyrightText: © 2020 Sacha Chua
+# SPDX-FileCopyrightText: © 2024 Ryan Carsten Schmidt
+#
+# SPDX-License-Identifier: LGPL-2.1-or-later
+
 SUBDIRS = po
 man_MANS = autotrace.1
 EXTRA_DIST=$(man_MANS) \

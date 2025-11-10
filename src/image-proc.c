@@ -1,3 +1,10 @@
+/*
+ * SPDX-FileCopyrightText: © 2002-2003 Masatake YAMATO
+ * SPDX-FileCopyrightText: © 2017-2025 Peter Lemenkov
+ *
+ * SPDX-License-Identifier: LGPL-2.1-or-later
+ */
+
 /* image-proc.c: image processing routines */
 
 #include <assert.h>

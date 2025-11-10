@@ -1,4 +1,10 @@
 #!/bin/sh
+#
+# SPDX-FileCopyrightText: © 2014-2016 Walter Doekes
+# SPDX-FileCopyrightText: © 2024 Ryan Carsten Schmidt
+#
+# SPDX-License-Identifier: LGPL-2.1-or-later
+#
 # This regression test is a part of Autotrace.
 # Author: Walter Doekes, OSSO B.V., 2014
 # Taken from https://github.com/SIPp/sipp

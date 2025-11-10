@@ -1,3 +1,14 @@
+dnl SPDX-FileCopyrightText: © 2014 Khaled Hosny
+dnl SPDX-FileCopyrightText: © 2017-2025 Peter Lemenkov
+dnl SPDX-FileCopyrightText: © 2018 Juergen Weigert
+dnl SPDX-FileCopyrightText: © 2018 Jürgen Weigert
+dnl SPDX-FileCopyrightText: © 2020 Sacha Chua
+dnl SPDX-FileCopyrightText: © 2023 Mamoru TASAKA
+dnl SPDX-FileCopyrightText: © 2024 Rui Chen
+dnl SPDX-FileCopyrightText: © 2024 Ryan Carsten Schmidt
+dnl
+dnl SPDX-License-Identifier: LGPL-2.1-or-later
+
 # configure.ac for autotrace
 #
 # Author: Masatake YAMATO (yamato@redhat.com)

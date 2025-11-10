@@ -1,3 +1,12 @@
+/*
+ * SPDX-FileCopyrightText: © 2000 Peter Cucka
+ * SPDX-FileCopyrightText: © 2000-2001 Martin Weber
+ * SPDX-FileCopyrightText: © 2000-2003 Masatake YAMATO
+ * SPDX-FileCopyrightText: © 2017-2025 Peter Lemenkov
+ *
+ * SPDX-License-Identifier: LGPL-2.1-or-later
+ */
+
 /* spline.c: spline and spline list (represented as arrays) manipulation. */
 
 #include "types.h"

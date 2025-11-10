@@ -1,0 +1,104 @@
+# SPDX-FileCopyrightText: 2025 Peter Lemenkov <lemenkov@gmail.com>
+# SPDX-License-Identifier: CC0-1.0
+
+version = 1
+SPDX-PackageName = "AutoTrace"
+SPDX-PackageSupplier = "Peter Lemenkov <lemenkov@gmail.com>"
+SPDX-PackageDownloadLocation = "https://github.com/autotrace/autotrace"
+
+[[annotations]]
+path = "AUTHORS"
+precedence = "aggregate"
+SPDX-FileCopyrightText = "2000 Martin Weber"
+SPDX-License-Identifier = "GPL-2.0-or-later"
+
+[[annotations]]
+path = "FAQ"
+precedence = "aggregate"
+SPDX-FileCopyrightText = ["2002 Martin Weber", "2002-2003 Masatake YAMATO"]
+SPDX-License-Identifier = "GPL-2.0-or-later"
+
+[[annotations]]
+path = "INSTALL"
+precedence = "aggregate"
+SPDX-FileCopyrightText = ["2000 Martin Weber", "2002 Masatake YAMATO", "2014 Khaled Hosny", "2019-2023 Jürgen Weigert", "2020 Sacha Chua", "2023 Peter Lemenkov"]
+SPDX-License-Identifier = "GPL-2.0-or-later"
+
+[[annotations]]
+path = "INSTALL_OSX.md"
+precedence = "aggregate"
+SPDX-FileCopyrightText = ["2018-2019 Jürgen Weigert", "2022-2024 Peter Lemenkov", "2024 Ryan Carsten Schmidt"]
+SPDX-License-Identifier = "GPL-2.0-or-later"
+
+[[annotations]]
+path = "NEWS"
+precedence = "aggregate"
+SPDX-FileCopyrightText = ["2000-2003 Martin Weber", "2001 Kevin O' Gorman", "2001-2003 Masatake YAMATO"]
+SPDX-License-Identifier = "GPL-2.0-or-later"
+
+[[annotations]]
+path = "README.md"
+precedence = "aggregate"
+SPDX-FileCopyrightText = ["2000-2002 Martin Weber", "2000-2002 Masatake YAMATO", "2004 Henning Makholm", "2014 Khaled Hosny", "2018 Jürgen Weigert", "2018-2025 Peter Lemenkov", "2019 Nicolas Raoul", "2020 uglygus", "2024 Ryan Carsten Schmidt"]
+SPDX-License-Identifier = "GPL-2.0-or-later"
+
+[[annotations]]
+path = "THANKS"
+precedence = "aggregate"
+SPDX-FileCopyrightText = ["2000-2002 Martin Weber", "2002-2004 Masatake YAMATO", "2002 Ralf Stubner", "2004 Steven P. Hirshman", "2005 Robin Adams", "2018 Jürgen Weigert"]
+SPDX-License-Identifier = "GPL-2.0-or-later"
+
+[[annotations]]
+path = "TODO"
+precedence = "aggregate"
+SPDX-FileCopyrightText = ["2002 Martin Weber", "2002-2003 Masatake YAMATO"]
+SPDX-License-Identifier = "GPL-2.0-or-later"
+
+[[annotations]]
+path = "doc/despeckle.txt"
+precedence = "aggregate"
+SPDX-FileCopyrightText = "2003 Martin Weber"
+SPDX-License-Identifier = "GPL-2.0-or-later"
+
+[[annotations]]
+path = "doc/HACKING"
+precedence = "aggregate"
+SPDX-FileCopyrightText = ["2000-2002 Martin Weber", "2000-2003 Masatake YAMATO"]
+SPDX-License-Identifier = "GPL-2.0-or-later"
+
+[[annotations]]
+path = ["distribute/deb/**", "distribute/distribute.sh"]
+precedence = "aggregate"
+SPDX-FileCopyrightText = ["2018-2019 Jürgen Weigert", "2020 Sacha Chua", "2022 Peter Lemenkov", "2024 Ryan Carsten Schmidt"]
+SPDX-License-Identifier = "GPL-2.0-or-later"
+
+[[annotations]]
+path = ["distribute/mac/icns/**", "distribute/mac/**.sh"]
+precedence = "aggregate"
+SPDX-FileCopyrightText = ["2018 Jürgen Weigert", "2022 Peter Lemenkov"]
+SPDX-License-Identifier = "GPL-2.0-or-later"
+
+[[annotations]]
+path = "distribute/win/**"
+precedence = "aggregate"
+SPDX-FileCopyrightText = ["2018-2019 Jürgen Weigert", "2022,2024 Peter Lemenkov"]
+SPDX-License-Identifier = "GPL-2.0-or-later"
+
+[[annotations]]
+path = "po/LINGUAS"
+precedence = "aggregate"
+SPDX-FileCopyrightText = "2014 Khaled Hosny"
+SPDX-License-Identifier = "GPL-2.0-or-later"
+
+[[annotations]]
+path = "po/POTFILES.in"
+precedence = "aggregate"
+SPDX-FileCopyrightText = "2002 Masatake YAMATO"
+SPDX-License-Identifier = "GPL-2.0-or-later"
+
+[[annotations]]
+path = ["tests/**/**.bmp", "tests/**/**.tga", "tests/**/**.png", "tests/**/**.xpm", "tests/**/**.pbm", "tests/**/**.svg"]
+precedence = "aggregate"
+SPDX-FileCopyrightText = "2018-2025 Peter Lemenkov"
+SPDX-License-Identifier = "CC0-1.0"
+SPDX-FileComment = "Test data is in public domain for easy reuse"

@@ -1,3 +1,8 @@
+# SPDX-FileCopyrightText: © 2022-2025 Peter Lemenkov
+# SPDX-FileCopyrightText: © 2023-2025 dependabot[bot]
+#
+# SPDX-License-Identifier: CC0-1.0
+
 # This is a basic workflow to help you get started with Actions
 
 name: Testing on Linux

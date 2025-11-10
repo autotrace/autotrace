@@ -1,3 +1,17 @@
+/*
+ * SPDX-FileCopyrightText: © 2000 Enrico Persiani
+ * SPDX-FileCopyrightText: © 2000 Johannes.Schindelin
+ * SPDX-FileCopyrightText: © 2000 MenTaLguY
+ * SPDX-FileCopyrightText: © 2000-2003 Martin Weber
+ * SPDX-FileCopyrightText: © 2000-2003 Masatake YAMATO
+ * SPDX-FileCopyrightText: © 2001 Per Grahn
+ * SPDX-FileCopyrightText: © 2017-2025 Peter Lemenkov
+ * SPDX-FileCopyrightText: © 2020 Han Mertens
+ * SPDX-FileCopyrightText: © 2020 uglygus
+ *
+ * SPDX-License-Identifier: LGPL-2.1-or-later
+ */
+
 /* main.c: main driver for autotrace -- convert bitmaps to splines. */
 
 #ifdef HAVE_CONFIG_H

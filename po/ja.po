@@ -1,6 +1,8 @@
-# ja.po for autotrace
 # Copyright (C) 2002 Free Software Foundation, Inc.
-# Masatake YAMATO <yamato@redhat.com>, 2002
+# SPDX-FileCopyrightText: © 2002-2003 Masatake YAMATO
+# SPDX-FileCopyrightText: © 2024 Peter Lemenkov
+#
+# SPDX-License-Identifier: LGPL-2.1-or-later
 msgid ""
 msgstr ""
 "Project-Id-Version: autotrace 0.31.2\n"
