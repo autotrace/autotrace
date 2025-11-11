@@ -22,21 +22,24 @@ env:
 jobs:
   test_on_freebsd:
     runs-on: ubuntu-latest
-    name: A job to run test in FreeBSD
+    strategy:
+      fail-fast: false
+      matrix:
+        freebsd-version: ['14.1', '14.2', '15.0']
+    name: A job to run test in FreeBSD ${{ matrix.freebsd-version }}
     steps:
       # Checks-out your repository under $GITHUB_WORKSPACE, so your job can access it
       - uses: actions/checkout@v5
       # Runs a single command using the runners shell
-      - name: build and run tests packages on FreeBSD
-        id: test_freebsd
+      - name: build and run tests packages on FreeBSD ${{ matrix.freebsd-version }}
         uses: vmactions/freebsd-vm@v1
         with:
-            release: "15.0"
+            release: ${{ matrix.freebsd-version }}
             prepare: |
                 pkg update -f
                 pkg upgrade -y
                 pkg install -y gmake autoconf automake libtool pkgconf perl5 git
-                pkg install -y graphicsmagick pstoedit png gettext-tools intltool glib p5-XML-Parser
+                pkg install -y ImageMagick7 pstoedit png gettext-tools intltool glib p5-XML-Parser
             run: |
                 ./autogen.sh
                 ./configure
