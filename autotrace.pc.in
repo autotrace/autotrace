@@ -11,7 +11,7 @@ includedir=@includedir@
 Name: Autotrace
 Description: a utility that converts bitmap to vector graphics
 Version: @VERSION@
-Requires:
-Libs.private: -L@libdir@ @LIBPNG_LIBS@ @MAGICK_LIBS@ @LIBSWF_LIBS@ @LIBPSTOEDIT_LIBS@ @GLIB2_LIBS@
+Requires: glib-2.0 >= 2.44, gobject-2.0 >= 2.44
+Libs.private: @LIBPNG_LIBS@ @MAGICK_LIBS@ @LIBSWF_LIBS@ @LIBPSTOEDIT_LIBS@ @GLIB2_LIBS@
 Libs: -L@libdir@ -lautotrace
-Cflags: -I@includedir@ @MAGICK_CFLAGS@ @LIBPSTOEDIT_CFLAGS@ @GLIB2_CFLAGS@
+Cflags: -I@includedir@
