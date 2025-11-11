@@ -9,7 +9,7 @@
 DIR=$1
 
 autotrace -report-progress -filter-iterations 0 -error-threshold 1 -centerline $DIR/testrect.pbm -output-format svg -output-file $DIR/testrect.svg
-cmp --silent $DIR/testrect.output.svg $DIR/testrect.svg
+diff -q -w --strip-trailing-cr $DIR/testrect.output.svg $DIR/testrect.svg
 RESULT=$?
 
 if [ $RESULT -eq 0 ] && [ -s $DIR/testrect.svg ] ; then
