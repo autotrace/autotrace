@@ -8,11 +8,26 @@
 
 DIR=$1
 
+# Check whether pstoedit support is enabled and hence we support IDRAW
+autotrace -list-output-formats 2>&1 | grep -q idraw
+RESULT=$?
+
+if [ $RESULT -ne 0 ] ; then
+    IDRAW=0
+else
+    IDRAW=1
+fi
+
 autotrace -output-file $DIR/trace01.idraw -output-format idraw -report-progress -input-format BMP $DIR/trace01.bmp
 RESULT=$?
-rm -f $DIR/trace01.idraw
 
-if [ $RESULT -ne 0 ]; then
-    fail
+if [ $RESULT -eq 0 ] && [ -s $DIR/trace01.idraw ] ; then
+    rm -f $DIR/trace01.idraw
+    ok
+else
+    if [ $IDRAW -eq 0 ] ; then
+        expected_fail
+    else
+        fail
+    fi
 fi
-ok
