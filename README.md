@@ -46,14 +46,12 @@ pgm, ppm, bmp, and tga files. If you have installed
 files and with ImageMagick or GraphicsMagick a very broad range of input
 formats is available.
 
-You will need at least libpng 1.0.6 and ImageMagick 5.2.1.  Most
-output formats like dxf, emf, eps, ai, er, fig, svg, epd, dr2d, and sk
-are directly integrated in AutoTrace, but if you need swf export you
-need to install [Ming](https://github.com/libming/libming).  Also you can
-export to the p2e format.  This format can be converted by
-[pstoedit](http://www.pstoedit.net) to a large number of other formats.
-If you have installed the latest pstoedit (3.32 or newer), AutoTrace uses
-pstoedit directly.  However, direct pstoedit support is not stable enough.
+You will need at least libpng 1.0.6 and ImageMagick 5.2.1. Most output formats
+like dxf, emf, eps, ai, er, fig, svg, epd, dr2d, and sk are directly integrated
+in AutoTrace. Also you can export to the p2e format. This format can be
+converted by [pstoedit](http://www.pstoedit.net) to a large number of other
+formats.  If you have installed the latest pstoedit (3.32 or newer), AutoTrace
+uses pstoedit directly. However, direct pstoedit support is not stable enough.
 See INSTALL file for more detail.
 
 Installation

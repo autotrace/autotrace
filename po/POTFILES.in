@@ -34,7 +34,6 @@ output-pdf.c
 output-pstoedit.c
 output-sk.c
 output-svg.c
-output-swf.c
 output.c
 pxl-outline.c
 spline.c

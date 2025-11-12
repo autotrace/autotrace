@@ -179,28 +179,6 @@ fi
 AM_CONDITIONAL(HAVE_LIBPNG, test $HAVE_LIBPNG = yes)
 
 dnl
-dnl LIBMING(LIBSWF)
-dnl
-
-HAVE_LIBSWF=no
-AC_CHECK_HEADER(ming.h,
-	        swf_header_found=yes,
-		swf_header_found=no)
-if test "${swf_header_found}" = yes ; then
-	PKG_CHECK_MODULES([LIBSWF],
-			  [libming],
-			  [
-			   HAVE_LIBSWF=yes
-			   AC_DEFINE(HAVE_LIBSWF,1,[Define to 1 if the SWF library is available])
-			   ],
-			  )
-else
-	AC_MSG_WARN([*** Cannot find ming.h.     ***])
-	AC_MSG_WARN([*** SWF output is disabled. ***])
-fi
-AM_CONDITIONAL(HAVE_LIBSWF, test x$HAVE_LIBSWF = xyes)
-
-dnl
 dnl pstoedit library
 dnl
 
@@ -242,7 +220,6 @@ echo "
 Configuration:
 	graphics/imagemagick output support:	$HAVE_MAGICK ($MAGICK_LIBRARY) (magick readers only: $HAVE_MAGICK_READERS)
 	libpng output support:			$HAVE_LIBPNG
-	swf output support by ming:		$HAVE_LIBSWF
 	pstoedit output support:		$HAVE_LIBPSTOEDIT
 
 "
