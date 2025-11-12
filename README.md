@@ -3,6 +3,7 @@
 [![Build status on Linux](https://github.com/autotrace/autotrace/actions/workflows/linux_test.yml/badge.svg)](https://github.com/autotrace/autotrace/actions?query=workflows%3Alinux_test)
 [![Build status on macOS](https://github.com/autotrace/autotrace/actions/workflows/macosx_test.yml/badge.svg)](https://github.com/autotrace/autotrace/actions?query=workflows%3Amacosx_test)
 [![Build status on FreeBSD](https://github.com/autotrace/autotrace/actions/workflows/freebsd_test.yml/badge.svg)](https://github.com/autotrace/autotrace/actions?query=workflows%3Afreebsd_test)
+[![Build status on Windows](https://github.com/autotrace/autotrace/actions/workflows/windows_test.yml/badge.svg)](https://github.com/autotrace/autotrace/actions?query=workflows%3Awindows_test)
 
 AutoTrace
 =========
