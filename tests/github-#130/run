@@ -1,0 +1,18 @@
+#!/bin/sh
+
+# SPDX-FileCopyrightText: © 2025 Peter Lemenkov
+#
+# SPDX-License-Identifier: CC0-1.0
+
+. "`dirname "$0"`/../functions"
+
+DIR=$1
+
+autotrace -output-format svg -output-file $DIR/out.svg -report-progress $DIR/a.png
+RESULT=$?
+rm -f $DIR/out.svg
+
+if [ $RESULT -ne 0 ]; then
+    fail
+fi
+ok

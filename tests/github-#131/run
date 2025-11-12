@@ -1,0 +1,17 @@
+#!/bin/sh
+
+# SPDX-FileCopyrightText: © 2025 Peter Lemenkov
+#
+# SPDX-License-Identifier: CC0-1.0
+
+. "`dirname "$0"`/../functions"
+
+DIR=$1
+
+autotrace --help 2>&1 | grep -q "Usage:"
+RESULT=$?
+
+if [ $RESULT -ne 0 ]; then
+    fail
+fi
+ok
