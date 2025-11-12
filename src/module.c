@@ -44,9 +44,6 @@ int install_input_magick_readers(void)
 #include "output-svg.h"
 #include "output-ugs.h"
 #include "output-fig.h"
-#ifdef HAVE_LIBSWF
-#include "output-swf.h"
-#endif /* HAVE_LIBSWF */
 #include "output-emf.h"
 #include "output-mif.h"
 #include "output-dxf.h"
@@ -122,9 +119,6 @@ static int install_output_writers(void)
   at_output_add_handler("POV", "Povray format", output_pov_writer);
   at_output_add_handler("SK", "Sketch", output_sk_writer);
   at_output_add_handler("SVG", "Scalable Vector Graphics", output_svg_writer);
-#ifdef HAVE_LIBSWF
-  at_output_add_handler("SWF", "Shockwave Flash 3", output_swf_writer);
-#endif /* HAVE_LIBSWF */
   at_output_add_handler("UGS", "Unicode glyph source", output_ugs_writer);
 
   return (0 << 1) || install_output_pstoedit_writers();

@@ -27,17 +27,13 @@ EXTRA_DIST=$(man_MANS) \
 	   autotrace.pc.in \
 	   distribute \
 	   doc/HACKING \
-	   doc/README.MING \
 	   doc/despeckle.txt \
-	   doc/patchestoming02a.txt \
 	   src/input-magick.c \
 	   src/input-magick.h \
 	   src/input-png.c \
 	   src/input-png.h \
 	   src/output-pstoedit.c \
-	   src/output-pstoedit.h \
-	   src/output-swf.c \
-	   src/output-swf.h
+	   src/output-pstoedit.h
 
 AUTOMAKE_OPTIONS = foreign no-dependencies
 
@@ -70,12 +66,6 @@ input_src=src/input-gf.c src/input-gf.h \
 	  $(input_native_src) \
 	  $(input_png_src)
 
-if HAVE_LIBSWF
-output_swf_src=src/output-swf.c src/output-swf.h
-else
-output_swf_src=
-endif
-
 if HAVE_LIBPSTOEDIT
 output_pstoedit_src=src/output-pstoedit.h src/output-pstoedit.c
 else
@@ -98,7 +88,6 @@ output_src=src/output-eps.c src/output-eps.h \
 	   src/output-pov.c src/output-pov.h \
 	   src/output-plt.c src/output-plt.h \
 	   src/output-ild.c src/output-ild.h \
-	   $(output_swf_src) \
 	   $(output_pstoedit_src)
 
 libautotrace_la_SOURCES =\
@@ -158,14 +147,13 @@ autotrace_SOURCES=\
 		src/atou.h				\
 		src/main.c
 
-AM_CPPFLAGS = $(GRAPHICSMAGICK_CFLAGS) $(IMAGEMAGICK_CFLAGS) $(LIBPNG_CFLAGS) $(LIBPSTOEDIT_CFLAGS) $(LIBSWF_CFLAGS) $(GLIB2_CFLAGS) -DLOCALEDIR=\""$(datadir)/locale"\"
+AM_CPPFLAGS = $(GRAPHICSMAGICK_CFLAGS) $(IMAGEMAGICK_CFLAGS) $(LIBPNG_CFLAGS) $(LIBPSTOEDIT_CFLAGS) $(GLIB2_CFLAGS) -DLOCALEDIR=\""$(datadir)/locale"\"
 
 autotrace_LDADD =				\
 		libautotrace.la			\
 		$(GRAPHICSMAGICK_LIBS)		\
 		$(IMAGEMAGICK_LIBS)		\
 		$(LIBPNG_LIBS)		\
-		$(LIBSWF_LIBS)		\
 		$(LIBPSTOEDIT_LIBS)		\
 		$(GLIB2_LIBS)			\
 		$(POPT_LIBS)			\
