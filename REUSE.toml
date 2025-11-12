@@ -73,15 +73,9 @@ SPDX-FileCopyrightText = ["2018-2019 Jürgen Weigert", "2020 Sacha Chua", "2022 
 SPDX-License-Identifier = "GPL-2.0-or-later"
 
 [[annotations]]
-path = ["distribute/mac/icns/**", "distribute/mac/**.sh"]
-precedence = "aggregate"
-SPDX-FileCopyrightText = ["2018 Jürgen Weigert", "2022 Peter Lemenkov"]
-SPDX-License-Identifier = "GPL-2.0-or-later"
-
-[[annotations]]
 path = "distribute/win/**"
 precedence = "aggregate"
-SPDX-FileCopyrightText = ["2018-2019 Jürgen Weigert", "2022,2024 Peter Lemenkov"]
+SPDX-FileCopyrightText = ["2018-2019 Jürgen Weigert", "2022,2024,2025 Peter Lemenkov"]
 SPDX-License-Identifier = "GPL-2.0-or-later"
 
 [[annotations]]
