@@ -21,10 +21,6 @@ if [ "$ID_LIKE" = ubuntu -o "$ID_LIKE" = debian -o "$_system_name" = Ubuntu ]; t
   echo "****************************************************************"
   echo "Win64 Version: using x86_64-w64-mingw32 cross toolchain"
   (cd win && sh ./dist.sh $PKG_NAME $PKG_VER)
-elif [ "$(uname)" = Darwin ]; then
-  echo "++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++"
-  echo "MacOS Version: using zip"
-  (cd mac && sh ./dist.sh $PKG_NAME $PKG_VER)
 else
   echo "................................................................"
   echo "ERROR: unknown system, neither Ubuntu nor macOS."
