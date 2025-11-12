@@ -97,7 +97,7 @@ static int install_input_readers(void)
 
   at_input_add_handler("GF", "TeX raster font (native)", input_gf_reader);
 
-  return ((0 << 1) || install_input_magick_readers());
+  return install_input_magick_readers();
 }
 
 static int install_output_writers(void)
@@ -121,5 +121,5 @@ static int install_output_writers(void)
   at_output_add_handler("SVG", "Scalable Vector Graphics", output_svg_writer);
   at_output_add_handler("UGS", "Unicode glyph source", output_ugs_writer);
 
-  return (0 << 1) || install_output_pstoedit_writers();
+  return install_output_pstoedit_writers();
 }
