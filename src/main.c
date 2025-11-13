@@ -281,7 +281,7 @@ static char *read_command_line(int argc, char *argv[], at_fitting_opts_type *fit
                                   {"line-threshold", 1, 0, 0},
                                   {"list-input-formats", 0, 0, 0},
                                   {"list-output-formats", 0, 0, 0},
-                                  {"log", 0, 0, 0},
+                                  {"log", 1, 0, 0},
                                   {"noise-removal", 1, 0, 0},
                                   {"output-file", 1, 0, 0},
                                   {"output-format", 1, 0, 0},
