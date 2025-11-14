@@ -1,3 +1,5 @@
+# AutoTrace
+
 [![REUSE status](https://api.reuse.software/badge/github.com/autotrace/autotrace)](https://api.reuse.software/info/github.com/autotrace/autotrace)
 [![Coverity passed](https://scan.coverity.com/projects/18456/badge.svg)](https://scan.coverity.com/projects/autotrace-autotrace)
 [![Build status on Linux](https://github.com/autotrace/autotrace/actions/workflows/linux_test.yml/badge.svg)](https://github.com/autotrace/autotrace/actions?query=workflows%3Alinux_test)
@@ -5,196 +7,163 @@
 [![Build status on FreeBSD](https://github.com/autotrace/autotrace/actions/workflows/freebsd_test.yml/badge.svg)](https://github.com/autotrace/autotrace/actions?query=workflows%3Afreebsd_test)
 [![Build status on Windows](https://github.com/autotrace/autotrace/actions/workflows/windows_test.yml/badge.svg)](https://github.com/autotrace/autotrace/actions?query=workflows%3Awindows_test)
 
-AutoTrace
-=========
+AutoTrace is a program for converting bitmap images to vector graphics.
 
-AutoTrace is a utility for converting bitmaps into vector graphics.
+## Features
 
-Features
---------
-- tracing outline and midline
-- color reduction and despeckling
-- supports a lot of input and output formats
+- **Outline and centerline tracing** - trace the edges or centerlines of shapes
+- **Color reduction** - reduce colors for cleaner output
+- **Despeckling** - remove noise from images
+- **Multiple formats** - supports numerous input formats (PNG, BMP, PNM, TGA, etc.) and output formats (SVG, EPS, PDF, DXF, etc.)
 
-Licenses
---------
-The program can be used under the GNU General Public License (GPL), either
-version 2 of the License, or (at your option) any later version.
+## Installation
 
-The input and output functions (`input-*.[ch]` and `output-*.[ch]`)
-can also be used under the GNU Lesser General Public License (LGPL),
-either version 2.1 of the License, or (at your option) any later version.
+### Package Managers
 
-Some of code was partially derived from limn of GNU fontutils.
-However, almost all code has been rewritten.
+**macOS:**
+```bash
+brew install autotrace
+# or
+port install autotrace
+```
 
-Platforms
---------- 
-The program was tested using GNU/Linux, HP-UX, Solaris, Windows 98,
-Windows NT, Windows 2000, macOS, and OS/2 4.0. It compiles with GCC,
-Borland C++ Builder, Visual C++, and many other compilers.
+**Linux:**
+```bash
+# Fedora/RHEL
+sudo dnf install autotrace
 
-If you use Visual C++ 6.0 for compilation be sure to have at
-least SP 5 otherwise you could get memory access violations due to
-a bug in earlier versions.
+# Arch Linux
+sudo pacman -S autotrace
 
-Requirements
-------------
-AutoTrace can be compiled standalone, then it can import pnm, pbm,
-pgm, ppm, bmp, and tga files. If you have installed
-[libpng](http://www.libpng.org/pub/png/libpng.html) you can also read png
-files and with ImageMagick or GraphicsMagick a very broad range of input
-formats is available.
+# Debian/Ubuntu - build from source (see below)
+```
 
-You will need at least libpng 1.0.6 and ImageMagick 5.2.1. Most output formats
-like dxf, emf, eps, ai, er, fig, svg, epd, dr2d, and sk are directly integrated
-in AutoTrace. Also you can export to the p2e format. This format can be
-converted by [pstoedit](http://www.pstoedit.net) to a large number of other
-formats.  If you have installed the latest pstoedit (3.32 or newer), AutoTrace
-uses pstoedit directly. However, direct pstoedit support is not stable enough.
-See INSTALL file for more detail.
+**FreeBSD:**
+```bash
+pkg install autotrace
+```
 
-Installation
-------------
-See the file `INSTALL`.
+### Windows
 
-Usage
------
-AutoTrace comes in two parts: a command-line program and a library.
+Download the installer from the [Releases page](https://github.com/autotrace/autotrace/releases).
 
-Here are the options you can use in the command-line program:
+**Available installers:**
+- `autotrace-VERSION-win32-setup.exe` (32-bit)
+- `autotrace-VERSION-win64-setup.exe` (64-bit)
 
-    Usage: autotrace [options] <input_file_name>
-    Options:<input_file_name> must be a supported image file.
-      You can use '--' or '-' to start an option.
-      You can use any unambiguous abbreviation for an option name.
-      You can separate option names and values with '=' or ' '.
+### Building from Source
 
-    -background-color <hexadecimal>: the color of the background that should
-        be ignored, for example FFFFFF; default is no background color.
+See [INSTALL](INSTALL) for detailed instructions.
 
-    -centerline: trace a character's centerline, rather than its outline.
+**Requirements:**
+- C compiler (GCC, Clang, MSVC)
+- libpng (optional, for PNG support)
+- ImageMagick or GraphicsMagick (optional, for additional formats)
+- GLib 2.x
 
-    -charcode <unsigned>: code of character to load from GF font file.
+**Quick start:**
+```bash
+# System-wide installation (requires root)
+./autogen.sh
+./configure
+make
+sudo make install
 
-    -color-count <unsigned>: number of colors a color bitmap is reduced to,
-        it does not work on grayscale, allowed are 1..256;
-        default is 0, that means no color reduction is done.
+# User-local installation (no root needed)
+./autogen.sh
+./configure --prefix=$HOME/.local
+make
+make install
+```
 
-    -corner-always-threshold <angle-in-degrees>: if the angle at a pixel is
-        less than this, it is considered a corner, even if it is within
-        `corner-surround' pixels of another corner; default is 60.
+## Usage
 
-    -corner-surround <unsigned>: number of pixels on either side of a
-        point to consider when determining if that point is a corner;
-        default is 4.
+### Command Line
 
-    -corner-threshold <angle-in-degrees>: if a pixel, its predecessor(s),
-        and its successor(s) meet at an angle smaller than this, it's a
-        corner; default is 100.
+Convert a bitmap to SVG:
+```bash
+autotrace input.png -output-file output.svg
+```
 
-    -despeckle-level <unsigned>: 0..20; default is 0: no despeckling.
+Trace centerlines:
+```bash
+autotrace input.png -centerline -output-file output.svg
+```
 
-    -despeckle-tightness <real>: 0.0..8.0; default is 2.0.
+Reduce colors before tracing:
+```bash
+autotrace input.png -color-count 4 -output-file output.svg
+```
 
-    -dpi <unsigned>: The dots per inch value in the input image, affects scaling
-        of mif output image
+For complete options, see `autotrace --help` or `man autotrace`.
 
+### Library
 
-    -error-threshold <real>: subdivide fitted curves that are off by
-        more pixels than this; default is 2.0.
+AutoTrace can be used as a library (`libautotrace`). Here's a minimal example:
 
-    -filter-iterations <unsigned>: smooth the curve this many times
-        before fitting; default is 4.
+```c
+#include <autotrace/autotrace.h>
 
-    -input-format: Available formats: ppm, png, pbm, pnm, bmp, tga, pgm, gf.
+int main()
+{
+  at_fitting_opts_type * opts = at_fitting_opts_new();
+  at_input_read_func rfunc = at_input_get_handler("image.png");
+  at_bitmap_type * bitmap = at_bitmap_read(rfunc, "image.png", NULL, NULL, NULL);
+  at_splines_type * splines = at_splines_new(bitmap, opts, NULL, NULL);
+  at_output_write_func wfunc = at_output_get_handler_by_suffix("eps");
 
-    -help: print this message.
+  at_splines_write(wfunc, stdout, "", NULL, splines, NULL, NULL);
+  at_splines_free(splines);
+  at_bitmap_free(bitmap);
+  at_fitting_opts_free(opts);
 
-    -line-reversion-threshold <real>: if a spline is closer to a straight
-        line than this, weighted by the square of the curve length, keep it a
-        straight line even if it is a list with curves; default is .01.
+  return 0;
+}
+```
 
-    -line-threshold <real>: if the spline is not more than this far away
-        from the straight line defined by its endpoints,
-        then output a straight line; default is 1.
+Compile with:
+```bash
+gcc sample.c $(pkg-config --cflags --libs autotrace)
+```
 
-    -list-output-formats: print a list of supported output formats to stderr.
+See `autotrace.h` for full API documentation.
 
-    -list-input-formats: print a list of supported input formats to stderr.
+## Supported Formats
 
-    -log: write detailed progress reports to <input_name>.log.
+**Input formats:** PNG, BMP, TGA, PNM (PBM/PGM/PPM), GF
+- With ImageMagick/GraphicsMagick: JPEG, TIFF, GIF, and many more
 
-    -noise-removal <real>:: 0.0..1.0; default is 0.99.
+**Output formats:** SVG, EPS, PDF, AI, DXF, CGM, EMF, MIF, ER, Fig, and many others
 
-    -output-file <filename>: write to <filename>
+List all formats: `autotrace --list-input-formats` or `autotrace --list-output-formats`
 
-    -output-format <format>: use format <format> for the output file. Available formats:
-        rpl, tk, cfdg, xfig, plot, svg, plot-svg, gschem, gmfa, text, epd, tek, rib, sk, plot-tek, gmfb, pcl, txt, asy, plot-pcl, tex, gnuplot, cairo, dat, plot-hpgl, lwo, pcb, xml, dr2d, pov, dxf_14, eps, tfig, mp, meta, java1, hpgl, ai, cgm, pdf, latex2e, ps2ai, p2e, java2, pic, svm, plot-cgm, plot-ai, plt, noixml, vtk, tgif, idraw, fig, emf, plot-fig, kil, er, m, dxf, obj, ugs, pcbfill, mif, mma, java, gcode, c, dxf_s, ild, mpost, pcbi
+## License
 
-    -preserve-width: preserve line width prior to thinning.
+- **Program:** GPL v2 or later
+- **Library (`libautotrace`):** LGPL v2.1 or later
+- Input/output modules can be used under either license
 
-    -remove-adjacent-corners: remove corners that are adjacent.
+## Contributing
 
-    -tangent-surround <unsigned>: number of points on either side of a
-        point to consider when computing the tangent at that point; default is 3.
+Contributions welcome! See our [issue tracker](https://github.com/autotrace/autotrace/issues) and [TODO](TODO) file.
 
-    -report-progress: report tracing status in real time.
+Areas where help is needed:
+- Bug fixes and improvements
+- Documentation
+- Additional format support
+- Plugin development for image editors
+- Your ideas and suggestions!
 
-    -debug-arch: print the type of cpu.
+## History
 
-    -debug-bitmap: dump loaded bitmap to <input_name>.bitmap.ppm or pgm.
+AutoTrace was originally developed by Martin Weber. Some code was derived from the `limn` program in GNU fontutils, though most has been completely rewritten.
 
-    -version: print the version number of this program.
+## Links
 
-    -width-weight-factor <real>: weight factor for fitting the linewidth.
+- **Homepage:** https://github.com/autotrace/autotrace
+- **Issues:** https://github.com/autotrace/autotrace/issues
+- **GUI Frontend (inactive):** https://github.com/autotrace/frontline
 
+## Author
 
-    You can get the source code of autotrace from 
-    https://github.com/autotrace/autotrace
-
-The library is named libautotrace. To learn about the usage of the
-library see `autotrace.h`.
-Here is a sample program that uses libautotrace.
-To compile, invoke the following commands (on POSIX):
-
-    gcc sample.c `pkg-config --libs autotrace` `pkg-config --cflags autotrace`
-
-    /* sample.c */
-    #include <autotrace/autotrace.h>
-
-    int main()
-    {
-      char * fname = "img/triangle.png";
-      at_fitting_opts_type * opts = at_fitting_opts_new();
-      at_input_read_func rfunc = at_input_get_handler(fname);
-      at_bitmap_type * bitmap ;
-      at_splines_type * splines;
-      at_output_write_func wfunc = at_output_get_handler_by_suffix("eps");
-
-      bitmap = at_bitmap_read(rfunc, fname, NULL, NULL, NULL);
-      splines = at_splines_new(bitmap, opts, NULL, NULL);
-      at_splines_write(wfunc, stdout, "", NULL, splines, NULL, NULL);
-      return 0;
-    }
-
-GUI Frontend
-------------
-Frontline, a Gtk+/Gnome-based GUI frontend, was under development until 2002.
-See https://github.com/autotrace/frontline
-
-
-More Information
-----------------
-See https://github.com/autotrace/autotrace
-
-
-Contribution
-------------
-Programmers wanted!!!
-
-See the [issue tracker](https://github.com/autotrace/autotrace/issues), or the `TODO` file and contact the author.
-
-Author
-------
 Martin Weber (martweb@gmx.net)
