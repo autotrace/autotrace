@@ -1,0 +1,69 @@
+# SPDX-FileCopyrightText: © 2025 Peter Lemenkov
+#
+# SPDX-License-Identifier: CC0-1.0
+
+name: Check Translation Template
+
+on:
+  pull_request:
+    paths:
+      - 'src/**/*.c'
+      - 'src/**/*.h'
+      - 'po/POTFILES.in'
+      - 'po/autotrace.pot'
+
+jobs:
+  check-pot:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v5
+
+      - name: Install dependencies
+        run: |
+          sudo apt-get update
+          sudo apt-get install -y intltool gettext autoconf automake autopoint libtool libglib2.0-dev pkg-config
+
+      - name: Run autogen.sh
+        run: |
+            ./autogen.sh
+
+      - name: Backup current POT file
+        run: |
+          cd po
+          cp autotrace.pot autotrace.pot.committed
+
+      - name: Regenerate POT file
+        run: |
+          cd po
+          intltool-update --pot --gettext-package=autotrace
+
+      - name: Compare POT files
+        id: compare
+        run: |
+          cd po
+
+          # Normalize timestamps and line numbers to avoid false positives
+          # POT files have "POT-Creation-Date" that changes on every generation
+          grep -v "POT-Creation-Date:" autotrace.pot.committed > autotrace.pot.committed.normalized || true
+          grep -v "POT-Creation-Date:" autotrace.pot > autotrace.pot.generated.normalized || true
+
+          if diff -u autotrace.pot.committed.normalized autotrace.pot.generated.normalized; then
+            echo "✅ POT file is up-to-date"
+            echo "status=success" >> $GITHUB_OUTPUT
+          else
+            echo "❌ POT file is outdated"
+            echo ""
+            echo "The translation template (POT file) needs to be updated."
+            echo ""
+            echo "Please run the following commands and commit the changes:"
+            echo ""
+            echo "  cd po"
+            echo "  intltool-update --pot --gettext-package=autotrace"
+            echo "  git add autotrace.pot"
+            echo "  git commit -m 'Update translation template (POT file)'"
+            echo ""
+            echo "status=failure" >> $GITHUB_OUTPUT
+            exit 1
+          fi

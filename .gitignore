@@ -77,7 +77,6 @@ po/Makefile.in.in
 po/Makevars.template
 po/POTFILES
 po/Rules-quot
-po/autotrace.pot
 po/boldquot.sed
 po/cat-id-tbl.c
 po/en@boldquot.header
