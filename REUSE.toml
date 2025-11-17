@@ -79,6 +79,12 @@ SPDX-FileCopyrightText = ["2018-2019 Jürgen Weigert", "2022,2024,2025 Peter Lem
 SPDX-License-Identifier = "GPL-2.0-or-later"
 
 [[annotations]]
+path = "po/*.pot"
+precedence = "aggregate"
+SPDX-FileCopyrightText = "2002-2025 AutoTrace contributors"
+SPDX-License-Identifier = "GPL-2.0-or-later"
+
+[[annotations]]
 path = "po/LINGUAS"
 precedence = "aggregate"
 SPDX-FileCopyrightText = "2014 Khaled Hosny"
