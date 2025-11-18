@@ -10,8 +10,18 @@ on:
     tags:
       - '*'           # Push events to every tag not containing /
   pull_request:
-    branches:
-      - '*'
+    paths:
+      # Source code
+      - 'src/**.c'
+      - 'src/**.h'
+      # Build system
+      - 'configure.ac'
+      - 'Makefile.am'
+      - '**/Makefile.am'
+      - 'autogen.sh'
+      - 'm4/**'
+      # Dependencies
+      - '.github/workflows/windows.yml'  # Re-run if workflow changes
 
 jobs:
   build_windows_installer:

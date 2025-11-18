@@ -3,13 +3,17 @@
 #
 # SPDX-License-Identifier: CC0-1.0
 
-# Your .github/workflows/coverity.yml file.
 name: Coverity scan
 
 # We only want to test official release code, not every pull request.
 on:
   push:
-    branches: [master]
+    branches:
+      - master
+    paths:
+      - 'src/**.c'
+      - 'src/**.h'
+      - '.github/workflows/coverity.yml'
 
 jobs:
   coverity:

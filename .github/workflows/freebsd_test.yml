@@ -2,18 +2,33 @@
 #
 # SPDX-License-Identifier: CC0-1.0
 
-# This is a basic workflow to help you get started with Actions
-
 name: Testing on FreeBSD
 
-# Controls when the action will run.
 on:
-  # Triggers the workflow on push or pull request events but only for the main branch
   push:
-    branches: [master]
-  pull_request:
     branches:
-         - '*'
+      - master
+    paths:
+      - 'src/**.c'
+      - 'src/**.h'
+      - 'configure.ac'
+      - 'Makefile.am'
+      - '**/Makefile.am'
+      - 'autogen.sh'
+  pull_request:
+    paths:
+      # Source code
+      - 'src/**.c'
+      - 'src/**.h'
+      # Build system
+      - 'configure.ac'
+      - 'Makefile.am'
+      - '**/Makefile.am'
+      - 'autogen.sh'
+      - 'm4/**'
+      # Dependencies
+      - '.github/workflows/freebsd_test.yml'  # Re-run if workflow changes
+
 env:
   # Allows you to run this workflow manually from the Actions tab
   workflow_dispatch:
