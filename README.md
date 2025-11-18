@@ -6,7 +6,6 @@
 [![Build status on macOS](https://github.com/autotrace/autotrace/actions/workflows/macosx_test.yml/badge.svg)](https://github.com/autotrace/autotrace/actions?query=workflows%3Amacosx_test)
 [![Build status on FreeBSD](https://github.com/autotrace/autotrace/actions/workflows/freebsd_test.yml/badge.svg)](https://github.com/autotrace/autotrace/actions?query=workflows%3Afreebsd_test)
 [![Build status on Windows](https://github.com/autotrace/autotrace/actions/workflows/windows_test.yml/badge.svg)](https://github.com/autotrace/autotrace/actions?query=workflows%3Awindows_test)
-[![Translation status](https://hosted.weblate.org/widget/autotrace/multi-auto.svg)](https://hosted.weblate.org/engage/autotrace/)
 
 AutoTrace is a program for converting bitmap images to vector graphics.
 
@@ -138,11 +137,15 @@ See `autotrace.h` for full API documentation.
 
 List all formats: `autotrace --list-input-formats` or `autotrace --list-output-formats`
 
-## License
+## Translation
 
-- **Program:** GPL v2 or later
-- **Library (`libautotrace`):** LGPL v2.1 or later
-- Input/output modules can be used under either license
+AutoTrace uses [GNU gettext](https://www.gnu.org/software/gettext/) for internationalization. Help translate AutoTrace into your language!
+
+[![Translation status](https://hosted.weblate.org/widget/autotrace/multi-auto.svg)](https://hosted.weblate.org/engage/autotrace/)
+
+**For translators:** Visit our [Weblate project](https://hosted.weblate.org/projects/autotrace/) to start translating. See [TRANSLATING.md](TRANSLATING.md) for detailed guidelines.
+
+**For developers:** When adding translatable strings, wrap them with `_()` and run `./po/update-pot.sh` to update the translation template. See [TRANSLATING.md](TRANSLATING.md) for details.
 
 ## Contributing
 
@@ -154,6 +157,12 @@ Areas where help is needed:
 - Additional format support
 - Plugin development for image editors
 - Your ideas and suggestions!
+
+## License
+
+- **Program:** GPL v2 or later
+- **Library (`libautotrace`):** LGPL v2.1 or later
+- Input/output modules can be used under either license
 
 ## History
 
