@@ -1,15 +1,33 @@
-# SPDX-FileCopyrightText: © 2024 Peter Lemenkov
+# SPDX-FileCopyrightText: © 2025 Peter Lemenkov
 #
 # SPDX-License-Identifier: CC0-1.0
-#
+
 name: Testing on Windows
 
 on:
   push:
-    branches: [master]
-  pull_request:
     branches:
-      - '*'
+      - master
+    paths:
+      - 'src/**.c'
+      - 'src/**.h'
+      - 'configure.ac'
+      - 'Makefile.am'
+      - '**/Makefile.am'
+      - 'autogen.sh'
+  pull_request:
+    paths:
+      # Source code
+      - 'src/**.c'
+      - 'src/**.h'
+      # Build system
+      - 'configure.ac'
+      - 'Makefile.am'
+      - '**/Makefile.am'
+      - 'autogen.sh'
+      - 'm4/**'
+      # Dependencies
+      - '.github/workflows/windows_test.yml'  # Re-run if workflow changes
 
 jobs:
   test_windows:

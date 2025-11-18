@@ -11,8 +11,18 @@ on:
     branches: [ "master" ]
   pull_request:
     branches: [ "master" ]
-  schedule:
-    - cron: "15 23 * * 6"
+on:
+  pull_request:
+    paths:
+      - 'src/**.c'
+      - 'src/**.h'
+      - '.github/workflows/codeql.yml'
+  push:
+    branches:
+      - master
+    paths:
+      - 'src/**.c'
+      - 'src/**.h'
 
 jobs:
   analyze:

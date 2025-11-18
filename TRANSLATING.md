@@ -52,9 +52,9 @@ AutoTrace uses C-style format specifiers in strings. These must be preserved in 
 
 **Important**: The order and type of format specifiers must match the original!
 
-✅ Correct: `"Processing %d of %d files"` → `"%d/%d 個のファイルを処理中"`
-❌ Wrong: `"Processing %d of %d files"` → `"%s 個のファイルを処理中"` (wrong type)
-❌ Wrong: `"Processing %d of %d files"` → `"ファイルを処理中"` (missing specifiers)
+✅ Correct: `"Processing %d of %d files"` → `"%d/%d 個のファイルを処理中"`  
+❌ Wrong: `"Processing %d of %d files"` → `"%s 個のファイルを処理中"` (wrong type)  
+❌ Wrong: `"Processing %d of %d files"` → `"ファイルを処理中"` (missing specifiers)  
 
 ## Plural Forms
 
