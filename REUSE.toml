@@ -55,6 +55,11 @@ SPDX-FileCopyrightText = ["2002 Martin Weber", "2002-2003 Masatake YAMATO"]
 SPDX-License-Identifier = "GPL-2.0-or-later"
 
 [[annotations]]
+path = "TRANSLATING.md"
+SPDX-FileCopyrightText = "2025 AutoTrace contributors"
+SPDX-License-Identifier = "CC0-1.0"
+
+[[annotations]]
 path = "doc/despeckle.txt"
 precedence = "aggregate"
 SPDX-FileCopyrightText = "2003 Martin Weber"
