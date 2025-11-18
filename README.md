@@ -6,6 +6,7 @@
 [![Build status on macOS](https://github.com/autotrace/autotrace/actions/workflows/macosx_test.yml/badge.svg)](https://github.com/autotrace/autotrace/actions?query=workflows%3Amacosx_test)
 [![Build status on FreeBSD](https://github.com/autotrace/autotrace/actions/workflows/freebsd_test.yml/badge.svg)](https://github.com/autotrace/autotrace/actions?query=workflows%3Afreebsd_test)
 [![Build status on Windows](https://github.com/autotrace/autotrace/actions/workflows/windows_test.yml/badge.svg)](https://github.com/autotrace/autotrace/actions?query=workflows%3Awindows_test)
+[![Translation status](https://hosted.weblate.org/widget/autotrace/multi-auto.svg)](https://hosted.weblate.org/engage/autotrace/)
 
 AutoTrace is a program for converting bitmap images to vector graphics.
 

@@ -37,7 +37,7 @@ jobs:
       - name: Regenerate POT file
         run: |
           cd po
-          intltool-update --pot --gettext-package=autotrace
+          ./update-pot.sh
 
       - name: Compare POT files
         id: compare
