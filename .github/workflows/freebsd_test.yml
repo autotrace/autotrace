@@ -44,7 +44,7 @@ jobs:
     name: A job to run test in FreeBSD ${{ matrix.freebsd-version }}
     steps:
       # Checks-out your repository under $GITHUB_WORKSPACE, so your job can access it
-      - uses: actions/checkout@v5
+      - uses: actions/checkout@v6
       # Runs a single command using the runners shell
       - name: build and run tests packages on FreeBSD ${{ matrix.freebsd-version }}
         uses: vmactions/freebsd-vm@v1
