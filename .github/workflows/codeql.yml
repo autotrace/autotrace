@@ -7,19 +7,14 @@
 name: "CodeQL"
 
 on:
-  push:
-    branches: [ "master" ]
   pull_request:
     branches: [ "master" ]
-on:
-  pull_request:
     paths:
       - 'src/**.c'
       - 'src/**.h'
       - '.github/workflows/codeql.yml'
   push:
-    branches:
-      - master
+    branches: [ "master" ]
     paths:
       - 'src/**.c'
       - 'src/**.h'
