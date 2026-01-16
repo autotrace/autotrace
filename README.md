@@ -2,6 +2,7 @@
 
 [![REUSE status](https://api.reuse.software/badge/github.com/autotrace/autotrace)](https://api.reuse.software/info/github.com/autotrace/autotrace)
 [![Coverity passed](https://scan.coverity.com/projects/18456/badge.svg)](https://scan.coverity.com/projects/autotrace-autotrace)
+[![OpenSSF Best Practices](https://www.bestpractices.dev/projects/6255/badge)](https://www.bestpractices.dev/projects/6255)
 [![Build status on Linux](https://github.com/autotrace/autotrace/actions/workflows/linux_test.yml/badge.svg)](https://github.com/autotrace/autotrace/actions?query=workflows%3Alinux_test)
 [![Build status on macOS](https://github.com/autotrace/autotrace/actions/workflows/macosx_test.yml/badge.svg)](https://github.com/autotrace/autotrace/actions?query=workflows%3Amacosx_test)
 [![Build status on FreeBSD](https://github.com/autotrace/autotrace/actions/workflows/freebsd_test.yml/badge.svg)](https://github.com/autotrace/autotrace/actions?query=workflows%3Afreebsd_test)
