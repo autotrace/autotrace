@@ -7,8 +7,8 @@ name: Check Translation Template
 on:
   pull_request:
     paths:
-      - 'src/**/*.c'
-      - 'src/**/*.h'
+      - 'src/*.c'
+      - 'src/*.h'
       - 'po/POTFILES.in'
       - 'po/autotrace.pot'
 

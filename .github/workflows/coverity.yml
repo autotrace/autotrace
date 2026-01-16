@@ -11,8 +11,8 @@ on:
     branches:
       - master
     paths:
-      - 'src/**.c'
-      - 'src/**.h'
+      - 'src/*.c'
+      - 'src/*.h'
       - '.github/workflows/coverity.yml'
 
 jobs:

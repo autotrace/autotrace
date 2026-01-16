@@ -10,14 +10,14 @@ on:
   pull_request:
     branches: [ "master" ]
     paths:
-      - 'src/**.c'
-      - 'src/**.h'
+      - 'src/*.c'
+      - 'src/*.h'
       - '.github/workflows/codeql.yml'
   push:
     branches: [ "master" ]
     paths:
-      - 'src/**.c'
-      - 'src/**.h'
+      - 'src/*.c'
+      - 'src/*.h'
 
 jobs:
   analyze:

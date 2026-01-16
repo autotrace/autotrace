@@ -10,8 +10,8 @@ on:
     branches:
       - master
     paths:
-      - 'src/**.c'
-      - 'src/**.h'
+      - 'src/*.c'
+      - 'src/*.h'
       - 'configure.ac'
       - 'Makefile.am'
       - '**/Makefile.am'
@@ -19,14 +19,13 @@ on:
   pull_request:
     paths:
       # Source code
-      - 'src/**.c'
-      - 'src/**.h'
+      - 'src/*.c'
+      - 'src/*.h'
       # Build system
       - 'configure.ac'
       - 'Makefile.am'
       - '**/Makefile.am'
       - 'autogen.sh'
-      - 'm4/**'
       # Dependencies
       - '.github/workflows/linux_test.yml'  # Re-run if workflow changes
 

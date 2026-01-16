@@ -12,14 +12,13 @@ on:
   pull_request:
     paths:
       # Source code
-      - 'src/**.c'
-      - 'src/**.h'
+      - 'src/*.c'
+      - 'src/*.h'
       # Build system
       - 'configure.ac'
       - 'Makefile.am'
       - '**/Makefile.am'
       - 'autogen.sh'
-      - 'm4/**'
       # Dependencies
       - '.github/workflows/windows.yml'  # Re-run if workflow changes
 
