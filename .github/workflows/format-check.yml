@@ -7,8 +7,8 @@ name: Format Check with clang-format
 on:
   pull_request:
     paths:
-      - 'src/**.c'
-      - 'src/**.h'
+      - 'src/*.c'
+      - 'src/*.h'
       - '.github/workflows/format-check.yml'
 
 jobs:
