@@ -8,26 +8,32 @@ msgstr ""
 "Project-Id-Version: PACKAGE VERSION\n"
 "Report-Msgid-Bugs-To: \n"
 "POT-Creation-Date: 2025-11-17 22:16+0100\n"
-"PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
-"Last-Translator: Automatically generated\n"
-"Language-Team: none\n"
+"PO-Revision-Date: 2026-02-15 22:09+0000\n"
+"Last-Translator: croomfolk <croomfolk@proton.me>\n"
+"Language-Team: Portuguese (Brazil) <https://hosted.weblate.org/projects/"
+"autotrace/autotrace/pt_BR/>\n"
 "Language: pt_BR\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
 "Plural-Forms: nplurals=2; plural=n > 1;\n"
+"X-Generator: Weblate 5.16-dev\n"
 
 #: ../src/autotrace.h:104
 msgid ""
 "background-color <hexadezimal>: the color of the background that should be "
 "ignored, for example FFFFFF; default is no background color."
 msgstr ""
+"background-color <hexadezimal>: a cor do fundo que deve ser ignorada, por "
+"exemplo FFFFFF; o padrão é nenhuma cor de fundo."
 
 #: ../src/autotrace.h:110
 msgid ""
 "charcode <unsigned>: code of character to load from GF file, allowed are "
 "0..255; default is the first character in font."
 msgstr ""
+"charcode <unsigned>: código do caractere a ser carregado do arquivo GF, de 0 "
+"a 255; o padrão é o primeiro caractere na fonte."
 
 #: ../src/autotrace.h:115
 msgid ""
@@ -35,6 +41,9 @@ msgid ""
 "does not work on grayscale, allowed are 1..256; default is 0, that means not "
 "color reduction is done."
 msgstr ""
+"color-count <unsigned>: número de cores a que um bitmap de cores será "
+"reduzido, não funciona em escala de cinza. Valores aceitos vão de 1 a 256; o "
+"padrão é 0, significando que nenhuma redução de cores é feita."
 
 #: ../src/autotrace.h:121
 msgid ""
@@ -42,12 +51,17 @@ msgid ""
 "than this, it is considered a corner, even if it is within `corner-surround' "
 "pixels of another corner; default is 60. "
 msgstr ""
+"corner-always-threshold <angle-in-degrees>: se o ângulo em um pixel for "
+"menor do que este, ele será considerado um canto, mesmo que esteja dentro de "
+"pixels corner-surround de outro canto; o padrão é 60. "
 
 #: ../src/autotrace.h:127
 msgid ""
 "corner-surround <unsigned>: number of pixels on either side of a point to "
 "consider when determining if that point is a corner; default is 4. "
 msgstr ""
+"corner-surround <unsigned>: número de pixeis nos lados de um ponto a serem "
+"considerados ao determinar se aquele ponto é um canto; o padrão é 4. "
 
 #: ../src/autotrace.h:133
 msgid ""
