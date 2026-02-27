@@ -66,7 +66,7 @@ jobs:
           file_glob: true
           file: distribute/win/autotrace-*-setup.exe
 
-      - uses: actions/upload-artifact@v6
+      - uses: actions/upload-artifact@v7
         with:
           name: win${{ matrix.arch }}-installer
           path: distribute/win/autotrace-*-win${{ matrix.arch }}-setup.exe
