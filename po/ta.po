@@ -8,26 +8,32 @@ msgstr ""
 "Project-Id-Version: PACKAGE VERSION\n"
 "Report-Msgid-Bugs-To: \n"
 "POT-Creation-Date: 2025-11-17 22:16+0100\n"
-"PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
-"Last-Translator: Automatically generated\n"
-"Language-Team: none\n"
+"PO-Revision-Date: 2026-06-17 04:01+0000\n"
+"Last-Translator: தமிழ்நேரம் <tamilneram247@gmail.com>\n"
+"Language-Team: Tamil <https://hosted.weblate.org/projects/autotrace/"
+"autotrace/ta/>\n"
 "Language: ta\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
 "Plural-Forms: nplurals=2; plural=n != 1;\n"
+"X-Generator: Weblate 2026.7.dev0\n"
 
 #: ../src/autotrace.h:104
 msgid ""
 "background-color <hexadezimal>: the color of the background that should be "
 "ignored, for example FFFFFF; default is no background color."
 msgstr ""
+"background-color <hexadezimal>: புறக்கணிக்கப்பட வேண்டிய பின்னணியின் நிறம், "
+"எடுத்துக்காட்டாக FFFFFF; இயல்புநிலை பின்னணி நிறம் இல்லை."
 
 #: ../src/autotrace.h:110
 msgid ""
 "charcode <unsigned>: code of character to load from GF file, allowed are "
 "0..255; default is the first character in font."
 msgstr ""
+"charcode <கையொப்பமிடாத>: GF கோப்பிலிருந்து ஏற்றுவதற்கான எழுத்துக்குறி குறியீடு, "
+"அனுமதிக்கப்படும் 0..255; இயல்புநிலை எழுத்துருவில் முதல் எழுத்து."
 
 #: ../src/autotrace.h:115
 msgid ""
@@ -35,6 +41,9 @@ msgid ""
 "does not work on grayscale, allowed are 1..256; default is 0, that means not "
 "color reduction is done."
 msgstr ""
+"color-count <கையொப்பமிடப்படாத>: ஒரு வண்ண பிட்மேப் குறைக்கப்பட்ட வண்ணங்களின் எண்ணிக்கை, அது "
+"கிரேச்கேலில் வேலை செய்யாது, அனுமதிக்கப்பட்டவை 1..256; இயல்புநிலை 0, அதாவது வண்ணக் "
+"குறைப்பு செய்யப்படவில்லை."
 
 #: ../src/autotrace.h:121
 msgid ""
@@ -42,12 +51,17 @@ msgid ""
 "than this, it is considered a corner, even if it is within `corner-surround' "
 "pixels of another corner; default is 60. "
 msgstr ""
+"corner-always-threshold <angle-in-degrees>: ஒரு பிக்சலில் உள்ள கோணம் இதை விட "
+"குறைவாக இருந்தால், அது மற்றொரு மூலையின் `corner-surround' பிக்சல்களுக்குள் இருந்தாலும், "
+"அது ஒரு மூலையாகக் கருதப்படுகிறது; இயல்புநிலை 60 ஆகும். "
 
 #: ../src/autotrace.h:127
 msgid ""
 "corner-surround <unsigned>: number of pixels on either side of a point to "
 "consider when determining if that point is a corner; default is 4. "
 msgstr ""
+"corner-surround <signed>: ஒரு புள்ளியின் இருபுறமும் உள்ள பிக்சல்களின் எண்ணிக்கை, அந்த "
+"புள்ளி ஒரு மூலையில் உள்ளதா என்பதை தீர்மானிக்கும்போது கருத்தில் கொள்ள வேண்டும்; இயல்புநிலை 4. "
 
 #: ../src/autotrace.h:133
 msgid ""
@@ -55,18 +69,24 @@ msgid ""
 "successor(s) meet at an angle smaller than this, it's a corner; default is "
 "100. "
 msgstr ""
+"மூலை-வாசல் <angle-in-degrees>: ஒரு படப்புள்ளி, முன்னோடியாக இருந்தால், அதன் வாரிசு (இதை "
+"விட) சிறிய கோணத்தில் சந்தித்தால், அது ஒரு மூலை; இயல்புநிலை 100 ஆகும். "
 
 #: ../src/autotrace.h:139
 msgid ""
 "error-threshold <real>: subdivide fitted curves that are off by more pixels "
 "than this; default is 2.0. "
 msgstr ""
+"error-threshold <real>: இதை விட அதிகமான படப்புள்ளிகள் ஆஃப் செய்யப்பட்ட பொருத்தப்பட்ட "
+"வளைவுகளை உட்பிரிவு செய்யவும்; இயல்புநிலை 2.0. "
 
 #: ../src/autotrace.h:144
 msgid ""
 "filter-iterations <unsigned>: smooth the curve this many times before "
 "fitting; default is 4."
 msgstr ""
+"வடிகட்டி மறு செய்கைகள் <கையொப்பமிடப்படாதவை>: வளைவைப் பொருத்துவதற்கு முன் பல முறை "
+"மென்மையாக்கவும்; இயல்புநிலை 4."
 
 #: ../src/autotrace.h:149
 msgid ""
@@ -74,6 +94,9 @@ msgid ""
 "than this, weighted by the square of the curve length, keep it a straight "
 "line even if it is a list with curves; default is .01. "
 msgstr ""
+"line-reversion-threshold <real>: வளைவு நீளத்தின் சதுரத்தால் எடைபோடப்பட்ட ஒரு ச்ப்லைன் "
+"இதை விட நேர்கோட்டிற்கு நெருக்கமாக இருந்தால், அது வளைவுகள் கொண்ட பட்டியலாக இருந்தாலும் அதை "
+"நேர்கோட்டாக வைத்திருங்கள்; இயல்புநிலை .01. "
 
 #: ../src/autotrace.h:155
 msgid ""
@@ -81,77 +104,85 @@ msgid ""
 "straight line defined by its endpoints,then output a straight line; default "
 "is 1. "
 msgstr ""
+"line-threshold <real>: ச்ப்லைன் அதன் இறுதிப்புள்ளிகளால் வரையறுக்கப்பட்ட நேர்கோட்டிலிருந்து "
+"இதைவிட தொலைவில் இல்லை என்றால், ஒரு நேர்கோட்டை வெளியிடவும்; இயல்புநிலை 1. "
 
 #: ../src/autotrace.h:161
 msgid ""
 "remove-adjacent-corners: remove corners that are adjacent; default doesn't "
 "remove."
 msgstr ""
+"நீக்க-அடுத்த-மூலைகள்: அருகில் இருக்கும் மூலைகளை அகற்று; இயல்புநிலை அகற்றாது."
 
 #: ../src/autotrace.h:166
 msgid ""
 "tangent-surround <unsigned>: number of points on either side of a point to "
 "consider when computing the tangent at that point;  default is 3."
 msgstr ""
+"tangent-surround <signed>: ஒரு புள்ளியின் இருபுறமும் உள்ள புள்ளிகளின் எண்ணிக்கை, அந்த "
+"புள்ளியில் தொடுகோட்டைக் கணக்கிடும்போது கருத்தில் கொள்ள வேண்டும்; இயல்புநிலை 3."
 
 #: ../src/autotrace.h:171
 msgid "despeckle-level <unsigned>: 0..20; default is no despeckling. "
 msgstr ""
+"டெச்பெக்கிள்-லெவல் <கையொப்பமிடாத>: 0..20; இயல்புநிலை despeckling இல்லை. "
 
 #: ../src/autotrace.h:174
 msgid "despeckle-tightness <real>: 0.0..8.0; default is 2.0. "
-msgstr ""
+msgstr "despeckle-tightness <real>: 0.0..8.0; இயல்புநிலை 2.0. "
 
 #: ../src/autotrace.h:177
 msgid "noise-removal <real>: 1.0..0.0; default is 0.99. "
-msgstr ""
+msgstr "சத்தம்-அகற்றுதல் <உண்மை>: 1.0..0.0; இயல்புநிலை 0.99. "
 
 #: ../src/autotrace.h:181
 msgid "centerline: trace a character's centerline, rather than its outline. "
 msgstr ""
+"சென்டர்லைன்: ஒரு கதாபாத்திரத்தின் வெளிப்புறத்தை விட அதன் மையக் கோட்டைக் கண்டறியவும். "
 
 #: ../src/autotrace.h:185
 msgid ""
 "preserve-width: whether to preserve linewith with centerline fitting; "
 "default doesn't preserve."
 msgstr ""
+"பாதுகாக்க-அகலம்: சென்டர்லைன் பொருத்துதலுடன் வரியுடன் பாதுகாக்க வேண்டுமா; இயல்புநிலை பாதுகாக்காது."
 
 #: ../src/autotrace.h:190
 msgid "width-weight-factor <real>: weight factor for fitting the linewidth."
-msgstr ""
+msgstr "width-weight-factor <real>: வரி அகலத்தை பொருத்துவதற்கான எடை காரணி."
 
 #: ../src/color.c:38
 #, c-format
 msgid "color string is too short: %s"
-msgstr ""
+msgstr "வண்ண சரம் மிகவும் சிறியது: %s"
 
 #: ../src/color.c:53
 #, c-format
 msgid "wrong char in color string: %c"
-msgstr ""
+msgstr "வண்ண சரத்தில் தவறான எழுத்து: %c"
 
 #: ../src/main.c:105
 msgid "Input and output file may not be the same\n"
-msgstr ""
+msgstr "உள்ளீடு மற்றும் வெளியீடு கோப்பு ஒரே மாதிரியாக இருக்காது\n"
 
 #: ../src/main.c:119
 #, c-format
 msgid "Default format %s is not supported"
-msgstr ""
+msgstr "இயல்புநிலை வடிவம் %s ஆதரிக்கப்படவில்லை"
 
 #: ../src/main.c:139
 msgid "Unsupported input format"
-msgstr ""
+msgstr "ஆதரிக்கப்படாத உள்ளீட்டு வடிவம்"
 
 #: ../src/main.c:155
 #, c-format
 msgid "Not a valid input file name %s"
-msgstr ""
+msgstr "சரியான உள்ளீட்டு கோப்பு பெயர் %s இல்லை"
 
 #: ../src/main.c:356
 #, c-format
 msgid "Usage: %s [options] <input_file_name>\n"
-msgstr ""
+msgstr "பயன்பாடு: %s [options] <input_file_name>\n"
 
 #: ../src/main.c:362
 #, c-format
@@ -160,32 +191,35 @@ msgid ""
 "You can get the source code of autotrace from \n"
 "%s\n"
 msgstr ""
+"\n"
+"ஆட்டோட்ரேசின் மூலக் குறியீட்டை நீங்கள் பெறலாம் \n"
+"%s\n"
 
 #: ../src/main.c:369
 #, c-format
 msgid "Input format %s is not supported\n"
-msgstr ""
+msgstr "உள்ளீட்டு வடிவம் %s ஆதரிக்கப்படவில்லை\n"
 
 #: ../src/main.c:382
 #, c-format
 msgid "Supported input formats:\n"
-msgstr ""
+msgstr "ஆதரிக்கப்படும் உள்ளீட்டு வடிவங்கள்:\n"
 
 #: ../src/main.c:388
 #, c-format
 msgid "Supported output formats:\n"
-msgstr ""
+msgstr "ஆதரிக்கப்படும் வெளியீட்டு வடிவங்கள்:\n"
 
 #: ../src/main.c:402
 #, c-format
 msgid "Output format %s is not supported"
-msgstr ""
+msgstr "%s வெளியீட்டு வடிவம் ஆதரிக்கப்படவில்லை"
 
 #: ../src/main.c:415
 #, c-format
 msgid "AutoTrace version %s.\n"
-msgstr ""
+msgstr "ஆட்டோடிரேச் பதிப்பு %s.\n"
 
 #: ../src/main.c:506
 msgid "Wrong type of msg"
-msgstr ""
+msgstr "தவறான வகை செய்தி"
