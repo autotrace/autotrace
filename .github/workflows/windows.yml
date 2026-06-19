@@ -30,7 +30,7 @@ jobs:
       matrix:
         arch: ['32', '64']
     steps:
-      - uses: actions/checkout@v6
+      - uses: actions/checkout@v7
       - name: Install dependencies for Win${{ matrix.arch }}
         run: |
             sudo dnf update -y

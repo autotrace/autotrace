@@ -46,7 +46,7 @@ jobs:
     runs-on: ${{ matrix.os.runs-on }}
     steps:
       # Checks-out your repository under $GITHUB_WORKSPACE, so your job can access it
-      - uses: actions/checkout@v6
+      - uses: actions/checkout@v7
       # Runs a single command using the runners shell
       - name: build and run tests packages with all featured readers
         run: |
@@ -61,7 +61,7 @@ jobs:
     runs-on: ubuntu-22.04
     steps:
       # Checks-out your repository under $GITHUB_WORKSPACE, so your job can access it
-      - uses: actions/checkout@v6
+      - uses: actions/checkout@v7
       # Runs a single command using the runners shell
       - name: build and run tests package against ImageMagick 6 only
         run: |
@@ -77,7 +77,7 @@ jobs:
     container: fedora:42
     steps:
       # Checks-out your repository under $GITHUB_WORKSPACE, so your job can access it
-      - uses: actions/checkout@v6
+      - uses: actions/checkout@v7
       # Runs a single command using the runners shell
       - name: build and run tests package against ImageMagick 7 only
         run: |
@@ -93,7 +93,7 @@ jobs:
     container: fedora:42
     steps:
       # Checks-out your repository under $GITHUB_WORKSPACE, so your job can access it
-      - uses: actions/checkout@v6
+      - uses: actions/checkout@v7
       # Runs a single command using the runners shell
       - name: build and run tests package against GraphicsMagick only
         run: |
@@ -109,7 +109,7 @@ jobs:
     container: fedora:42
     steps:
       # Checks-out your repository under $GITHUB_WORKSPACE, so your job can access it
-      - uses: actions/checkout@v6
+      - uses: actions/checkout@v7
       # Runs a single command using the runners shell
       - name: build and run tests package against pstoedit 4.00
         run: |
