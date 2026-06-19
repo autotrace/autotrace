@@ -39,7 +39,7 @@ jobs:
     strategy:
       fail-fast: false
       matrix:
-        freebsd-version: ['14.1', '14.2', '15.0']
+        freebsd-version: ['14.4', '15.1']
     name: A job to run test in FreeBSD ${{ matrix.freebsd-version }}
     steps:
       # Checks-out your repository under $GITHUB_WORKSPACE, so your job can access it
