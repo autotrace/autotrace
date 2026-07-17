@@ -8,8 +8,9 @@ msgstr ""
 "Project-Id-Version: PACKAGE VERSION\n"
 "Report-Msgid-Bugs-To: \n"
 "POT-Creation-Date: 2025-11-17 22:16+0100\n"
-"PO-Revision-Date: 2026-05-25 15:11+0000\n"
-"Last-Translator: beibao 233 <beibao2333@gmail.com>\n"
+"PO-Revision-Date: 2026-07-18 17:01+0000\n"
+"Last-Translator: reducedradius "
+"<137701630+flytothehighest@users.noreply.github.com>\n"
 "Language-Team: Chinese (Simplified Han script) <https://hosted.weblate.org/"
 "projects/autotrace/autotrace/zh_Hans/>\n"
 "Language: zh_Hans\n"
@@ -17,7 +18,7 @@ msgstr ""
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
 "Plural-Forms: nplurals=1; plural=0;\n"
-"X-Generator: Weblate 2026.6.dev0\n"
+"X-Generator: Weblate 2026.8.dev0\n"
 
 #: ../src/autotrace.h:104
 msgid ""
@@ -129,7 +130,7 @@ msgstr ""
 #: ../src/color.c:38
 #, c-format
 msgid "color string is too short: %s"
-msgstr ""
+msgstr "颜色字符串过短：%s"
 
 #: ../src/color.c:53
 #, c-format
@@ -194,4 +195,4 @@ msgstr ""
 
 #: ../src/main.c:506
 msgid "Wrong type of msg"
-msgstr ""
+msgstr "错误类型的信息"
