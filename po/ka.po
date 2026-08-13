@@ -8,15 +8,17 @@ msgstr ""
 "Project-Id-Version: PACKAGE VERSION\n"
 "Report-Msgid-Bugs-To: \n"
 "POT-Creation-Date: 2025-11-18 14:01+0100\n"
-"PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
-"Last-Translator: Automatically generated\n"
-"Language-Team: none\n"
+"PO-Revision-Date: 2026-08-14 16:53+0000\n"
+"Last-Translator: Temuri Doghonadze <temuri.doghonadze@gmail.com>\n"
+"Language-Team: Georgian <https://hosted.weblate.org/projects/autotrace/"
+"autotrace/ka/>\n"
 "Language: ka\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
 "License: GPL-2.0-or-later\n"
 "Plural-Forms: nplurals=2; plural=n != 1;\n"
+"X-Generator: Weblate 2026.9.dev0\n"
 
 #: ../src/autotrace.h:104
 msgid ""
@@ -97,15 +99,15 @@ msgstr ""
 
 #: ../src/autotrace.h:171
 msgid "despeckle-level <unsigned>: 0..20; default is no despeckling. "
-msgstr ""
+msgstr "despeckle-level <უნიშნო>: 0..20; ნაგულისხმევია ხმაურის არმოცილება. "
 
 #: ../src/autotrace.h:174
 msgid "despeckle-tightness <real>: 0.0..8.0; default is 2.0. "
-msgstr ""
+msgstr "despeckle-tightness <რეალური>: 0.0..8.0; ნაგულისხმევია 2.0. "
 
 #: ../src/autotrace.h:177
 msgid "noise-removal <real>: 1.0..0.0; default is 0.99. "
-msgstr ""
+msgstr "noise-removal <რეალურ>: 1.0..0.0; ნაგულისხმევია 0.99. "
 
 #: ../src/autotrace.h:181
 msgid "centerline: trace a character's centerline, rather than its outline. "
@@ -120,16 +122,17 @@ msgstr ""
 #: ../src/autotrace.h:190
 msgid "width-weight-factor <real>: weight factor for fitting the linewidth."
 msgstr ""
+"width-weight-factor <რეალური>: სიმძიმის კოეფიციენტი ხაზის სიგანის ჩასატევად."
 
 #: ../src/color.c:38
 #, c-format
 msgid "color string is too short: %s"
-msgstr ""
+msgstr "ფერის სტრიქონი მეტისმეტად მოკლეა: %s"
 
 #: ../src/color.c:53
 #, c-format
 msgid "wrong char in color string: %c"
-msgstr ""
+msgstr "არასწორი სიმბოლო ფერის სტრიქონში: %c"
 
 #: ../src/main.c:105
 msgid "Input and output file may not be the same\n"
@@ -138,21 +141,21 @@ msgstr ""
 #: ../src/main.c:119
 #, c-format
 msgid "Default format %s is not supported"
-msgstr ""
+msgstr "ნაგულისხმევი ფორმატი %s მხარდაჭერილი არაა"
 
 #: ../src/main.c:139
 msgid "Unsupported input format"
-msgstr ""
+msgstr "მხარდაუჭერელი შეყვანის ფორმატი"
 
 #: ../src/main.c:155
 #, c-format
 msgid "Not a valid input file name %s"
-msgstr ""
+msgstr "არასწორი შეყვანის ფაილის სახელი %s"
 
 #: ../src/main.c:356
 #, c-format
 msgid "Usage: %s [options] <input_file_name>\n"
-msgstr ""
+msgstr "გამოყენება: %s [პარამეტრები] <შეყვანის_ფაილის_სახელი>\n"
 
 #: ../src/main.c:362
 #, c-format
@@ -165,28 +168,28 @@ msgstr ""
 #: ../src/main.c:369
 #, c-format
 msgid "Input format %s is not supported\n"
-msgstr ""
+msgstr "შეყვანის ფორმატი %s მხარდაჭერილი არაა\n"
 
 #: ../src/main.c:382
 #, c-format
 msgid "Supported input formats:\n"
-msgstr ""
+msgstr "მხარდაჭერილი შეყვანის ფორმატები:\n"
 
 #: ../src/main.c:388
 #, c-format
 msgid "Supported output formats:\n"
-msgstr ""
+msgstr "მხარდაჭერილი გამოტანის ფორმატები:\n"
 
 #: ../src/main.c:402
 #, c-format
 msgid "Output format %s is not supported"
-msgstr ""
+msgstr "გამოტანის ფორმატი %s მხარდაჭერილი არაა"
 
 #: ../src/main.c:415
 #, c-format
 msgid "AutoTrace version %s.\n"
-msgstr ""
+msgstr "AutoTrace-ის ვერსია %s.\n"
 
 #: ../src/main.c:506
 msgid "Wrong type of msg"
-msgstr ""
+msgstr "შეტყობინების არასწორი ტიპი"
