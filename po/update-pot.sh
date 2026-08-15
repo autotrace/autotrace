@@ -26,5 +26,18 @@ if ! grep -q '"License:' autotrace.pot; then
   sed -i '/"Content-Transfer-Encoding: 8bit\\n"/a "License: GPL-2.0-or-later\\n"' autotrace.pot
 fi
 
+# Fix POT header for REUSE compliance — only if the generic placeholder is present
+if grep -q "SOME DESCRIPTIVE TITLE" autotrace.pot; then
+  echo "Replacing generic gettext header with SPDX/REUSE header..."
+  SPDX_TAG="SPDX-License-Identifier"
+  SPDX_CR="SPDX-FileCopyrightText"
+  sed -i '1,5d' autotrace.pot
+  sed -i "1i\\
+# AutoTrace translation template.\\
+# ${SPDX_CR}: © 2000-$(date +%Y) AutoTrace contributors\\
+# ${SPDX_TAG}: GPL-2.0-or-later\\
+#" autotrace.pot
+fi
+
 echo "POT file updated successfully!"
 echo "Total translatable strings: $(grep -c "^msgid" autotrace.pot)"

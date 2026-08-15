@@ -1,7 +1,6 @@
-# SOME DESCRIPTIVE TITLE.
-# Copyright (C) YEAR THE PACKAGE'S COPYRIGHT HOLDER
-# This file is distributed under the same license as the PACKAGE package.
-# FIRST AUTHOR <EMAIL@ADDRESS>, YEAR.
+# AutoTrace translation template.
+# SPDX-FileCopyrightText: © 2000-2026 AutoTrace contributors
+# SPDX-License-Identifier: GPL-2.0-or-later
 #
 msgid ""
 msgstr ""
