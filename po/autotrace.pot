@@ -7,7 +7,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: PACKAGE VERSION\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2025-11-18 14:01+0100\n"
+"POT-Creation-Date: 2026-09-25 21:57+0200\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
@@ -148,12 +148,17 @@ msgstr ""
 msgid "Not a valid input file name %s"
 msgstr ""
 
-#: ../src/main.c:356
+#: ../src/main.c:207
+#, c-format
+msgid "Invalid real number: '%s'"
+msgstr ""
+
+#: ../src/main.c:370
 #, c-format
 msgid "Usage: %s [options] <input_file_name>\n"
 msgstr ""
 
-#: ../src/main.c:362
+#: ../src/main.c:376
 #, c-format
 msgid ""
 "\n"
@@ -161,31 +166,31 @@ msgid ""
 "%s\n"
 msgstr ""
 
-#: ../src/main.c:369
+#: ../src/main.c:383
 #, c-format
 msgid "Input format %s is not supported\n"
 msgstr ""
 
-#: ../src/main.c:382
+#: ../src/main.c:396
 #, c-format
 msgid "Supported input formats:\n"
 msgstr ""
 
-#: ../src/main.c:388
+#: ../src/main.c:402
 #, c-format
 msgid "Supported output formats:\n"
 msgstr ""
 
-#: ../src/main.c:402
+#: ../src/main.c:416
 #, c-format
 msgid "Output format %s is not supported"
 msgstr ""
 
-#: ../src/main.c:415
+#: ../src/main.c:429
 #, c-format
 msgid "AutoTrace version %s.\n"
 msgstr ""
 
-#: ../src/main.c:506
+#: ../src/main.c:520
 msgid "Wrong type of msg"
 msgstr ""
