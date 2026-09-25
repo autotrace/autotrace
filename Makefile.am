@@ -20,6 +20,7 @@
 SUBDIRS = po
 man_MANS = autotrace.1
 EXTRA_DIST=$(man_MANS) \
+	   tests \
 	   FAQ \
 	   INSTALL_OSX.md \
 	   README.md \
@@ -111,7 +112,6 @@ libautotrace_la_SOURCES =\
 		src/quantize.h \
 		src/image-header.h \
 		src/fit.h \
-		src/bitmap.h \
 		src/curve.h \
 		src/vector.h \
 		src/pxl-outline.h \
