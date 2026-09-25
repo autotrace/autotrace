@@ -102,7 +102,7 @@ SPDX-FileCopyrightText = "2002 Masatake YAMATO"
 SPDX-License-Identifier = "GPL-2.0-or-later"
 
 [[annotations]]
-path = ["tests/**/**.bmp", "tests/**/**.tga", "tests/**/**.png", "tests/**/**.xpm", "tests/**/**.pbm", "tests/**/**.svg", "tests/other-output-formats/expected/**"]
+path = ["tests/**/**.bmp", "tests/**/**.tga", "tests/**/**.png", "tests/**/**.xpm", "tests/**/**.pbm", "tests/**/**.svg", "tests/**/**.600gf", "tests/other-output-formats/expected/**"]
 precedence = "aggregate"
 SPDX-FileCopyrightText = "2018-2025 Peter Lemenkov"
 SPDX-License-Identifier = "CC0-1.0"

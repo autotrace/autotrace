@@ -1,0 +1,27 @@
+#!/bin/sh
+
+# SPDX-FileCopyrightText: © 2026 Peter Lemenkov
+#
+# SPDX-License-Identifier: CC0-1.0
+
+# The GF (TeX generic font) reader is the only input module that no other
+# library provides, and it had no test.  shapes.600gf is generated from
+# shapes.mf (see there) and holds two glyphs: A is a square, B a triangle.
+
+. "`dirname "$0"`/../functions"
+
+DIR=$1
+
+failed=""
+for code in 65 66; do
+    autotrace -input-format gf -charcode $code $DIR/shapes.600gf -output-format svg -output-file $DIR/char$code.svg
+    if ! diff -q -w --strip-trailing-cr $DIR/char$code.output.svg $DIR/char$code.svg >/dev/null; then
+        failed="$failed $code"
+    fi
+    rm -f $DIR/char$code.svg
+done
+
+if [ -n "$failed" ]; then
+    fail "unexpected output for charcode:$failed"
+fi
+ok

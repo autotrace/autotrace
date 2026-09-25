@@ -1,0 +1,15 @@
+% SPDX-FileCopyrightText: © 2026 Peter Lemenkov
+%
+% SPDX-License-Identifier: CC0-1.0
+%
+% Source of shapes.600gf: two glyphs for the AutoTrace GF reader test, a
+% square (A) and a triangle (B).  Regenerate with
+%     mf -interaction=batchmode '\mode=ljfour; input shapes'
+mode_setup;
+beginchar("A", 10pt#, 10pt#, 0);
+  fill (0,0)--(w,0)--(w,h)--(0,h)--cycle;
+endchar;
+beginchar("B", 10pt#, 10pt#, 0);
+  fill (0,0)--(w,0)--(w/2,h)--cycle;
+endchar;
+end
