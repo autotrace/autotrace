@@ -16,11 +16,6 @@
 #include "spline.h"
 #include <glib.h>
 
-#ifdef MAX
-#undef MAX
-#endif
-#define MAX(a, b) ((a) > (b) ? (a) : (b))
-
 #define _USE_MATH_DEFINES
 #include <math.h>
 
