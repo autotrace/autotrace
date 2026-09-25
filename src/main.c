@@ -195,6 +195,20 @@ int main(int argc, char *argv[])
   return 0;
 }
 
+/* Parse a real-valued option argument.  atof() honours LC_NUMERIC, so in a
+   locale with a decimal comma "2.5" silently became 2; always parse in the
+   C locale instead.  */
+static gfloat parse_real(const gchar *s)
+{
+  gchar *end;
+  gdouble value = g_ascii_strtod(s, &end);
+
+  if (end == s || *end != '\0')
+    FATAL(_("Invalid real number: '%s'"), s);
+
+  return (gfloat)value;
+}
+
 /* Reading the options.  */
 
 #define USAGE1                                                                                     \
@@ -328,25 +342,25 @@ static char *read_command_line(int argc, char *argv[], at_fitting_opts_type *fit
       fitting_opts->color_count = atou(optarg);
 
     else if (ARGUMENT_IS("corner-always-threshold"))
-      fitting_opts->corner_always_threshold = (gfloat)atof(optarg);
+      fitting_opts->corner_always_threshold = parse_real(optarg);
 
     else if (ARGUMENT_IS("corner-surround"))
       fitting_opts->corner_surround = atou(optarg);
 
     else if (ARGUMENT_IS("corner-threshold"))
-      fitting_opts->corner_threshold = (gfloat)atof(optarg);
+      fitting_opts->corner_threshold = parse_real(optarg);
 
     else if (ARGUMENT_IS("despeckle-level"))
       fitting_opts->despeckle_level = atou(optarg);
 
     else if (ARGUMENT_IS("despeckle-tightness"))
-      fitting_opts->despeckle_tightness = (gfloat)atof(optarg);
+      fitting_opts->despeckle_tightness = parse_real(optarg);
 
     else if (ARGUMENT_IS("dpi"))
       output_opts->dpi = atou(optarg);
 
     else if (ARGUMENT_IS("error-threshold"))
-      fitting_opts->error_threshold = (gfloat)atof(optarg);
+      fitting_opts->error_threshold = parse_real(optarg);
 
     else if (ARGUMENT_IS("filter-iterations"))
       fitting_opts->filter_iterations = atou(optarg);
@@ -373,10 +387,10 @@ static char *read_command_line(int argc, char *argv[], at_fitting_opts_type *fit
       set_log_level(optarg);
 
     else if (ARGUMENT_IS("line-reversion-threshold"))
-      fitting_opts->line_reversion_threshold = (gfloat)atof(optarg);
+      fitting_opts->line_reversion_threshold = parse_real(optarg);
 
     else if (ARGUMENT_IS("line-threshold"))
-      fitting_opts->line_threshold = (gfloat)atof(optarg);
+      fitting_opts->line_threshold = parse_real(optarg);
 
     else if (ARGUMENT_IS("list-input-formats")) {
       fprintf(stderr, _("Supported input formats:\n"));
@@ -391,7 +405,7 @@ static char *read_command_line(int argc, char *argv[], at_fitting_opts_type *fit
     }
 
     else if (ARGUMENT_IS("noise-removal"))
-      fitting_opts->noise_removal = (gfloat)atof(optarg);
+      fitting_opts->noise_removal = parse_real(optarg);
 
     else if (ARGUMENT_IS("output-file"))
       output_name = optarg;
@@ -415,7 +429,7 @@ static char *read_command_line(int argc, char *argv[], at_fitting_opts_type *fit
       printf(_("AutoTrace version %s.\n"), at_version(FALSE));
 
     else if (ARGUMENT_IS("width-weight-factor"))
-      fitting_opts->width_weight_factor = (gfloat)atof(optarg);
+      fitting_opts->width_weight_factor = parse_real(optarg);
 
     /* Else it was just a flag; getopt has already done the assignment.  */
   }

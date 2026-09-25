@@ -1,0 +1,35 @@
+#!/bin/sh
+
+# SPDX-FileCopyrightText: © 2026 Peter Lemenkov
+#
+# SPDX-License-Identifier: CC0-1.0
+
+# Real-valued options such as -line-threshold used to be parsed with atof(),
+# which honours LC_NUMERIC: in a locale with a decimal comma "0.9" silently
+# became 0.  The output for the same command line must not depend on the
+# locale.
+
+. "`dirname "$0"`/../functions"
+
+DIR=$1
+
+COMMA_LOCALE=`locale -a 2>/dev/null | grep -iE '^de_DE\.utf-?8$' | head -n 1`
+if [ -z "$COMMA_LOCALE" ]; then
+    skip "no de_DE.UTF-8 locale installed"
+fi
+
+LC_ALL=C autotrace -line-threshold 0.9 $DIR/a.png -output-format svg -output-file $DIR/c_0.9.svg
+LC_ALL=C autotrace -line-threshold 0 $DIR/a.png -output-format svg -output-file $DIR/c_0.svg
+LC_ALL=$COMMA_LOCALE autotrace -line-threshold 0.9 $DIR/a.png -output-format svg -output-file $DIR/comma_0.9.svg
+
+# Sanity check: the value has to matter, otherwise this test proves nothing.
+if cmp -s $DIR/c_0.9.svg $DIR/c_0.svg; then
+    fail "-line-threshold 0.9 and 0 produce the same output"
+fi
+
+if cmp -s $DIR/c_0.9.svg $DIR/comma_0.9.svg; then
+    rm -f $DIR/c_0.9.svg $DIR/c_0.svg $DIR/comma_0.9.svg
+    ok
+else
+    fail "output differs between the C locale and $COMMA_LOCALE"
+fi
