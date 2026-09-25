@@ -326,7 +326,11 @@ static char *read_command_line(int argc, char *argv[], at_fitting_opts_type *fit
     assert(g == 0); /* We have no short option names.  */
 
     if (ARGUMENT_IS("background-color")) {
-      fitting_opts->background_color = at_color_parse(optarg, NULL);
+      g_autoptr(GError) error = NULL;
+
+      fitting_opts->background_color = at_color_parse(optarg, &error);
+      if (error)
+        FATAL("%s", error->message);
       input_opts->background_color = at_color_copy(fitting_opts->background_color);
     }
 

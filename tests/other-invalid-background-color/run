@@ -1,0 +1,28 @@
+#!/bin/sh
+
+# SPDX-FileCopyrightText: © 2026 Peter Lemenkov
+#
+# SPDX-License-Identifier: CC0-1.0
+
+# A -background-color value that is not six hexadecimal digits used to be
+# ignored silently, so a typo quietly disabled background removal.  It must
+# be rejected with a message.
+
+. "`dirname "$0"`/../functions"
+
+DIR=$1
+
+failed=""
+for color in GGGGGF FFF 12345G; do
+    autotrace -background-color $color $DIR/../github-#4/testrect.pbm -output-format svg -output-file $DIR/out.svg 2>$DIR/err.txt
+    RESULT=$?
+    if [ $RESULT -eq 0 ] || ! grep -q "color string" $DIR/err.txt; then
+        failed="$failed $color(exit=$RESULT)"
+    fi
+done
+rm -f $DIR/out.svg $DIR/err.txt
+
+if [ -n "$failed" ]; then
+    fail "accepted invalid colour:$failed"
+fi
+ok
