@@ -176,14 +176,6 @@ static unsigned char ilda_standard_color_palette[256][3] = {
     {21, 21, 21},    {11, 11, 11},    {0, 0, 0}        // Black
 };
 
-#ifdef _WINDOWS
-// no Windows compiler seems to have rint(), although it is C99
-int rint(double x)
-{
-  return (int)(x > 0 ? x + 0.5 : x - 0.5);
-}
-#endif
-
 int find_best_match_color(unsigned char r, unsigned char g, unsigned char b)
 {
   unsigned int i, dmin = 195076, d, ret = 0;
@@ -387,12 +379,7 @@ int writeILDAFrameHeader(FILE *file, LaserFrame *f, int format, unsigned int fra
   writeILDAHeader(file, format, 0);
 
   if (f) {
-#ifdef _WINDOWS
-    _snprintf((char *)(fhbuffer), 17, "Frame #%04d     ", frames);
-#endif
-#ifndef _WINDOWS
     snprintf((char *)(fhbuffer), 17, "Frame #%04d     ", frames);
-#endif
   } else {
     strncpy((char *)(fhbuffer), (char *)emptys, 16);
   }
