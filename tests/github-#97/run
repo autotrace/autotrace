@@ -1,0 +1,34 @@
+#!/bin/sh
+
+# SPDX-FileCopyrightText: © 2026 Peter Lemenkov
+#
+# SPDX-License-Identifier: CC0-1.0
+
+# Transparent PNG pixels must be composited against -background-color (or
+# white) regardless of whether the file carries a bKGD chunk, and the
+# colour must not be truncated for 8-bit images.  Every image below is a
+# red (or white) square on a fully transparent background whose hidden RGB
+# value is blue (or dark grey); after compositing and background removal
+# only the square may remain.
+
+. "`dirname "$0"`/../functions"
+
+DIR=$1
+
+failed=""
+for case in "rgba8_nobkgd FFFFFF" "rgba8_bkgd 808080" "rgba16_nobkgd 808080" "graya8_nobkgd 808080"; do
+    set -- $case
+    name=$1
+    bg=$2
+
+    autotrace -background-color $bg $DIR/$name.png -output-format svg -output-file $DIR/$name.svg
+    if ! diff -q -w --strip-trailing-cr $DIR/$name.output.svg $DIR/$name.svg >/dev/null; then
+        failed="$failed $name"
+    fi
+    rm -f $DIR/$name.svg
+done
+
+if [ -n "$failed" ]; then
+    fail "unexpected output for:$failed"
+fi
+ok
