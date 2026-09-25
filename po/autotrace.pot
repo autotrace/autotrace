@@ -7,7 +7,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: autotrace 0.31.10\n"
 "Report-Msgid-Bugs-To: https://github.com/autotrace/autotrace/issues\n"
-"POT-Creation-Date: 2026-09-26 00:40+0200\n"
+"POT-Creation-Date: 2026-09-26 01:32+0200\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
@@ -131,7 +131,7 @@ msgid "wrong char in color string: %c"
 msgstr ""
 
 #: src/main.c
-msgid "Input and output file may not be the same\n"
+msgid "Input and output file may not be the same"
 msgstr ""
 
 #: src/main.c
@@ -168,7 +168,7 @@ msgstr ""
 
 #: src/main.c
 #, c-format
-msgid "Input format %s is not supported\n"
+msgid "Input format %s is not supported"
 msgstr ""
 
 #: src/main.c

@@ -115,8 +115,10 @@ static void output_contour(FILE *file, FILE *tracer, unsigned height)
     if (x != 'M' || lastx != '"')
       continue;
 
-    if (fscanf(tracer, "%lg%lg", &x1, &y1) != 2)
-      FATAL("Autotrace format error");
+    if (fscanf(tracer, "%lg%lg", &x1, &y1) != 2) {
+      WARNING("Autotrace format error");
+      return;
+    }
     y1 = height - y1;
 
     fprintf(file, "\t\tpath\n");
@@ -124,13 +126,17 @@ static void output_contour(FILE *file, FILE *tracer, unsigned height)
 
     while ((x = getc(tracer)) >= 0) {
       if (x == 'L') {
-        if (fscanf(tracer, "%lg%lg", &x3, &y3) != 2)
-          FATAL("Autotrace format error");
+        if (fscanf(tracer, "%lg%lg", &x3, &y3) != 2) {
+          WARNING("Autotrace format error");
+          return;
+        }
         y3 = height - y3;
         fprintf(file, "\t\t\tline %g %g\n", x3, y3);
       } else if (x == 'C') {
-        if (fscanf(tracer, "%lg%lg%lg%lg%lg%lg", &x1a, &y1a, &x3a, &y3a, &x3, &y3) != 6)
-          FATAL("Autotrace format error");
+        if (fscanf(tracer, "%lg%lg%lg%lg%lg%lg", &x1a, &y1a, &x3a, &y3a, &x3, &y3) != 6) {
+          WARNING("Autotrace format error");
+          return;
+        }
         y1a = height - y1a;
         y3a = height - y3a;
         y3 = height - y3;

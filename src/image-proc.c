@@ -334,7 +334,8 @@ at_bitmap ip_thin(bitmap_type input_b)
   bitmap_type b = input_b;
 
   if (AT_BITMAP_PLANES(input_b) != 1) {
-    FATAL("thin: single-plane image required; " "%u-plane images cannot be thinned", AT_BITMAP_PLANES(input_b));
+    WARNING("thin: single-plane image required; %u-plane images cannot be thinned",
+            AT_BITMAP_PLANES(input_b));
     return b;
   }
 

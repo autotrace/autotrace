@@ -102,7 +102,7 @@ int main(int argc, char *argv[])
   input_name = read_command_line(argc, argv, fitting_opts, input_opts, output_opts);
 
   if (output_name != NULL && input_name != NULL && 0 == strcasecmp(output_name, input_name))
-    FATAL(_("Input and output file may not be the same\n"));
+    FATAL(_("Input and output file may not be the same"));
 
   /* Set input_reader if it is not set in command line args */
   if (!input_reader)
@@ -384,7 +384,7 @@ static char *read_command_line(int argc, char *argv[], at_fitting_opts_type *fit
     else if (ARGUMENT_IS("input-format")) {
       input_reader = at_input_get_handler_by_suffix(optarg);
       if (!input_reader)
-        FATAL(_("Input format %s is not supported\n"), optarg);
+        FATAL(_("Input format %s is not supported"), optarg);
     }
 
     else if (ARGUMENT_IS("log"))

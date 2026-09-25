@@ -193,8 +193,11 @@ int install_output_pstoedit_writers(void)
     is_pstoedit_v4 = TRUE;
   else if (pstoedit_checkversion(301U))
     is_pstoedit_v4 = FALSE;
-  else
-    FATAL("pstoedit version 3.01 or higher is required for pstoedit output.\n");
+  else {
+    WARNING("pstoedit version 3.01 or higher is required for pstoedit output; "
+            "pstoedit output formats are disabled");
+    return 0;
+  }
 
   dd_start = getPstoeditDriverInfo_plainC();
 
