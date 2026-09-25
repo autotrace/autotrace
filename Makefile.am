@@ -96,7 +96,6 @@ libautotrace_la_SOURCES =\
 		src/fit.c \
 		src/spline.c \
 		src/curve.c \
-		src/epsilon-equal.c \
 		src/vector.c \
 		src/color.c \
 		src/autotrace.c \

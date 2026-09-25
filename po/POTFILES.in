@@ -4,7 +4,6 @@ src/autotrace.h
 src/color.c
 src/curve.c
 src/despeckle.c
-src/epsilon-equal.c
 src/exception.c
 src/filename.c
 src/fit.c
