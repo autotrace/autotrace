@@ -21,7 +21,19 @@ for code in 65 66; do
     rm -f $DIR/char$code.svg
 done
 
+# A malformed font must be reported as an error (exit status 1 from the
+# fatal-message handler), not terminate the process from inside the library.
+# Byte 60 is the first painting command of character 65; 0xFF is no command.
+cp $DIR/shapes.600gf $DIR/corrupt.600gf
+printf '\377' | dd of=$DIR/corrupt.600gf bs=1 seek=60 conv=notrunc 2>/dev/null
+autotrace -input-format gf -charcode 65 $DIR/corrupt.600gf -output-format svg -output-file $DIR/corrupt.svg 2>$DIR/corrupt.err
+RESULT=$?
+if [ $RESULT -ne 1 ] || ! grep -q "expected paint or skip or new_row" $DIR/corrupt.err; then
+    failed="$failed corrupt-font(exit=$RESULT)"
+fi
+rm -f $DIR/corrupt.600gf $DIR/corrupt.svg $DIR/corrupt.err
+
 if [ -n "$failed" ]; then
-    fail "unexpected output for charcode:$failed"
+    fail "unexpected output for:$failed"
 fi
 ok
