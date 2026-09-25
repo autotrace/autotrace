@@ -21,7 +21,7 @@ jobs:
     steps:
     - uses: actions/checkout@v7
     - run: sudo apt update
-    - run: sudo apt install -y libgraphicsmagick1-dev libpng-dev libexiv2-dev libtiff-dev libjpeg-dev libxml2-dev libbz2-dev libfreetype6-dev libpstoedit-dev autoconf automake libtool intltool autopoint
+    - run: sudo apt install -y libgraphicsmagick1-dev libpng-dev libexiv2-dev libtiff-dev libjpeg-dev libxml2-dev libbz2-dev libfreetype6-dev libpstoedit-dev autoconf automake libtool gettext autopoint
     - run: ./autogen.sh
     - run: ./configure
     - uses: vapier/coverity-scan-action@v1

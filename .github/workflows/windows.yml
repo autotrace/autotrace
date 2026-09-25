@@ -35,7 +35,7 @@ jobs:
         run: |
             sudo dnf update -y
             # FIXME mingw64-nsis is broken in Fedora 43 at least, so we install mingw32-nsis for both architectures
-            sudo dnf install -y autoconf automake gettext-devel glib2-devel intltool libtool make \
+            sudo dnf install -y autoconf automake gettext-devel glib2-devel libtool make \
                                 mingw${{ matrix.arch }}-filesystem mingw${{ matrix.arch }}-glib2 mingw${{ matrix.arch }}-libpng \
                                 mingw${{ matrix.arch }}-gcc mingw32-nsis pkgconf-pkg-config which
             mkdir -p distribute/win/3rdparty

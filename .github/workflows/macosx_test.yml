@@ -45,7 +45,7 @@ jobs:
       - name: build and run tests packages with all featured readers
         run: |
             brew update
-            brew install graphicsmagick pstoedit libpng gettext intltool glib libtool autoconf automake pkg-config perl-xml-parser
+            brew install graphicsmagick pstoedit libpng gettext glib libtool autoconf automake pkg-config
             # libltdl is needed by GraphicsMagick but not in default linker search path on macOS
             export LDFLAGS="-L$HOMEBREW_PREFIX/opt/libtool/lib $LDFLAGS"
             ./autogen.sh
