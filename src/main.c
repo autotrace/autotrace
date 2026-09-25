@@ -20,7 +20,7 @@
 
 #include "autotrace.h"
 #include "logreport.h"
-#include "getopt.h"
+#include <getopt.h>
 #include "filename.h"
 #include "atou.h"
 #include "input.h"
