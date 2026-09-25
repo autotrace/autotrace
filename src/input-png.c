@@ -147,7 +147,6 @@ static png_bytep *read_image(png_structp png_ptr, png_infop info_ptr)
 
 static png_bytep *read_png(png_structp png_ptr, png_infop info_ptr, at_input_opts_type *opts)
 {
-  png_color_16p original_bg;
   png_color_16 my_bg;
   png_bytep *rows;
 
@@ -160,24 +159,25 @@ static png_bytep *read_png(png_structp png_ptr, png_infop info_ptr, at_input_opt
       (png_get_valid(png_ptr, info_ptr, PNG_INFO_tRNS)))
     png_set_expand(png_ptr);
 
-  if (png_get_bKGD(png_ptr, info_ptr, &original_bg)) {
-    /* Fill transparent region with ... */
+  if ((png_get_color_type(png_ptr, info_ptr) & PNG_COLOR_MASK_ALPHA) ||
+      (png_get_valid(png_ptr, info_ptr, PNG_INFO_tRNS))) {
+    /* Composite transparent pixels against the requested background colour,
+       or white when none was given.  The colour is expressed in the format
+       libpng produces after the transformations above (8-bit gray or RGB),
+       which is what need_expand = 0 means; see png_set_background() in the
+       libpng manual. */
     my_bg.index = 0;
 
     if (opts && opts->background_color) {
-      my_bg.red = 256 * opts->background_color->r;
-      my_bg.green = 256 * opts->background_color->g;
-      my_bg.blue = 256 * opts->background_color->b;
-      my_bg.gray =
-          256 *
-          ((opts->background_color->r + opts->background_color->g + opts->background_color->b) / 3);
+      my_bg.red = opts->background_color->r;
+      my_bg.green = opts->background_color->g;
+      my_bg.blue = opts->background_color->b;
+      my_bg.gray = at_color_luminance(opts->background_color);
     } else
-      /* else, use white */
-      my_bg.red = my_bg.green = my_bg.blue = my_bg.gray = 0xFFFF;
+      my_bg.red = my_bg.green = my_bg.blue = my_bg.gray = 0xFF;
 
-    png_set_background(png_ptr, &my_bg, PNG_BACKGROUND_GAMMA_FILE, 1, 1.0);
-  } else
-    png_set_strip_alpha(png_ptr);
+    png_set_background(png_ptr, &my_bg, PNG_BACKGROUND_GAMMA_SCREEN, 0, 1.0);
+  }
   png_set_interlace_handling(png_ptr);
   png_read_update_info(png_ptr, info_ptr);
 
