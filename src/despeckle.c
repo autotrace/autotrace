@@ -14,6 +14,57 @@
 #include "despeckle.h"
 #include <glib.h>
 
+/* The flood fills below walk a blob one horizontal scanline segment at a
+ * time and then visit the rows above and below every pixel of the segment.
+ * Doing that recursively needs one stack frame per segment, which overflows
+ * the stack on large blobs (github #154).  Instead the pending segments are
+ * kept on an explicit stack: a span_frame remembers a segment [x1, x2] on
+ * row y and which neighbour (x, y + dy) is due next.  span_stack_next()
+ * hands out the neighbours in exactly the order the recursive calls were
+ * made, so the traversal, and thus the result, is unchanged.
+ */
+typedef struct {
+  int x1, x2, y;
+  int x;  /* column of the next neighbour to visit */
+  int dy; /* -1: the row above is next, +1: the row below is next */
+} span_frame;
+
+static void span_stack_push(GArray *stack, int x1, int x2, int y)
+{
+  span_frame frame = {x1, x2, y, x1, -1};
+
+  g_array_append_val(stack, frame);
+}
+
+/* Fetch the next (x, y) to visit.  Returns FALSE once every pending segment
+ * has been fully processed.
+ */
+static gboolean span_stack_next(GArray *stack, int *x, int *y)
+{
+  while (stack->len > 0) {
+    span_frame *frame = &g_array_index(stack, span_frame, stack->len - 1);
+
+    if (frame->x > frame->x2) {
+      g_array_set_size(stack, stack->len - 1);
+      continue;
+    }
+
+    *x = frame->x;
+    *y = frame->y + frame->dy;
+
+    if (frame->dy < 0)
+      frame->dy = 1;
+    else {
+      frame->dy = -1;
+      frame->x++;
+    }
+
+    return TRUE;
+  }
+
+  return FALSE;
+}
+
 /* Calculate Error - compute the error between two colors
  *
  *   Input parameters:
@@ -77,35 +128,36 @@ static int find_size(/* in */ unsigned char *index,
                      /* in */ unsigned char *bitmap,
                      /* in/out */ unsigned char *mask)
 {
-  int count;
+  int count = 0;
   int x1, x2;
+  g_autoptr(GArray) stack = g_array_new(FALSE, FALSE, sizeof(span_frame));
 
-  if (y < 0 || y >= height || mask[y * width + x] == 1 || bitmap[3 * (y * width + x)] != index[0] ||
-      bitmap[3 * (y * width + x) + 1] != index[1] || bitmap[3 * (y * width + x) + 2] != index[2])
-    return 0;
+  do {
+    if (y < 0 || y >= height || mask[y * width + x] == 1 ||
+        bitmap[3 * (y * width + x)] != index[0] || bitmap[3 * (y * width + x) + 1] != index[1] ||
+        bitmap[3 * (y * width + x) + 2] != index[2])
+      continue;
 
-  for (x1 = x; x1 >= 0 && bitmap[3 * (y * width + x1)] == index[0] &&
-               bitmap[3 * (y * width + x1) + 1] == index[1] &&
-               bitmap[3 * (y * width + x1) + 2] == index[2] && mask[y * width + x1] != 1;
-       x1--)
-    ;
-  x1++;
+    for (x1 = x; x1 >= 0 && bitmap[3 * (y * width + x1)] == index[0] &&
+                 bitmap[3 * (y * width + x1) + 1] == index[1] &&
+                 bitmap[3 * (y * width + x1) + 2] == index[2] && mask[y * width + x1] != 1;
+         x1--)
+      ;
+    x1++;
 
-  for (x2 = x; x2 < width && bitmap[3 * (y * width + x2)] == index[0] &&
-               bitmap[3 * (y * width + x2) + 1] == index[1] &&
-               bitmap[3 * (y * width + x2) + 2] == index[2] && mask[y * width + x2] != 1;
-       x2++)
-    ;
-  x2--;
+    for (x2 = x; x2 < width && bitmap[3 * (y * width + x2)] == index[0] &&
+                 bitmap[3 * (y * width + x2) + 1] == index[1] &&
+                 bitmap[3 * (y * width + x2) + 2] == index[2] && mask[y * width + x2] != 1;
+         x2++)
+      ;
+    x2--;
 
-  count = x2 - x1 + 1;
-  for (x = x1; x <= x2; x++)
-    mask[y * width + x] = 1;
+    count += x2 - x1 + 1;
+    for (x = x1; x <= x2; x++)
+      mask[y * width + x] = 1;
 
-  for (x = x1; x <= x2; x++) {
-    count += find_size(index, x, y - 1, width, height, bitmap, mask);
-    count += find_size(index, x, y + 1, width, height, bitmap, mask);
-  }
+    span_stack_push(stack, x1, x2, y);
+  } while (span_stack_next(stack, &x, &y));
 
   return count;
 }
@@ -131,29 +183,29 @@ static int find_size_8(/* in */ unsigned char *index,
                        /* in */ unsigned char *bitmap,
                        /* in/out */ unsigned char *mask)
 {
-  int count;
+  int count = 0;
   int x1, x2;
+  g_autoptr(GArray) stack = g_array_new(FALSE, FALSE, sizeof(span_frame));
 
-  if (y < 0 || y >= height || mask[y * width + x] == 1 || bitmap[(y * width + x)] != index[0])
-    return 0;
+  do {
+    if (y < 0 || y >= height || mask[y * width + x] == 1 || bitmap[(y * width + x)] != index[0])
+      continue;
 
-  for (x1 = x; x1 >= 0 && bitmap[(y * width + x1)] == index[0] && mask[y * width + x1] != 1; x1--)
-    ;
-  x1++;
+    for (x1 = x; x1 >= 0 && bitmap[(y * width + x1)] == index[0] && mask[y * width + x1] != 1; x1--)
+      ;
+    x1++;
 
-  for (x2 = x; x2 < width && bitmap[(y * width + x2)] == index[0] && mask[y * width + x2] != 1;
-       x2++)
-    ;
-  x2--;
+    for (x2 = x; x2 < width && bitmap[(y * width + x2)] == index[0] && mask[y * width + x2] != 1;
+         x2++)
+      ;
+    x2--;
 
-  count = x2 - x1 + 1;
-  for (x = x1; x <= x2; x++)
-    mask[y * width + x] = 1;
+    count += x2 - x1 + 1;
+    for (x = x1; x <= x2; x++)
+      mask[y * width + x] = 1;
 
-  for (x = x1; x <= x2; x++) {
-    count += find_size_8(index, x, y - 1, width, height, bitmap, mask);
-    count += find_size_8(index, x, y + 1, width, height, bitmap, mask);
-  }
+    span_stack_push(stack, x1, x2, y);
+  } while (span_stack_next(stack, &x, &y));
 
   return count;
 }
@@ -187,66 +239,64 @@ static void find_most_similar_neighbor(/* in */ unsigned char *index,
   int x1, x2;
   int temp_error;
   unsigned char *value, *temp;
-
-  if (y < 0 || y >= height || mask[y * width + x] == 2)
-    return;
-
-  temp = &bitmap[3 * (y * width + x)];
+  g_autoptr(GArray) stack = g_array_new(FALSE, FALSE, sizeof(span_frame));
 
   assert(closest_index != NULL);
 
-  if (temp[0] != index[0] || temp[1] != index[1] || temp[2] != index[2]) {
-    value = temp;
+  do {
+    if (y < 0 || y >= height || mask[y * width + x] == 2)
+      continue;
 
-    temp_error = calc_error(index, value);
+    temp = &bitmap[3 * (y * width + x)];
 
-    if (*closest_index == NULL || temp_error < *error_amt)
-      *closest_index = value, *error_amt = temp_error;
+    if (temp[0] != index[0] || temp[1] != index[1] || temp[2] != index[2]) {
+      value = temp;
 
-    return;
-  }
+      temp_error = calc_error(index, value);
 
-  for (x1 = x;
-       x1 >= 0 && bitmap[3 * (y * width + x1)] == index[0] &&
-       bitmap[3 * (y * width + x1) + 1] == index[1] && bitmap[3 * (y * width + x1) + 2] == index[2];
-       x1--)
-    ;
-  x1++;
+      if (*closest_index == NULL || temp_error < *error_amt)
+        *closest_index = value, *error_amt = temp_error;
 
-  for (x2 = x;
-       x2 < width && bitmap[3 * (y * width + x2)] == index[0] &&
-       bitmap[3 * (y * width + x2) + 1] == index[1] && bitmap[3 * (y * width + x2) + 2] == index[2];
-       x2++)
-    ;
-  x2--;
+      continue;
+    }
 
-  if (x1 > 0) {
-    value = &bitmap[3 * (y * width + x1 - 1)];
+    for (x1 = x; x1 >= 0 && bitmap[3 * (y * width + x1)] == index[0] &&
+                 bitmap[3 * (y * width + x1) + 1] == index[1] &&
+                 bitmap[3 * (y * width + x1) + 2] == index[2];
+         x1--)
+      ;
+    x1++;
 
-    temp_error = calc_error(index, value);
+    for (x2 = x; x2 < width && bitmap[3 * (y * width + x2)] == index[0] &&
+                 bitmap[3 * (y * width + x2) + 1] == index[1] &&
+                 bitmap[3 * (y * width + x2) + 2] == index[2];
+         x2++)
+      ;
+    x2--;
 
-    if (*closest_index == NULL || temp_error < *error_amt)
-      *closest_index = value, *error_amt = temp_error;
-  }
+    if (x1 > 0) {
+      value = &bitmap[3 * (y * width + x1 - 1)];
 
-  if (x2 < width - 1) {
-    value = &bitmap[3 * (y * width + x2 + 1)];
+      temp_error = calc_error(index, value);
 
-    temp_error = calc_error(index, value);
+      if (*closest_index == NULL || temp_error < *error_amt)
+        *closest_index = value, *error_amt = temp_error;
+    }
 
-    if (*closest_index == NULL || temp_error < *error_amt)
-      *closest_index = value, *error_amt = temp_error;
-  }
+    if (x2 < width - 1) {
+      value = &bitmap[3 * (y * width + x2 + 1)];
 
-  for (x = x1; x <= x2; x++)
-    mask[y * width + x] = 2;
+      temp_error = calc_error(index, value);
 
-  for (x = x1; x <= x2; x++) {
-    find_most_similar_neighbor(index, closest_index, error_amt, x, y - 1, width, height, bitmap,
-                               mask);
-    find_most_similar_neighbor(index, closest_index, error_amt, x, y + 1, width, height, bitmap,
-                               mask);
-  }
+      if (*closest_index == NULL || temp_error < *error_amt)
+        *closest_index = value, *error_amt = temp_error;
+    }
+
+    for (x = x1; x <= x2; x++)
+      mask[y * width + x] = 2;
+
+    span_stack_push(stack, x1, x2, y);
+  } while (span_stack_next(stack, &x, &y));
 }
 
 /* Find Most Similar Neighbor - Given a position in an 8 bit bitmap and a color
@@ -278,60 +328,58 @@ static void find_most_similar_neighbor_8(/* in */ unsigned char *index,
   int x1, x2;
   int temp_error;
   unsigned char *value, *temp;
-
-  if (y < 0 || y >= height || mask[y * width + x] == 2)
-    return;
-
-  temp = &bitmap[(y * width + x)];
+  g_autoptr(GArray) stack = g_array_new(FALSE, FALSE, sizeof(span_frame));
 
   assert(closest_index != NULL);
 
-  if (temp[0] != index[0]) {
-    value = temp;
+  do {
+    if (y < 0 || y >= height || mask[y * width + x] == 2)
+      continue;
 
-    temp_error = calc_error_8(index, value);
+    temp = &bitmap[(y * width + x)];
 
-    if (*closest_index == NULL || temp_error < *error_amt)
-      *closest_index = value, *error_amt = temp_error;
+    if (temp[0] != index[0]) {
+      value = temp;
 
-    return;
-  }
+      temp_error = calc_error_8(index, value);
 
-  for (x1 = x; x1 >= 0 && bitmap[(y * width + x1)] == index[0]; x1--)
-    ;
-  x1++;
+      if (*closest_index == NULL || temp_error < *error_amt)
+        *closest_index = value, *error_amt = temp_error;
 
-  for (x2 = x; x2 < width && bitmap[(y * width + x2)] == index[0]; x2++)
-    ;
-  x2--;
+      continue;
+    }
 
-  if (x1 > 0) {
-    value = &bitmap[(y * width + x1 - 1)];
+    for (x1 = x; x1 >= 0 && bitmap[(y * width + x1)] == index[0]; x1--)
+      ;
+    x1++;
 
-    temp_error = calc_error_8(index, value);
+    for (x2 = x; x2 < width && bitmap[(y * width + x2)] == index[0]; x2++)
+      ;
+    x2--;
 
-    if (*closest_index == NULL || temp_error < *error_amt)
-      *closest_index = value, *error_amt = temp_error;
-  }
+    if (x1 > 0) {
+      value = &bitmap[(y * width + x1 - 1)];
 
-  if (x2 < width - 1) {
-    value = &bitmap[(y * width + x2 + 1)];
+      temp_error = calc_error_8(index, value);
 
-    temp_error = calc_error_8(index, value);
+      if (*closest_index == NULL || temp_error < *error_amt)
+        *closest_index = value, *error_amt = temp_error;
+    }
 
-    if (*closest_index == NULL || temp_error < *error_amt)
-      *closest_index = value, *error_amt = temp_error;
-  }
+    if (x2 < width - 1) {
+      value = &bitmap[(y * width + x2 + 1)];
 
-  for (x = x1; x <= x2; x++)
-    mask[y * width + x] = 2;
+      temp_error = calc_error_8(index, value);
 
-  for (x = x1; x <= x2; x++) {
-    find_most_similar_neighbor_8(index, closest_index, error_amt, x, y - 1, width, height, bitmap,
-                                 mask);
-    find_most_similar_neighbor_8(index, closest_index, error_amt, x, y + 1, width, height, bitmap,
-                                 mask);
-  }
+      if (*closest_index == NULL || temp_error < *error_amt)
+        *closest_index = value, *error_amt = temp_error;
+    }
+
+    for (x = x1; x <= x2; x++)
+      mask[y * width + x] = 2;
+
+    span_stack_push(stack, x1, x2, y);
+  } while (span_stack_next(stack, &x, &y));
 }
 
 /* Fill - change the color of a blob
@@ -352,30 +400,30 @@ static void fill(/* in */ unsigned char *to_index,
                  /* in/out */ unsigned char *mask)
 {
   int x1, x2;
+  g_autoptr(GArray) stack = g_array_new(FALSE, FALSE, sizeof(span_frame));
 
-  if (y < 0 || y >= height || mask[y * width + x] != 2)
-    return;
+  do {
+    if (y < 0 || y >= height || mask[y * width + x] != 2)
+      continue;
 
-  for (x1 = x; x1 >= 0 && mask[y * width + x1] == 2; x1--)
-    ;
-  x1++;
-  for (x2 = x; x2 < width && mask[y * width + x2] == 2; x2++)
-    ;
-  x2--;
+    for (x1 = x; x1 >= 0 && mask[y * width + x1] == 2; x1--)
+      ;
+    x1++;
+    for (x2 = x; x2 < width && mask[y * width + x2] == 2; x2++)
+      ;
+    x2--;
 
-  assert(x1 >= 0 && x2 < width);
+    assert(x1 >= 0 && x2 < width);
 
-  for (x = x1; x <= x2; x++) {
-    bitmap[3 * (y * width + x)] = to_index[0];
-    bitmap[3 * (y * width + x) + 1] = to_index[1];
-    bitmap[3 * (y * width + x) + 2] = to_index[2];
-    mask[y * width + x] = 3;
-  }
+    for (x = x1; x <= x2; x++) {
+      bitmap[3 * (y * width + x)] = to_index[0];
+      bitmap[3 * (y * width + x) + 1] = to_index[1];
+      bitmap[3 * (y * width + x) + 2] = to_index[2];
+      mask[y * width + x] = 3;
+    }
 
-  for (x = x1; x <= x2; x++) {
-    fill(to_index, x, y - 1, width, height, bitmap, mask);
-    fill(to_index, x, y + 1, width, height, bitmap, mask);
-  }
+    span_stack_push(stack, x1, x2, y);
+  } while (span_stack_next(stack, &x, &y));
 }
 
 /* Fill - change the color of a blob
@@ -396,28 +444,28 @@ static void fill_8(/* in */ unsigned char *to_index,
                    /* in/out */ unsigned char *mask)
 {
   int x1, x2;
+  g_autoptr(GArray) stack = g_array_new(FALSE, FALSE, sizeof(span_frame));
 
-  if (y < 0 || y >= height || mask[y * width + x] != 2)
-    return;
+  do {
+    if (y < 0 || y >= height || mask[y * width + x] != 2)
+      continue;
 
-  for (x1 = x; x1 >= 0 && mask[y * width + x1] == 2; x1--)
-    ;
-  x1++;
-  for (x2 = x; x2 < width && mask[y * width + x2] == 2; x2++)
-    ;
-  x2--;
+    for (x1 = x; x1 >= 0 && mask[y * width + x1] == 2; x1--)
+      ;
+    x1++;
+    for (x2 = x; x2 < width && mask[y * width + x2] == 2; x2++)
+      ;
+    x2--;
 
-  assert(x1 >= 0 && x2 < width);
+    assert(x1 >= 0 && x2 < width);
 
-  for (x = x1; x <= x2; x++) {
-    bitmap[(y * width + x)] = to_index[0];
-    mask[y * width + x] = 3;
-  }
+    for (x = x1; x <= x2; x++) {
+      bitmap[(y * width + x)] = to_index[0];
+      mask[y * width + x] = 3;
+    }
 
-  for (x = x1; x <= x2; x++) {
-    fill_8(to_index, x, y - 1, width, height, bitmap, mask);
-    fill_8(to_index, x, y + 1, width, height, bitmap, mask);
-  }
+    span_stack_push(stack, x1, x2, y);
+  } while (span_stack_next(stack, &x, &y));
 }
 
 /* Ignore - blob is big enough, mask it off
@@ -433,26 +481,26 @@ static void ignore(/* in */ int x,
                    /* in/out */ unsigned char *mask)
 {
   int x1, x2;
+  g_autoptr(GArray) stack = g_array_new(FALSE, FALSE, sizeof(span_frame));
 
-  if (y < 0 || y >= height || mask[y * width + x] != 1)
-    return;
+  do {
+    if (y < 0 || y >= height || mask[y * width + x] != 1)
+      continue;
 
-  for (x1 = x; x1 >= 0 && mask[y * width + x1] == 1; x1--)
-    ;
-  x1++;
-  for (x2 = x; x2 < width && mask[y * width + x2] == 1; x2++)
-    ;
-  x2--;
+    for (x1 = x; x1 >= 0 && mask[y * width + x1] == 1; x1--)
+      ;
+    x1++;
+    for (x2 = x; x2 < width && mask[y * width + x2] == 1; x2++)
+      ;
+    x2--;
 
-  assert(x1 >= 0 && x2 < width);
+    assert(x1 >= 0 && x2 < width);
 
-  for (x = x1; x <= x2; x++)
-    mask[y * width + x] = 3;
+    for (x = x1; x <= x2; x++)
+      mask[y * width + x] = 3;
 
-  for (x = x1; x <= x2; x++) {
-    ignore(x, y - 1, width, height, mask);
-    ignore(x, y + 1, width, height, mask);
-  }
+    span_stack_push(stack, x1, x2, y);
+  } while (span_stack_next(stack, &x, &y));
 }
 
 /* Recolor - conditionally change a feature's color to the closest color of all

@@ -1,0 +1,43 @@
+#!/bin/sh
+
+# SPDX-FileCopyrightText: © 2026 Peter Lemenkov
+#
+# SPDX-License-Identifier: CC0-1.0
+
+# Despeckling used a recursive scanline flood fill with one stack frame per
+# segment, so a single blob made of many segments overflowed the stack.
+# Generate such a blob: a serpentine of vertical lines every third column,
+# joined alternately at the top and at the bottom.  600x600 was enough to
+# crash on an 8 MB stack.
+
+. "`dirname "$0"`/../functions"
+
+DIR=$1
+N=600
+
+awk -v n=$N 'BEGIN {
+    print "P1"
+    print n, n
+    for (y = 0; y < n; y++) {
+        row = ""
+        for (x = 0; x < n; x++) {
+            v = (x % 3 == 0)
+            col = int(x / 3)
+            join = (col % 2) ? 0 : n - 1
+            if (y == join)
+                v = 1
+            row = row v
+        }
+        print row
+    }
+}' > $DIR/serpentine.pbm
+
+autotrace -despeckle-level 5 $DIR/serpentine.pbm -output-format svg -output-file $DIR/serpentine.svg
+RESULT=$?
+
+if [ $RESULT -eq 0 ] && [ -s $DIR/serpentine.svg ] ; then
+    rm -f $DIR/serpentine.pbm $DIR/serpentine.svg
+    ok
+else
+    fail "despeckling a large serpentine blob failed (exit $RESULT)"
+fi
