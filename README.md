@@ -60,7 +60,7 @@ See [INSTALL](INSTALL) for detailed instructions.
 - C compiler (GCC, Clang, MSVC)
 - libpng (optional, for PNG support)
 - ImageMagick or GraphicsMagick (optional, for additional formats)
-- GLib 2.x
+- GLib 2.58 or newer
 
 **Quick start:**
 ```bash
