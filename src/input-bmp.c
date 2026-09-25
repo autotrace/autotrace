@@ -754,12 +754,22 @@ static unsigned char *ReadImage(FILE *fd, int width, int height, unsigned char c
   return image;
 }
 
+/* Read little-endian integers from a header buffer.  memcpy plus GLib's byte
+   order macros avoid shifting a byte into the sign bit of an int, which is
+   undefined behaviour.  The results are what the shifts produced in
+   practice: 32-bit values are sign-extended into long. */
 static long ToL(unsigned char *puffer)
 {
-  return (puffer[0] | puffer[1] << 8 | puffer[2] << 16 | puffer[3] << 24);
+  guint32 v;
+
+  memcpy(&v, puffer, sizeof v);
+  return (gint32)GUINT32_FROM_LE(v);
 }
 
 static short ToS(unsigned char *puffer)
 {
-  return ((short)(puffer[0] | puffer[1] << 8));
+  guint16 v;
+
+  memcpy(&v, puffer, sizeof v);
+  return (gint16)GUINT16_FROM_LE(v);
 }
