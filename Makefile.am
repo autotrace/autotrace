@@ -36,7 +36,7 @@ EXTRA_DIST=$(man_MANS) \
 	   src/output-pstoedit.c \
 	   src/output-pstoedit.h
 
-AUTOMAKE_OPTIONS = foreign no-dependencies
+AUTOMAKE_OPTIONS = foreign
 
 autotraceincludedir=$(includedir)/autotrace
 lib_LTLIBRARIES=libautotrace.la
