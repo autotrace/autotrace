@@ -94,3 +94,6 @@ src/*.c.smatch
 src/*.o
 src/.dirstamp
 stamp-*
+
+# Recorded output of the golden-file test, regardless of extension
+!tests/other-output-formats/expected/*
