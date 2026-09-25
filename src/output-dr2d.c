@@ -53,7 +53,6 @@ static struct Chunk *BuildBBOX(spline_list_type, int);
 static struct Chunk *BuildATTR(at_color, int, struct Chunk *);
 static int GetCMAPEntry(at_color, struct Chunk *);
 static int CountSplines(spline_list_type);
-static int SizeFloat(float, char *);
 static void FloatAsIEEEBytes(float, unsigned char *);
 /* static void ieee2flt(long *, float *); */
 static void flt2ieee(float *, unsigned char *);
@@ -287,10 +286,17 @@ static struct Chunk *BuildPPRF(char *Units, int Portrait, char *PageType, float 
     return NULL;
   }
 
-  ChunkSize = strlen("Units=") + strlen(Units) + 1;
-  ChunkSize += strlen("Portrait=") + (Portrait ? 4 : 5) + 1;
-  ChunkSize += strlen("PageType=") + strlen(PageType) + 1;
-  ChunkSize += strlen("GridSize=") + SizeFloat(GridSize, "%f") + 1;
+  /* The chunk is a sequence of NUL-terminated "Key=Value" strings. */
+  g_autofree char *units = g_strdup_printf("Units=%s", Units);
+  g_autofree char *portrait = g_strdup_printf("Portrait=%s", Portrait ? "True" : "False");
+  g_autofree char *pagetype = g_strdup_printf("PageType=%s", PageType);
+  g_autofree char *gridsize = g_strdup_printf("GridSize=%f", GridSize);
+  const char *fields[] = {units, portrait, pagetype, gridsize};
+  size_t i;
+
+  ChunkSize = 0;
+  for (i = 0; i < G_N_ELEMENTS(fields); i++)
+    ChunkSize += strlen(fields[i]) + 1;
 
   if ((PPRFData = (char *)malloc(ChunkSize)) == NULL) {
     fprintf(stderr, "Insufficient memory to allocate PPRF data\n");
@@ -299,13 +305,12 @@ static struct Chunk *BuildPPRF(char *Units, int Portrait, char *PageType, float 
   }
 
   PPRFPos = PPRFData;
-  sprintf(PPRFPos, "Units=%s", Units);
-  PPRFPos += strlen(PPRFPos) + 1;
-  sprintf(PPRFPos, "Portrait=%s", (Portrait ? "True" : "False"));
-  PPRFPos += strlen(PPRFPos) + 1;
-  sprintf(PPRFPos, "PageType=%s", PageType);
-  PPRFPos += strlen(PPRFPos) + 1;
-  sprintf(PPRFPos, "GridSize=%f", GridSize);
+  for (i = 0; i < G_N_ELEMENTS(fields); i++) {
+    size_t len = strlen(fields[i]) + 1;
+
+    memcpy(PPRFPos, fields[i], len);
+    PPRFPos += len;
+  }
 
   memcpy(PPRFChunk->ID, "PPRF", 4);
   PPRFChunk->Size = ChunkSize;
@@ -629,13 +634,6 @@ int output_dr2d_writer(FILE *file, gchar *name, int llx, int lly, int urx, int u
   FreeChunks(ChunkList, NumSplines);
 
   return 0;
-}
-
-static int SizeFloat(float f, char *Format)
-{
-  char FloatString[100];
-
-  return (sprintf(FloatString, Format, f));
 }
 
 static void FloatAsIEEEBytes(float value, unsigned char *bytes)
