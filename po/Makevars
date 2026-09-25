@@ -8,7 +8,7 @@ DOMAIN = $(PACKAGE)
 subdir = po
 top_builddir = ..
 
-XGETTEXT_OPTIONS = --keyword=_ --keyword=N_ --from-code=UTF-8 --add-comments=TRANSLATORS:
+XGETTEXT_OPTIONS = --keyword=_ --keyword=N_ --from-code=UTF-8 --add-comments=TRANSLATORS: --add-location=file
 
 COPYRIGHT_HOLDER = AutoTrace contributors
 PACKAGE_GNU = no
