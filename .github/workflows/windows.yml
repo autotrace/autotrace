@@ -5,22 +5,16 @@
 
 name: Building installer for Windows
 
+# The installers are built for every push to master and every tag; pull
+# requests are covered by the Windows build-and-test workflow instead.
 on:
   push:
+    branches:
+      - master
     tags:
       - '*'           # Push events to every tag not containing /
-  pull_request:
-    paths:
-      # Source code
-      - 'src/*.c'
-      - 'src/*.h'
-      # Build system
-      - 'configure.ac'
-      - 'Makefile.am'
-      - '**/Makefile.am'
-      - 'autogen.sh'
-      # Dependencies
-      - '.github/workflows/windows.yml'  # Re-run if workflow changes
+  # Allows you to run this workflow manually from the Actions tab
+  workflow_dispatch:
 
 jobs:
   build_windows_installer:
