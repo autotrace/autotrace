@@ -41,19 +41,15 @@ at_color *at_color_parse(const gchar *string, GError **err)
   }
 
   for (i = 0; i < 6; i++) {
-    char ch = string[i];
-    if (ch >= '0' && ch <= '9')
-      c[i] = ch - '0';
-    else if (ch >= 'A' && ch <= 'F')
-      c[i] = ch - 'A' + 10;
-    else if (ch >= 'a' && ch <= 'f')
-      c[i] = ch - 'a' + 10;
-    else {
+    int digit = g_ascii_xdigit_value(string[i]);
+
+    if (digit < 0) {
       g_set_error(&local_err, AT_ERROR, AT_ERROR_WRONG_COLOR_STRING,
                   _("wrong char in color string: %c"), string[i]);
       g_propagate_error(err, local_err);
       return NULL;
     }
+    c[i] = digit;
   }
   return at_color_new((unsigned char)(16 * c[0] + c[1]), (unsigned char)(16 * c[2] + c[3]),
                       (unsigned char)(16 * c[4] + c[5]));
