@@ -21,6 +21,7 @@
 
 #include <stdio.h>
 #include <string.h>
+#include "byteorder.h"
 #include "spline.h"
 #include <glib.h>
 
@@ -137,36 +138,18 @@ static int ColorLookUp(uint32_t colref, uint32_t *table, int len)
 
 static gboolean write32(FILE *fdes, uint32_t data)
 {
-  size_t count = 0;
-  uint8_t outch;
+  guchar buf[4];
 
-  outch = (uint8_t)(data & 0x0FF);
-  count += fwrite(&outch, 1, 1, fdes);
-
-  outch = (uint8_t)((data >> 8) & 0x0FF);
-  count += fwrite(&outch, 1, 1, fdes);
-
-  outch = (uint8_t)((data >> 16) & 0x0FF);
-  count += fwrite(&outch, 1, 1, fdes);
-
-  outch = (uint8_t)((data >> 24) & 0x0FF);
-  count += fwrite(&outch, 1, 1, fdes);
-
-  return (count == sizeof(uint32_t)) ? TRUE : FALSE;
+  at_put_u32le(buf, data);
+  return fwrite(buf, 1, sizeof buf, fdes) == sizeof buf;
 }
 
 static gboolean write16(FILE *fdes, uint16_t data)
 {
-  size_t count = 0;
-  uint8_t outch;
+  guchar buf[2];
 
-  outch = (uint8_t)(data & 0x0FF);
-  count += fwrite(&outch, 1, 1, fdes);
-
-  outch = (uint8_t)((data >> 8) & 0x0FF);
-  count += fwrite(&outch, 1, 1, fdes);
-
-  return (count == sizeof(uint16_t)) ? TRUE : FALSE;
+  at_put_u16le(buf, data);
+  return fwrite(buf, 1, sizeof buf, fdes) == sizeof buf;
 }
 
 /* EMF record-type function definitions */
