@@ -8,8 +8,11 @@
  */
 
 #include <stdio.h>
+#include <setjmp.h>
+#include <stdarg.h>
 #include "input-gf.h"
 #include "output-ugs.h"
+#include "logreport.h"
 #include <glib.h>
 
 #define WHITE 0
@@ -70,6 +73,10 @@ typedef struct _gf_font_t {
   long bbox_min_row;
   long bbox_max_row;
   gf_locator_t char_loc[256];
+  /* Error reporting: gf_fatal() reports through exp and unwinds to the
+     setjmp() in input_gf_reader().  */
+  at_exception_type *exp;
+  jmp_buf abort_jump;
 } gf_font_t;
 
 /* The characters are the most important information in the GF file. */
@@ -90,14 +97,35 @@ typedef struct {
 /* This is the pixel at [ROW,COL]. */
 #define PIXEL(s, r, c) (s)->bitmap[(r) * (s)->width + (c)]
 
+static void gf_fatal(gf_font_t *font, const char *format, ...) G_GNUC_NORETURN G_GNUC_PRINTF(2, 3);
+
+/* Report a truncated or malformed font and abandon reading it.  This used
+   to call exit(), which a library must not do; instead the error goes to
+   the caller's message handler and control returns to input_gf_reader(),
+   which cleans up.  */
+static void gf_fatal(gf_font_t *font, const char *format, ...)
+{
+  va_list args;
+  gchar *detail, *message;
+
+  va_start(args, format);
+  detail = g_strdup_vprintf(format, args);
+  va_end(args);
+
+  message = g_strdup_printf("%s: %s", font->input_filename, detail);
+  g_free(detail);
+  LOG("%s\n", message);
+  at_exception_fatal(font->exp, message);
+  g_free(message);
+  longjmp(font->abort_jump, 1);
+}
+
 static unsigned char get_byte(gf_font_t *font)
 {
   unsigned char b;
 
-  if (fread(&b, 1, 1, font->input_file) != 1) {
-    fprintf(stderr, "%s: read error\n", font->input_filename);
-    exit(-1);
-  }
+  if (fread(&b, 1, 1, font->input_file) != 1)
+    gf_fatal(font, "read error");
   return b;
 }
 
@@ -137,10 +165,8 @@ static unsigned long get_four(gf_font_t *font)
 
 static void move_relative(gf_font_t *font, long count)
 {
-  if (fseek(font->input_file, count, SEEK_CUR) < 0) {
-    fprintf(stderr, "%s: seek error\n", font->input_filename);
-    exit(-1);
-  }
+  if (fseek(font->input_file, count, SEEK_CUR) < 0)
+    gf_fatal(font, "seek error");
 }
 
 static unsigned char get_previous_byte(gf_font_t *font)
@@ -246,21 +272,14 @@ static void get_character_bitmap(gf_char_t *sym)
     /* The next non-NO_OP byte should be EOC. */
     while ((c = get_byte(sym->font)) == NO_OP)
       continue; /* do nothing */
-    if (c != EOC) {
-      fprintf(stderr, "%s: expected eoc (for a blank character), found %u\n",
-              sym->font->input_filename, c);
-      exit(-1);
-    }
+    if (c != EOC)
+      gf_fatal(sym->font, "expected eoc (for a blank character), found %u", c);
     return;
   }
 
   sym->height = height;
   sym->width = width;
   sym->bitmap = g_malloc0((gsize)width * height);
-  if (!sym->bitmap) {
-    fprintf(stderr, "%s: out of memory\n", sym->font->input_filename);
-    exit(-1);
-  }
 
   for (;;) {
     c = get_byte(sym->font);
@@ -290,8 +309,7 @@ static void get_character_bitmap(gf_char_t *sym)
           length = get_three(sym->font);
           break;
         default:
-          fprintf(stderr, "%s: invalid painting command %u\n", sym->font->input_filename, c);
-          exit(-1);
+          gf_fatal(sym->font, "invalid painting command %u", c);
         }
       }
 
@@ -332,8 +350,7 @@ static void get_character_bitmap(gf_char_t *sym)
         rows_to_skip = get_three(sym->font);
         break;
       default:
-        fprintf(stderr, "%s: invalid skip command %u\n", sym->font->input_filename, c);
-        exit(-1);
+        gf_fatal(sym->font, "invalid skip command %u", c);
       }
       cur_y -= rows_to_skip + 1;
       cur_x = sym->bbox_min_col;
@@ -353,9 +370,7 @@ static void get_character_bitmap(gf_char_t *sym)
       skip_specials(sym->font);
 
     } else {
-      fprintf(stderr, "%s: expected paint or skip or new_row, found %u\n",
-              sym->font->input_filename, c);
-      exit(-1);
+      gf_fatal(sym->font, "expected paint or skip or new_row, found %u", c);
     }
   }
 }
@@ -436,10 +451,6 @@ static void deblank(gf_char_t *sym)
       condensed.width = sym->width - white_on_left - white_on_right;
       condensed.height = sym->height - white_on_top - white_on_bottom;
       condensed.bitmap = g_malloc0((gsize)condensed.width * condensed.height);
-      if (!condensed.bitmap) {
-        fprintf(stderr, "%s: out of memory\n", sym->font->input_filename);
-        exit(-1);
-      }
       for (r = 0; r < condensed.height; r++)
         for (c = 0; c < condensed.width; c++) {
           PIXEL(&condensed, r, c) = PIXEL(sym, r + white_on_top, c + white_on_left);
@@ -460,7 +471,7 @@ static int gf_open(gf_font_t *font, char *filename)
   unsigned long post_ptr;
 
   font->input_filename = filename;
-  font->input_file = fopen(filename, "r");
+  font->input_file = fopen(filename, "rb");
   if (!font->input_file) {
     perror(filename);
     return 0;
@@ -639,6 +650,17 @@ at_bitmap input_gf_reader(gchar *filename, at_input_opts_type *opts, at_msg_func
   gf_font_t fontdata, *font = &fontdata;
   gf_char_t chardata, *sym = &chardata;
   unsigned int i, j, ptr;
+
+  font->exp = &exp;
+  font->input_file = NULL;
+  sym->bitmap = NULL;
+  if (setjmp(font->abort_jump)) {
+    /* gf_fatal() has already reported the error.  */
+    g_free(sym->bitmap);
+    if (font->input_file)
+      fclose(font->input_file);
+    return bitmap;
+  }
 
   if (!gf_open(font, filename)) {
     at_exception_fatal(&exp, "Cannot open input GF file");
