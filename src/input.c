@@ -34,8 +34,7 @@ static void at_input_format_free(at_input_format_entry *entry);
  * Helper functions
  */
 static void input_list_set(gpointer key, gpointer value, gpointer user_data);
-static void input_list_strlen(gpointer key, gpointer value, gpointer user_data);
-static void input_list_strcat(gpointer key, gpointer value, gpointer user_data);
+static void input_list_append(gpointer key, gpointer value, gpointer user_data);
 
 /**
  * at_input_init:
@@ -165,23 +164,10 @@ void at_input_list_free(const char **list)
 
 char *at_input_shortlist(void)
 {
-  gint length = 0, count;
-  char *list, *tmp;
-  g_hash_table_foreach(at_input_formats, input_list_strlen, &length);
-  count = g_hash_table_size(at_input_formats);
+  GString *list = g_string_new(NULL);
 
-  /* 2 for ", " */
-  length += (2 * count);
-  list = g_malloc(length + 1);
-  list[0] = '\0';
-
-  tmp = list;
-  g_hash_table_foreach(at_input_formats, input_list_strcat, &tmp);
-
-  /* remove final ", " */
-  g_return_val_if_fail(list[length - 2] == ',', NULL);
-  list[length - 2] = '\0';
-  return list;
+  g_hash_table_foreach(at_input_formats, input_list_append, list);
+  return g_string_free(list, FALSE);
 }
 
 static void input_list_set(gpointer key, gpointer value, gpointer user_data)
@@ -194,25 +180,11 @@ static void input_list_set(gpointer key, gpointer value, gpointer user_data)
   *list_ptr = &(list[2]);
 }
 
-static void input_list_strlen(gpointer key, gpointer value, gpointer user_data)
+static void input_list_append(gpointer key, gpointer value, gpointer user_data)
 {
-  gint *length;
-  g_return_if_fail(key);
-  g_return_if_fail(user_data);
+  GString *list = user_data;
 
-  length = user_data;
-  *length += strlen(key);
-}
-
-static void input_list_strcat(gpointer key, gpointer value, gpointer user_data)
-{
-  gchar **list_ptr;
-  gchar *list;
-  list_ptr = user_data;
-  list = *list_ptr;
-  strcat(list, key);
-  strcat(list, ", ");
-
-  /* 2 for ", " */
-  *list_ptr = list + strlen(key) + 2;
+  if (list->len > 0)
+    g_string_append(list, ", ");
+  g_string_append(list, key);
 }
