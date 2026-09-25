@@ -11,6 +11,7 @@
 #include <stdlib.h>
 #include <string.h>
 
+#include "byteorder.h"
 #include "spline.h"
 #include "color.h"
 #include "output-dr2d.h"
@@ -53,8 +54,6 @@ static struct Chunk *BuildATTR(at_color, int, struct Chunk *);
 static int GetCMAPEntry(at_color, struct Chunk *);
 static int CountSplines(spline_list_type);
 static int SizeFloat(float, char *);
-static void ShortAsBytes(int, unsigned char *);
-static void IntAsBytes(int, unsigned char *);
 static void FloatAsIEEEBytes(float, unsigned char *);
 /* static void ieee2flt(long *, float *); */
 static void flt2ieee(float *, unsigned char *);
@@ -236,9 +235,9 @@ static struct Chunk *BuildATTR(at_color colour, int StrokeOrFill, struct Chunk *
   ATTRData[1] = JT_ROUND;
   ATTRData[2] = 1;
   ATTRData[3] = 0;
-  ShortAsBytes(ColourIndex, ATTRData + 4);
-  ShortAsBytes(ColourIndex, ATTRData + 6);
-  ShortAsBytes(0, ATTRData + 8);
+  at_put_u16be(ATTRData + 4, ColourIndex);
+  at_put_u16be(ATTRData + 6, ColourIndex);
+  at_put_u16be(ATTRData + 8, 0);
   FloatAsIEEEBytes(LineThickness, ATTRData + 10);
 
   memcpy(ATTRChunk->ID, "ATTR", 4);
@@ -331,7 +330,7 @@ static struct Chunk *BuildLAYR()
     return NULL;
   }
 
-  ShortAsBytes(0, LAYRData);
+  at_put_u16be(LAYRData, 0);
   memset(LAYRData + 2, 0, 16);
   strcpy((char *)(LAYRData + 2), "Default layer");
   *(LAYRData + 18) = LF_ACTIVE | LF_DISPLAYED;
@@ -360,8 +359,8 @@ static struct Chunk *BuildDASH(void)
     return NULL;
   }
 
-  ShortAsBytes(1, DASHData);
-  ShortAsBytes(0, DASHData + 2);
+  at_put_u16be(DASHData, 1);
+  at_put_u16be(DASHData + 2, 0);
 
   memcpy(DASHChunk->ID, "DASH", 4);
   DASHChunk->Size = 4;
@@ -428,7 +427,7 @@ static struct Chunk **GeneratexPLY(struct Chunk *CMAP, spline_list_array_type sh
     PolyChunk->Size = PolySize;
     PolyChunk->Data = PolyData;
 
-    ShortAsBytes(NumPoints, PolyData);
+    at_put_u16be(PolyData, NumPoints);
     PolyPoint = 2;
 
     if (SPLINE_DEGREE(first) == LINEARTYPE) {
@@ -496,9 +495,9 @@ static void PushPolyIndicator(unsigned char *PolyData, int *PolyPoint, unsigned 
 
   PolyLocal = *PolyPoint;
 
-  IntAsBytes(INDICATOR, PolyData + PolyLocal);
+  at_put_u32be(PolyData + PolyLocal, INDICATOR);
   PolyLocal += 4;
-  IntAsBytes(flags, PolyData + PolyLocal);
+  at_put_u32be(PolyData + PolyLocal, flags);
 
   *PolyPoint = PolyLocal + 4;
 }
@@ -509,7 +508,7 @@ static void WriteChunk(FILE *file, struct Chunk *Chunk)
   int Size;
 
   Size = Chunk->Size;
-  IntAsBytes(Size, SizeBytes);
+  at_put_u32be(SizeBytes, Size);
 
   fwrite(Chunk->ID, 4, 1, file);
   fwrite(SizeBytes, 4, 1, file);
@@ -611,7 +610,7 @@ int output_dr2d_writer(FILE *file, gchar *name, int llx, int lly, int urx, int u
              (SizeChunk(LAYRChunk) + 8) + (SizeChunk(DASHChunk) + 8) + (SizeChunk(CMAPChunk) + 8) +
              TotalSizeChunks(ChunkList, NumSplines);
 
-  IntAsBytes(FORMSize, SizeBytes);
+  at_put_u32be(SizeBytes, FORMSize);
   fprintf(file, "FORM");
   fwrite(SizeBytes, 4, 1, file);
   fprintf(file, "DR2D");
@@ -637,20 +636,6 @@ static int SizeFloat(float f, char *Format)
   char FloatString[100];
 
   return (sprintf(FloatString, Format, f));
-}
-
-static void IntAsBytes(int value, unsigned char *bytes)
-{
-  *bytes = (unsigned char)((value >> 24) & 0xFF);
-  *(bytes + 1) = (unsigned char)((value >> 16) & 0xFF);
-  *(bytes + 2) = (unsigned char)((value >> 8) & 0xFF);
-  *(bytes + 3) = (unsigned char)(value & 0xFF);
-}
-
-static void ShortAsBytes(int value, unsigned char *bytes)
-{
-  *(bytes + 0) = (unsigned char)((value >> 8) & 0xFF);
-  *(bytes + 1) = (unsigned char)(value & 0xFF);
 }
 
 static void FloatAsIEEEBytes(float value, unsigned char *bytes)

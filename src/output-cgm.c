@@ -8,6 +8,7 @@
  * SPDX-License-Identifier: LGPL-2.1-or-later
  */
 
+#include "byteorder.h"
 #include "spline.h"
 #include "color.h"
 #include "output-cgm.h"
@@ -24,16 +25,10 @@
 
 static gboolean write16(FILE *fdes, uint16_t data)
 {
-  size_t count = 0;
-  uint8_t outch;
+  guchar buf[2];
 
-  outch = (uint8_t)((data >> 8) & 0x0FF);
-  count += fwrite(&outch, 1, 1, fdes);
-
-  outch = (uint8_t)(data & 0x0FF);
-  count += fwrite(&outch, 1, 1, fdes);
-
-  return (count == sizeof(uint16_t)) ? TRUE : FALSE;
+  at_put_u16be(buf, data);
+  return fwrite(buf, 1, sizeof buf, fdes) == sizeof buf;
 }
 
 static gboolean write8(FILE *fdes, uint8_t data)

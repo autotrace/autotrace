@@ -13,6 +13,7 @@
 #include <stdio.h>
 #include <string.h>
 
+#include "byteorder.h"
 #include "spline.h"
 #include <glib.h>
 
@@ -341,14 +342,11 @@ int writeILDAFrame(FILE *file, LaserFrame *f, int format)
     if (points + 1 == cpoints)
       b += 0x80; // set last point bit
 
-    cbuffer[0] = point->x >> 8;
-    cbuffer[1] = point->x & 255;
-    cbuffer[2] = point->y >> 8;
-    cbuffer[3] = point->y & 255;
+    at_put_u16be(&cbuffer[0], point->x);
+    at_put_u16be(&cbuffer[2], point->y);
 
     if (format == ILDA_3D_DATA) {
-      cbuffer[4] = point->z >> 8;
-      cbuffer[5] = point->z & 255;
+      at_put_u16be(&cbuffer[4], point->z);
       cbuffer[6] = b;
       cbuffer[7] = c;
       fwrite((char *)cbuffer, sizeof(char), 8, file);
@@ -372,15 +370,8 @@ int writeILDAHeader(FILE *file, unsigned int format, unsigned int datalength)
 
   memcpy(fhbuffer, ilda, 4);
 
-  fhbuffer[4] = (format >> 24) & 0xFF;
-  fhbuffer[5] = (format >> 16) & 0xFF;
-  fhbuffer[6] = (format >> 8) & 0xFF;
-  fhbuffer[7] = format & 0xFF;
-
-  fhbuffer[8] = (datalength >> 24) & 0xFF;
-  fhbuffer[9] = (datalength >> 16) & 0xFF;
-  fhbuffer[10] = (datalength >> 8) & 0xFF;
-  fhbuffer[11] = datalength & 0xFF;
+  at_put_u32be(&fhbuffer[4], format);
+  at_put_u32be(&fhbuffer[8], datalength);
 
   return fwrite((char *)fhbuffer, sizeof(char), ((format > 2) ? 12 : 8), file);
 }
@@ -409,12 +400,9 @@ int writeILDAFrameHeader(FILE *file, LaserFrame *f, int format, unsigned int fra
   if (f)
     cpoints = frame_point_count(f);
 
-  fhbuffer[16] = (cpoints >> 8) & 255;
-  fhbuffer[17] = cpoints & 255;
-  fhbuffer[18] = (frames >> 8) & 255;
-  fhbuffer[19] = frames & 255;
-  fhbuffer[20] = (cframes >> 8) & 255;
-  fhbuffer[21] = cframes & 255;
+  at_put_u16be(&fhbuffer[16], cpoints);
+  at_put_u16be(&fhbuffer[18], frames);
+  at_put_u16be(&fhbuffer[20], cframes);
   fhbuffer[22] = 0;
   fhbuffer[23] = 0;
 
@@ -433,10 +421,7 @@ int writeILDATrueColor(FILE *file, LaserFrame *f)
 
   writeILDAHeader(file, ILDA_TRUE_COLOR, (cpoints * 3) + 4);
 
-  cbuffer[0] = (cpoints >> 24) & 0xFF;
-  cbuffer[1] = (cpoints >> 16) & 0xFF;
-  cbuffer[2] = (cpoints >> 8) & 0xFF;
-  cbuffer[3] = cpoints & 0xFF;
+  at_put_u32be(cbuffer, cpoints);
 
   fwrite((char *)cbuffer, sizeof(char), 4, file);
 
@@ -465,10 +450,8 @@ int writeILDAColorTable(FILE *file)
   writeILDAHeader(file, ILDA_COLOR_TABLE, 0);
 
   strncpy((char *)(fhbuffer), (char *)emptys, 16);
-  fhbuffer[16] = (colors >> 8) & 255;
-  fhbuffer[17] = colors & 255;
-  fhbuffer[18] = (palette >> 8) & 255;
-  fhbuffer[19] = palette & 255;
+  at_put_u16be(&fhbuffer[16], colors);
+  at_put_u16be(&fhbuffer[18], palette);
   fhbuffer[20] = 0;
   fhbuffer[21] = 0;
   fhbuffer[22] = 0;
