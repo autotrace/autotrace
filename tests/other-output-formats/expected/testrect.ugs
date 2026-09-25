@@ -1,0 +1,31 @@
+symbol 0 design-size 0
+	advance-width 0
+	contour
+		path
+			dot-on 0 83
+			dot-on 0 0
+			dot-on 86 0
+			dot-on 86 83
+			dot-on 0 83
+		end path
+		path
+			dot-on 17 42
+			dot-on 17 13
+			dot-on 65 13
+			dot-on 65 42
+			dot-on 17 42
+		end path
+		path
+			dot-on 20 39
+			dot-on 20 16
+			dot-on 62 16
+			dot-on 62 39
+			dot-on 20 39
+		end path
+	end contour
+	left-bearing 0
+	right-bearing -87
+	ascend 84
+	descend 0
+end symbol
+

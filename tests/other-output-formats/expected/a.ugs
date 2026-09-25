@@ -1,0 +1,90 @@
+symbol 0 design-size 0
+	advance-width 0
+	contour
+		path
+			dot-on 0 150
+			dot-on 0 0
+			dot-on 150 0
+			dot-on 150 150
+			dot-on 0 150
+		end path
+		path
+			dot-on 10 140
+			dot-on 10 123
+			dot-on 26 123
+			dot-on 26 140
+			dot-on 10 140
+		end path
+		path
+			dot-on 26 140
+			dot-on 26 123
+			dot-on 10 123
+			dot-on 10 24
+			dot-on 43 24
+			dot-on 43 57
+			dot-on 93 57
+			dot-on 93 24
+			dot-on 126 24
+			dot-on 126 123
+			dot-on 110 123
+			dot-on 110 140
+			dot-on 26 140
+		end path
+		path
+			dot-on 110 140
+			dot-on 110 123
+			dot-on 126 123
+			dot-on 126 7
+			dot-on 143 7
+			dot-on 143 140
+			dot-on 110 140
+		end path
+		path
+			dot-on 43 123
+			dot-on 43 107
+			dot-on 93 107
+			dot-on 93 123
+			dot-on 43 123
+		end path
+		path
+			dot-on 43 107
+			dot-on 43 73
+			dot-on 93 73
+			dot-on 93 107
+			dot-on 43 107
+		end path
+		path
+			dot-on 43 57
+			dot-on 43 40
+			dot-on 93 40
+			dot-on 93 57
+			dot-on 43 57
+		end path
+		path
+			dot-on 43 40
+			dot-on 43 7
+			dot-on 93 7
+			dot-on 93 40
+			dot-on 43 40
+		end path
+		path
+			dot-on 10 24
+			dot-on 10 7
+			dot-on 43 7
+			dot-on 43 24
+			dot-on 10 24
+		end path
+		path
+			dot-on 93 24
+			dot-on 93 7
+			dot-on 126 7
+			dot-on 126 24
+			dot-on 93 24
+		end path
+	end contour
+	left-bearing 0
+	right-bearing -151
+	ascend 151
+	descend 0
+end symbol
+

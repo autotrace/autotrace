@@ -1,0 +1,115 @@
+<Units Upt>
+<ColorCatalog
+ <Color <ColorTag R015G015B045><ColorCyan 11><ColorMagenta 11><ColorYellow 0><ColorBlack 82>>
+ <Color <ColorTag Black><ColorCyan 0><ColorMagenta 0><ColorYellow 0><ColorBlack 100>>
+ <Color <ColorTag White><ColorCyan 0><ColorMagenta 0><ColorYellow 0><ColorBlack 0>>
+ <Color <ColorTag Red><ColorCyan 0><ColorMagenta 100><ColorYellow 100><ColorBlack 0>>
+ <Color <ColorTag R081G081B081><ColorCyan 0><ColorMagenta 0><ColorYellow 0><ColorBlack 68>>
+>
+<Frame
+ <Pen 15>
+ <Fill 15>
+ <PenWidth  0.2 pt>
+ <Separation 0>
+ <BRect  0.0 pt 0.0 pt 150.0 pt 150.0 pt>
+ <Polygon <Fill 0><Pen 15>
+  <ObColor `R081G081B081'>
+  <Point 0.00 1.00>
+  <Point 0.00 151.00>
+  <Point 150.00 151.00>
+  <Point 150.00 1.00>
+  <Point 0.00 1.00>
+  <Smoothed No>
+ >
+ <Polygon <Fill 0><Pen 15>
+  <ObColor `R081G081B081'>
+  <Point 10.00 11.00>
+  <Point 10.00 28.00>
+  <Point 26.00 28.00>
+  <Point 26.00 11.00>
+  <Point 10.00 11.00>
+  <Smoothed No>
+ >
+ <Polygon <Fill 0><Pen 15>
+  <ObColor `R081G081B081'>
+  <Point 26.00 11.00>
+  <Point 26.00 28.00>
+  <Point 10.00 28.00>
+  <Point 10.00 127.00>
+  <Point 43.00 127.00>
+  <Point 43.00 94.00>
+  <Point 93.00 94.00>
+  <Point 93.00 127.00>
+  <Point 126.00 127.00>
+  <Point 126.00 28.00>
+  <Point 110.00 28.00>
+  <Point 110.00 11.00>
+  <Point 26.00 11.00>
+  <Smoothed No>
+ >
+ <Polygon <Fill 0><Pen 15>
+  <ObColor `R081G081B081'>
+  <Point 110.00 11.00>
+  <Point 110.00 28.00>
+  <Point 126.00 28.00>
+  <Point 126.00 144.00>
+  <Point 143.00 144.00>
+  <Point 143.00 11.00>
+  <Point 110.00 11.00>
+  <Smoothed No>
+ >
+ <Polygon <Fill 0><Pen 15>
+  <ObColor `R081G081B081'>
+  <Point 43.00 28.00>
+  <Point 43.00 44.00>
+  <Point 93.00 44.00>
+  <Point 93.00 28.00>
+  <Point 43.00 28.00>
+  <Smoothed No>
+ >
+ <Polygon <Fill 0><Pen 15>
+  <ObColor `R081G081B081'>
+  <Point 43.00 44.00>
+  <Point 43.00 78.00>
+  <Point 93.00 78.00>
+  <Point 93.00 44.00>
+  <Point 43.00 44.00>
+  <Smoothed No>
+ >
+ <Polygon <Fill 0><Pen 15>
+  <ObColor `R081G081B081'>
+  <Point 43.00 94.00>
+  <Point 43.00 111.00>
+  <Point 93.00 111.00>
+  <Point 93.00 94.00>
+  <Point 43.00 94.00>
+  <Smoothed No>
+ >
+ <Polygon <Fill 0><Pen 15>
+  <ObColor `R081G081B081'>
+  <Point 43.00 111.00>
+  <Point 43.00 144.00>
+  <Point 93.00 144.00>
+  <Point 93.00 111.00>
+  <Point 43.00 111.00>
+  <Smoothed No>
+ >
+ <Polygon <Fill 0><Pen 15>
+  <ObColor `R081G081B081'>
+  <Point 10.00 127.00>
+  <Point 10.00 144.00>
+  <Point 43.00 144.00>
+  <Point 43.00 127.00>
+  <Point 10.00 127.00>
+  <Smoothed No>
+ >
+ <Polygon <Fill 0><Pen 15>
+  <ObColor `R081G081B081'>
+  <Point 93.00 127.00>
+  <Point 93.00 144.00>
+  <Point 126.00 144.00>
+  <Point 126.00 127.00>
+  <Point 93.00 127.00>
+  <Smoothed No>
+ >
+>

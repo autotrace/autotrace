@@ -1,0 +1,166 @@
+%!PS-Adobe-3.0
+%%Creator: pstoedit
+%%BoundingBox: (atend)
+%%Pages: (atend)
+%%EndComments
+%%BeginProlog
+/setPageSize { pop pop } def
+/ntranslate { neg exch neg exch translate } def
+/setshowparams { pop pop pop} def
+/awidthshowhex { dup /ASCIIHexDecode filter exch length 2 div cvi string readstring pop awidthshow } def
+/backendconstraints { pop pop } def
+/pstoedit.newfont { 80 string cvs  findfont  dup length dict begin {1 index /FID ne {def} {pop pop} ifelse} forall  /Encoding ISOLatin1Encoding def   dup 80 string cvs /FontName exch def  currentdict end  definefont pop } def
+/imagestring 1 string def
+%%EndProlog
+%%BeginSetup
+% textastext doflatten backendconstraints  
+1 0 backendconstraints
+%%EndSetup
+ 612 792 setPageSize
+ 0 setlinecap
+ 10.0 setmiterlimit
+ 0 setlinejoin
+ [ ] 0.0 setdash
+ 1.0 setlinewidth
+fill
+
+
+% 1 pathnumber
+% filledpath
+0.118 0.118 0.000 0.824 setcmykcolor
+newpath
+ 0 150 moveto
+ 0 0 lineto
+ 150 0 lineto
+ 150 150 lineto
+ 0 150 lineto
+closepath
+fill
+
+
+% 2 pathnumber
+% filledpath
+0.000 0.000 0.000 1.000 setcmykcolor
+newpath
+ 10 140 moveto
+ 10 123 lineto
+ 26 123 lineto
+ 26 140 lineto
+ 10 140 lineto
+closepath
+fill
+
+
+% 3 pathnumber
+% filledpath
+0.000 0.000 0.000 0.000 setcmykcolor
+newpath
+ 26 140 moveto
+ 26 123 lineto
+ 10 123 lineto
+ 10 24 lineto
+ 43 24 lineto
+ 43 57 lineto
+ 93 57 lineto
+ 93 24 lineto
+ 126 24 lineto
+ 126 123 lineto
+ 110 123 lineto
+ 110 140 lineto
+ 26 140 lineto
+closepath
+fill
+
+
+% 4 pathnumber
+% filledpath
+0.000 0.000 0.000 1.000 setcmykcolor
+newpath
+ 110 140 moveto
+ 110 123 lineto
+ 126 123 lineto
+ 126 7 lineto
+ 143 7 lineto
+ 143 140 lineto
+ 110 140 lineto
+closepath
+fill
+
+
+% 5 pathnumber
+% filledpath
+0.000 1.000 1.000 0.000 setcmykcolor
+newpath
+ 43 123 moveto
+ 43 107 lineto
+ 93 107 lineto
+ 93 123 lineto
+ 43 123 lineto
+closepath
+fill
+
+
+% 6 pathnumber
+% filledpath
+0.000 0.000 0.000 1.000 setcmykcolor
+newpath
+ 43 107 moveto
+ 43 73 lineto
+ 93 73 lineto
+ 93 107 lineto
+ 43 107 lineto
+closepath
+fill
+
+
+% 7 pathnumber
+% filledpath
+0.000 0.000 0.000 0.682 setcmykcolor
+newpath
+ 43 57 moveto
+ 43 40 lineto
+ 93 40 lineto
+ 93 57 lineto
+ 43 57 lineto
+closepath
+fill
+
+
+% 8 pathnumber
+% filledpath
+0.000 0.000 0.000 1.000 setcmykcolor
+newpath
+ 43 40 moveto
+ 43 7 lineto
+ 93 7 lineto
+ 93 40 lineto
+ 43 40 lineto
+closepath
+fill
+
+
+% 9 pathnumber
+% filledpath
+0.000 0.000 0.000 0.682 setcmykcolor
+newpath
+ 10 24 moveto
+ 10 7 lineto
+ 43 7 lineto
+ 43 24 lineto
+ 10 24 lineto
+closepath
+newpath
+ 93 24 moveto
+ 93 7 lineto
+ 126 7 lineto
+ 126 24 lineto
+ 93 24 lineto
+closepath
+fill
+showpage
+%%BoundingBox: 0 0 150 150
+%%Page: 1 1
+% normal end reached by pstoedit.pro
+%%Trailer
+%%Pages: 1
+%%EOF
