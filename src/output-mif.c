@@ -14,6 +14,7 @@
 #include "color.h"
 #include "output-mif.h"
 #include "logreport.h"
+#include "exception.h"
 #include "autotrace.h"
 #include <math.h>
 #include <glib.h>
@@ -117,8 +118,12 @@ int output_mif_writer(FILE *ps_file, gchar *name, int llx, int lly, int urx, int
       col_tbl[n_ctbl].tag = colorstring(curr_color.r, curr_color.g, curr_color.b);
       col_tbl[n_ctbl].c = curr_color;
       n_ctbl++;
-      if (n_ctbl > 255)
-        FATAL("MIF: too many colors: %d", n_ctbl);
+      if (n_ctbl > 255) {
+        at_exception_type exp = at_exception_new(msg_func, msg_data);
+
+        at_exception_fatal(&exp, "MIF: too many colors");
+        return -1;
+      }
     }
   }
 

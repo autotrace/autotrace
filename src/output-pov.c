@@ -8,6 +8,7 @@
  * SPDX-License-Identifier: LGPL-2.1-or-later
  */
 
+#include "exception.h"
 #include "spline.h"
 #include "color.h"
 #include "output-pov.h"
@@ -97,8 +98,12 @@ int output_pov_writer(FILE *pov_file, gchar *name, int llx, int lly, int urx, in
                       at_output_opts_type *opts, spline_list_array_type shape, at_msg_func msg_func,
                       gpointer msg_data, gpointer user_data)
 {
-  if (shape.centerline == TRUE)
-    FATAL("Povray output currently not supported for centerline method");
+  if (shape.centerline == TRUE) {
+    at_exception_type exp = at_exception_new(msg_func, msg_data);
+
+    at_exception_fatal(&exp, "Povray output currently not supported for centerline method");
+    return -1;
+  }
 
   out_splines(pov_file, shape);
 

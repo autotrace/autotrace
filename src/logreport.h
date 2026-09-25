@@ -11,6 +11,7 @@
 #ifndef LOGREPORT_H
 #define LOGREPORT_H
 
+#include <stdlib.h>
 #include <glib.h>
 
 #define LOG_DOMAIN "autotrace"
@@ -19,7 +20,18 @@
 #define DEBUG(...) g_debug(__VA_ARGS__)
 #define LOG(...) g_message(__VA_ARGS__)
 #define WARNING(...) g_warning(__VA_ARGS__)
-#define FATAL(...) g_error(__VA_ARGS__)
+
+/* For the command line program only: print the message and stop with exit
+   status 1.  Library code must not use this; it reports errors through
+   at_exception instead, so that the caller decides what happens.  */
+#define FATAL(...)                                                                                 \
+  G_STMT_START                                                                                     \
+  {                                                                                                \
+    g_printerr(__VA_ARGS__);                                                                       \
+    g_printerr("\n");                                                                              \
+    exit(EXIT_FAILURE);                                                                            \
+  }                                                                                                \
+  G_STMT_END
 
 /* Initialize logging system - call once at program startup */
 void init_logging(void);
