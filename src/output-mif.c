@@ -36,29 +36,26 @@ BboxT cbox;
 /*===========================================================================
   Return a color name based on RGB value
 ===========================================================================*/
-static const char *colorstring(int r, int g, int b)
+static gchar *colorstring(int r, int g, int b)
 {
-  static char buffer[15];
   if (r == 0 && g == 0 && b == 0)
-    return "Black";
+    return g_strdup("Black");
   else if (r == 255 && g == 0 && b == 0)
-    return "Red";
+    return g_strdup("Red");
   else if (r == 0 && g == 255 && b == 0)
-    return "Green";
+    return g_strdup("Green");
   else if (r == 0 && g == 0 && b == 255)
-    return "Blue";
+    return g_strdup("Blue");
   else if (r == 255 && g == 255 && b == 0)
-    return "Yellow";
+    return g_strdup("Yellow");
   else if (r == 255 && g == 0 && b == 255)
-    return "Magenta";
+    return g_strdup("Magenta");
   else if (r == 0 && g == 255 && b == 255)
-    return "Cyan";
+    return g_strdup("Cyan");
   else if (r == 255 && g == 255 && b == 255)
-    return "White";
-  else {
-    sprintf(buffer, "R%.3dG%.3dB%.3d", r, g, b);
-  }
-  return buffer;
+    return g_strdup("White");
+  else
+    return g_strdup_printf("R%.3dG%.3dB%.3d", r, g, b);
 }
 
 /*===========================================================================
@@ -117,7 +114,7 @@ int output_mif_writer(FILE *ps_file, gchar *name, int llx, int lly, int urx, int
         break;
 
     if (i >= n_ctbl) {
-      col_tbl[n_ctbl].tag = g_strdup(colorstring(curr_color.r, curr_color.g, curr_color.b));
+      col_tbl[n_ctbl].tag = colorstring(curr_color.r, curr_color.g, curr_color.b);
       col_tbl[n_ctbl].c = curr_color;
       n_ctbl++;
       if (n_ctbl > 255)

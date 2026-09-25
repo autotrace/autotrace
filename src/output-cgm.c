@@ -124,9 +124,7 @@ int output_cgm_writer(FILE *cgm_file, gchar *name, int llx, int lly, int urx, in
   write16(cgm_file, CGM_METAFILEVERSION);
   write16(cgm_file, 0x0002);
 
-  g_autofree char *des = g_malloc(strlen("created by ") + strlen(version_string) + 1);
-  strcpy(des, "created by ");
-  strcat(des, version_string);
+  g_autofree char *des = g_strconcat("created by ", version_string, NULL);
   output_metafiledescription(cgm_file, des);
 
   write16(cgm_file, 0x1166); /* metafile element list */
