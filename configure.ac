@@ -91,7 +91,7 @@ dnl GraphicsMagick
 dnl
 AC_ARG_WITH(magick,
   [AS_HELP_STRING([--with-magick=LIB],
-   [select library to use for images (options: GraphicsMagick (default) or ImageMagick (<= 5.5.2))])],
+   [select library to use for images (options: GraphicsMagick (default) or ImageMagick)])],
    ,[with_magick=GraphicsMagick])
 
 HAVE_MAGICK=yes
