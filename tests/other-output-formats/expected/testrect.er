@@ -1,0 +1,116 @@
+#Elastic Reality Shape File
+
+
+ImageSize = {
+	Width = 86
+	Height = 83
+}
+
+Shape = {
+	#Shape Number 1
+	Group = Default
+	Type = Source
+	Roll = A
+	Opaque = True
+	Locked = False
+	Warp = True
+	CookieCut = True
+	ColorCorrect = True
+	Precision = 10
+	Closed = True
+	Tween = Linear
+	BPoints = 4
+	CPoints = 4
+	FormKey = {
+		Frame = 1
+		PointList = {
+			(0.000000, 1.000000), (0.000000, 1.000000), (0.000000, 1.000000),
+			(0.000000, 0.000000), (0.000000, 0.000000), (0.000000, 0.000000),
+			(1.000000, 0.000000), (1.000000, 0.000000), (1.000000, 0.000000),
+			(1.000000, 1.000000), (1.000000, 1.000000), (1.000000, 1.000000),
+		}
+
+	}
+
+	CorrKey = {
+		Frame = 1
+		PointList = {
+			0, 0.5, 1, 1.5
+		}
+
+	}
+
+}
+
+Shape = {
+	#Shape Number 2
+	Group = Default
+	Type = Source
+	Roll = A
+	Opaque = True
+	Locked = False
+	Warp = True
+	CookieCut = True
+	ColorCorrect = True
+	Precision = 10
+	Closed = True
+	Tween = Linear
+	BPoints = 4
+	CPoints = 4
+	FormKey = {
+		Frame = 1
+		PointList = {
+			(0.197674, 0.506024), (0.197674, 0.506024), (0.197674, 0.506024),
+			(0.197674, 0.156627), (0.197674, 0.156627), (0.197674, 0.156627),
+			(0.755814, 0.156627), (0.755814, 0.156627), (0.755814, 0.156627),
+			(0.755814, 0.506024), (0.755814, 0.506024), (0.755814, 0.506024),
+		}
+
+	}
+
+	CorrKey = {
+		Frame = 1
+		PointList = {
+			0, 0.5, 1, 1.5
+		}
+
+	}
+
+}
+
+Shape = {
+	#Shape Number 3
+	Group = Default
+	Type = Source
+	Roll = A
+	Opaque = True
+	Locked = False
+	Warp = True
+	CookieCut = True
+	ColorCorrect = True
+	Precision = 10
+	Closed = True
+	Tween = Linear
+	BPoints = 4
+	CPoints = 4
+	FormKey = {
+		Frame = 1
+		PointList = {
+			(0.232558, 0.469880), (0.232558, 0.469880), (0.232558, 0.469880),
+			(0.232558, 0.192771), (0.232558, 0.192771), (0.232558, 0.192771),
+			(0.720930, 0.192771), (0.720930, 0.192771), (0.720930, 0.192771),
+			(0.720930, 0.469880), (0.720930, 0.469880), (0.720930, 0.469880),
+		}
+
+	}
+
+	CorrKey = {
+		Frame = 1
+		PointList = {
+			0, 0.5, 1, 1.5
+		}
+
+	}
+
+}
+

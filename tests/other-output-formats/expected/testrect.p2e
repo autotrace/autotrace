@@ -1,0 +1,71 @@
+%!PS-Adobe-3.0
+%%Creator: pstoedit
+%%BoundingBox: (atend)
+%%Pages: (atend)
+%%EndComments
+%%BeginProlog
+/setPageSize { pop pop } def
+/ntranslate { neg exch neg exch translate } def
+/setshowparams { pop pop pop} def
+/awidthshowhex { dup /ASCIIHexDecode filter exch length 2 div cvi string readstring pop awidthshow } def
+/backendconstraints { pop pop } def
+/pstoedit.newfont { 80 string cvs  findfont  dup length dict begin {1 index /FID ne {def} {pop pop} ifelse} forall  /Encoding ISOLatin1Encoding def   dup 80 string cvs /FontName exch def  currentdict end  definefont pop } def
+/imagestring 1 string def
+%%EndProlog
+%%BeginSetup
+% textastext doflatten backendconstraints  
+1 0 backendconstraints
+%%EndSetup
+ 612 792 setPageSize
+ 0 setlinecap
+ 10.0 setmiterlimit
+ 0 setlinejoin
+ [ ] 0.0 setdash
+ 1.0 setlinewidth
+fill
+
+
+% 1 pathnumber
+% filledpath
+0.000 0.000 0.000 0.000 setcmykcolor
+newpath
+ 0 83 moveto
+ 0 0 lineto
+ 86 0 lineto
+ 86 83 lineto
+ 0 83 lineto
+closepath
+fill
+
+
+% 2 pathnumber
+% filledpath
+0.000 0.000 0.000 1.000 setcmykcolor
+newpath
+ 17 42 moveto
+ 17 13 lineto
+ 65 13 lineto
+ 65 42 lineto
+ 17 42 lineto
+closepath
+fill
+
+
+% 3 pathnumber
+% filledpath
+0.000 0.000 0.000 0.000 setcmykcolor
+newpath
+ 20 39 moveto
+ 20 16 lineto
+ 62 16 lineto
+ 62 39 lineto
+ 20 39 lineto
+closepath
+fill
+showpage
+%%BoundingBox: 0 0 86 83
+%%Page: 1 1
+% normal end reached by pstoedit.pro
+%%Trailer
+%%Pages: 1
+%%EOF

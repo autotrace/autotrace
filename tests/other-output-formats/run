@@ -1,0 +1,89 @@
+#!/bin/sh
+
+# SPDX-FileCopyrightText: © 2026 Peter Lemenkov
+#
+# SPDX-License-Identifier: CC0-1.0
+
+# Golden-file regression test for every native output writer.
+#
+# Each input image is traced into every format listed below and the result
+# is compared with the pre-recorded file in expected/.  Text formats are
+# compared after dropping the lines that legitimately differ between runs
+# (timestamps, the AutoTrace version string, the output file name).  Binary
+# formats are compared byte for byte.
+#
+# EMF and CGM embed the AutoTrace version string in their binary headers, so
+# their expected files have to be regenerated after a version bump.  To
+# regenerate every expected file from the current binary run:
+#
+#     REGENERATE=1 tests/other-output-formats/run tests/other-output-formats
+
+. "`dirname "$0"`/../functions"
+
+DIR=$1
+
+# Work inside the test directory so that the output file name embedded in
+# some formats (EMF, CGM) does not depend on how this script was invoked.
+cd "$DIR" || fail "cannot enter $DIR"
+
+TEXT_FORMATS="svg eps pdf epd er fig mif p2e pov sk ugs plt dxf"
+BINARY_FORMATS="emf cgm dr2d ild"
+INPUTS="testrect.pbm a.png"
+OPTS="-filter-iterations 0 -error-threshold 1"
+
+normalize() {
+    sed -e '/AutoTrace version/d' \
+        -e '/CreationDate/d' \
+        -e '/^#Date/d' \
+        -e '/Title:/d' "$1"
+}
+
+is_text() {
+    case " $TEXT_FORMATS " in
+        *" $1 "*) return 0 ;;
+        *) return 1 ;;
+    esac
+}
+
+failed=""
+for input in $INPUTS; do
+    base=`echo "$input" | sed 's/\.[^.]*$//'`
+    for fmt in $TEXT_FORMATS $BINARY_FORMATS; do
+        out="$base.$fmt"
+        log="$base.$fmt.log"
+        expected="expected/$base.$fmt"
+        rm -f "$out" "$log"
+
+        if ! autotrace $OPTS "$input" -output-format "$fmt" -output-file "$out" >"$log" 2>&1; then
+            failed="$failed $out(exit)"
+            continue
+        fi
+
+        if [ -n "$REGENERATE" ]; then
+            if is_text "$fmt"; then
+                normalize "$out" > "$expected"
+            else
+                cp "$out" "$expected"
+            fi
+            rm -f "$out" "$log"
+            continue
+        fi
+
+        if is_text "$fmt"; then
+            normalize "$out" | diff -q -w --strip-trailing-cr "$expected" - >/dev/null
+        else
+            cmp -s "$expected" "$out"
+        fi
+        if [ $? -eq 0 ] && [ -s "$out" ]; then
+            rm -f "$out" "$log"
+        else
+            # Keep the mismatching output and its log for inspection.
+            failed="$failed $out"
+        fi
+    done
+done
+
+if [ -n "$failed" ]; then
+    fail "mismatch:$failed"
+fi
+ok

@@ -1,0 +1,39 @@
+<Units Upt>
+<ColorCatalog
+ <Color <ColorTag White><ColorCyan 0><ColorMagenta 0><ColorYellow 0><ColorBlack 0>>
+ <Color <ColorTag Black><ColorCyan 0><ColorMagenta 0><ColorYellow 0><ColorBlack 100>>
+>
+<Frame
+ <Pen 15>
+ <Fill 15>
+ <PenWidth  0.2 pt>
+ <Separation 0>
+ <BRect  0.0 pt 0.0 pt 86.0 pt 83.0 pt>
+ <Polygon <Fill 0><Pen 15>
+  <ObColor `White'>
+  <Point 0.00 1.00>
+  <Point 0.00 84.00>
+  <Point 86.00 84.00>
+  <Point 86.00 1.00>
+  <Point 0.00 1.00>
+  <Smoothed No>
+ >
+ <Polygon <Fill 0><Pen 15>
+  <ObColor `White'>
+  <Point 17.00 42.00>
+  <Point 17.00 71.00>
+  <Point 65.00 71.00>
+  <Point 65.00 42.00>
+  <Point 17.00 42.00>
+  <Smoothed No>
+ >
+ <Polygon <Fill 0><Pen 15>
+  <ObColor `White'>
+  <Point 20.00 45.00>
+  <Point 20.00 68.00>
+  <Point 62.00 68.00>
+  <Point 62.00 45.00>
+  <Point 20.00 45.00>
+  <Smoothed No>
+ >
+>
