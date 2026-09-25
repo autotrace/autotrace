@@ -46,7 +46,6 @@ jobs:
           install: >-
             base-devel
             git
-            intltool
             mingw-w64-x86_64-autotools
             mingw-w64-x86_64-gettext-tools
             mingw-w64-x86_64-glib2

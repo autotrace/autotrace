@@ -23,11 +23,12 @@ jobs:
       - name: Install dependencies
         run: |
           sudo apt-get update
-          sudo apt-get install -y intltool gettext autoconf automake autopoint libtool libglib2.0-dev pkg-config
+          sudo apt-get install -y gettext autoconf automake autopoint libtool libglib2.0-dev pkg-config
 
-      - name: Run autogen.sh
+      - name: Run autogen.sh and configure
         run: |
             ./autogen.sh
+            ./configure --without-magick --without-pstoedit
 
       - name: Backup current POT file
         run: |
@@ -59,9 +60,9 @@ jobs:
             echo ""
             echo "Please run the following commands and commit the changes:"
             echo ""
-            echo "  cd po"
-            echo "  intltool-update --pot --gettext-package=autotrace"
-            echo "  git add autotrace.pot"
+            echo "  ./autogen.sh && ./configure --without-magick --without-pstoedit"
+            echo "  ./po/update-pot.sh"
+            echo "  git add po/autotrace.pot"
             echo "  git commit -m 'Update translation template (POT file)'"
             echo ""
             echo "status=failure" >> $GITHUB_OUTPUT

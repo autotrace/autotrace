@@ -87,7 +87,7 @@ If you want to test your translations locally:
 ```bash
 # Install AutoTrace build dependencies
 sudo apt-get install build-essential autoconf automake libtool \
-                     libglib2.0-dev libpng-dev intltool gettext
+                     libglib2.0-dev libpng-dev gettext
 ```
 
 ### Build and Test
@@ -127,18 +127,16 @@ printf(g_dpgettext2(NULL, "adjective", "Open"));
 
 ### Updating the Translation Template
 
-After adding or modifying translatable strings:
+After adding or modifying translatable strings (the tree has to be configured once, `./autogen.sh && ./configure`; `--without-magick --without-pstoedit` is enough for this):
 
 ```bash
-cd po
-./update-pot.sh
-git add autotrace.pot
+./po/update-pot.sh
+git add po/autotrace.pot
 git commit -m "Update translation template"
 ```
 
 The `update-pot.sh` script:
-- Extracts all translatable strings from the source code
-- Generates/updates the `autotrace.pot` template file
+- Runs `make autotrace.pot-update` in `po/`, i.e. gettext's own rules: the files listed in `po/POTFILES.in` are scanned with the options from `po/Makevars`
 - Adds license information for Weblate compliance
 
 ### CI Validation
@@ -146,9 +144,8 @@ The `update-pot.sh` script:
 Our CI automatically checks that the POT file is up-to-date on every pull request. If the check fails, simply run:
 
 ```bash
-cd po
-./update-pot.sh
-git add autotrace.pot
+./po/update-pot.sh
+git add po/autotrace.pot
 git commit --amend --no-edit
 git push --force-with-lease
 ```
@@ -170,7 +167,7 @@ If you create new source files with translatable strings, add them to `po/POTFIL
 echo "src/new-file.c" >> po/POTFILES.in
 ```
 
-Then run `./update-pot.sh` to regenerate the template.
+Then run `./po/update-pot.sh` to regenerate the template.
 
 ## Getting Help
 

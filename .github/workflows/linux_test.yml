@@ -53,7 +53,7 @@ jobs:
       - name: build and run tests packages with all featured readers
         run: |
             sudo apt update
-            sudo apt install -y gcc g++ libgraphicsmagick1-dev libpng-dev libexiv2-dev libtiff-dev libjpeg-dev libxml2-dev libbz2-dev libfreetype6-dev libpstoedit-dev autoconf automake libtool intltool autopoint
+            sudo apt install -y gcc g++ libgraphicsmagick1-dev libpng-dev libexiv2-dev libtiff-dev libjpeg-dev libxml2-dev libbz2-dev libfreetype6-dev libpstoedit-dev autoconf automake libtool gettext autopoint
             ./autogen.sh
             ./configure
             make
@@ -68,7 +68,7 @@ jobs:
       - name: build and run tests package against ImageMagick 6 only
         run: |
             sudo apt update
-            sudo apt install -y gcc g++ libmagickcore-6.q16-dev libpng-dev libexiv2-dev libtiff-dev libjpeg-dev libxml2-dev libbz2-dev libfreetype6-dev libpstoedit-dev autoconf automake libtool intltool autopoint
+            sudo apt install -y gcc g++ libmagickcore-6.q16-dev libpng-dev libexiv2-dev libtiff-dev libjpeg-dev libxml2-dev libbz2-dev libfreetype6-dev libpstoedit-dev autoconf automake libtool gettext autopoint
             ./autogen.sh
             ./configure --enable-magick-readers
             make
@@ -84,7 +84,7 @@ jobs:
       - name: build and run tests package against ImageMagick 7 only
         run: |
             sudo dnf update -y
-            sudo dnf install -y ImageMagick-devel autoconf automake gcc gcc-c++ gettext-devel glib2-devel intltool libpng-devel libstdc++-devel libtiff-devel libtool make pkgconf-pkg-config procps-ng pstoedit-devel which
+            sudo dnf install -y ImageMagick-devel autoconf automake gcc gcc-c++ gettext-devel glib2-devel libpng-devel libstdc++-devel libtiff-devel libtool make pkgconf-pkg-config procps-ng pstoedit-devel which
             ./autogen.sh
             ./configure --enable-magick-readers
             make
@@ -100,7 +100,7 @@ jobs:
       - name: build and run tests package against GraphicsMagick only
         run: |
             sudo dnf update -y
-            sudo dnf install -y GraphicsMagick-devel autoconf automake gcc gcc-c++ gettext-devel glib2-devel intltool libpng-devel libstdc++-devel libtiff-devel libtool make pkgconf-pkg-config procps-ng pstoedit-devel which
+            sudo dnf install -y GraphicsMagick-devel autoconf automake gcc gcc-c++ gettext-devel glib2-devel libpng-devel libstdc++-devel libtiff-devel libtool make pkgconf-pkg-config procps-ng pstoedit-devel which
             ./autogen.sh
             ./configure --enable-magick-readers
             make
@@ -116,7 +116,7 @@ jobs:
       - name: build and run tests package against pstoedit 4.00
         run: |
             sudo dnf update -y
-            sudo dnf install -y ImageMagick-devel autoconf automake gcc gcc-c++ gettext-devel glib2-devel intltool libpng-devel libstdc++-devel libtiff-devel libtool make pkgconf-pkg-config procps-ng pstoedit-devel which
+            sudo dnf install -y ImageMagick-devel autoconf automake gcc gcc-c++ gettext-devel glib2-devel libpng-devel libstdc++-devel libtiff-devel libtool make pkgconf-pkg-config procps-ng pstoedit-devel which
             ./autogen.sh
             ./configure --enable-magick-readers
             make

@@ -24,14 +24,12 @@ which autoreconf || {
 	exit 1
 }
 
-printf "%s" "checking for intltoolize... "
-which intltoolize || {
-	echo "*** No intltoolize found, please install it ***"
+printf "%s" "checking for autopoint... "
+which autopoint || {
+	echo "*** No autopoint found, please install gettext ***"
 	exit 1
 }
 
-echo "running autopoint --force"
-autopoint --force || exit $?
-
+# autoreconf runs autopoint itself for the po/ infrastructure.
 echo "running autoreconf --force --install --verbose"
-AUTOPOINT='intltoolize --automake --copy' autoreconf --force --install --verbose || exit $?
+autoreconf --force --install --verbose || exit $?

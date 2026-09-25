@@ -2,22 +2,35 @@
 # SPDX-License-Identifier: CC0-1.0
 # SPDX-FileCopyrightText: 2025 Peter Lemenkov
 #
-# Script to update the POT file with proper license information
+# Refresh po/autotrace.pot from the sources and add the header information
+# Weblate's libre hosting requires.
+#
+# The strings are extracted by gettext's own po/Makefile rules (settings in
+# po/Makevars, file list in po/POTFILES.in), so the tree has to be configured
+# once first: ./autogen.sh && ./configure
+# (--without-magick --without-pstoedit is enough for this).
 
 set -e
 
 cd "$(dirname "$0")"
 
-echo "Generating POT file using intltool-update..."
+if [ ! -f Makefile ]; then
+  echo "Error: po/Makefile not found; run ./autogen.sh && ./configure first" >&2
+  exit 1
+fi
 
-# Use intltool-update - it handles paths correctly
-intltool-update --pot --gettext-package=autotrace
+echo "Generating POT file..."
+make autotrace.pot-update
 
 # Verify POT was created
 if [ ! -f autotrace.pot ]; then
   echo "Error: Failed to generate autotrace.pot"
   exit 1
 fi
+
+# xgettext leaves the placeholder charset when no string is non-ASCII, but
+# the SPDX header added below is, and msgmerge then rejects the template.
+sed -i 's/charset=CHARSET/charset=UTF-8/' autotrace.pot
 
 # Add license information to the POT file header
 # This is important for Weblate's Libre hosting compliance

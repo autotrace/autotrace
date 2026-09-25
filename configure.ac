@@ -76,13 +76,12 @@ AM_SANITY_CHECK
 AC_PROG_INSTALL
 AC_CHECK_HEADERS(malloc.h)
 
-IT_PROG_INTLTOOL([0.50.1])
-AM_GNU_GETTEXT_VERSION([0.19.3])
+dnl Translations: plain GNU gettext.  The languages come from po/LINGUAS and
+dnl the xgettext settings from po/Makevars.
+AM_GNU_GETTEXT_REQUIRE_VERSION([0.19.8])
 AM_GNU_GETTEXT([external])
 AC_SUBST([GETTEXT_PACKAGE], [$PACKAGE_NAME])
 AC_DEFINE_UNQUOTED([GETTEXT_PACKAGE], "$GETTEXT_PACKAGE", [Define to the gettext package name.])
-ALL_LINGUAS="ja de"
-AM_GLIB_GNU_GETTEXT
 
 AC_CHECK_FUNCS([localtime_r])
 

@@ -54,7 +54,7 @@ jobs:
                 pkg update -f
                 pkg upgrade -y
                 pkg install -y gmake autoconf automake libtool pkgconf perl5 git
-                pkg install -y ImageMagick7 pstoedit png gettext-tools intltool glib p5-XML-Parser
+                pkg install -y ImageMagick7 pstoedit png gettext-tools glib
             run: |
                 ./autogen.sh
                 ./configure

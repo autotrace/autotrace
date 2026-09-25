@@ -13,7 +13,7 @@ security issues when using pstoedit.  For this, use `configure --without-magick
 perl -MCPAN -e 'install XML::Parser'
 perl -e "require XML::Parser"
 brew update
-brew install gettext intltool glib libtool autoconf automake pkg-config
+brew install gettext glib libtool autoconf automake pkg-config
 brew install graphicsmagick pstoedit libpng
 git clone https://github.com/autotrace/autotrace.git
 cd autotrace

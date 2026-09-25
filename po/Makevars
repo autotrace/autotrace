@@ -1,0 +1,25 @@
+# Makefile variables for the po directory (GNU gettext).
+#
+# SPDX-FileCopyrightText: © 2026 Peter Lemenkov
+#
+# SPDX-License-Identifier: CC0-1.0
+
+DOMAIN = $(PACKAGE)
+subdir = po
+top_builddir = ..
+
+XGETTEXT_OPTIONS = --keyword=_ --keyword=N_ --from-code=UTF-8 --add-comments=TRANSLATORS:
+
+COPYRIGHT_HOLDER = AutoTrace contributors
+PACKAGE_GNU = no
+MSGID_BUGS_ADDRESS = https://github.com/autotrace/autotrace/issues
+
+EXTRA_LOCALE_CATEGORIES =
+USE_MSGCTXT = no
+MSGMERGE_OPTIONS =
+MSGINIT_OPTIONS =
+
+# Weblate owns the .po files: never rewrite them as a side effect of a build
+# or of "make dist".  The template is refreshed explicitly with update-pot.sh.
+PO_DEPENDS_ON_POT = no
+DIST_DEPENDS_ON_UPDATE_PO = no

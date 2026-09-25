@@ -78,14 +78,14 @@ po/Makevars.template
 po/POTFILES
 po/Rules-quot
 po/boldquot.sed
-po/cat-id-tbl.c
 po/en@boldquot.header
 po/en@quot.header
+po/insert-header.sed
 po/insert-header.sin
-po/messages
 po/quot.sed
+po/remove-potcdate.sed
 po/remove-potcdate.sin
-po/stamp-cat-id
+po/stamp-po
 port
 release
 rpm.log
