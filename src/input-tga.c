@@ -75,15 +75,6 @@ struct tga_header {
   unsigned char descriptor;
 };
 
-static struct {
-  unsigned int extensionAreaOffset;
-  unsigned int developerDirectoryOffset;
-#define TGA_SIGNATURE "TRUEVISION-XFILE"
-  char signature[16];
-  char dot;
-  char null;
-} tga_footer;
-
 static at_bitmap ReadImage(FILE *fp, struct tga_header *hdr, at_exception_type *exp);
 at_bitmap input_tga_reader(gchar *filename, at_input_opts_type *opts, at_msg_func msg_func,
                            gpointer msg_data, gpointer user_data)
@@ -100,17 +91,9 @@ at_bitmap input_tga_reader(gchar *filename, at_input_opts_type *opts, at_msg_fun
     at_exception_fatal(&exp, "Cannot open input tga file");
   }
 
-  /* Check the footer. */
-  if (fseek(fp, 0L - (sizeof(tga_footer)), SEEK_END) ||
-      fread(&tga_footer, sizeof(tga_footer), 1, fp) != 1) {
-    LOG("TGA: Cannot read footer from \"%s\"\n", filename);
-    at_exception_fatal(&exp, "TGA: Cannot read footer");
-    goto cleanup;
-  }
+  /* Read the header. */
 
-  /* Check the signature. */
-
-  if (fseek(fp, 0, SEEK_SET) || fread(&hdr, sizeof(hdr), 1, fp) != 1) {
+  if (fread(&hdr, sizeof(hdr), 1, fp) != 1) {
     LOG("TGA: Cannot read header from \"%s\"\n", filename);
     at_exception_fatal(&exp, "TGA: Cannot read header");
     goto cleanup;
