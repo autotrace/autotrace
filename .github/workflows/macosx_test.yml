@@ -31,7 +31,6 @@ on:
       # Dependencies
       - '.github/workflows/macosx_test.yml'  # Re-run if workflow changes
 
-env:
   # Allows you to run this workflow manually from the Actions tab
   workflow_dispatch:
 
