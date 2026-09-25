@@ -15,6 +15,7 @@ on:
       - 'Makefile.am'
       - '**/Makefile.am'
       - 'autogen.sh'
+      - 'tests/**'
   pull_request:
     paths:
       # Source code
@@ -25,6 +26,7 @@ on:
       - 'Makefile.am'
       - '**/Makefile.am'
       - 'autogen.sh'
+      - 'tests/**'
       # Dependencies
       - '.github/workflows/windows_test.yml'  # Re-run if workflow changes
 
