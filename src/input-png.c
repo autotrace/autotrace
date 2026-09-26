@@ -17,13 +17,6 @@
 #include <png.h>
 #include "input-png.h"
 
-static png_bytep *read_png(png_structp png_ptr, png_infop info_ptr, at_input_opts_type *opts);
-
-/* for pre-1.0.6 versions of libpng */
-#ifndef png_jmpbuf
-#define png_jmpbuf(png_ptr) (png_ptr)->jmpbuf
-#endif
-
 static void handle_warning(png_structp png, const gchar *message)
 {
   LOG("PNG warning: %s", message);
@@ -74,81 +67,11 @@ static int init_structs(png_structp *png, png_infop *info, png_infop *end_info,
     }                                                                                              \
   } while (0)
 
-static int load_image(at_bitmap *image, FILE *stream, at_input_opts_type *opts,
-                      at_exception_type *exp)
-{
-  png_structp png;
-  png_infop info, end_info;
-  png_bytep *rows;
-  unsigned short width, height, row;
-  int pixel_size;
-  int result = 1;
-
-  if (!init_structs(&png, &info, &end_info, exp))
-    return 0;
-
-  png_init_io(png, stream);
-  CHECK_ERROR();
-
-  rows = read_png(png, info, opts);
-
-  width = (unsigned short)png_get_image_width(png, info);
-  height = (unsigned short)png_get_image_height(png, info);
-  if (png_get_color_type(png, info) == PNG_COLOR_TYPE_GRAY) {
-    pixel_size = 1;
-  } else {
-    pixel_size = 3;
-  }
-
-  *image = at_bitmap_init(NULL, width, height, pixel_size);
-  for (row = 0; row < height; row++, rows++) {
-    memcpy(AT_BITMAP_PIXEL(image, row, 0), *rows, width * pixel_size * sizeof(unsigned char));
-  }
-cleanup:
-  finalize_structs(png, info, end_info);
-  return result;
-}
-
-at_bitmap input_png_reader(gchar *filename, at_input_opts_type *opts, at_msg_func msg_func,
-                           gpointer msg_data, gpointer user_data)
-{
-  FILE *stream;
-  at_bitmap image = at_bitmap_init(0, 0, 0, 1);
-  at_exception_type exp = at_exception_new(msg_func, msg_data);
-
-  stream = fopen(filename, "rb");
-  if (!stream) {
-    LOG("Can't open \"%s\"\n", filename);
-    at_exception_fatal(&exp, "Cannot open input png file");
-    return image;
-  }
-
-  load_image(&image, stream, opts, &exp);
-  fclose(stream);
-
-  return image;
-}
-
-static png_bytep *read_image(png_structp png_ptr, png_infop info_ptr)
-{
-  unsigned width, height, y;
-  png_bytep *rows;
-
-  width = png_get_rowbytes(png_ptr, info_ptr);
-  height = png_get_image_height(png_ptr, info_ptr);
-  rows = (png_bytep *)png_malloc(png_ptr, height * sizeof(png_bytep));
-  for (y = 0; y < height; y++) {
-    rows[y] = (png_bytep)png_malloc(png_ptr, width);
-  }
-
-  png_read_image(png_ptr, rows);
-  return rows;
-}
-
-static png_bytep *read_png(png_structp png_ptr, png_infop info_ptr, at_input_opts_type *opts)
+/* Read the header and ask libpng to hand us plain 8-bit gray or RGB rows,
+   whatever the file stores.  */
+static void set_up_transforms(png_structp png_ptr, png_infop info_ptr, at_input_opts_type *opts)
 {
   png_color_16 my_bg;
-  png_bytep *rows;
 
   png_read_info(png_ptr, info_ptr);
 
@@ -180,8 +103,65 @@ static png_bytep *read_png(png_structp png_ptr, png_infop info_ptr, at_input_opt
   }
   png_set_interlace_handling(png_ptr);
   png_read_update_info(png_ptr, info_ptr);
+}
 
-  rows = read_image(png_ptr, info_ptr);
-  png_read_end(png_ptr, info_ptr);
-  return rows;
+static int load_image(at_bitmap *image, FILE *stream, at_input_opts_type *opts,
+                      at_exception_type *exp)
+{
+  png_structp png;
+  png_infop info, end_info;
+  g_autofree png_bytep *rows = NULL;
+  unsigned short width, height, row;
+  int pixel_size;
+  int result = 1;
+
+  if (!init_structs(&png, &info, &end_info, exp))
+    return 0;
+
+  png_init_io(png, stream);
+  CHECK_ERROR();
+
+  set_up_transforms(png, info, opts);
+  CHECK_ERROR();
+
+  width = (unsigned short)png_get_image_width(png, info);
+  height = (unsigned short)png_get_image_height(png, info);
+  pixel_size = (png_get_color_type(png, info) == PNG_COLOR_TYPE_GRAY) ? 1 : 3;
+  if (png_get_rowbytes(png, info) != (png_size_t)width * pixel_size) {
+    at_exception_fatal(exp, "PNG: unexpected row layout");
+    result = 0;
+    goto cleanup;
+  }
+
+  /* Let libpng write each row straight into the bitmap.  */
+  *image = at_bitmap_init(NULL, width, height, pixel_size);
+  rows = g_new(png_bytep, height);
+  for (row = 0; row < height; row++)
+    rows[row] = AT_BITMAP_PIXEL(image, row, 0);
+  png_read_image(png, rows);
+  png_read_end(png, info);
+
+cleanup:
+  finalize_structs(png, info, end_info);
+  return result;
+}
+
+at_bitmap input_png_reader(gchar *filename, at_input_opts_type *opts, at_msg_func msg_func,
+                           gpointer msg_data, gpointer user_data)
+{
+  FILE *stream;
+  at_bitmap image = at_bitmap_init(0, 0, 0, 1);
+  at_exception_type exp = at_exception_new(msg_func, msg_data);
+
+  stream = fopen(filename, "rb");
+  if (!stream) {
+    LOG("Can't open \"%s\"\n", filename);
+    at_exception_fatal(&exp, "Cannot open input png file");
+    return image;
+  }
+
+  load_image(&image, stream, opts, &exp);
+  fclose(stream);
+
+  return image;
 }
