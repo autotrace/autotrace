@@ -13,6 +13,7 @@
 #include <stdio.h>
 #include <string.h>
 
+#include "logreport.h"
 #include "byteorder.h"
 #include "spline.h"
 #include <glib.h>
@@ -778,15 +779,9 @@ int output_ild_writer(FILE *file, gchar *name, int llx, int lly, int urx, int ur
   /* Output ILDA */
   OutputILDA(file, llx, lly, urx, ury, shape);
 
-  if (file != stdout) {
-    printf("Wrote %d frame with %d points (%d anchors", sequence_frame_count(drawsequence),
-           frame_point_count(drawframe), inserted_anchor_points);
-    if (trueColorWrite)
-      printf(", True Color Header");
-    if (writeTable)
-      printf(", Color Table");
-    printf(").\n");
-  }
+  LOG("Wrote %d frame with %d points (%d anchors%s%s)", sequence_frame_count(drawsequence),
+      frame_point_count(drawframe), inserted_anchor_points,
+      trueColorWrite ? ", True Color Header" : "", writeTable ? ", Color Table" : "");
 
   /* Release the frame data and start afresh on the next call. */
   free_laser_sequence(drawsequence);
