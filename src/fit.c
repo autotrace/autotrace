@@ -388,8 +388,8 @@ static curve_list_array_type split_at_corners(pixel_outline_list_type pixel_list
 
     curve = first_curve;
 
-    if (INDEX_LIST_LENGTH(corner_list) ==
-        0) { /* No corners.  Use all of the pixel outline as the curve.  */
+    if (INDEX_LIST_LENGTH(corner_list) == 0) {
+      /* No corners.  Use all of the pixel outline as the curve.  */
       for (p = 0; p < O_LENGTH(pixel_o); p++)
         append_pixel(curve, O_COORDINATE(pixel_o, p));
 
@@ -886,6 +886,7 @@ static spline_list_type *fit_with_least_squares(curve_type curve, fitting_opts_t
   spline_list_type *spline_list = NULL;
   unsigned worst_point = 0;
   gfloat previous_error = FLT_MAX;
+  gboolean perfect_fit;
 
   DEBUG("\nFitting with least squares:\n");
 
@@ -940,7 +941,16 @@ static spline_list_type *fit_with_least_squares(curve_type curve, fitting_opts_t
   spline = best_spline;
   error = best_error;
 
-  if (error < fitting_opts->error_threshold && CURVE_CYCLIC(curve) == FALSE) {
+  /* The spline interpolates the curve's endpoints, so the error there is
+     only floating-point noise.  If find_error() still reports an endpoint
+     as the worst point (or found no worst point at all), the spline runs
+     through every point and no subdivision can improve on it.  Splitting
+     at an endpoint would hand the whole curve back to fit_curve() and
+     recurse until the stack overflows, which is what an error threshold
+     of 0 used to do (issue #247).  */
+  perfect_fit = worst_point == 0 || worst_point >= CURVE_LENGTH(curve) - 1;
+
+  if ((error < fitting_opts->error_threshold || perfect_fit) && CURVE_CYCLIC(curve) == FALSE) {
     /* The points were fitted with a
        spline.  We end up here whenever a fit is accepted.  We have
        one more job: see if the ``curve'' that was fit should really
@@ -969,7 +979,11 @@ static spline_list_type *fit_with_least_squares(curve_type curve, fitting_opts_t
     DEBUG("\nSubdividing (error %.3f):\n", error);
     DEBUG("  Original point: (%.3f,%.3f), #%u.\n", CURVE_POINT(curve, worst_point).x,
           CURVE_POINT(curve, worst_point).y, worst_point);
-    subdivision_index = worst_point;
+    /* A cyclic curve is always split at least once.  If it fits
+       perfectly there is no worst point to split at, so split it in the
+       middle; either way both halves are shorter than CURVE, which is
+       what bounds the recursion.  */
+    subdivision_index = perfect_fit ? CURVE_LENGTH(curve) / 2 : worst_point;
     DEBUG("  Final point: (%.3f,%.3f), #%u.\n", CURVE_POINT(curve, subdivision_index).x,
           CURVE_POINT(curve, subdivision_index).y, subdivision_index);
 

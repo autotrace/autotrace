@@ -1,0 +1,36 @@
+#!/bin/sh
+
+# SPDX-FileCopyrightText: © 2026 Peter Lemenkov
+#
+# SPDX-License-Identifier: CC0-1.0
+
+# An error threshold of 0 can never be met, so fit_with_least_squares()
+# subdivided every curve for ever and overflowed the stack.  The
+# subdivision is now bounded: a curve the spline already runs through is
+# accepted (or, if cyclic, split in the middle) instead of being split at
+# an endpoint, which left one half as long as the whole.
+
+. "`dirname "$0"`/../functions"
+
+DIR=$1
+
+autotrace -error-threshold 0 -output-format svg -output-file $DIR/outline.svg $DIR/a.png
+RESULT=$?
+if [ $RESULT -ne 0 ]; then
+    fail "outline tracing exited with $RESULT"
+fi
+
+autotrace -error-threshold 0 -centerline -output-format svg -output-file $DIR/centerline.svg $DIR/a.png
+RESULT=$?
+if [ $RESULT -ne 0 ]; then
+    fail "centerline tracing exited with $RESULT"
+fi
+
+# Sanity check: the threshold has to matter, otherwise this proves nothing.
+autotrace -output-format svg -output-file $DIR/default.svg $DIR/a.png
+if cmp -s $DIR/outline.svg $DIR/default.svg; then
+    fail "-error-threshold 0 and the default produce the same output"
+fi
+
+rm -f $DIR/outline.svg $DIR/centerline.svg $DIR/default.svg
+ok
