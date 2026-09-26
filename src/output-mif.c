@@ -20,7 +20,7 @@
 #include <glib.h>
 
 typedef struct {
-  char *tag;
+  gchar tag[16]; /* a name from named_colors, or R255G255B255 */
   at_color c;
 } ColorT;
 
@@ -37,26 +37,24 @@ BboxT cbox;
 /*===========================================================================
   Return a color name based on RGB value
 ===========================================================================*/
-static gchar *colorstring(int r, int g, int b)
+static const struct {
+  at_color c;
+  const gchar *name;
+} named_colors[] = {
+    {{0, 0, 0}, "Black"},    {{255, 0, 0}, "Red"},       {{0, 255, 0}, "Green"},
+    {{0, 0, 255}, "Blue"},   {{255, 255, 0}, "Yellow"},  {{255, 0, 255}, "Magenta"},
+    {{0, 255, 255}, "Cyan"}, {{255, 255, 255}, "White"},
+};
+
+static void colorstring(gchar *tag, gsize size, const at_color *c)
 {
-  if (r == 0 && g == 0 && b == 0)
-    return g_strdup("Black");
-  else if (r == 255 && g == 0 && b == 0)
-    return g_strdup("Red");
-  else if (r == 0 && g == 255 && b == 0)
-    return g_strdup("Green");
-  else if (r == 0 && g == 0 && b == 255)
-    return g_strdup("Blue");
-  else if (r == 255 && g == 255 && b == 0)
-    return g_strdup("Yellow");
-  else if (r == 255 && g == 0 && b == 255)
-    return g_strdup("Magenta");
-  else if (r == 0 && g == 255 && b == 255)
-    return g_strdup("Cyan");
-  else if (r == 255 && g == 255 && b == 255)
-    return g_strdup("White");
-  else
-    return g_strdup_printf("R%.3dG%.3dB%.3d", r, g, b);
+  for (gsize i = 0; i < G_N_ELEMENTS(named_colors); i++) {
+    if (at_color_equal(c, &named_colors[i].c)) {
+      g_strlcpy(tag, named_colors[i].name, size);
+      return;
+    }
+  }
+  g_snprintf(tag, size, "R%.3dG%.3dB%.3d", c->r, c->g, c->b);
 }
 
 /*===========================================================================
@@ -115,7 +113,7 @@ int output_mif_writer(FILE *ps_file, gchar *name, int llx, int lly, int urx, int
         break;
 
     if (i >= n_ctbl) {
-      col_tbl[n_ctbl].tag = colorstring(curr_color.r, curr_color.g, curr_color.b);
+      colorstring(col_tbl[n_ctbl].tag, sizeof(col_tbl[n_ctbl].tag), &curr_color);
       col_tbl[n_ctbl].c = curr_color;
       n_ctbl++;
       if (n_ctbl > 255) {
