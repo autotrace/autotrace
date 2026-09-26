@@ -33,6 +33,16 @@ if [ $RESULT -ne 1 ] || ! grep -q "expected paint or skip or new_row" $DIR/corru
 fi
 rm -f $DIR/corrupt.600gf $DIR/corrupt.svg $DIR/corrupt.err
 
+# A truncated font has no postamble; it must be rejected the same way, with
+# the reason in the message.
+head -c 300 $DIR/shapes.600gf > $DIR/truncated.600gf
+autotrace -input-format gf -charcode 65 $DIR/truncated.600gf -output-format svg -output-file $DIR/truncated.svg 2>$DIR/truncated.err
+RESULT=$?
+if [ $RESULT -ne 1 ] || ! grep -q "invalid signature" $DIR/truncated.err || grep -q "Cannot open input GF file" $DIR/truncated.err; then
+    failed="$failed truncated-font(exit=$RESULT)"
+fi
+rm -f $DIR/truncated.600gf $DIR/truncated.svg $DIR/truncated.err
+
 if [ -n "$failed" ]; then
     fail "unexpected output for:$failed"
 fi

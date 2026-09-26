@@ -8,6 +8,7 @@
  */
 
 #include <stdio.h>
+#include <errno.h>
 #include <setjmp.h>
 #include <stdarg.h>
 #include "input-gf.h"
@@ -120,6 +121,25 @@ static void gf_fatal(gf_font_t *font, const char *format, ...)
   longjmp(font->abort_jump, 1);
 }
 
+/* Report something odd about the font that does not prevent reading it.  */
+static void gf_warning(gf_font_t *font, const char *format, ...) G_GNUC_PRINTF(2, 3);
+
+static void gf_warning(gf_font_t *font, const char *format, ...)
+{
+  va_list args;
+  gchar *detail, *message;
+
+  va_start(args, format);
+  detail = g_strdup_vprintf(format, args);
+  va_end(args);
+
+  message = g_strdup_printf("%s: %s", font->input_filename, detail);
+  g_free(detail);
+  LOG("%s\n", message);
+  at_exception_warning(font->exp, message);
+  g_free(message);
+}
+
 static unsigned char get_byte(gf_font_t *font)
 {
   unsigned char b;
@@ -206,10 +226,8 @@ static void skip_specials(gf_font_t *font)
     case XXX3: {
       unsigned long val = get_three(font);
       // Ensure value fits in positive signed long
-      if (val > LONG_MAX) {
-        fprintf(stderr, "%s: skip length too large: %lu\n", font->input_filename, val);
-        return;
-      }
+      if (val > LONG_MAX)
+        gf_fatal(font, "skip length too large: %lu", val);
       move_relative(font, val);
     }
       continue;
@@ -465,37 +483,28 @@ static void deblank(gf_char_t *sym)
   }
 }
 
-static int gf_open(gf_font_t *font, char *filename)
+static void gf_open(gf_font_t *font, char *filename)
 {
   unsigned char b, c;
   unsigned long post_ptr;
 
   font->input_filename = filename;
   font->input_file = fopen(filename, "rb");
-  if (!font->input_file) {
-    perror(filename);
-    return 0;
-  }
+  if (!font->input_file)
+    gf_fatal(font, "%s", g_strerror(errno));
 
-  if (fseek(font->input_file, 0, SEEK_END) < 0) {
-    perror(filename);
-    return 0;
-  }
+  if (fseek(font->input_file, 0, SEEK_END) < 0)
+    gf_fatal(font, "%s", g_strerror(errno));
   /* Check that file is not empty, because we are trying
    * to seek before the beginning. */
-  if (ftell(font->input_file) <= 0) {
-    fprintf(stderr, "%s: empty file\n", font->input_filename);
-    return 0;
-  }
+  if (ftell(font->input_file) <= 0)
+    gf_fatal(font, "empty file");
 
   do
     b = get_previous_byte(font);
   while (b == GF_SIGNATURE);
-  if (b != GF_ID) {
-    fprintf(stderr, "%s: invalid signature (expected %u, found %u)\n", font->input_filename, GF_ID,
-            b);
-    return 0;
-  }
+  if (b != GF_ID)
+    gf_fatal(font, "invalid signature (expected %u, found %u)", GF_ID, b);
 
   post_ptr = get_previous_four(font);
   for (c = 0;; c++) {
@@ -508,11 +517,8 @@ static int gf_open(gf_font_t *font, char *filename)
 
   fseek(font->input_file, post_ptr, SEEK_SET);
   b = get_byte(font);
-  if (b != POST) {
-    fprintf(stderr, "%s: invalid font structure (expected %u, found %u)\n", font->input_filename,
-            POST, b);
-    return 0;
-  }
+  if (b != POST)
+    gf_fatal(font, "invalid font structure (expected %u, found %u)", POST, b);
   get_four(font); /* Ignore the special pointer. */
 
   font->design_size = get_four(font) / (double)(1L << 20);
@@ -547,14 +553,12 @@ static int gf_open(gf_font_t *font, char *filename)
       font->char_loc[c].h_escapement = get_byte(font);
 
     } else {
-      fprintf(stderr, "%s: invalid char_loc command (found %u)\n", font->input_filename, b);
-      return 0;
+      gf_fatal(font, "invalid char_loc command (found %u)", b);
     }
 
     font->char_loc[c].tfm_width = get_four(font);
     font->char_loc[c].char_pointer = get_four(font);
   }
-  return 1;
 }
 
 /*
@@ -574,10 +578,8 @@ static int gf_get_char(gf_font_t *font, gf_char_t *sym, unsigned char charcode)
   sym->h_escapement = loc->h_escapement;
   sym->tfm_width = loc->tfm_width;
 
-  if (fseek(font->input_file, loc->char_pointer, SEEK_SET) < 0) {
-    fprintf(stderr, "%s: seek error\n", font->input_filename);
-    return 0;
-  }
+  if (fseek(font->input_file, loc->char_pointer, SEEK_SET) < 0)
+    gf_fatal(font, "seek error");
 
   /* This reads the character starting from the current position
    * (but some specials might come first).
@@ -595,16 +597,14 @@ static int gf_get_char(gf_font_t *font, gf_char_t *sym, unsigned char charcode)
     if (lcode < 0 || lcode > 255) {
       /* Someone is trying to use a font with character codes
        * that are out of our range. */
-      fprintf(stderr, "%s: invalid character code %ld (expected %d)\n", font->input_filename, lcode,
-              charcode);
-      return 0;
+      gf_fatal(font, "invalid character code %ld (expected %d)", lcode, charcode);
     }
     sym->charcode = lcode;
 
     back_pointer = (long)get_four(font);
     if (back_pointer != -1)
-      fprintf(stderr, "%s: warning: character %u has a non-null back pointer (to %#lx)\n",
-              font->input_filename, sym->charcode, back_pointer);
+      gf_warning(font, "character %u has a non-null back pointer (to %#lx)", sym->charcode,
+                 back_pointer);
 
     sym->bbox_min_col = (long)get_four(font);
     sym->bbox_max_col = (long)get_four(font);
@@ -628,13 +628,10 @@ static int gf_get_char(gf_font_t *font, gf_char_t *sym, unsigned char charcode)
     return 0;
 
   default:
-    fprintf(stderr, "%s: error reading character (found %u)\n", font->input_filename, c);
-    return 0;
+    gf_fatal(font, "error reading character (found %u)", c);
   }
-  if (sym->charcode != charcode) {
-    fprintf(stderr, "%s: warning: character code mismatch, %d != %d\n", font->input_filename,
-            sym->charcode, charcode);
-  }
+  if (sym->charcode != charcode)
+    gf_warning(font, "character code mismatch, %d != %d", sym->charcode, charcode);
 
   get_character_bitmap(sym);
 
@@ -662,10 +659,7 @@ at_bitmap input_gf_reader(gchar *filename, at_input_opts_type *opts, at_msg_func
     return bitmap;
   }
 
-  if (!gf_open(font, filename)) {
-    at_exception_fatal(&exp, "Cannot open input GF file");
-    return bitmap;
-  }
+  gf_open(font, filename);
   if (opts->charcode == 0) {
     /* Find a first character in font file. */
     for (i = 0; i < 256; ++i)
