@@ -113,9 +113,7 @@ int at_output_add_handler_full(const gchar *suffix, const gchar *description, at
 
 at_spline_writer *at_output_get_handler(gchar *filename)
 {
-  char *ext = find_suffix(filename);
-  if (ext == NULL)
-    ext = "";
+  g_autofree gchar *ext = find_suffix(filename);
 
   return at_output_get_handler_by_suffix(ext);
 }

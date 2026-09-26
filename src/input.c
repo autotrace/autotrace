@@ -115,9 +115,7 @@ int at_input_add_handler_full(const gchar *suffix, const gchar *description, at_
 
 at_bitmap_reader *at_input_get_handler(gchar *filename)
 {
-  char *ext = find_suffix(filename);
-  if (ext == NULL)
-    ext = "";
+  g_autofree gchar *ext = find_suffix(filename);
 
   return at_input_get_handler_by_suffix(ext);
 }
