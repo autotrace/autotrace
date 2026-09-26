@@ -150,6 +150,7 @@ int install_input_magick_readers(void)
       at_input_add_handler_full(info->name, info->description, input_magick_reader, 0, info->name,
                                 NULL);
   }
+  RelinquishMagickMemory(infos);
 #endif // HAVE_GRAPHICSMAGICK
 
   DestroyExceptionInfo(exception_ptr);
