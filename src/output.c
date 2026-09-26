@@ -37,8 +37,7 @@ static void at_output_format_free(at_output_format_entry *entry);
 /*
  * Helper functions
  */
-static void output_list_set(gpointer key, gpointer value, gpointer user_data);
-static void output_list_append(gpointer key, gpointer value, gpointer user_data);
+static GList *output_sorted_suffixes(void);
 
 int at_output_init(void)
 {
@@ -141,18 +140,19 @@ at_spline_writer *at_output_get_handler_by_suffix(const gchar *suffix)
 
 const char **at_output_list_new(void)
 {
-  char **list, **tmp;
-  gint format_count;
-  gint list_count;
+  GList *suffixes = output_sorted_suffixes(), *l;
+  const char **list = g_new(const char *, 2 * g_list_length(suffixes) + 1);
+  gint i = 0;
 
-  format_count = g_hash_table_size(at_output_formats);
-  list_count = 2 * format_count;
-  list = g_new(gchar *, list_count + 1);
-  list[list_count] = NULL;
+  for (l = suffixes; l != NULL; l = l->next) {
+    at_output_format_entry *format = g_hash_table_lookup(at_output_formats, l->data);
 
-  tmp = list;
-  g_hash_table_foreach(at_output_formats, output_list_set, &tmp);
-  return (const char **)list;
+    list[i++] = l->data;
+    list[i++] = format->descr;
+  }
+  list[i] = NULL;
+  g_list_free(suffixes);
+  return list;
 }
 
 void at_output_list_free(const char **list)
@@ -162,29 +162,24 @@ void at_output_list_free(const char **list)
 
 char *at_output_shortlist(void)
 {
+  GList *suffixes = output_sorted_suffixes(), *l;
   GString *list = g_string_new(NULL);
 
-  g_hash_table_foreach(at_output_formats, output_list_append, list);
+  for (l = suffixes; l != NULL; l = l->next) {
+    if (list->len > 0)
+      g_string_append(list, ", ");
+    g_string_append(list, l->data);
+  }
+  g_list_free(suffixes);
   return g_string_free(list, FALSE);
 }
 
-static void output_list_set(gpointer key, gpointer value, gpointer user_data)
+/* The registered suffixes in alphabetical order, so that listings do not
+   depend on the hash table's internal order.  The strings belong to the
+   table; free only the list.  */
+static GList *output_sorted_suffixes(void)
 {
-  at_output_format_entry *format = value;
-  const char ***list_ptr = user_data;
-  const char **list = *list_ptr;
-  list[0] = key;
-  list[1] = format->descr;
-  *list_ptr = &(list[2]);
-}
-
-static void output_list_append(gpointer key, gpointer value, gpointer user_data)
-{
-  GString *list = user_data;
-
-  if (list->len > 0)
-    g_string_append(list, ", ");
-  g_string_append(list, key);
+  return g_list_sort(g_hash_table_get_keys(at_output_formats), (GCompareFunc)g_ascii_strcasecmp);
 }
 
 void at_spline_list_foreach(at_spline_list_type *list, AtSplineListForeachFunc func,

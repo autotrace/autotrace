@@ -33,8 +33,7 @@ static void at_input_format_free(at_input_format_entry *entry);
 /*
  * Helper functions
  */
-static void input_list_set(gpointer key, gpointer value, gpointer user_data);
-static void input_list_append(gpointer key, gpointer value, gpointer user_data);
+static GList *input_sorted_suffixes(void);
 
 /**
  * at_input_init:
@@ -143,18 +142,19 @@ at_bitmap_reader *at_input_get_handler_by_suffix(const gchar *suffix)
 
 const char **at_input_list_new(void)
 {
-  char **list, **tmp;
-  gint format_count;
-  gint list_count;
+  GList *suffixes = input_sorted_suffixes(), *l;
+  const char **list = g_new(const char *, 2 * g_list_length(suffixes) + 1);
+  gint i = 0;
 
-  format_count = g_hash_table_size(at_input_formats);
-  list_count = 2 * format_count;
-  list = g_new(gchar *, list_count + 1);
-  list[list_count] = NULL;
+  for (l = suffixes; l != NULL; l = l->next) {
+    at_input_format_entry *format = g_hash_table_lookup(at_input_formats, l->data);
 
-  tmp = list;
-  g_hash_table_foreach(at_input_formats, input_list_set, &tmp);
-  return (const char **)list;
+    list[i++] = l->data;
+    list[i++] = format->descr;
+  }
+  list[i] = NULL;
+  g_list_free(suffixes);
+  return list;
 }
 
 void at_input_list_free(const char **list)
@@ -164,27 +164,22 @@ void at_input_list_free(const char **list)
 
 char *at_input_shortlist(void)
 {
+  GList *suffixes = input_sorted_suffixes(), *l;
   GString *list = g_string_new(NULL);
 
-  g_hash_table_foreach(at_input_formats, input_list_append, list);
+  for (l = suffixes; l != NULL; l = l->next) {
+    if (list->len > 0)
+      g_string_append(list, ", ");
+    g_string_append(list, l->data);
+  }
+  g_list_free(suffixes);
   return g_string_free(list, FALSE);
 }
 
-static void input_list_set(gpointer key, gpointer value, gpointer user_data)
+/* The registered suffixes in alphabetical order, so that listings do not
+   depend on the hash table's internal order.  The strings belong to the
+   table; free only the list.  */
+static GList *input_sorted_suffixes(void)
 {
-  at_input_format_entry *format = value;
-  const char ***list_ptr = user_data;
-  const char **list = *list_ptr;
-  list[0] = key;
-  list[1] = format->descr;
-  *list_ptr = &(list[2]);
-}
-
-static void input_list_append(gpointer key, gpointer value, gpointer user_data)
-{
-  GString *list = user_data;
-
-  if (list->len > 0)
-    g_string_append(list, ", ");
-  g_string_append(list, key);
+  return g_list_sort(g_hash_table_get_keys(at_input_formats), (GCompareFunc)g_ascii_strcasecmp);
 }
