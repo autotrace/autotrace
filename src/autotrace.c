@@ -347,9 +347,17 @@ void at_splines_write(at_spline_writer *writer, FILE *writeto, gchar *file_name,
     opts = at_output_opts_new();
   }
 
+  /* The writers format numbers with printf(), which must produce a decimal
+     point whatever the caller's locale says.  Switch LC_NUMERIC to "C" for
+     the duration of the write only: a library must not leave its host's
+     locale changed.  */
+  g_autofree gchar *saved_locale = g_strdup(setlocale(LC_NUMERIC, NULL));
   setlocale(LC_NUMERIC, "C");
   (*writer->func)(writeto, file_name, llx, lly, urx, ury, opts, *splines, msg_func, msg_data,
                   writer->data);
+  if (saved_locale)
+    setlocale(LC_NUMERIC, saved_locale);
+
   if (new_opts)
     at_output_opts_free(opts);
 }
@@ -380,7 +388,8 @@ void autotrace_init(void)
   static int initialized = 0;
   if (!initialized) {
 #ifdef ENABLE_NLS
-    setlocale(LC_ALL, "");
+    /* Only register our message catalogue.  Selecting the locale is the
+       host program's decision, not the library's.  */
     bindtextdomain(PACKAGE, LOCALEDIR);
 #endif /* Def: ENABLE_NLS */
 
