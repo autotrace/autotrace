@@ -37,14 +37,13 @@
 /* We need to manipulate lists of array indices.  */
 
 typedef struct index_list {
-  unsigned *data;
-  unsigned length;
+  GArray *data; /* of unsigned */
 } index_list_type;
 
 /* The usual accessor macros.  */
-#define GET_INDEX(i_l, n) ((i_l).data[n])
-#define INDEX_LIST_LENGTH(i_l) ((i_l).length)
-#define GET_LAST_INDEX(i_l) ((i_l).data[INDEX_LIST_LENGTH(i_l) - 1])
+#define GET_INDEX(i_l, n) g_array_index((i_l).data, unsigned, n)
+#define INDEX_LIST_LENGTH(i_l) ((i_l).data->len)
+#define GET_LAST_INDEX(i_l) GET_INDEX(i_l, INDEX_LIST_LENGTH(i_l) - 1)
 
 static void append_index(index_list_type *, unsigned);
 static void free_index_list(index_list_type *);
@@ -235,7 +234,7 @@ static spline_list_type fit_curve_list(curve_list_type curve_list, fitting_opts_
      look at an unfiltered curve when computing tangents.  */
 
   DEBUG("\nFiltering curves:\n");
-  for (this_curve = 0; this_curve < curve_list.length; this_curve++) {
+  for (this_curve = 0; this_curve < CURVE_LIST_LENGTH(curve_list); this_curve++) {
     DEBUG("#%u: ", this_curve);
     filter(CURVE_LIST_ELT(curve_list, this_curve), fitting_opts);
   }
@@ -379,8 +378,7 @@ static curve_list_array_type split_at_corners(pixel_outline_list_type pixel_list
         corner_list = find_corners(pixel_o, fitting_opts, exception);
         fitting_opts->corner_surround = save_corner_surround;
       } else {
-        corner_list.length = 0;
-        corner_list.data = NULL;
+        corner_list = new_index_list();
       }
     }
 
@@ -390,7 +388,8 @@ static curve_list_array_type split_at_corners(pixel_outline_list_type pixel_list
 
     curve = first_curve;
 
-    if (corner_list.length == 0) { /* No corners.  Use all of the pixel outline as the curve.  */
+    if (INDEX_LIST_LENGTH(corner_list) ==
+        0) { /* No corners.  Use all of the pixel outline as the curve.  */
       for (p = 0; p < O_LENGTH(pixel_o); p++)
         append_pixel(curve, O_COORDINATE(pixel_o, p));
 
@@ -400,7 +399,7 @@ static curve_list_array_type split_at_corners(pixel_outline_list_type pixel_list
         CURVE_CYCLIC(curve) = TRUE;
     } else { /* Each curve consists of the points between (inclusive) each pair
                 of corners.  */
-      for (this_corner = 0; this_corner < corner_list.length - 1; this_corner++) {
+      for (this_corner = 0; this_corner < INDEX_LIST_LENGTH(corner_list) - 1; this_corner++) {
         curve_type previous_curve = curve;
         unsigned corner = GET_INDEX(corner_list, this_corner);
         unsigned next_corner = GET_INDEX(corner_list, this_corner + 1);
@@ -431,7 +430,7 @@ static curve_list_array_type split_at_corners(pixel_outline_list_type pixel_list
       }
     }
 
-    DEBUG(" [%u].\n", corner_list.length);
+    DEBUG(" [%u].\n", INDEX_LIST_LENGTH(corner_list));
     free_index_list(&corner_list);
 
     /* Add `curve' to the end of the list, updating the pointers in
@@ -1408,26 +1407,21 @@ static index_list_type new_index_list(void)
 {
   index_list_type index_list;
 
-  index_list.data = NULL;
-  INDEX_LIST_LENGTH(index_list) = 0;
+  index_list.data = g_array_new(FALSE, FALSE, sizeof(unsigned));
 
   return index_list;
 }
 
 static void free_index_list(index_list_type *index_list)
 {
-  if (INDEX_LIST_LENGTH(*index_list) > 0) {
-    g_free(index_list->data);
-    index_list->data = NULL;
-    INDEX_LIST_LENGTH(*index_list) = 0;
-  }
+  if (index_list->data)
+    g_array_free(index_list->data, TRUE);
+  index_list->data = NULL;
 }
 
 static void append_index(index_list_type *list, unsigned new_index)
 {
-  INDEX_LIST_LENGTH(*list)++;
-  list->data = g_realloc(list->data, INDEX_LIST_LENGTH(*list) * sizeof(unsigned));
-  list->data[INDEX_LIST_LENGTH(*list) - 1] = new_index;
+  g_array_append_val(list->data, new_index);
 }
 
 /* Turn an real point into a integer one.  */
