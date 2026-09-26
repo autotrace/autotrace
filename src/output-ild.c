@@ -759,13 +759,6 @@ int output_ild_writer(FILE *file, gchar *name, int llx, int lly, int urx, int ur
                       at_msg_func msg_func, gpointer msg_data, gpointer user_data)
 {
 
-#ifdef _WINDOWS
-  if (file == stdout) {
-    fprintf(stderr, "This driver couldn't write to stdout!\n");
-    return -1;
-  }
-#endif
-
   /* This should be user-adjustable. */
   write3DFrames = 0;
   trueColorWrite = 1;

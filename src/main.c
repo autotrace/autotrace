@@ -28,6 +28,10 @@
 #include <strings.h>
 #include <assert.h>
 #include <errno.h>
+#ifdef _WIN32
+#include <fcntl.h>
+#include <io.h>
+#endif
 
 #undef N_
 #include "intl.h"
@@ -120,9 +124,14 @@ int main(int argc, char *argv[])
   }
 
   /* Open output file */
-  if (!strcmp(output_name, ""))
+  if (!strcmp(output_name, "")) {
     output_file = stdout;
-  else {
+#ifdef _WIN32
+    /* stdout is a text stream on Windows and would turn every LF into
+       CR LF, which corrupts the binary formats.  */
+    _setmode(_fileno(stdout), _O_BINARY);
+#endif
+  } else {
     output_file = fopen(output_name, "wb");
     if (output_file == NULL) {
       perror(output_name);

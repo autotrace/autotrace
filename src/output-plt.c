@@ -202,12 +202,6 @@ int output_plt_writer(FILE *file, gchar *name, int llx, int lly, int urx, int ur
                       at_output_opts_type *opts, at_spline_list_array_type shape,
                       at_msg_func msg_func, gpointer msg_data, gpointer user_data)
 {
-#ifdef _WINDOWS
-  if (file == stdout) {
-    fprintf(stderr, "This driver couldn't write to stdout!\n");
-    return -1;
-  }
-#endif
 
   /* Output PLT */
   OutputPlt(file, llx, lly, urx, ury, shape);

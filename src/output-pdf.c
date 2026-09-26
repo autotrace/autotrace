@@ -207,13 +207,6 @@ int output_pdf_writer(FILE *pdf_file, gchar *name, int llx, int lly, int urx, in
   pdf_writer writer = {pdf_file, 0, {0}};
   pdf_writer *pdf = &writer;
 
-#ifdef _WINDOWS
-  if (pdf_file == stdout) {
-    fprintf(stderr, "This driver couldn't write to stdout!\n");
-    return -1;
-  }
-#endif
-
   output_pdf_header(pdf, llx, lly, urx, ury);
   output_pdf_content(pdf, shape);
   output_pdf_tailor(pdf);
