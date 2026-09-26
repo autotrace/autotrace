@@ -77,16 +77,8 @@ static struct Chunk *BuildCMAP(spline_list_array_type shape)
 
   MaxListSize = SPLINE_LIST_ARRAY_LENGTH(shape);
 
-  if ((CMAPChunk = (struct Chunk *)malloc(sizeof(struct Chunk))) == NULL) {
-    fprintf(stderr, "Insufficient memory to allocate CMAP chunk\n");
-    return NULL;
-  }
-
-  if ((CMAP = (unsigned char *)malloc(MaxListSize * 3)) == NULL) {
-    fprintf(stderr, "Insufficient memory to allocate colour map (size %d)\n", MaxListSize);
-    free(CMAPChunk);
-    return NULL;
-  }
+  CMAPChunk = g_new(struct Chunk, 1);
+  CMAP = g_malloc((gsize)MaxListSize * 3);
 
   ListSize = 0;
   this_list_length = SPLINE_LIST_ARRAY_LENGTH(shape);
@@ -158,16 +150,8 @@ static struct Chunk *BuildBBOX(spline_list_type list, int height)
   unsigned char *BBOXData;
   spline_type s;
 
-  if ((BBOXChunk = (struct Chunk *)malloc(sizeof(struct Chunk))) == NULL) {
-    fprintf(stderr, "Insufficient memory to allocate BBOX chunk\n");
-    return NULL;
-  }
-
-  if ((BBOXData = (unsigned char *)malloc(16)) == NULL) {
-    fprintf(stderr, "Insufficient memory to allocate BBOX data\n");
-    free(BBOXChunk);
-    return NULL;
-  }
+  BBOXChunk = g_new(struct Chunk, 1);
+  BBOXData = g_malloc(16);
 
   s = SPLINE_LIST_ELT(list, 0);
 
@@ -217,16 +201,8 @@ static struct Chunk *BuildATTR(at_color colour, int StrokeOrFill, struct Chunk *
   unsigned char *ATTRData;
   int ColourIndex;
 
-  if ((ATTRChunk = (struct Chunk *)malloc(sizeof(struct Chunk))) == NULL) {
-    fprintf(stderr, "Insufficient memory to allocate ATTR chunk\n");
-    return NULL;
-  }
-
-  if ((ATTRData = (unsigned char *)malloc(14)) == NULL) {
-    fprintf(stderr, "Insufficient memory to allocate ATTR data\n");
-    free(ATTRChunk);
-    return NULL;
-  }
+  ATTRChunk = g_new(struct Chunk, 1);
+  ATTRData = g_malloc(14);
 
   ColourIndex = GetCMAPEntry(colour, CMAPChunk);
 
@@ -251,16 +227,8 @@ static struct Chunk *BuildDRHD(int x1, int y1, int x2, int y2)
   struct Chunk *DRHDChunk;
   unsigned char *DRHDData;
 
-  if ((DRHDChunk = (struct Chunk *)malloc(sizeof(struct Chunk))) == NULL) {
-    fprintf(stderr, "Insufficient memory to allocate DRHD chunk\n");
-    return NULL;
-  }
-
-  if ((DRHDData = (unsigned char *)malloc(16)) == NULL) {
-    fprintf(stderr, "Insufficient memory to allocate DRHD data\n");
-    free(DRHDChunk);
-    return NULL;
-  }
+  DRHDChunk = g_new(struct Chunk, 1);
+  DRHDData = g_malloc(16);
 
   FloatAsIEEEBytes(x1 * XFactor, DRHDData);
   FloatAsIEEEBytes(y1 * YFactor, DRHDData + 4);
@@ -281,10 +249,7 @@ static struct Chunk *BuildPPRF(char *Units, int Portrait, char *PageType, float 
   char *PPRFPos;
   int ChunkSize;
 
-  if ((PPRFChunk = (struct Chunk *)malloc(sizeof(struct Chunk))) == NULL) {
-    fprintf(stderr, "Insufficient memory to allocate PPRF chunk\n");
-    return NULL;
-  }
+  PPRFChunk = g_new(struct Chunk, 1);
 
   /* The chunk is a sequence of NUL-terminated "Key=Value" strings. */
   g_autofree char *units = g_strdup_printf("Units=%s", Units);
@@ -298,11 +263,7 @@ static struct Chunk *BuildPPRF(char *Units, int Portrait, char *PageType, float 
   for (i = 0; i < G_N_ELEMENTS(fields); i++)
     ChunkSize += strlen(fields[i]) + 1;
 
-  if ((PPRFData = (char *)malloc(ChunkSize)) == NULL) {
-    fprintf(stderr, "Insufficient memory to allocate PPRF data\n");
-    free(PPRFChunk);
-    return NULL;
-  }
+  PPRFData = g_malloc(ChunkSize);
 
   PPRFPos = PPRFData;
   for (i = 0; i < G_N_ELEMENTS(fields); i++) {
@@ -324,16 +285,8 @@ static struct Chunk *BuildLAYR()
   struct Chunk *LAYRChunk;
   unsigned char *LAYRData;
 
-  if ((LAYRChunk = (struct Chunk *)malloc(sizeof(struct Chunk))) == NULL) {
-    fprintf(stderr, "Insufficient memory to allocate LAYR chunk\n");
-    return NULL;
-  }
-
-  if ((LAYRData = (unsigned char *)malloc(20)) == NULL) {
-    fprintf(stderr, "Insufficient memory to allocate LAYR data\n");
-    free(LAYRChunk);
-    return NULL;
-  }
+  LAYRChunk = g_new(struct Chunk, 1);
+  LAYRData = g_malloc(20);
 
   at_put_u16be(LAYRData, 0);
   memset(LAYRData + 2, 0, 16);
@@ -353,16 +306,8 @@ static struct Chunk *BuildDASH(void)
   struct Chunk *DASHChunk;
   unsigned char *DASHData;
 
-  if ((DASHChunk = (struct Chunk *)malloc(sizeof(struct Chunk))) == NULL) {
-    fprintf(stderr, "Insufficient memory to allocate DASH chunk\n");
-    return NULL;
-  }
-
-  if ((DASHData = (unsigned char *)malloc(4)) == NULL) {
-    fprintf(stderr, "Insufficient memory to allocate DASH data\n");
-    free(DASHChunk);
-    return NULL;
-  }
+  DASHChunk = g_new(struct Chunk, 1);
+  DASHData = g_malloc(4);
 
   at_put_u16be(DASHData, 1);
   at_put_u16be(DASHData + 2, 0);
@@ -390,11 +335,7 @@ static struct Chunk **GeneratexPLY(struct Chunk *CMAP, spline_list_array_type sh
   this_list_length = SPLINE_LIST_ARRAY_LENGTH(shape);
 
   /* We store three chunks for every spline (one for BBOX, one for ATTR, and one for xPLY) */
-  if ((ChunkList = (struct Chunk **)malloc(sizeof(struct Chunk) * (this_list_length * 3))) ==
-      NULL) {
-    fprintf(stderr, "Insufficient memory to allocate chunk list\n");
-    return NULL;
-  }
+  ChunkList = g_new(struct Chunk *, this_list_length * 3);
 
   ListPoint = 0;
   for (this_list = 0; this_list < this_list_length; this_list++) {
@@ -409,23 +350,13 @@ static struct Chunk **GeneratexPLY(struct Chunk *CMAP, spline_list_array_type sh
     ChunkList[ListPoint++] = BuildBBOX(list, height);
     ChunkList[ListPoint++] = BuildATTR(curr_color, StrokeOrFill, CMAP);
 
-    if ((PolyChunk = (struct Chunk *)malloc(sizeof(struct Chunk))) == NULL) {
-      fprintf(stderr, "Insufficient memory to allocate xPLY chunk\n");
-      FreeChunks(ChunkList, ListPoint);
-      return NULL;
-    }
+    PolyChunk = g_new(struct Chunk, 1);
 
     NumPoints = CountSplines(list);
 
     /* Store an extra 2 bytes for length header */
     PolySize = (NumPoints << 3) + 2;
-    if ((PolyData = (unsigned char *)malloc(PolySize)) == NULL) {
-      fprintf(stderr, "Insufficient memory to allocate xPLY data\n");
-      free(PolyChunk);
-      free(PolyData);
-      FreeChunks(ChunkList, ListPoint);
-      return NULL;
-    }
+    PolyData = g_malloc(PolySize);
 
     ChunkList[ListPoint++] = PolyChunk;
     memcpy(PolyChunk->ID, (StrokeOrFill) ? "OPLY" : "CPLY", 4);
@@ -561,8 +492,8 @@ static int SizeChunk(struct Chunk *ThisChunk)
 
 static void FreeChunk(struct Chunk *ThisChunk)
 {
-  free(ThisChunk->Data);
-  free(ThisChunk);
+  g_free(ThisChunk->Data);
+  g_free(ThisChunk);
 }
 
 static void FreeChunks(struct Chunk **ChunkList, int NumChunks)
@@ -632,6 +563,7 @@ int output_dr2d_writer(FILE *file, gchar *name, int llx, int lly, int urx, int u
   FreeChunk(CMAPChunk);
   WriteChunks(file, ChunkList, NumSplines);
   FreeChunks(ChunkList, NumSplines);
+  g_free(ChunkList);
 
   return 0;
 }
