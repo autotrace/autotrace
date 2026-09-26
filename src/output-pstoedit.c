@@ -14,55 +14,14 @@
 #include <stdio.h>
 #include <string.h>
 
-/* Forward declare pstoedit's plain C API functions.
- *
- * We cannot include <pstoedit/pstoedit.h> from C code because it contains
- * C++ declarations (std::ostream, etc.) that break C compilation. This has
- * always been an issue, though older pstoedit versions or GCC may have been
- * more lenient. Forward declaring just the C functions we need avoids the
- * C++ dependency entirely.
- */
+/* pstoedit.h is a C++ header; pstoedll.h is the C-compatible description of
+   the plain C entry points, meant for clients like us.  */
+#include <pstoedit/pstoedll.h>
 
-/* Driver description structure */
-/* Version 3.x struct (no formatGroup) */
-struct DriverDescription_S_v3 {
-  const char *symbolicname;
-  const char *explanation;
-  const char *suffix;
-  const char *additionalInfo;
-  int backendSupportsSubPaths;
-  int backendSupportsCurveto;
-  int backendSupportsMerging;
-  int backendSupportsText;
-  int backendSupportsImages;
-  int backendSupportsMultiplePages;
-};
-
-/* Version 4.x struct (with formatGroup) */
-struct DriverDescription_S_v4 {
-  const char *symbolicname;
-  const char *explanation;
-  const char *suffix;
-  const char *additionalInfo;
-  int backendSupportsSubPaths;
-  int backendSupportsCurveto;
-  int backendSupportsMerging;
-  int backendSupportsText;
-  int backendSupportsImages;
-  int backendSupportsMultiplePages;
-  int formatGroup;
-};
-
-extern int pstoedit_plainC(
-    int argc, const char *const argv[],
-    const char *const psinterpreter /* if 0, then pstoedit will look for one using whichpi() */
-);
-
-extern int pstoedit_checkversion(unsigned int callersversion);
-
-extern void *getPstoeditDriverInfo_plainC(void);
-
-extern void clearPstoeditDriverInfo_plainC(void *ptr);
+extern pstoedit_checkversion_func pstoedit_checkversion;
+extern pstoedit_plainC_func pstoedit_plainC;
+extern getPstoeditDriverInfo_plainC_func getPstoeditDriverInfo_plainC;
+extern clearPstoeditDriverInfo_plainC_func clearPstoeditDriverInfo_plainC;
 
 /* #define OUTPUT_PSTOEDIT_DEBUG */
 
@@ -73,8 +32,6 @@ static int output_pstoedit_writer(FILE *file, gchar *name, int llx, int lly, int
 static gboolean unusable_writer_p(const gchar *name);
 
 static FILE *make_temporary_file(char *template, char *mode);
-
-static gboolean is_pstoedit_v4 = FALSE;
 
 /* This output routine uses two temporary files to keep the
    both the command line syntax of autotrace and the
@@ -167,35 +124,17 @@ static FILE *make_temporary_file(char *template, char *mode)
   return fdopen(tmpfd, mode);
 }
 
-/* Helper to advance pointer by correct struct size */
-static inline void *dd_next(void *ptr)
-{
-  if (is_pstoedit_v4)
-    return (struct DriverDescription_S_v4 *)ptr + 1;
-  else
-    return (struct DriverDescription_S_v3 *)ptr + 1;
-}
-
-/* Generic pointer that works for both versions - fields we use are in same positions */
-typedef struct DriverDescription_S_v3 DriverDescription_S;
-
 int install_output_pstoedit_writers(void)
 {
-  DriverDescription_S *dd_start, *dd_tmp;
+  struct DriverDescription_S *dd_start, *dd_tmp;
 
-  /* Minimum pstoedit version we require (3.01).
-   * We need clearPstoeditDriverInfo_plainC which was added in version 301.
-   * Note: pstoeditdllversion has static linkage in pstoedit.h and cannot
-   * be referenced from C code.
-   */
-
-  if (pstoedit_checkversion(401U))
-    is_pstoedit_v4 = TRUE;
-  else if (pstoedit_checkversion(301U))
-    is_pstoedit_v4 = FALSE;
-  else {
-    WARNING("pstoedit version 3.01 or higher is required for pstoedit output; "
-            "pstoedit output formats are disabled");
+  /* The interface number is checked for equality: the struct layout below
+     is the one from the header we were compiled against, so the library
+     must be the same generation.  */
+  if (!pstoedit_checkversion(pstoeditdllversion)) {
+    WARNING("this autotrace was built for pstoedit interface %u, which the installed "
+            "pstoedit library does not provide; pstoedit output formats are disabled",
+            pstoeditdllversion);
     return 0;
   }
 
@@ -205,7 +144,7 @@ int install_output_pstoedit_writers(void)
     dd_tmp = dd_start;
     while (dd_tmp->symbolicname) {
       if (unusable_writer_p(dd_tmp->suffix)) {
-        dd_tmp = dd_next(dd_tmp);
+        dd_tmp++;
         continue;
       }
       if (!at_output_get_handler_by_suffix(dd_tmp->suffix))
@@ -215,7 +154,7 @@ int install_output_pstoedit_writers(void)
         at_output_add_handler_full(dd_tmp->symbolicname, dd_tmp->explanation,
                                    output_pstoedit_writer, 0, g_strdup(dd_tmp->symbolicname),
                                    g_free);
-      dd_tmp = dd_next(dd_tmp);
+      dd_tmp++;
     }
   }
   clearPstoeditDriverInfo_plainC(dd_start);
