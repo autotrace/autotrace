@@ -147,7 +147,7 @@ autotrace_SOURCES=\
 		src/atou.h				\
 		src/main.c
 
-AM_CPPFLAGS = $(GRAPHICSMAGICK_CFLAGS) $(IMAGEMAGICK_CFLAGS) $(LIBPNG_CFLAGS) $(LIBPSTOEDIT_CFLAGS) $(GLIB2_CFLAGS) -DLOCALEDIR=\""$(datadir)/locale"\"
+AM_CPPFLAGS = -DG_LOG_DOMAIN=\"autotrace\" $(GRAPHICSMAGICK_CFLAGS) $(IMAGEMAGICK_CFLAGS) $(LIBPNG_CFLAGS) $(LIBPSTOEDIT_CFLAGS) $(GLIB2_CFLAGS) -DLOCALEDIR=\""$(datadir)/locale"\"
 
 autotrace_LDADD =				\
 		libautotrace.la			\

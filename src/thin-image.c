@@ -104,7 +104,7 @@ void thin_image(at_bitmap *image, const at_color *bg, at_exception_type *exp)
       PIXEL_SET(p, ptr[n]);
       if (!PIXEL_EQUAL(p, bg_color)) {
         /* we have a new colour in the image */
-        LOG("Thinning colour (%x, %x, %x)\n", p[0], p[1], p[2]);
+        DEBUG("Thinning colour (%x, %x, %x)\n", p[0], p[1], p[2]);
         for (m = n - 1; m >= 0L; --m) {
           if (PIXEL_EQUAL(ptr[m], p))
             PIXEL_SET(ptr[m], bg_color);
@@ -127,7 +127,7 @@ void thin_image(at_bitmap *image, const at_color *bg, at_exception_type *exp)
     for (n = num_pixels - 1; n >= 0L; --n) {
       unsigned char c = ptr[n];
       if (c != bg_color) {
-        LOG("Thinning colour %x\n", c);
+        DEBUG("Thinning colour %x\n", c);
         for (m = n - 1; m >= 0L; --m)
           if (ptr[m] == c)
             ptr[m] = bg_color;
@@ -164,7 +164,7 @@ void thin3(at_bitmap *image, Pixel colour)
   bg_color[1] = background.g;
   bg_color[2] = background.b;
 
-  LOG(" Thinning image.....\n ");
+  DEBUG(" Thinning image.....\n ");
   xsize = AT_BITMAP_WIDTH(image);
   ysize = AT_BITMAP_HEIGHT(image);
   qb = g_malloc(xsize * sizeof(unsigned char));
@@ -227,7 +227,7 @@ void thin3(at_bitmap *image, Pixel colour)
         }
       }
     }
-    LOG("ThinImage: pass %d, %d pixels deleted\n", pc, count);
+    DEBUG("ThinImage: pass %d, %d pixels deleted\n", pc, count);
   }
 }
 
@@ -251,7 +251,7 @@ void thin1(at_bitmap *image, unsigned char colour)
   else
     bg_color = at_color_luminance(&background);
 
-  LOG(" Thinning image.....\n ");
+  DEBUG(" Thinning image.....\n ");
   xsize = AT_BITMAP_WIDTH(image);
   ysize = AT_BITMAP_HEIGHT(image);
   qb = g_malloc(xsize * sizeof(unsigned char));
@@ -310,6 +310,6 @@ void thin1(at_bitmap *image, unsigned char colour)
         }
       }
     }
-    LOG("thin1: pass %d, %d pixels deleted\n", pc, count);
+    DEBUG("thin1: pass %d, %d pixels deleted\n", pc, count);
   }
 }

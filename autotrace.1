@@ -41,7 +41,8 @@ autotrace \- converts bitmap image data into vector graphics
 .IR " real" ]
 .RB [ \-list-input-formats ]
 .RB [ \-list-output-formats ]
-.RB [ \-log ]
+.RB [ \-log
+.IR " level" ]
 .RB [ \-output-file
 .IR " file" ]
 .RB [ \-output-format
@@ -176,9 +177,13 @@ Send a list of the supported input formats to stderr.
 .B \-list-output-formats
 Send a list of the supported output formats to stderr.
 .TP
-.B \-log
-Send a detailed progress report to the file
-.IR inputfile .log.
+.BI \-log " level"
+Print diagnostics of the given level and above to stderr.
+.I level
+is one of
+.BR error ", " warning " (the default), " info " or " debug ;
+.B debug
+includes a detailed report of the tracing itself.
 .TP
 .BI \-output-file " file"
 Send the output to the specified file.
