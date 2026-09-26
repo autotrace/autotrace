@@ -35,7 +35,6 @@ static void out_splines(FILE *pov_file, spline_list_array_type shape)
 
   for (this_list = 0; this_list < SPLINE_LIST_ARRAY_LENGTH(shape); this_list++) {
     unsigned this_spline;
-    spline_type first;
     unsigned test_list;
     unsigned number = 0;
 
@@ -47,8 +46,6 @@ static void out_splines(FILE *pov_file, spline_list_array_type shape)
         break;
       number += SPLINE_LIST_LENGTH(testlist) * 4;
     }
-
-    first = SPLINE_LIST_ELT(list, 0);
 
     if (this_list > 0) {
       if (!at_color_equal(&list.color, &last_color)) {

@@ -1223,7 +1223,7 @@ static vector_type find_half_tangent(curve_type c, gboolean to_start_point, unsi
   int factor = to_start_point ? 1 : -1;
   unsigned tangent_index = to_start_point ? 0 : c->length - 1;
   at_real_coord tangent_point = CURVE_POINT(c, tangent_index);
-  vector_type tangent = {0.0, 0.0};
+  vector_type tangent = {0.0, 0.0, 0.0};
   unsigned int surround;
 
   if ((surround = CURVE_LENGTH(c) / 2) > tangent_surround)

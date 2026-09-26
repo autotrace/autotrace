@@ -363,7 +363,7 @@ void at_splines_free(at_splines_type *splines);
  * Input related
  * --------------------------------------------------------------------- */
 at_bitmap_reader *at_input_get_handler(gchar *filename);
-at_bitmap_reader *at_input_get_handler_by_suffix(gchar *suffix);
+at_bitmap_reader *at_input_get_handler_by_suffix(const gchar *suffix);
 
 const char **at_input_list_new(void);
 void at_input_list_free(const char **list);
@@ -376,7 +376,7 @@ char *at_input_shortlist(void);
  * Output related
  * --------------------------------------------------------------------- */
 at_spline_writer *at_output_get_handler(gchar *filename);
-at_spline_writer *at_output_get_handler_by_suffix(gchar *suffix);
+at_spline_writer *at_output_get_handler_by_suffix(const gchar *suffix);
 const char **at_output_list_new(void);
 void at_output_list_free(const char **list);
 
