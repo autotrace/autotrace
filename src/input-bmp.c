@@ -38,8 +38,8 @@ struct Bitmap_File_Head_Struct {
 } Bitmap_File_Head;
 
 struct Bitmap_Head_Struct {
-  unsigned long biWidth;   /* 12 */
-  unsigned long biHeight;  /* 16 */
+  long biWidth;            /* 12 */
+  long biHeight;           /* 16, negative for top-down rows */
   unsigned short biPlanes; /* 1A */
   unsigned short biBitCnt; /* 1C */
   unsigned long biCompr;   /* 1E */
@@ -125,6 +125,7 @@ at_bitmap input_bmp_reader(gchar *filename, at_input_opts_type *opts, at_msg_fun
   unsigned char buffer[128];
   int ColormapSize, rowbytes, Maps;
   gboolean Grey = FALSE;
+  gboolean topdown = FALSE;
   unsigned char ColorMap[256][3];
   at_bitmap image = at_bitmap_init(0, 0, 0, 1);
   unsigned char *image_storage;
@@ -366,6 +367,13 @@ at_bitmap input_bmp_reader(gchar *filename, at_input_opts_type *opts, at_msg_fun
     goto cleanup;
   }
 
+  /* A negative height means the rows are stored top-down instead of
+     bottom-up.  Read with the absolute height and flip the result.  */
+  if (Bitmap_Head.biHeight < 0) {
+    topdown = TRUE;
+    Bitmap_Head.biHeight = -Bitmap_Head.biHeight;
+  }
+
   if (Bitmap_Head.biPlanes != 1) {
     LOG("%s is not a valid BMP file", filename);
     at_exception_fatal(&exp, "bmp: invalid input file");
@@ -383,7 +391,7 @@ at_bitmap input_bmp_reader(gchar *filename, at_input_opts_type *opts, at_msg_fun
 
   if (((unsigned long)Bitmap_Head.biWidth) > (unsigned int)0x7fffffff / Bitmap_Head.biBitCnt ||
       ((unsigned long)Bitmap_Head.biWidth) >
-          ((unsigned int)0x7fffffff / abs(Bitmap_Head.biHeight)) / 4) {
+          ((unsigned int)0x7fffffff / Bitmap_Head.biHeight) / 4) {
     LOG("%s is not a valid BMP file", filename);
     at_exception_fatal(&exp, "bmp: invalid input file");
     goto cleanup;
@@ -423,6 +431,19 @@ at_bitmap input_bmp_reader(gchar *filename, at_input_opts_type *opts, at_msg_fun
   image_storage =
       ReadImage(fd, Bitmap_Head.biWidth, Bitmap_Head.biHeight, ColorMap, Bitmap_Head.biClrUsed,
                 Bitmap_Head.biBitCnt, Bitmap_Head.biCompr, rowbytes, Grey, masks, &exp);
+
+  if (topdown && image_storage) {
+    /* ReadImage() stored the rows bottom-up; swap them into place. */
+    size_t rowstride = (size_t)Bitmap_Head.biWidth * (Grey ? 1 : 3);
+    g_autofree unsigned char *row = g_malloc(rowstride);
+    long top, bottom;
+
+    for (top = 0, bottom = Bitmap_Head.biHeight - 1; top < bottom; top++, bottom--) {
+      memcpy(row, image_storage + top * rowstride, rowstride);
+      memcpy(image_storage + top * rowstride, image_storage + bottom * rowstride, rowstride);
+      memcpy(image_storage + bottom * rowstride, row, rowstride);
+    }
+  }
 
   image = at_bitmap_init(image_storage, (unsigned short)Bitmap_Head.biWidth,
                          (unsigned short)Bitmap_Head.biHeight, Grey ? 1 : 3);
