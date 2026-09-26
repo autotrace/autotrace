@@ -1,0 +1,30 @@
+#!/bin/sh
+
+# SPDX-FileCopyrightText: © 2026 Peter Lemenkov
+#
+# SPDX-License-Identifier: CC0-1.0
+
+# A BMP with a negative height stores its rows top-down.  The native reader
+# used the negative value as a size and aborted on such files.  The two
+# images here are the same picture stored bottom-up and top-down, so they
+# must trace to the same output.
+#
+# Note that a build with *Magick readers enabled (the default when a Magick
+# library is found) reads BMP through that library; only a build configured
+# with --without-magick or --disable-magick-readers exercises the native
+# reader this test is about.
+
+. "`dirname "$0"`/../functions"
+
+DIR=$1
+
+autotrace -input-format bmp $DIR/testrect.bmp -output-format svg -output-file $DIR/bottom-up.svg
+autotrace -input-format bmp $DIR/testrect.td.bmp -output-format svg -output-file $DIR/top-down.svg
+RESULT=$?
+
+if [ $RESULT -eq 0 ] && cmp -s $DIR/bottom-up.svg $DIR/top-down.svg && [ -s $DIR/top-down.svg ]; then
+    rm -f $DIR/bottom-up.svg $DIR/top-down.svg
+    ok
+else
+    fail "top-down BMP not read like its bottom-up twin (exit $RESULT)"
+fi
