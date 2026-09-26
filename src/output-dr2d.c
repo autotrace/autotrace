@@ -211,7 +211,9 @@ static struct Chunk *BuildATTR(at_color colour, int StrokeOrFill, struct Chunk *
   at_put_u16be(ATTRData + 4, ColourIndex);
   at_put_u16be(ATTRData + 6, ColourIndex);
   at_put_u16be(ATTRData + 8, 0);
-  FloatAsIEEEBytes(LineThickness, ATTRData + 10);
+  /* Like the coordinates, the thickness goes through the fixed-point
+     encoder and must be scaled the same way.  */
+  FloatAsIEEEBytes(LineThickness * (1 << FIXOFFS), ATTRData + 10);
 
   memcpy(ATTRChunk->ID, "ATTR", 4);
   ATTRChunk->Size = 14;
