@@ -104,3 +104,20 @@ jobs:
             ./configure --enable-magick-readers
             make
             make check
+
+  # The other jobs read BMP, TGA and PNM through the Magick library; this one
+  # keeps the library for the remaining formats but exercises autotrace's own
+  # readers for those three, which are otherwise never run in CI.
+  build_with_native_readers:
+    runs-on: ubuntu-latest
+    container: fedora:42
+    steps:
+      - uses: actions/checkout@v7
+      - name: build and run tests with the native BMP, TGA and PNM readers
+        run: |
+            sudo dnf update -y
+            sudo dnf install -y ImageMagick-devel autoconf automake gcc gcc-c++ gettext-devel glib2-devel libpng-devel libstdc++-devel libtiff-devel libtool make pkgconf-pkg-config procps-ng pstoedit-devel which
+            ./autogen.sh
+            ./configure --disable-magick-readers
+            make
+            make check
