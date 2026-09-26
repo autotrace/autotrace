@@ -12,12 +12,26 @@
 # Don't run from anywhere else than here!
 cd `dirname "$0"`
 
+# Export custom location Autotrace binary if supplied; otherwise use the one
+# built next to this directory.  Resolve it now, before leaving the tree.
+if test -z "$AUTOTRACE"; then
+    AUTOTRACE=`cd .. && pwd`/autotrace
+fi
+export AUTOTRACE
+
+# The tests write their output next to their inputs.  Under "make distcheck"
+# the source tree is read-only, so run them from a scratch copy, which also
+# keeps stray output out of the tree.
+work=`mktemp -d "${TMPDIR:-/tmp}/autotrace-tests.XXXXXX"` || exit 1
+trap 'rm -rf "$work"' EXIT
+cp -R functions github-* other-* "$work"/ || exit 1
+# cp keeps the source's mode bits, and distcheck's tree is read-only.
+chmod -R u+w "$work"
+cd "$work"
+
 # Cleanup test remnants.
 find . -name '*.log' -print -delete
 echo
-
-# Export custom location Autotrace binary if supplied.
-export AUTOTRACE
 # Set flag that we want verbose exit codes.
 export VERBOSE_EXITSTATUS=1
 
