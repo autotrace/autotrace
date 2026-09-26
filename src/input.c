@@ -123,7 +123,7 @@ at_bitmap_reader *at_input_get_handler(gchar *filename)
   return at_input_get_handler_by_suffix(ext);
 }
 
-at_bitmap_reader *at_input_get_handler_by_suffix(gchar *suffix)
+at_bitmap_reader *at_input_get_handler_by_suffix(const gchar *suffix)
 {
   at_input_format_entry *format;
 

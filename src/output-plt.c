@@ -140,7 +140,6 @@ static void OutputPlt(FILE *fdes, int llx, int lly, int urx, int ury, spline_lis
   spline_type curr_spline;
   int last_degree, index;
   float Scale = ((float)plu_inch) / LOGXPIXELS;
-  at_real_coord StartPoint;
   at_real_coord LastPoint;
 
   if (fdes == NULL)
@@ -156,7 +155,6 @@ static void OutputPlt(FILE *fdes, int llx, int lly, int urx, int ury, spline_lis
 
   LastPoint.x = 0;
   LastPoint.y = 0;
-  StartPoint = LastPoint;
 
   // visit each spline-list
   for (this_list = 0; this_list < SPLINE_LIST_ARRAY_LENGTH(shape); this_list++) {
@@ -175,7 +173,6 @@ static void OutputPlt(FILE *fdes, int llx, int lly, int urx, int ury, spline_lis
     curr_spline = SPLINE_LIST_ELT(curr_list, 0);
     LastPoint = START_POINT(curr_spline);
     WritePenUp(fdes, LastPoint.x, LastPoint.y);
-    StartPoint = LastPoint;
 
     // visit each spline
     for (this_spline = 0; this_spline < SPLINE_LIST_LENGTH(curr_list); this_spline++) {

@@ -721,7 +721,6 @@ static void GetEmfStats(EMFStats *stats, gchar *name, spline_list_array_type sha
 {
   unsigned int this_list, this_spline;
   int ncolors = 0;
-  int ncolorchng = 0;
   int nrecords = 0;
   int filesize = 0;
   uint32_t last_color = 0xFFFFFFFF, curr_color;
@@ -735,7 +734,6 @@ static void GetEmfStats(EMFStats *stats, gchar *name, spline_list_array_type sha
     curr_list = SPLINE_LIST_ARRAY_ELT(shape, this_list);
     curr_color = MAKE_COLREF(curr_list.color.r, curr_list.color.g, curr_list.color.b);
     if (this_list == 0 || curr_color != last_color) {
-      ncolorchng++;
       if (!SearchColor(color_list, curr_color)) {
         ncolors++;
         AddColor(&color_list, curr_color);
@@ -836,7 +834,7 @@ static void OutputEmf(FILE *fdes, EMFStats *stats, gchar *name, int width, int h
                       spline_list_array_type shape)
 {
   unsigned int this_list, this_spline;
-  int color_index, last_index;
+  int color_index, last_index = 0;
   uint32_t last_color = 0xFFFFFFFF, curr_color;
   spline_list_type curr_list;
   spline_type curr_spline;
@@ -925,10 +923,12 @@ static void OutputEmf(FILE *fdes, EMFStats *stats, gchar *name, int width, int h
       WriteFillPath(fdes);
   }
 
-  // cleanup DC
-  if (shape.centerline)
-    WriteDeleteObject(fdes, MK_PEN(last_index));
-  WriteDeleteObject(fdes, MK_BRUSH(last_index));
+  // cleanup DC; nothing was selected for an empty shape
+  if (SPLINE_LIST_ARRAY_LENGTH(shape) > 0) {
+    if (shape.centerline)
+      WriteDeleteObject(fdes, MK_PEN(last_index));
+    WriteDeleteObject(fdes, MK_BRUSH(last_index));
+  }
 
   // output EndOfMetafile
   WriteEndOfMetafile(fdes);

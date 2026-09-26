@@ -121,7 +121,7 @@ at_spline_writer *at_output_get_handler(gchar *filename)
   return at_output_get_handler_by_suffix(ext);
 }
 
-at_spline_writer *at_output_get_handler_by_suffix(gchar *suffix)
+at_spline_writer *at_output_get_handler_by_suffix(const gchar *suffix)
 {
   at_output_format_entry *format;
 

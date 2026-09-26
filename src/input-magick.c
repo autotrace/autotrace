@@ -31,7 +31,7 @@ static at_bitmap input_magick_reader(gchar *filename, at_input_opts_type *opts,
   Image *image = NULL;
   ImageInfo *image_info;
   ImageType image_type;
-  unsigned int i, j, point, np, runcount;
+  unsigned int i, j, point, np;
   unsigned char red, green, blue;
   at_bitmap bitmap;
 #if defined(HAVE_IMAGEMAGICK7)
@@ -72,7 +72,7 @@ static at_bitmap input_magick_reader(gchar *filename, at_input_opts_type *opts,
 
   bitmap = at_bitmap_init(NULL, image->columns, image->rows, np);
 
-  for (j = 0, runcount = 0, point = 0; j < image->rows; j++)
+  for (j = 0, point = 0; j < image->rows; j++)
     for (i = 0; i < image->columns; i++) {
 #ifdef HAVE_GRAPHICSMAGICK
       ExceptionInfo exception;
@@ -123,7 +123,7 @@ int install_input_magick_readers(void)
   ExceptionInfo exception;
   ExceptionInfo *exception_ptr = &exception;
 #endif
-  MagickInfo *info;
+  const MagickInfo *info;
   const MagickInfo **infos;
 #if defined(HAVE_IMAGEMAGICK7)
   MagickCoreGenesis("", MagickFalse);

@@ -56,7 +56,7 @@ AC_COMPILE_IFELSE(
 )
 
 # Make C17 standard required
-AC_SUBST([AM_CFLAGS], ["-std=c17"])
+AC_SUBST([AM_CFLAGS], ["-std=c17 -Wall"])
 
 PKG_PROG_PKG_CONFIG
 

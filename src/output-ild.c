@@ -338,7 +338,7 @@ int writeILDAFrameHeader(FILE *file, LaserFrame *f, int format, unsigned int fra
   if (f) {
     snprintf((char *)(fhbuffer), 17, "Frame #%04d     ", frames);
   } else {
-    strncpy((char *)(fhbuffer), (char *)emptys, 16);
+    memcpy(fhbuffer, emptys, 16); /* 16 bytes, no terminator */
   }
 
   if (f)
@@ -390,7 +390,7 @@ int writeILDAColorTable(FILE *file)
 
   writeILDAHeader(file, ILDA_COLOR_TABLE, 0);
 
-  strncpy((char *)(fhbuffer), (char *)emptys, 16);
+  memcpy(fhbuffer, emptys, 16); /* 16 bytes, no terminator */
   at_put_u16be(&fhbuffer[16], colors);
   at_put_u16be(&fhbuffer[18], palette);
   fhbuffer[20] = 0;
@@ -413,7 +413,7 @@ int writeILDAColorTable(FILE *file)
 int writeILDA(FILE *file, LaserSequence *s)
 {
   int format = (write3DFrames) ? ILDA_3D_DATA : ILDA_2D_DATA;
-  int frames = 0, cframes, palettes = 0;
+  int frames = 0, cframes;
   GList *l;
 
   if (writeTable) {

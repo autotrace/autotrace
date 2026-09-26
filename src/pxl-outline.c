@@ -826,6 +826,7 @@ static at_coord next_point(at_bitmap *bitmap, edge_type *edge, unsigned short *r
         break;
       }
       CHECK_FATAL();
+      /* fall through */
     case NO_EDGE:
     default:
       *edge = NO_EDGE;
@@ -962,6 +963,7 @@ static at_coord next_point(at_bitmap *bitmap, edge_type *edge, unsigned short *r
         break;
       }
       CHECK_FATAL();
+      /* fall through */
     case NO_EDGE:
     default:
       *edge = NO_EDGE;
