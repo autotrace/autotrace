@@ -410,16 +410,12 @@ at_bitmap input_bmp_reader(gchar *filename, at_input_opts_type *opts, at_msg_fun
 
   rowbytes = ((Bitmap_Head.biWidth * Bitmap_Head.biBitCnt - 1) / 32) * 4 + 4;
 
-#ifdef DEBUG
-  printf("\nSize: %u, Colors: %u, Bits: %u, Width: %u, Height: %u, Comp: %u, Zeile: %u\n",
-         Bitmap_File_Head.bfSize, Bitmap_Head.biClrUsed, Bitmap_Head.biBitCnt, Bitmap_Head.biWidth,
-         Bitmap_Head.biHeight, Bitmap_Head.biCompr, rowbytes);
-#endif
+  DEBUG("Size: %lu, Colors: %lu, Bits: %u, Width: %ld, Height: %ld, Comp: %lu, Zeile: %d",
+        Bitmap_File_Head.bfSize, Bitmap_Head.biClrUsed, Bitmap_Head.biBitCnt, Bitmap_Head.biWidth,
+        Bitmap_Head.biHeight, Bitmap_Head.biCompr, rowbytes);
 
   if (Bitmap_Head.biBitCnt <= 8) {
-#ifdef DEBUG
-    printf("Colormap read\n");
-#endif
+    DEBUG("Colormap read");
     /* Get the Colormap */
     if (!ReadColorMap(fd, ColorMap, ColormapSize, Maps, &Grey, &exp))
       goto cleanup;
