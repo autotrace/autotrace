@@ -1,0 +1,30 @@
+#!/bin/sh
+
+# SPDX-FileCopyrightText: © 2026 Peter Lemenkov
+#
+# SPDX-License-Identifier: CC0-1.0
+
+# Without -output-file the result goes to stdout, and it must be the same
+# bytes as with -output-file.  On Windows stdout is a text stream unless
+# the program switches it to binary mode, which turned every LF into CR LF
+# and corrupted binary formats such as DR2D.  Compare a text and a binary
+# format that do not embed the output file name.
+
+. "`dirname "$0"`/../functions"
+
+DIR=$1
+
+failed=""
+for fmt in svg dr2d; do
+    autotrace $DIR/../github-#4/testrect.pbm -output-format $fmt -output-file $DIR/file.$fmt
+    autotrace $DIR/../github-#4/testrect.pbm -output-format $fmt > $DIR/stdout.$fmt
+    if ! cmp -s $DIR/file.$fmt $DIR/stdout.$fmt || [ ! -s $DIR/stdout.$fmt ]; then
+        failed="$failed $fmt"
+    fi
+    rm -f $DIR/file.$fmt $DIR/stdout.$fmt
+done
+
+if [ -n "$failed" ]; then
+    fail "stdout output differs from -output-file output for:$failed"
+fi
+ok

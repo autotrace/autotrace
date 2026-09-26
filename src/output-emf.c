@@ -943,13 +943,6 @@ int output_emf_writer(FILE *file, gchar *name, int llx, int lly, int urx, int ur
 {
   EMFStats stats;
 
-#ifdef _WINDOWS
-  if (file == stdout) {
-    fprintf(stderr, "This driver couldn't write to stdout!\n");
-    return -1;
-  }
-#endif
-
   /* Get EMF stats */
   GetEmfStats(&stats, name, shape);
 
