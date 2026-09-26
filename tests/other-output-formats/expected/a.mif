@@ -13,7 +13,7 @@
  <Separation 0>
  <BRect  0.0 pt 0.0 pt 150.0 pt 150.0 pt>
  <Polygon <Fill 0><Pen 15>
-  <ObColor `R081G081B081'>
+  <ObColor `R015G015B045'>
   <Point 0.00 1.00>
   <Point 0.00 151.00>
   <Point 150.00 151.00>
@@ -22,7 +22,7 @@
   <Smoothed No>
  >
  <Polygon <Fill 0><Pen 15>
-  <ObColor `R081G081B081'>
+  <ObColor `Black'>
   <Point 10.00 11.00>
   <Point 10.00 28.00>
   <Point 26.00 28.00>
@@ -31,7 +31,7 @@
   <Smoothed No>
  >
  <Polygon <Fill 0><Pen 15>
-  <ObColor `R081G081B081'>
+  <ObColor `White'>
   <Point 26.00 11.00>
   <Point 26.00 28.00>
   <Point 10.00 28.00>
@@ -48,7 +48,7 @@
   <Smoothed No>
  >
  <Polygon <Fill 0><Pen 15>
-  <ObColor `R081G081B081'>
+  <ObColor `Black'>
   <Point 110.00 11.00>
   <Point 110.00 28.00>
   <Point 126.00 28.00>
@@ -59,7 +59,7 @@
   <Smoothed No>
  >
  <Polygon <Fill 0><Pen 15>
-  <ObColor `R081G081B081'>
+  <ObColor `Red'>
   <Point 43.00 28.00>
   <Point 43.00 44.00>
   <Point 93.00 44.00>
@@ -68,7 +68,7 @@
   <Smoothed No>
  >
  <Polygon <Fill 0><Pen 15>
-  <ObColor `R081G081B081'>
+  <ObColor `Black'>
   <Point 43.00 44.00>
   <Point 43.00 78.00>
   <Point 93.00 78.00>
@@ -86,7 +86,7 @@
   <Smoothed No>
  >
  <Polygon <Fill 0><Pen 15>
-  <ObColor `R081G081B081'>
+  <ObColor `Black'>
   <Point 43.00 111.00>
   <Point 43.00 144.00>
   <Point 93.00 144.00>

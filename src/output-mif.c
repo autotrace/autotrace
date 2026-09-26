@@ -57,6 +57,15 @@ static void colorstring(gchar *tag, gsize size, const at_color *c)
   g_snprintf(tag, size, "R%.3dG%.3dB%.3d", c->r, c->g, c->b);
 }
 
+/* The colour an object is drawn with: clockwise lists are holes showing the
+   background, if there is one.  */
+static at_color list_color(const at_splines_type *shape, const spline_list_type *list)
+{
+  if (list->clockwise && shape->background_color != NULL)
+    return *shape->background_color;
+  return list->color;
+}
+
 /*===========================================================================
  Convert Bezier Spline
 ===========================================================================*/
@@ -105,8 +114,7 @@ int output_mif_writer(FILE *ps_file, gchar *name, int llx, int lly, int urx, int
 
   for (this_list = 0; this_list < SPLINE_LIST_ARRAY_LENGTH(shape); this_list++) {
     spline_list_type list = SPLINE_LIST_ARRAY_ELT(shape, this_list);
-    curr_color =
-        (list.clockwise && shape.background_color != NULL) ? *(shape.background_color) : list.color;
+    curr_color = list_color(&shape, &list);
 
     for (i = 0; i < n_ctbl; i++)
       if (at_color_equal(&curr_color, &col_tbl[i].c))
@@ -162,6 +170,7 @@ int output_mif_writer(FILE *ps_file, gchar *name, int llx, int lly, int urx, int
     spline_list_type list = SPLINE_LIST_ARRAY_ELT(shape, this_list);
     spline_type first = SPLINE_LIST_ELT(list, 0);
 
+    curr_color = list_color(&shape, &list);
     for (i = 0; i < n_ctbl; i++)
       if (at_color_equal(&curr_color, &col_tbl[i].c))
         break;
