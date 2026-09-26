@@ -15,15 +15,15 @@
 #define MAXNUMCOLORS 256
 
 #if 0
-#define R_SCALE
-#define G_SCALE
-#define B_SCALE
+#define R_SCALE 1
+#define G_SCALE 1
+#define B_SCALE 1
 #else
 
 /* scale RGB distances by *2,*3,*1 */
-#define R_SCALE << 1
-#define G_SCALE *3
-#define B_SCALE
+#define R_SCALE 2
+#define G_SCALE 3
+#define B_SCALE 1
 #endif
 
 #define BITS_IN_SAMPLE 8
@@ -485,67 +485,67 @@ static int find_nearby_colors(QuantizeObj *quantobj, int minR, int minG, int min
     /* We compute the squared-R-distance term, then add in the other two. */
     x = quantobj->cmap[i].r;
     if (x < minR) {
-      tdist = (x - minR) R_SCALE;
+      tdist = (x - minR) * R_SCALE;
       min_dist = tdist * tdist;
-      tdist = (x - maxR) R_SCALE;
+      tdist = (x - maxR) * R_SCALE;
       max_dist = tdist * tdist;
     } else if (x > maxR) {
-      tdist = (x - maxR) R_SCALE;
+      tdist = (x - maxR) * R_SCALE;
       min_dist = tdist * tdist;
-      tdist = (x - minR) R_SCALE;
+      tdist = (x - minR) * R_SCALE;
       max_dist = tdist * tdist;
     } else {
       /* within cell range so no contribution to min_dist */
       min_dist = 0;
       if (x <= centerR) {
-        tdist = (x - maxR) R_SCALE;
+        tdist = (x - maxR) * R_SCALE;
         max_dist = tdist * tdist;
       } else {
-        tdist = (x - minR) R_SCALE;
+        tdist = (x - minR) * R_SCALE;
         max_dist = tdist * tdist;
       }
     }
 
     x = quantobj->cmap[i].g;
     if (x < minG) {
-      tdist = (x - minG) G_SCALE;
+      tdist = (x - minG) * G_SCALE;
       min_dist += tdist * tdist;
-      tdist = (x - maxG) G_SCALE;
+      tdist = (x - maxG) * G_SCALE;
       max_dist += tdist * tdist;
     } else if (x > maxG) {
-      tdist = (x - maxG) G_SCALE;
+      tdist = (x - maxG) * G_SCALE;
       min_dist += tdist * tdist;
-      tdist = (x - minG) G_SCALE;
+      tdist = (x - minG) * G_SCALE;
       max_dist += tdist * tdist;
     } else {
       /* within cell range so no contribution to min_dist */
       if (x <= centerG) {
-        tdist = (x - maxG) G_SCALE;
+        tdist = (x - maxG) * G_SCALE;
         max_dist += tdist * tdist;
       } else {
-        tdist = (x - minG) G_SCALE;
+        tdist = (x - minG) * G_SCALE;
         max_dist += tdist * tdist;
       }
     }
 
     x = quantobj->cmap[i].b;
     if (x < minB) {
-      tdist = (x - minB) B_SCALE;
+      tdist = (x - minB) * B_SCALE;
       min_dist += tdist * tdist;
-      tdist = (x - maxB) B_SCALE;
+      tdist = (x - maxB) * B_SCALE;
       max_dist += tdist * tdist;
     } else if (x > maxB) {
-      tdist = (x - maxB) B_SCALE;
+      tdist = (x - maxB) * B_SCALE;
       min_dist += tdist * tdist;
-      tdist = (x - minB) B_SCALE;
+      tdist = (x - minB) * B_SCALE;
       max_dist += tdist * tdist;
     } else {
       /* within cell range so no contribution to min_dist */
       if (x <= centerB) {
-        tdist = (x - maxB) B_SCALE;
+        tdist = (x - maxB) * B_SCALE;
         max_dist += tdist * tdist;
       } else {
-        tdist = (x - minB) B_SCALE;
+        tdist = (x - minB) * B_SCALE;
         max_dist += tdist * tdist;
       }
     }
@@ -600,18 +600,18 @@ static void find_best_colors(QuantizeObj *quantobj, int minR, int minG, int minB
    */
 
   /* Nominal steps between cell centers ("x" in Thomas article) */
-#define STEP_R ((1 << R_SHIFT) R_SCALE)
-#define STEP_G ((1 << G_SHIFT) G_SCALE)
-#define STEP_B ((1 << B_SHIFT) B_SCALE)
+#define STEP_R ((1 << R_SHIFT) * R_SCALE)
+#define STEP_G ((1 << G_SHIFT) * G_SCALE)
+#define STEP_B ((1 << B_SHIFT) * B_SCALE)
 
   for (i = 0; i < numcolors; i++) {
     icolor = colorlist[i];
     /* Compute (square of) distance from minR/G/B to this color */
-    inR = (minR - quantobj->cmap[icolor].r) R_SCALE;
+    inR = (minR - quantobj->cmap[icolor].r) * R_SCALE;
     dist0 = inR * inR;
-    inG = (minG - quantobj->cmap[icolor].g) G_SCALE;
+    inG = (minG - quantobj->cmap[icolor].g) * G_SCALE;
     dist0 += inG * inG;
-    inB = (minB - quantobj->cmap[icolor].b) B_SCALE;
+    inB = (minB - quantobj->cmap[icolor].b) * B_SCALE;
     dist0 += inB * inB;
     /* Form the initial difference increments */
     inR = inR * (2 * STEP_R) + STEP_R * STEP_R;
