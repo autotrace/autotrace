@@ -10,6 +10,7 @@
  * SPDX-License-Identifier: LGPL-2.1-or-later
  */
 
+#include <setjmp.h>
 #include <stdio.h>
 #include <string.h>
 
@@ -25,12 +26,14 @@ static void handle_warning(png_structp png, const gchar *message)
      "PNG warning"); */
 }
 
+/* libpng's error callback must not return: if it does, libpng falls back to
+   its default handler, which abort()s.  Record the error and jump back to
+   the setjmp() in load_image().  */
 static void handle_error(png_structp png, const gchar *message)
 {
   LOG("PNG error: %s", message);
   at_exception_fatal((at_exception_type *)png_get_error_ptr(png), message);
-  /* at_exception_fatal((at_exception_type *)at_png->error_ptr,
-     "PNG error"); */
+  png_longjmp(png, 1);
 }
 
 static void finalize_structs(png_structp png, png_infop info, png_infop end_info)
@@ -110,13 +113,20 @@ static int load_image(at_bitmap *image, FILE *stream, at_input_opts_type *opts,
 {
   png_structp png;
   png_infop info, end_info;
-  g_autofree png_bytep *rows = NULL;
+  png_bytep *volatile rows = NULL;
   unsigned short width, height, row;
   int pixel_size;
   int result = 1;
 
   if (!init_structs(&png, &info, &end_info, exp))
     return 0;
+
+  /* Any libpng error lands here via handle_error(); the exception has
+     already been flagged fatal by then.  */
+  if (setjmp(png_jmpbuf(png))) {
+    result = 0;
+    goto cleanup;
+  }
 
   png_init_io(png, stream);
   CHECK_ERROR();
@@ -142,6 +152,7 @@ static int load_image(at_bitmap *image, FILE *stream, at_input_opts_type *opts,
   png_read_end(png, info);
 
 cleanup:
+  g_free(rows);
   finalize_structs(png, info, end_info);
   return result;
 }
