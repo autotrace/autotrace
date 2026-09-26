@@ -254,7 +254,8 @@ static gfloat parse_real(const gchar *s)
     then output a straight line; default is 1.\n\n\
 -list-output-formats: print a list of supported output formats to stderr.\n\n\
 -list-input-formats: print a list of supported input formats to stderr.\n\n\
--log: write detailed progress reports to <input_name>.log.\n\n\
+-log <level>: print diagnostics of this level and above to stderr;\n\
+    one of error, warning, info, debug; default is warning.\n\n\
 -noise-removal <real>:: 0.0..1.0; default is 0.99.\n\n\
 -output-file <filename>: write to <filename>\n\n\
 -output-format <format>: use format <format> for the output file. Available formats:\n\

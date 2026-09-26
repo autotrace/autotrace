@@ -35,6 +35,9 @@ void set_log_level(const gchar *level)
     current_log_level = G_LOG_LEVEL_INFO;
   } else if (g_ascii_strcasecmp(level, "debug") == 0) {
     current_log_level = G_LOG_LEVEL_DEBUG;
+    /* GLib's default handler drops debug messages unless the domain is
+       listed here, whatever our own threshold says.  */
+    g_setenv("G_MESSAGES_DEBUG", "all", TRUE);
   } else {
     g_warning("Unknown log level '%s', using 'warning'", level);
     current_log_level = G_LOG_LEVEL_WARNING;
