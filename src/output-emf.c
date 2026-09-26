@@ -65,13 +65,6 @@
 #define Y_FLOAT_TO_UI32(num) ((uint32_t)(y_offset - num * SCALE))
 #define Y_FLOAT_TO_UI16(num) ((uint16_t)(y_offset - num * SCALE))
 
-/* color list type */
-
-typedef struct EMFColorListType {
-  uint32_t colref;
-  struct EMFColorListType *next;
-} EMFColorList;
-
 /* Emf stats needed for outputting EHNMETAHEADER*/
 
 typedef struct {
@@ -82,45 +75,44 @@ typedef struct {
 
 /* globals */
 
-static EMFColorList *color_list = NULL; /* Color list */
-static uint32_t *color_table = NULL;    /* Color table */
+static GArray *color_list = NULL;    /* colours (uint32_t) in order of first use */
+static uint32_t *color_table = NULL; /* Color table */
 static float y_offset;
 
 /* color list & table functions */
 
-static int SearchColor(EMFColorList *head, uint32_t colref)
+static int SearchColor(GArray *colors, uint32_t colref)
 {
-  while (head != NULL) {
-    if (head->colref == colref)
+  guint i;
+
+  if (colors == NULL)
+    return 0;
+  for (i = 0; i < colors->len; i++)
+    if (g_array_index(colors, uint32_t, i) == colref)
       return 1;
-    head = head->next;
-  }
   return 0;
 }
 
-static void AddColor(EMFColorList **head, uint32_t colref)
+static void AddColor(GArray **colors, uint32_t colref)
 {
-  EMFColorList *temp = g_malloc(sizeof(EMFColorList));
-
-  temp->colref = colref;
-  temp->next = *head;
-  *head = temp;
+  if (*colors == NULL)
+    *colors = g_array_new(FALSE, FALSE, sizeof(uint32_t));
+  g_array_append_val(*colors, colref);
 }
 
-static void ColorListToColorTable(EMFColorList **head, uint32_t **table, int len)
+/* The table is filled from the most recently added colour to the first
+   one; that is the order the handle numbers have always been assigned in. */
+static void ColorListToColorTable(GArray **colors, uint32_t **table, int len)
 {
-  EMFColorList *temp;
-  int i = 0;
+  int i;
 
   *table = g_malloc(sizeof(uint32_t) * len);
 
-  while (*head != NULL) {
-    temp = *head;
-    *head = (*head)->next;
-    (*table)[i] = temp->colref;
-    i++;
-    g_free(temp);
-  }
+  for (i = 0; i < len; i++)
+    (*table)[i] = g_array_index(*colors, uint32_t, len - 1 - i);
+
+  g_array_free(*colors, TRUE);
+  *colors = NULL;
 }
 
 static int ColorLookUp(uint32_t colref, uint32_t *table, int len)

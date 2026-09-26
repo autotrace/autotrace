@@ -41,7 +41,6 @@ int anchor_thresh = 40;
 int inserted_anchor_points = 0;
 
 typedef struct tagLaserPoint {
-  void *next;
   short int x;
   short int y;
   short int z;
@@ -54,20 +53,13 @@ typedef struct tagLaserPoint {
 typedef LaserPoint *pLaserPoint;
 
 typedef struct tagLaserFrame {
-  void *next;
-  void *previous;
-  LaserPoint *point_first;
-  LaserPoint *point_last;
-  int count;
-  char *name;
+  GQueue *points; /* of LaserPoint * */
 } LaserFrame;
 
 typedef LaserFrame *pLaserFrame;
 
 typedef struct tagLaserSequence {
-  LaserFrame *frame_first;
-  LaserFrame *frame_last;
-  int frame_count;
+  GQueue *frames; /* of LaserFrame * */
 } LaserSequence;
 
 typedef LaserSequence *pLaserSequence;
@@ -201,102 +193,68 @@ int find_best_match_color(unsigned char r, unsigned char g, unsigned char b)
 
 pLaserPoint newLaserPoint(void)
 {
-  pLaserPoint p = g_malloc(sizeof(LaserPoint));
-
-  p->x = p->y = p->z = 0;
-  p->r = p->g = p->b = 0;
-  p->attrib = 0;
-  p->next = NULL;
-
-  return (p);
+  return g_new0(LaserPoint, 1);
 }
 
 pLaserFrame newLaserFrame(void)
 {
-  pLaserFrame p = g_malloc(sizeof(LaserFrame));
+  pLaserFrame p = g_new(LaserFrame, 1);
 
-  p->next = NULL;
-  p->previous = NULL;
-  p->point_first = NULL;
-  p->point_last = NULL;
-  p->name = NULL;
-  p->count = 0;
+  p->points = g_queue_new();
 
   return (p);
 }
 
 pLaserPoint frame_point_add(pLaserFrame fra)
 {
-  pLaserPoint point = fra->point_last;
-  pLaserPoint point2 = NULL;
+  pLaserPoint point = newLaserPoint();
 
-  fra->count += 1;
+  g_queue_push_tail(fra->points, point);
 
-  if (point == NULL) {
-    point = newLaserPoint();
-    point->next = NULL;
-    fra->point_first = point;
-    fra->point_last = point;
-    return point;
-  }
-
-  point2 = newLaserPoint();
-  point2->next = NULL;
-
-  point->next = point2;
-
-  fra->point_last = point->next;
-
-  return point2;
-};
+  return point;
+}
 
 int frame_point_count(LaserFrame *f)
 {
-  return (f->count);
+  return g_queue_get_length(f->points);
 }
 
 pLaserSequence newLaserSequence(void)
 {
-  pLaserSequence p = g_malloc(sizeof(LaserSequence));
+  pLaserSequence p = g_new(LaserSequence, 1);
 
-  p->frame_count = 0;
-  p->frame_first = NULL;
-  p->frame_last = NULL;
+  p->frames = g_queue_new();
 
   return (p);
 }
 
 int sequence_frame_count(pLaserSequence seq)
 {
-  return (seq->frame_count);
+  return g_queue_get_length(seq->frames);
 }
 
 pLaserFrame sequence_frame_add(pLaserSequence seq)
 {
+  pLaserFrame frame = newLaserFrame();
 
-  pLaserFrame frame1 = seq->frame_last;
-  pLaserFrame frame2 = NULL;
+  g_queue_push_tail(seq->frames, frame);
 
-  seq->frame_count += 1;
+  return frame;
+}
 
-  if (frame1 == NULL) {
-    frame1 = newLaserFrame();
-    frame1->next = NULL;
-    frame1->previous = NULL;
-    seq->frame_first = frame1;
-    seq->frame_last = frame1;
-    return frame1;
-  };
+static void free_laser_frame(gpointer data)
+{
+  pLaserFrame frame = data;
 
-  frame2 = newLaserFrame();
-  frame2->previous = frame1;
+  g_queue_free_full(frame->points, g_free);
+  g_free(frame);
+}
 
-  frame1->next = frame2;
-
-  seq->frame_last = frame2;
-
-  return frame2;
-};
+static void free_laser_sequence(pLaserSequence seq)
+{
+  g_queue_free_full(seq->frames, free_laser_frame);
+  g_free(seq);
+}
 
 /** write 2D/3D Frame to file */
 int writeILDAFrame(FILE *file, LaserFrame *f, int format)
@@ -305,15 +263,14 @@ int writeILDAFrame(FILE *file, LaserFrame *f, int format)
   unsigned int lastc = 0;
   unsigned char cbuffer[8];
   int points, c, b, cpoints;
-
-  LaserPoint *point;
+  GList *l;
 
   cpoints = frame_point_count(f);
 
-  point = f->point_first;
   points = 0;
 
-  while (point) {
+  for (l = f->points->head; l != NULL; l = l->next) {
+    LaserPoint *point = l->data;
 
     if ((point->r == lastr) && (point->g == lastg) && (point->b == lastb)) {
       c = lastc;
@@ -347,9 +304,8 @@ int writeILDAFrame(FILE *file, LaserFrame *f, int format)
       cbuffer[5] = c;
       fwrite((char *)cbuffer, sizeof(char), 6, file);
     }
-    point = point->next;
     points++;
-  };
+  }
 
   return 0;
 }
@@ -401,8 +357,7 @@ int writeILDATrueColor(FILE *file, LaserFrame *f)
 {
   unsigned char cbuffer[4];
   int cpoints;
-
-  LaserPoint *point;
+  GList *l;
 
   cpoints = frame_point_count(f);
 
@@ -412,17 +367,15 @@ int writeILDATrueColor(FILE *file, LaserFrame *f)
 
   fwrite((char *)cbuffer, sizeof(char), 4, file);
 
-  point = f->point_first;
+  for (l = f->points->head; l != NULL; l = l->next) {
+    LaserPoint *point = l->data;
 
-  while (point) {
     cbuffer[0] = point->r;
     cbuffer[1] = point->g;
     cbuffer[2] = point->b;
 
     fwrite((char *)cbuffer, sizeof(char), 3, file);
-
-    point = point->next;
-  };
+  }
 
   return 0;
 }
@@ -460,7 +413,7 @@ int writeILDA(FILE *file, LaserSequence *s)
 {
   int format = (write3DFrames) ? ILDA_3D_DATA : ILDA_2D_DATA;
   int frames = 0, cframes, palettes = 0;
-  LaserFrame *f;
+  GList *l;
 
   if (writeTable) {
     writeILDAColorTable(file);
@@ -468,9 +421,8 @@ int writeILDA(FILE *file, LaserSequence *s)
 
   cframes = sequence_frame_count(s);
 
-  f = s->frame_first;
-
-  while (f) {
+  for (l = s->frames->head; l != NULL; l = l->next) {
+    LaserFrame *f = l->data;
 
     if (trueColorWrite)
       writeILDATrueColor(file, f);
@@ -478,9 +430,8 @@ int writeILDA(FILE *file, LaserSequence *s)
     writeILDAFrameHeader(file, f, format, frames, cframes);
     writeILDAFrame(file, f, format);
 
-    f = f->next;
     frames++;
-  };
+  }
 
   // write empty ILDA header at EOF
   writeILDAFrameHeader(file, NULL, format, 0, cframes);
@@ -532,9 +483,14 @@ void blankingPath(int x1, int y1, int x2, int y2)
 /** No descriptions */
 void blankingPathTo(int x, int y)
 {
-  if ((!drawframe) || (!drawframe->point_last))
+  LaserPoint *last;
+
+  if (!drawframe)
     return;
-  blankingPath(drawframe->point_last->x, drawframe->point_last->y, x, y);
+  last = g_queue_peek_tail(drawframe->points);
+  if (!last)
+    return;
+  blankingPath(last->x, last->y, x, y);
 }
 
 /** No descriptions */
@@ -544,9 +500,13 @@ void frameDrawInit(int x, int y, unsigned char r, unsigned char g, unsigned char
     drawframe = sequence_frame_add(drawsequence); // we can't do frameInit here, because we don't
                                                   // know where the first point will be.
   if (!frame_point_count(drawframe)) {
-    if (drawframe->previous && ((LaserFrame *)drawframe->previous)->point_last) {
-      blankingPath(((LaserFrame *)drawframe->previous)->point_last->x,
-                   ((LaserFrame *)drawframe->previous)->point_last->y, x, y);
+    /* Continue from where the previous frame, if any, left off. */
+    GList *link = g_queue_find(drawsequence->frames, drawframe);
+    LaserFrame *previous = (link && link->prev) ? link->prev->data : NULL;
+    LaserPoint *last = previous ? g_queue_peek_tail(previous->points) : NULL;
+
+    if (last) {
+      blankingPath(last->x, last->y, x, y);
     } else {
       if (fromToZero)
         blankingPath(0, 0, x, y);
@@ -574,55 +534,54 @@ double getAngle(double b1x, double b1y, double b2x, double b2y)
 
 void insertAnchorPoints()
 {
-  LaserPoint *p = drawframe->point_first, *pn;
+  GQueue *points = drawframe->points;
+  GList *l = points->head;
+  LaserPoint *p, *next, *pn;
   double dx, dy, dx1, dy1, a;
 
-  if ((!p) || (!p->next))
+  if ((!l) || (!l->next))
     return;
 
-  dx1 = ((LaserPoint *)p->next)->x - p->x;
-  dy1 = ((LaserPoint *)p->next)->y - p->y;
-  p = p->next;
+  p = l->data;
+  next = l->next->data;
+  dx1 = next->x - p->x;
+  dy1 = next->y - p->y;
+  l = l->next;
 
-  while (p && p->next) {
+  while (l && l->next) {
+    p = l->data;
+    next = l->next->data;
 
-    dx = ((LaserPoint *)p->next)->x - p->x;
-    dy = ((LaserPoint *)p->next)->y - p->y;
+    dx = next->x - p->x;
+    dy = next->y - p->y;
 
 #ifdef ANCHOR_DEBUG
     printf("x:%d y:%d", p->x, p->y);
-    printf(" x:%d y:%d", ((LaserPoint *)p->next)->x, ((LaserPoint *)p->next)->y);
+    printf(" x:%d y:%d", next->x, next->y);
     printf(" dx1: %f dy1:%f dx: %f dy:%f\n", dx1, dy1, dx, dy);
 #endif
 
     if (dx || dy) {
       a = getAngle(dx1, dy1, dx, dy);
       while (a > anchor_thresh) {
+        /* Dwell on a sharp corner: repeat the point after itself. */
         pn = newLaserPoint();
-        pn->x = p->x;
-        pn->y = p->y;
-        pn->z = p->z;
-        pn->r = p->r;
-        pn->g = p->g;
-        pn->b = p->b;
+        *pn = *p;
 #ifdef ANCHOR_DEBUG
         pn->r = 255;
         pn->g = 255;
         pn->b = 0;
 #endif
-        pn->attrib = p->attrib;
-        pn->next = p->next;
-        p->next = pn;
-        drawframe->count += 1;
+        g_queue_insert_after(points, l, pn);
         inserted_anchor_points++;
-        p = p->next;
+        l = l->next;
         a -= anchor_thresh;
       }
       dx1 = dx;
       dy1 = dy;
     };
 
-    p = p->next;
+    l = l->next;
   }
 }
 
@@ -792,7 +751,6 @@ static void OutputILDA(FILE *fdes, int llx, int lly, int urx, int ury, spline_li
 
   frameDrawFinish();
   writeILDA(fdes, drawsequence);
-  g_free(drawsequence);
 }
 
 int output_ild_writer(FILE *file, gchar *name, int llx, int lly, int urx, int ury,
@@ -820,15 +778,21 @@ int output_ild_writer(FILE *file, gchar *name, int llx, int lly, int urx, int ur
   /* Output ILDA */
   OutputILDA(file, llx, lly, urx, ury, shape);
 
-  if (file == stdout)
-    return 0;
+  if (file != stdout) {
+    printf("Wrote %d frame with %d points (%d anchors", sequence_frame_count(drawsequence),
+           frame_point_count(drawframe), inserted_anchor_points);
+    if (trueColorWrite)
+      printf(", True Color Header");
+    if (writeTable)
+      printf(", Color Table");
+    printf(").\n");
+  }
 
-  printf("Wrote %d frame with %d points (%d anchors", sequence_frame_count(drawsequence),
-         frame_point_count(drawframe), inserted_anchor_points);
-  if (trueColorWrite)
-    printf(", True Color Header");
-  if (writeTable)
-    printf(", Color Table");
-  printf(").\n");
+  /* Release the frame data and start afresh on the next call. */
+  free_laser_sequence(drawsequence);
+  drawsequence = NULL;
+  drawframe = NULL;
+  inserted_anchor_points = 0;
+
   return 0;
 }
