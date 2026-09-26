@@ -21,13 +21,11 @@ SUBDIRS = po
 man_MANS = autotrace.1
 EXTRA_DIST=$(man_MANS) \
 	   tests \
-	   FAQ \
 	   INSTALL_OSX.md \
 	   README.md \
 	   TODO \
 	   autotrace.pc.in \
 	   distribute \
-	   doc/HACKING \
 	   doc/despeckle.txt \
 	   src/input-magick.c \
 	   src/input-magick.h \
