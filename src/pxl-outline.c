@@ -106,8 +106,7 @@ pixel_outline_list_type find_outline_pixels(at_bitmap *bitmap, at_color *bg_colo
   at_bitmap *marked = at_bitmap_new(AT_BITMAP_WIDTH(bitmap), AT_BITMAP_HEIGHT(bitmap), 1);
   unsigned int max_progress = AT_BITMAP_HEIGHT(bitmap) * AT_BITMAP_WIDTH(bitmap);
 
-  O_LIST_LENGTH(outline_list) = 0;
-  outline_list.data = NULL;
+  outline_list.data = g_array_new(FALSE, FALSE, sizeof(pixel_outline_type));
 
   for (row = 0; row < AT_BITMAP_HEIGHT(bitmap); row++) {
     for (col = 0; col < AT_BITMAP_WIDTH(bitmap); col++) {
@@ -253,8 +252,7 @@ pixel_outline_list_type find_centerline_pixels(at_bitmap *bitmap, at_color bg_co
   at_bitmap *marked = at_bitmap_new(AT_BITMAP_WIDTH(bitmap), AT_BITMAP_HEIGHT(bitmap), 1);
   unsigned int max_progress = AT_BITMAP_HEIGHT(bitmap) * AT_BITMAP_WIDTH(bitmap);
 
-  O_LIST_LENGTH(outline_list) = 0;
-  outline_list.data = NULL;
+  outline_list.data = g_array_new(FALSE, FALSE, sizeof(pixel_outline_type));
 
   for (row = 0; row < AT_BITMAP_HEIGHT(bitmap); row++) {
     for (col = 0; col < AT_BITMAP_WIDTH(bitmap);) {
@@ -373,8 +371,7 @@ pixel_outline_list_type find_centerline_pixels(at_bitmap *bitmap, at_color bg_co
         if (okay) {
           partial_outline = find_one_centerline(bitmap, dir, row, col, marked);
           concat_pixel_outline(&outline, &partial_outline);
-          if (partial_outline.data)
-            g_free(partial_outline.data);
+          free_pixel_outline(&partial_outline);
         } else
           col++;
       }
@@ -458,10 +455,7 @@ static pixel_outline_type find_one_centerline(at_bitmap *bitmap, direction_type 
 
 static void append_pixel_outline(pixel_outline_list_type *outline_list, pixel_outline_type outline)
 {
-  O_LIST_LENGTH(*outline_list)++;
-  outline_list->data =
-      g_realloc(outline_list->data, outline_list->length * sizeof(pixel_outline_type));
-  O_LIST_OUTLINE(*outline_list, O_LIST_LENGTH(*outline_list) - 1) = outline;
+  g_array_append_val(outline_list->data, outline);
 }
 
 /* Free the list of outline lists. */
@@ -470,13 +464,10 @@ void free_pixel_outline_list(pixel_outline_list_type *outline_list)
 {
   unsigned this_outline;
 
-  for (this_outline = 0; this_outline < outline_list->length; this_outline++) {
-    pixel_outline_type o = outline_list->data[this_outline];
-    free_pixel_outline(&o);
-  }
-  g_free(outline_list->data);
+  for (this_outline = 0; this_outline < O_LIST_LENGTH(*outline_list); this_outline++)
+    free_pixel_outline(&O_LIST_OUTLINE(*outline_list, this_outline));
+  g_array_free(outline_list->data, TRUE);
   outline_list->data = NULL;
-  outline_list->length = 0;
 }
 
 /* Return an empty list of pixels.  */
@@ -485,8 +476,7 @@ static pixel_outline_type new_pixel_outline(void)
 {
   pixel_outline_type pixel_outline;
 
-  O_LENGTH(pixel_outline) = 0;
-  pixel_outline.data = NULL;
+  pixel_outline.data = g_array_new(FALSE, FALSE, sizeof(at_coord));
   pixel_outline.open = FALSE;
 
   return pixel_outline;
@@ -494,9 +484,9 @@ static pixel_outline_type new_pixel_outline(void)
 
 static void free_pixel_outline(pixel_outline_type *outline)
 {
-  g_free(outline->data);
+  if (outline->data)
+    g_array_free(outline->data, TRUE);
   outline->data = NULL;
-  outline->length = 0;
 }
 
 /* Concatenate two pixel lists. The two lists are assumed to have the
@@ -504,33 +494,28 @@ static void free_pixel_outline(pixel_outline_type *outline)
 
 static void concat_pixel_outline(pixel_outline_type *o1, const pixel_outline_type *o2)
 {
-  int src, dst;
-  unsigned o1_length, o2_length;
+  GArray *joined;
+  int src;
+
   if (!o1 || !o2 || O_LENGTH(*o2) <= 1)
     return;
 
-  o1_length = O_LENGTH(*o1);
-  o2_length = O_LENGTH(*o2);
-  O_LENGTH(*o1) += o2_length - 1;
-  /* Resize o1 to the sum of the lengths of o1 and o2 minus one (because
-     the two lists are assumed to share the same starting pixel). */
-  o1->data = g_realloc(o1->data, O_LENGTH(*o1) * sizeof(at_coord));
-  /* Shift the contents of o1 to the end of the new array to make room
-     to prepend o2. */
-  for (src = o1_length - 1, dst = O_LENGTH(*o1) - 1; src >= 0; src--, dst--)
-    O_COORDINATE(*o1, dst) = O_COORDINATE(*o1, src);
-  /* Prepend the contents of o2 (in reverse order) to o1. */
-  for (src = o2_length - 1, dst = 0; src > 0; src--, dst++)
-    O_COORDINATE(*o1, dst) = O_COORDINATE(*o2, src);
+  /* The result is o2 backwards, without its first pixel (that is the one
+     shared with o1), followed by o1.  */
+  joined = g_array_sized_new(FALSE, FALSE, sizeof(at_coord), O_LENGTH(*o1) + O_LENGTH(*o2) - 1);
+  for (src = O_LENGTH(*o2) - 1; src > 0; src--)
+    g_array_append_val(joined, O_COORDINATE(*o2, src));
+  g_array_append_vals(joined, o1->data->data, O_LENGTH(*o1));
+
+  g_array_free(o1->data, TRUE);
+  o1->data = joined;
 }
 
 /* Add a point to the pixel list. */
 
 static void append_outline_pixel(pixel_outline_type *o, at_coord c)
 {
-  O_LENGTH(*o)++;
-  o->data = g_realloc(o->data, O_LENGTH(*o) * sizeof(at_coord));
-  O_COORDINATE(*o, O_LENGTH(*o) - 1) = c;
+  g_array_append_val(o->data, c);
 }
 
 /* Is this really an edge and is it still unmarked? */

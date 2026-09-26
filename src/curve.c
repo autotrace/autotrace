@@ -163,8 +163,9 @@ curve_list_type new_curve_list(void)
 {
   curve_list_type curve_list;
 
-  curve_list.length = 0;
-  curve_list.data = NULL;
+  curve_list.data = g_array_new(FALSE, FALSE, sizeof(curve_type));
+  curve_list.clockwise = FALSE;
+  curve_list.open = FALSE;
 
   return curve_list;
 }
@@ -175,22 +176,22 @@ void free_curve_list(curve_list_type *curve_list)
 {
   unsigned this_curve;
 
-  for (this_curve = 0; this_curve < curve_list->length; this_curve++) {
-    free_curve(curve_list->data[this_curve]);
-    g_free(curve_list->data[this_curve]);
+  for (this_curve = 0; this_curve < CURVE_LIST_LENGTH(*curve_list); this_curve++) {
+    curve_type curve = CURVE_LIST_ELT(*curve_list, this_curve);
+
+    free_curve(curve);
+    g_free(curve);
   }
 
-  /* If the character was empty, it won't have any curves.  */
-  g_free(curve_list->data);
+  g_array_free(curve_list->data, TRUE);
+  curve_list->data = NULL;
 }
 
 /* Add an element to a curve list.  */
 
 void append_curve(curve_list_type *curve_list, curve_type curve)
 {
-  curve_list->length++;
-  curve_list->data = g_realloc(curve_list->data, curve_list->length * sizeof(curve_type));
-  curve_list->data[curve_list->length - 1] = curve;
+  g_array_append_val(curve_list->data, curve);
 }
 
 /* Return an initialized but empty curve list array.  */
@@ -199,8 +200,7 @@ curve_list_array_type new_curve_list_array(void)
 {
   curve_list_array_type curve_list_array;
 
-  CURVE_LIST_ARRAY_LENGTH(curve_list_array) = 0;
-  curve_list_array.data = NULL;
+  curve_list_array.data = g_array_new(FALSE, FALSE, sizeof(curve_list_type));
 
   return curve_list_array;
 }
@@ -221,18 +221,15 @@ void free_curve_list_array(curve_list_array_type *curve_list_array,
     free_curve_list(&CURVE_LIST_ARRAY_ELT(*curve_list_array, this_list));
   }
 
-  /* If the character was empty, it won't have any curves.  */
-  g_free(curve_list_array->data);
+  g_array_free(curve_list_array->data, TRUE);
+  curve_list_array->data = NULL;
 }
 
 /* Add an element to a curve list array.  */
 
 void append_curve_list(curve_list_array_type *curve_list_array, curve_list_type curve_list)
 {
-  CURVE_LIST_ARRAY_LENGTH(*curve_list_array)++;
-  curve_list_array->data = g_realloc(
-      curve_list_array->data, CURVE_LIST_ARRAY_LENGTH(*curve_list_array) * sizeof(curve_list_type));
-  LAST_CURVE_LIST_ARRAY_ELT(*curve_list_array) = curve_list;
+  g_array_append_val(curve_list_array->data, curve_list);
 }
 
 /* Turn an integer point into a real one.  */

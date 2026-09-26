@@ -17,18 +17,17 @@
 
 /* This is a list of contiguous points on the bitmap.  */
 typedef struct {
-  at_coord *data;
-  unsigned length;
+  GArray *data; /* of at_coord */
   gboolean clockwise;
   at_color color;
   gboolean open;
 } pixel_outline_type;
 
 /* The Nth coordinate in the list.  */
-#define O_COORDINATE(p_o, n) ((p_o).data[n])
+#define O_COORDINATE(p_o, n) g_array_index((p_o).data, at_coord, n)
 
 /* The length of the list.  */
-#define O_LENGTH(p_o) ((p_o).length)
+#define O_LENGTH(p_o) ((p_o).data->len)
 
 /* Whether the outline moves clockwise or counterclockwise.  */
 #define O_CLOCKWISE(p_o) ((p_o).clockwise)
@@ -41,15 +40,14 @@ typedef struct {
 
 /* And the character turns into a list of such lists.  */
 typedef struct {
-  pixel_outline_type *data;
-  unsigned length;
+  GArray *data; /* of pixel_outline_type */
 } pixel_outline_list_type;
 
 /* The Nth list in the list of lists.  */
-#define O_LIST_OUTLINE(p_o_l, n) ((p_o_l).data[n])
+#define O_LIST_OUTLINE(p_o_l, n) g_array_index((p_o_l).data, pixel_outline_type, n)
 
 /* The length of the list of lists.  */
-#define O_LIST_LENGTH(p_o_l) ((p_o_l).length)
+#define O_LIST_LENGTH(p_o_l) ((p_o_l).data->len)
 
 /* Find all pixels on the outline in the character C.  */
 extern pixel_outline_list_type

@@ -96,18 +96,17 @@ extern void display_curve(curve_type);
 
 /* So, an outline is a list of curves.  */
 typedef struct {
-  curve_type *data;
-  unsigned length;
+  GArray *data; /* of curve_type */
   gboolean clockwise;
   gboolean open;
 } curve_list_type;
 
 /* Number of curves in the list.  */
-#define CURVE_LIST_LENGTH(c_l) ((c_l).length)
+#define CURVE_LIST_LENGTH(c_l) ((c_l).data->len)
 
 /* Access the individual curves.  */
-#define CURVE_LIST_ELT(c_l, n) ((c_l).data[n])
-#define LAST_CURVE_LIST_ELT(c_l) ((c_l).data[CURVE_LIST_LENGTH(c_l) - 1])
+#define CURVE_LIST_ELT(c_l, n) g_array_index((c_l).data, curve_type, n)
+#define LAST_CURVE_LIST_ELT(c_l) CURVE_LIST_ELT(c_l, CURVE_LIST_LENGTH(c_l) - 1)
 
 /* Says whether the outline that this curve list represents moves
    clockwise or counterclockwise.  */
@@ -121,15 +120,13 @@ extern void append_curve(curve_list_type *, curve_type);
    `curve_list_array_type' because `curve_list_list_type' seemed pretty
    monstrous.  */
 typedef struct {
-  curve_list_type *data;
-  unsigned length;
+  GArray *data; /* of curve_list_type */
 } curve_list_array_type;
 
-/* Turns out we can use the same definitions for lists of lists as for
-   just lists.  But we define the usual names, just in case.  */
-#define CURVE_LIST_ARRAY_LENGTH CURVE_LIST_LENGTH
-#define CURVE_LIST_ARRAY_ELT CURVE_LIST_ELT
-#define LAST_CURVE_LIST_ARRAY_ELT LAST_CURVE_LIST_ELT
+#define CURVE_LIST_ARRAY_LENGTH(c_l_a) ((c_l_a).data->len)
+#define CURVE_LIST_ARRAY_ELT(c_l_a, n) g_array_index((c_l_a).data, curve_list_type, n)
+#define LAST_CURVE_LIST_ARRAY_ELT(c_l_a)                                                           \
+  CURVE_LIST_ARRAY_ELT(c_l_a, CURVE_LIST_ARRAY_LENGTH(c_l_a) - 1)
 
 extern curve_list_array_type new_curve_list_array(void);
 extern void free_curve_list_array(curve_list_array_type *, at_progress_func, gpointer);
