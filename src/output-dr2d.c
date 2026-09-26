@@ -54,8 +54,6 @@ static struct Chunk *BuildATTR(at_color, int, struct Chunk *);
 static int GetCMAPEntry(at_color, struct Chunk *);
 static int CountSplines(spline_list_type);
 static void FloatAsIEEEBytes(float, unsigned char *);
-/* static void ieee2flt(long *, float *); */
-static void flt2ieee(float *, unsigned char *);
 static void FreeChunk(struct Chunk *);
 static void FreeChunks(struct Chunk **, int);
 static int TotalSizeChunks(struct Chunk **, int);
@@ -568,47 +566,15 @@ int output_dr2d_writer(FILE *file, gchar *name, int llx, int lly, int urx, int u
   return 0;
 }
 
+/* Store VALUE, which arrives scaled by 1 << FIXOFFS, as a big-endian IEEE
+   754 single precision number.  The scaled value is truncated to an integer
+   first, as the hand-written encoder this replaces did, so the stored
+   numbers are quantised to 1 / (1 << FIXOFFS).  */
 static void FloatAsIEEEBytes(float value, unsigned char *bytes)
 {
-  flt2ieee(&value, bytes);
-}
+  float real = (float)(long)value / (1 << FIXOFFS);
+  guint32 bits;
 
-static void flt2ieee(float *flt, unsigned char *bytes)
-{
-  long RealMant, RealMask, RealExp;
-  long MoveExp;
-
-  RealMant = (long)*flt;
-
-  *bytes = 0;
-  *(bytes + 1) = 0;
-  *(bytes + 2) = 0;
-  *(bytes + 3) = 0;
-
-  if (RealMant) {
-    if (RealMant < 0) {
-      *bytes |= 0x80;
-      RealMant = -RealMant;
-    }
-
-    for (RealMask = 0x40000000, RealExp = 31; RealMask; RealMask >>= 1, RealExp--) {
-      if (RealMant & RealMask) {
-        break;
-      }
-    }
-
-    if (RealExp > 24) {
-      RealMant >>= RealExp - 24;
-    } else {
-      RealMant <<= 24 - RealExp;
-    }
-    RealExp -= FIXOFFS;
-    RealExp += 126;
-
-    MoveExp = RealExp << 23;
-    *bytes |= (MoveExp >> 24) & 0x7F;
-    *(bytes + 1) |= ((MoveExp >> 16) & 0x80) | ((RealMant >> 16) & 0x7F);
-    *(bytes + 2) |= (RealMant >> 8) & 0xFF;
-    *(bytes + 3) |= RealMant & 0xFF;
-  }
+  memcpy(&bits, &real, sizeof bits);
+  at_put_u32be(bytes, bits);
 }
