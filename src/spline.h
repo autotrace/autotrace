@@ -32,13 +32,11 @@ typedef at_spline_type spline_type;
 #define SPLINE_DEGREE AT_SPLINE_DEGREE_VALUE
 #define SPLINE_LINEARITY(spl) ((spl).linearity)
 
-#ifndef _IMPORTING
 /* Print a spline on the given file.  */
 extern void print_spline(spline_type);
 
 /* Evaluate SPLINE at the given T value.  */
 extern at_real_coord evaluate_spline(spline_type spline, gfloat t);
-#endif
 
 /* Each outline in a character is typically represented by many
    splines.  So, here is a list structure for that:  */
@@ -62,7 +60,6 @@ typedef at_spline_list_type spline_list_type;
 #define PREV_SPLINE_LIST_ELT(s_l, index)                                                           \
   SPLINE_LIST_ELT(s_l, index == 0 ? SPLINE_LIST_LENGTH(s_l) - 1 : index - 1)
 
-#ifndef _IMPORTING
 /* Construct and destroy new `spline_list_type' objects.  */
 extern spline_list_type *new_spline_list(void);  /* Allocate new memory */
 extern spline_list_type empty_spline_list(void); /* No allocation */
@@ -74,7 +71,6 @@ extern void append_spline(spline_list_type *s_list, spline_type s);
 
 /* Append the elements in list S2 to S1, changing S1.  */
 extern void concat_spline_lists(spline_list_type *s1, spline_list_type s2);
-#endif
 
 typedef at_spline_list_array_type spline_list_array_type;
 
