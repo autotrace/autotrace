@@ -35,24 +35,19 @@
 static gfloat bezpnt(gfloat, gfloat, gfloat, gfloat, gfloat);
 static void out_fig_splines(FILE *, spline_list_array_type, int, int, int, int,
                             at_exception_type *);
-static int get_fig_colour(at_color, at_exception_type *);
-static void fig_col_init(void);
-
-/* colour information */
-#define fig_col_hash(col_typ) (((col_typ).r & 255) + ((col_typ).g & 161) + ((col_typ).b & 127))
-
-static struct {
-  unsigned int colour;
-  unsigned int alternate;
-} fig_hash[544];
-
-static struct {
-  at_color c;
-  int alternate;
-} fig_colour_map[544];
-
-static int LAST_FIG_COLOUR = 32;
+/* Colour information: the eight predefined FIG colours above plus the
+   user colours, which FIG numbers from 32 up to 543.  */
+#define FIG_USER_COLOUR 32
 #define MAX_FIG_COLOUR 543
+
+typedef struct {
+  GHashTable *index; /* packed RGB (guint) -> FIG colour number */
+  GArray *user;      /* at_color; user colour n is element n - FIG_USER_COLOUR */
+} fig_colour_table;
+
+static fig_colour_table *fig_col_init(void);
+static void fig_col_free(fig_colour_table *);
+static int get_fig_colour(fig_colour_table *, at_color, at_exception_type *);
 
 /* Bounding Box data and routines */
 static float glob_min_x, glob_max_x, glob_min_y, glob_max_y;
@@ -146,22 +141,21 @@ static void out_fig_splines(FILE *file, spline_list_array_type shape, int llx, i
   g_autofree int *spline_colours = g_new(int, SPLINE_LIST_ARRAY_LENGTH(shape));
 
   /* Preload the big 8 */
-  fig_col_init();
+  fig_colour_table *colours = fig_col_init();
 
   /*  Load the colours from the splines */
   for (this_list = 0; this_list < SPLINE_LIST_ARRAY_LENGTH(shape); this_list++) {
     spline_list_type list = SPLINE_LIST_ARRAY_ELT(shape, this_list);
     at_color curr_color =
         (list.clockwise && shape.background_color != NULL) ? *(shape.background_color) : list.color;
-    spline_colours[this_list] = get_fig_colour(curr_color, exp);
+    spline_colours[this_list] = get_fig_colour(colours, curr_color, exp);
   }
   /* Output colours */
-  if (LAST_FIG_COLOUR > 32) {
-    for (i = 32; i < LAST_FIG_COLOUR; i++) {
-      fprintf(file, "0 %d #%.2x%.2x%.2x\n", i, fig_colour_map[i].c.r, fig_colour_map[i].c.g,
-              fig_colour_map[i].c.b);
-    }
+  for (i = 0; i < (int)colours->user->len; i++) {
+    at_color c = g_array_index(colours->user, at_color, i);
+    fprintf(file, "0 %d #%.2x%.2x%.2x\n", FIG_USER_COLOUR + i, c.r, c.g, c.b);
   }
+  fig_col_free(colours);
   /*	Each "spline list" in the array appears to be a group of splines */
   fig_depth = SPLINE_LIST_ARRAY_LENGTH(shape) + 20;
   if (fig_depth > 999) {
@@ -352,124 +346,59 @@ int output_fig_writer(FILE *file, gchar *name, int llx, int lly, int urx, int ur
   return 0;
 }
 
-/*
-        Create hash number
-        At hash number -> set fig number
-        If fig number already used, go to next fig number (alternate)
-        if alternate is 0, set next unused fig number
-*/
-
-static void fig_col_init(void)
+static guint fig_colour_key(at_color c)
 {
-  int i;
+  return ((guint)c.r << 16) | ((guint)c.g << 8) | c.b;
+}
 
-  for (i = 0; i < 544; i++) {
-    fig_hash[i].colour = 0;
-    fig_colour_map[i].alternate = 0;
-  }
+/* Create the colour table with the eight predefined FIG colours in it.  */
+static fig_colour_table *fig_col_init(void)
+{
+  static const struct {
+    at_color c;
+    int number;
+  } predefined[] = {
+      {{0, 0, 0}, FIG_BLACK},      {{0, 0, 255}, FIG_BLUE},      {{0, 255, 0}, FIG_GREEN},
+      {{0, 255, 255}, FIG_CYAN},   {{255, 0, 0}, FIG_RED},       {{255, 0, 255}, FIG_MAGENTA},
+      {{255, 255, 0}, FIG_YELLOW}, {{255, 255, 255}, FIG_WHITE},
+  };
+  fig_colour_table *table = g_new(fig_colour_table, 1);
 
-  /*  populate the first 8 primary colours  */
-  /* Black */
-  fig_hash[0].colour = FIG_BLACK;
-  fig_colour_map[FIG_BLACK].c.r = 0;
-  fig_colour_map[FIG_BLACK].c.g = 0;
-  fig_colour_map[FIG_BLACK].c.b = 0;
-  /* White */
-  fig_hash[543].colour = FIG_WHITE;
-  fig_colour_map[FIG_WHITE].c.r = 255;
-  fig_colour_map[FIG_WHITE].c.g = 255;
-  fig_colour_map[FIG_WHITE].c.b = 255;
-  /* Red */
-  fig_hash[255].colour = FIG_RED;
-  fig_colour_map[FIG_RED].c.r = 255;
-  fig_colour_map[FIG_RED].c.g = 0;
-  fig_colour_map[FIG_RED].c.b = 0;
-  /* Green */
-  fig_hash[161].colour = FIG_GREEN;
-  fig_colour_map[FIG_GREEN].c.r = 0;
-  fig_colour_map[FIG_GREEN].c.g = 255;
-  fig_colour_map[FIG_GREEN].c.b = 0;
-  /* Blue */
-  fig_hash[127].colour = FIG_BLUE;
-  fig_colour_map[FIG_BLUE].c.r = 0;
-  fig_colour_map[FIG_BLUE].c.g = 0;
-  fig_colour_map[FIG_BLUE].c.b = 255;
-  /* Cyan */
-  fig_hash[198].colour = FIG_CYAN;
-  fig_colour_map[FIG_CYAN].c.r = 0;
-  fig_colour_map[FIG_CYAN].c.g = 255;
-  fig_colour_map[FIG_CYAN].c.b = 255;
-  /* Magenta */
-  fig_hash[382].colour = FIG_MAGENTA;
-  fig_colour_map[FIG_MAGENTA].c.r = 255;
-  fig_colour_map[FIG_MAGENTA].c.g = 0;
-  fig_colour_map[FIG_MAGENTA].c.b = 255;
-  /* Yellow */
-  fig_hash[416].colour = FIG_YELLOW;
-  fig_colour_map[FIG_YELLOW].c.r = 255;
-  fig_colour_map[FIG_YELLOW].c.g = 255;
-  fig_colour_map[FIG_YELLOW].c.b = 0;
+  table->index = g_hash_table_new(g_direct_hash, g_direct_equal);
+  table->user = g_array_new(FALSE, FALSE, sizeof(at_color));
+  for (gsize i = 0; i < G_N_ELEMENTS(predefined); i++)
+    g_hash_table_insert(table->index, GUINT_TO_POINTER(fig_colour_key(predefined[i].c)),
+                        GINT_TO_POINTER(predefined[i].number));
+  return table;
+}
+
+static void fig_col_free(fig_colour_table *table)
+{
+  g_hash_table_unref(table->index);
+  g_array_unref(table->user);
+  g_free(table);
 }
 
 /*
- * Return the FIG colour index based on the RGB triplet.
- * If unknown, create a new colour index and return that.
+ * Return the FIG colour number of the RGB triplet.
+ * If unknown, allocate the next user colour number and return that.
  */
 
-static int get_fig_colour(at_color this_colour, at_exception_type *exp)
+static int get_fig_colour(fig_colour_table *table, at_color this_colour, at_exception_type *exp)
 {
-  int hash, i, this_ind;
+  gpointer key = GUINT_TO_POINTER(fig_colour_key(this_colour));
+  gpointer number;
 
-  hash = fig_col_hash(this_colour);
+  if (g_hash_table_lookup_extended(table->index, key, NULL, &number))
+    return GPOINTER_TO_INT(number);
 
-  /*  Special case: black _IS_ zero: */
-  if ((hash == 0) && (at_color_equal(&(fig_colour_map[0].c), &this_colour))) {
-    return (0);
+  int next = FIG_USER_COLOUR + table->user->len;
+  if (next > MAX_FIG_COLOUR) {
+    LOG("Output-Fig: too many colours: %d", next);
+    at_exception_fatal(exp, "Output-Fig: too many colours");
+    return 0;
   }
-
-  if (fig_hash[hash].colour == 0) {
-    fig_hash[hash].colour = LAST_FIG_COLOUR;
-    fig_colour_map[LAST_FIG_COLOUR].c.r = this_colour.r;
-    fig_colour_map[LAST_FIG_COLOUR].c.g = this_colour.g;
-    fig_colour_map[LAST_FIG_COLOUR].c.b = this_colour.b;
-    LAST_FIG_COLOUR++;
-    if (LAST_FIG_COLOUR >= MAX_FIG_COLOUR) {
-      LOG("Output-Fig: too many colours: %d", LAST_FIG_COLOUR);
-      at_exception_fatal(exp, "Output-Fig: too many colours");
-      return 0;
-    }
-    return (fig_hash[hash].colour);
-  } else {
-    i = 0;
-    this_ind = fig_hash[hash].colour;
-  figcolloop:
-    /* If colour match return current colour */
-    if (at_color_equal(&(fig_colour_map[this_ind].c), &this_colour)) {
-      return (this_ind);
-    }
-    /* If next colour zero - set it, return */
-    if (fig_colour_map[this_ind].alternate == 0) {
-      fig_colour_map[this_ind].alternate = LAST_FIG_COLOUR;
-      fig_colour_map[LAST_FIG_COLOUR].c.r = this_colour.r;
-      fig_colour_map[LAST_FIG_COLOUR].c.g = this_colour.g;
-      fig_colour_map[LAST_FIG_COLOUR].c.b = this_colour.b;
-      LAST_FIG_COLOUR++;
-      if (LAST_FIG_COLOUR >= MAX_FIG_COLOUR) {
-        LOG("Output-Fig: too many colours: %d", LAST_FIG_COLOUR);
-        at_exception_fatal(exp, "Output-Fig: too many colours");
-        return 0;
-      }
-      return (fig_colour_map[this_ind].alternate);
-    }
-    /* Else get next colour */
-    this_ind = fig_colour_map[this_ind].alternate;
-    /* Sanity check ... if colour too big - abort */
-    if (i++ > MAX_FIG_COLOUR) {
-      LOG("Output-Fig: too many colours (loop): %d", i);
-      at_exception_fatal(exp, "Output-Fig: too many colours (loop)");
-      return 0;
-    }
-    /* Else loop top */
-    goto figcolloop;
-  }
+  g_array_append_val(table->user, this_colour);
+  g_hash_table_insert(table->index, key, GINT_TO_POINTER(next));
+  return next;
 }
