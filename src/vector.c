@@ -40,8 +40,6 @@ static vector_type normalize(const vector_type v)
   vector_type new_v;
   gfloat m = magnitude(v);
 
-  /* assert (m > 0.0); */
-
   if (m > 0.0) {
     new_v.dx = v.dx / m;
     new_v.dy = v.dy / m;

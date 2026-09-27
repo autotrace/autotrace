@@ -75,7 +75,6 @@ static gboolean is_unmarked_outline_edge(unsigned short, unsigned short, edge_ty
                                          at_bitmap *, at_color, at_exception_type *);
 
 static void mark_edge(edge_type e, unsigned short, unsigned short, at_bitmap *);
-/* static edge_type opposite_edge(edge_type); */
 
 static gboolean is_marked_dir(unsigned short, unsigned short, direction_type, at_bitmap *);
 static gboolean is_other_dir_marked(unsigned short, unsigned short, direction_type, at_bitmap *);

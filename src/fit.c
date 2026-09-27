@@ -658,7 +658,6 @@ static void remove_adjacent_corners(index_list_type *list, unsigned last_index,
     unsigned next = GET_INDEX(*list, j + 1);
 
     /* We should never have inserted the same element twice.  */
-    /* assert (current != next); */
 
     if ((remove_adj_corners) && ((next == current + 1) || (next == current)))
       j++;
@@ -1335,8 +1334,6 @@ static gboolean spline_linear_enough(spline_type *spline, curve_type curve,
   DEBUG("  Line endpoints are (%.3f, %.3f, %.3f) and ", START_POINT(*spline).x,
         START_POINT(*spline).y, START_POINT(*spline).z);
   DEBUG("(%.3f, %.3f, %.3f)\n", END_POINT(*spline).x, END_POINT(*spline).y, END_POINT(*spline).z);
-
-  /* LOG ("  Line is %.3fx + %.3fy + %.3f = 0.\n", A, B, C); */
 
   for (this_point = 0; this_point < CURVE_LENGTH(curve); this_point++) {
     gfloat a, b, c, w;

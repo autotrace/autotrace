@@ -25,8 +25,6 @@ extern pstoedit_plainC_func pstoedit_plainC;
 extern getPstoeditDriverInfo_plainC_func getPstoeditDriverInfo_plainC;
 extern clearPstoeditDriverInfo_plainC_func clearPstoeditDriverInfo_plainC;
 
-/* #define OUTPUT_PSTOEDIT_DEBUG */
-
 static int output_pstoedit_writer(FILE *file, gchar *name, int llx, int lly, int urx, int ury,
                                   at_output_opts_type *opts, at_spline_list_array_type shape,
                                   at_msg_func msg_func, gpointer msg_data, gpointer user_data);
