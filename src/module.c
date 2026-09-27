@@ -23,6 +23,7 @@
 #include "input-tga.h"
 #endif /* !HAVE_MAGICK_READERS */
 #include "input-gf.h"
+#include "glyph-metrics.h"
 
 #ifdef HAVE_LIBPNG
 #include "input-png.h"
@@ -63,6 +64,9 @@ int install_output_pstoedit_writers(void)
 #include "output-plt.h"
 #include "output-ild.h"
 
+/* Filled in by the GF reader, read by the UGS writer.  */
+static at_glyph_metrics glyph_metrics;
+
 static int install_input_readers(void);
 static int install_output_writers(void);
 
@@ -95,7 +99,8 @@ static int install_input_readers(void)
                             NULL);
 #endif /* HAVE_MAGICK_READERS */
 
-  at_input_add_handler("GF", "TeX raster font (native)", input_gf_reader);
+  at_input_add_handler_full("GF", "TeX raster font (native)", input_gf_reader, 0, &glyph_metrics,
+                            NULL);
 
   return install_input_magick_readers();
 }
@@ -119,7 +124,8 @@ static int install_output_writers(void)
   at_output_add_handler("POV", "Povray format", output_pov_writer);
   at_output_add_handler("SK", "Sketch", output_sk_writer);
   at_output_add_handler("SVG", "Scalable Vector Graphics", output_svg_writer);
-  at_output_add_handler("UGS", "Unicode glyph source", output_ugs_writer);
+  at_output_add_handler_full("UGS", "Unicode glyph source", output_ugs_writer, 0, &glyph_metrics,
+                             NULL);
 
   return install_output_pstoedit_writers();
 }

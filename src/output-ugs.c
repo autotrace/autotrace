@@ -9,16 +9,14 @@
 
 #include "spline.h"
 #include "output-ugs.h"
+#include "glyph-metrics.h"
+
+/* The glyph's extent: seeded from the font metrics, then widened to
+   cover every point of the outline.  */
+typedef struct {
+  long lowerx, upperx, lowery, uppery;
+} ugs_bounds;
 #include <math.h>
-
-long ugs_design_pixels; /*  A design size of font in pixels. */
-
-long ugs_charcode;
-long ugs_advance_width;
-long ugs_left_bearing, ugs_descend;
-long ugs_max_col, ugs_max_row;
-
-static long lowerx, upperx, lowery, uppery;
 
 static int compute_determinant(double *det, double a, double b, double c, double d)
 {
@@ -103,7 +101,14 @@ static void cubic_to_quadratic(double ax, double ay, double bx, double by, doubl
   }
 }
 
-static void output_splines(FILE *file, spline_list_array_type shape, int height)
+/* Write SHAPE as one UGS "contour": every spline list becomes a "path"
+   of "dot-on" points (on the outline) and "dot-off" points (quadratic
+   control points).  Cubic splines are split into two quadratics with
+   cubic_to_quadratic() first, since UGS has no cubic segments.  The
+   coordinates are offset by the glyph's left bearing and descent from
+   M, and B is widened to cover every point written.  */
+static void output_splines(FILE *file, spline_list_array_type shape, int height,
+                           const at_glyph_metrics *m, ugs_bounds *b)
 {
   unsigned l, s;
   spline_list_type list;
@@ -116,50 +121,55 @@ static void output_splines(FILE *file, spline_list_array_type shape, int height)
     list = SPLINE_LIST_ARRAY_ELT(shape, l);
     first = SPLINE_LIST_ELT(list, 0);
 
-    x1 = START_POINT(first).x + ugs_left_bearing;
-    y1 = START_POINT(first).y + ugs_descend;
+    /* Each spline list opens a path at its first point.  */
+    x1 = START_POINT(first).x + m->left_bearing;
+    y1 = START_POINT(first).y + m->descend;
     ix1 = lround(x1);
     iy1 = lround(y1);
 
     fprintf(file, "\t\tpath\n");
     fprintf(file, "\t\t\tdot-on %d %d\n", ix1, iy1);
 
-    if (lowerx > ix1)
-      lowerx = ix1;
-    if (lowery > iy1)
-      lowery = iy1;
-    if (upperx < ix1)
-      upperx = ix1;
-    if (uppery < iy1)
-      uppery = iy1;
+    if (b->lowerx > ix1)
+      b->lowerx = ix1;
+    if (b->lowery > iy1)
+      b->lowery = iy1;
+    if (b->upperx < ix1)
+      b->upperx = ix1;
+    if (b->uppery < iy1)
+      b->uppery = iy1;
 
     for (s = 0; s < SPLINE_LIST_LENGTH(list); s++) {
       t = SPLINE_LIST_ELT(list, s);
 
       if (SPLINE_DEGREE(t) == LINEARTYPE) {
-        x3 = END_POINT(t).x + ugs_left_bearing;
-        y3 = END_POINT(t).y + ugs_descend;
+        /* A line is just its end point, unless it goes nowhere.  */
+        x3 = END_POINT(t).x + m->left_bearing;
+        y3 = END_POINT(t).y + m->descend;
         ix3 = lround(x3);
         iy3 = lround(y3);
 
         if (!(ix3 == lround(x1) && iy3 == lround(y1)))
           fprintf(file, "\t\t\tdot-on %d %d\n", ix3, iy3);
 
-        if (lowerx > ix3)
-          lowerx = ix3;
-        if (lowery > iy3)
-          lowery = iy3;
-        if (upperx < ix3)
-          upperx = ix3;
-        if (uppery < iy3)
-          uppery = iy3;
+        if (b->lowerx > ix3)
+          b->lowerx = ix3;
+        if (b->lowery > iy3)
+          b->lowery = iy3;
+        if (b->upperx < ix3)
+          b->upperx = ix3;
+        if (b->uppery < iy3)
+          b->uppery = iy3;
       } else {
-        x1a = CONTROL1(t).x + ugs_left_bearing;
-        y1a = CONTROL1(t).y + ugs_descend;
-        x3a = CONTROL2(t).x + ugs_left_bearing;
-        y3a = CONTROL2(t).y + ugs_descend;
-        x3 = END_POINT(t).x + ugs_left_bearing;
-        y3 = END_POINT(t).y + ugs_descend;
+        /* Split the cubic into two quadratics: on-curve point x2/y2
+           in the middle, off-curve control points x1a/y1a and x3a/y3a.
+           Control points that coincide with a neighbour are left out.  */
+        x1a = CONTROL1(t).x + m->left_bearing;
+        y1a = CONTROL1(t).y + m->descend;
+        x3a = CONTROL2(t).x + m->left_bearing;
+        y3a = CONTROL2(t).y + m->descend;
+        x3 = END_POINT(t).x + m->left_bearing;
+        y3 = END_POINT(t).y + m->descend;
         ix3 = lround(x3);
         iy3 = lround(y3);
 
@@ -181,42 +191,43 @@ static void output_splines(FILE *file, spline_list_array_type shape, int height)
 
         fprintf(file, "\t\t\tdot-on %d %d\n", ix3, iy3);
 
-        if (lowerx > ix1a)
-          lowerx = ix1a;
-        if (lowery > iy1a)
-          lowery = iy1a;
-        if (upperx < ix1a)
-          upperx = ix1a;
-        if (uppery < iy1a)
-          uppery = iy1a;
+        if (b->lowerx > ix1a)
+          b->lowerx = ix1a;
+        if (b->lowery > iy1a)
+          b->lowery = iy1a;
+        if (b->upperx < ix1a)
+          b->upperx = ix1a;
+        if (b->uppery < iy1a)
+          b->uppery = iy1a;
 
-        if (lowerx > ix2)
-          lowerx = ix2;
-        if (lowery > iy2)
-          lowery = iy2;
-        if (upperx < ix2)
-          upperx = ix2;
-        if (uppery < iy2)
-          uppery = iy2;
+        if (b->lowerx > ix2)
+          b->lowerx = ix2;
+        if (b->lowery > iy2)
+          b->lowery = iy2;
+        if (b->upperx < ix2)
+          b->upperx = ix2;
+        if (b->uppery < iy2)
+          b->uppery = iy2;
 
-        if (lowerx > ix3a)
-          lowerx = ix3a;
-        if (lowery > iy3a)
-          lowery = iy3a;
-        if (upperx < ix3a)
-          upperx = ix3a;
-        if (uppery < iy3a)
-          uppery = iy3a;
+        if (b->lowerx > ix3a)
+          b->lowerx = ix3a;
+        if (b->lowery > iy3a)
+          b->lowery = iy3a;
+        if (b->upperx < ix3a)
+          b->upperx = ix3a;
+        if (b->uppery < iy3a)
+          b->uppery = iy3a;
 
-        if (lowerx > ix3)
-          lowerx = ix3;
-        if (lowery > iy3)
-          lowery = iy3;
-        if (upperx < ix3)
-          upperx = ix3;
-        if (uppery < iy3)
-          uppery = iy3;
+        if (b->lowerx > ix3)
+          b->lowerx = ix3;
+        if (b->lowery > iy3)
+          b->lowery = iy3;
+        if (b->upperx < ix3)
+          b->upperx = ix3;
+        if (b->uppery < iy3)
+          b->uppery = iy3;
       }
+      /* The end point of this spline starts the next one.  */
       x1 = x3;
       y1 = y3;
     }
@@ -227,24 +238,24 @@ static void output_splines(FILE *file, spline_list_array_type shape, int height)
 
 int output_ugs_writer(FILE *file, gchar *name, int llx, int lly, int urx, int ury,
                       at_output_opts_type *opts, spline_list_array_type shape, at_msg_func msg_func,
-                      gpointer msg_data, gpointer usar_data)
+                      gpointer msg_data, gpointer user_data)
 {
+  /* The metrics come from the GF reader through the shared user data;
+     without them (or with any other input format) they are all zero.  */
+  static const at_glyph_metrics none = {0};
+  const at_glyph_metrics *m = user_data ? user_data : &none;
+  ugs_bounds b = {m->left_bearing, m->advance_width - m->max_col - 1, m->descend, m->max_row};
+
   /* Write the header.  */
-  fprintf(file, "symbol %#lx design-size %ld\n", ugs_charcode, ugs_design_pixels);
-  fprintf(file, "\tadvance-width %ld\n", ugs_advance_width);
+  fprintf(file, "symbol %#lx design-size %ld\n", m->charcode, m->design_pixels);
+  fprintf(file, "\tadvance-width %ld\n", m->advance_width);
 
-  upperx = ugs_advance_width - ugs_max_col - 1;
-  uppery = ugs_max_row;
+  output_splines(file, shape, ury - lly, m, &b);
 
-  lowerx = ugs_left_bearing;
-  lowery = ugs_descend;
-
-  output_splines(file, shape, ury - lly);
-
-  fprintf(file, "\tleft-bearing %ld\n", lowerx);
-  fprintf(file, "\tright-bearing %ld\n", ugs_advance_width - upperx - 1);
-  fprintf(file, "\tascend %ld\n", uppery + 1);
-  fprintf(file, "\tdescend %ld\n", lowery);
+  fprintf(file, "\tleft-bearing %ld\n", b.lowerx);
+  fprintf(file, "\tright-bearing %ld\n", m->advance_width - b.upperx - 1);
+  fprintf(file, "\tascend %ld\n", b.uppery + 1);
+  fprintf(file, "\tdescend %ld\n", b.lowery);
 
   /* Write the trailer.  */
   fputs("end symbol\n\n", file);
