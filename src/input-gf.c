@@ -297,7 +297,7 @@ static void get_character_bitmap(gf_char_t *sym)
 
   sym->height = height;
   sym->width = width;
-  sym->bitmap = g_malloc0((gsize)width * height);
+  sym->bitmap = g_new0(char, (gsize)width *height);
 
   for (;;) {
     c = get_byte(sym->font);
@@ -468,7 +468,7 @@ static void deblank(gf_char_t *sym)
     } else {
       condensed.width = sym->width - white_on_left - white_on_right;
       condensed.height = sym->height - white_on_top - white_on_bottom;
-      condensed.bitmap = g_malloc0((gsize)condensed.width * condensed.height);
+      condensed.bitmap = g_new0(char, (gsize)condensed.width *condensed.height);
       for (r = 0; r < condensed.height; r++)
         for (c = 0; c < condensed.width; c++) {
           PIXEL(&condensed, r, c) = PIXEL(sym, r + white_on_top, c + white_on_left);

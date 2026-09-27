@@ -143,7 +143,7 @@ static void out_fig_splines(FILE *file, spline_list_array_type shape, int llx, i
   */
 
   /*  Need to create hash table for colours */
-  g_autofree int *spline_colours = g_malloc(sizeof(int) * SPLINE_LIST_ARRAY_LENGTH(shape));
+  g_autofree int *spline_colours = g_new(int, SPLINE_LIST_ARRAY_LENGTH(shape));
 
   /* Preload the big 8 */
   fig_col_init();
@@ -176,9 +176,9 @@ static void out_fig_splines(FILE *file, spline_list_array_type shape, int llx, i
     int maxlength = SPLINE_LIST_LENGTH(list) * 5 + 1;
 
     /*	store the spline points in two arrays, control weights in another */
-    g_autofree int *pointx = g_malloc(maxlength * sizeof(int));
-    g_autofree int *pointy = g_malloc(maxlength * sizeof(int));
-    g_autofree gfloat *contrl = g_malloc(maxlength * sizeof(gfloat));
+    g_autofree int *pointx = g_new(int, maxlength);
+    g_autofree int *pointy = g_new(int, maxlength);
+    g_autofree gfloat *contrl = g_new(gfloat, maxlength);
 
     if (list.clockwise) {
       fig_colour = FIG_WHITE;

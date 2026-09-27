@@ -56,7 +56,7 @@ static at_output_format_entry *at_output_format_new(const gchar *descr, at_outpu
                                                     GDestroyNotify user_data_destroy_func)
 {
   at_output_format_entry *entry;
-  entry = g_malloc(sizeof(at_output_format_entry));
+  entry = g_new(at_output_format_entry, 1);
   if (entry) {
     entry->writer.func = writer;
     entry->writer.data = user_data;

@@ -106,7 +106,7 @@ static void ColorListToColorTable(GArray **colors, uint32_t **table, int len)
 {
   int i;
 
-  *table = g_malloc(sizeof(uint32_t) * len);
+  *table = g_new(uint32_t, len);
 
   for (i = 0; i < len; i++)
     (*table)[i] = g_array_index(*colors, uint32_t, len - 1 - i);

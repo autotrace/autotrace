@@ -18,7 +18,7 @@ static at_real_coord int_to_real_coord(at_coord);
 
 curve_type new_curve(void)
 {
-  curve_type curve = g_malloc(sizeof(struct curve));
+  curve_type curve = g_new(struct curve, 1);
   curve->point_list = NULL;
   CURVE_LENGTH(curve) = 0;
   CURVE_CYCLIC(curve) = FALSE;
@@ -63,7 +63,7 @@ void append_pixel(curve_type curve, at_coord coord)
 void append_point(curve_type curve, at_real_coord coord)
 {
   CURVE_LENGTH(curve)++;
-  curve->point_list = g_realloc(curve->point_list, CURVE_LENGTH(curve) * sizeof(point_type));
+  curve->point_list = g_renew(point_type, curve->point_list, CURVE_LENGTH(curve));
   LAST_CURVE_POINT(curve) = coord;
   /* The t value does not need to be set.  */
 }

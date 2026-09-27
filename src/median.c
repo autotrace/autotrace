@@ -338,7 +338,7 @@ static void select_colors_rgb(QuantizeObj *quantobj, Histogram histogram)
   int i;
 
   /* Allocate workspace for box list */
-  g_autofree boxptr boxlist = g_malloc(desired * sizeof(box));
+  g_autofree boxptr boxlist = g_new(box, desired);
 
   /* Initialize one box containing whole space */
   numboxes = 1;
@@ -793,10 +793,10 @@ static void median_cut_pass2_rgb(QuantizeObj *quantobj, at_bitmap *image, const 
 
 static QuantizeObj *initialize_median_cut(int num_colors)
 {
-  QuantizeObj *quantobj = g_malloc(sizeof(QuantizeObj));
+  QuantizeObj *quantobj = g_new(QuantizeObj, 1);
 
   /* Initialize the data structures */
-  quantobj->histogram = g_malloc(sizeof(ColorFreq) * HIST_R_ELEMS * HIST_G_ELEMS * HIST_B_ELEMS);
+  quantobj->histogram = g_new(ColorFreq, HIST_R_ELEMS * HIST_G_ELEMS * HIST_B_ELEMS);
   quantobj->desired_number_of_colors = num_colors;
 
   return quantobj;

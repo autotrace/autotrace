@@ -77,6 +77,7 @@ void thin_image(at_bitmap *image, const at_color *bg, at_exception_type *exp)
   g_autofree unsigned char *bm_data = NULL; // Autofree pointer
   unsigned int spp = AT_BITMAP_PLANES(image), width = AT_BITMAP_WIDTH(image),
                height = AT_BITMAP_HEIGHT(image);
+  gsize size = (gsize)height * width * spp;
 
   if (bg)
     background = *bg;
@@ -84,9 +85,9 @@ void thin_image(at_bitmap *image, const at_color *bg, at_exception_type *exp)
   bm.height = image->height;
   bm.width = image->width;
   bm.np = image->np;
-  bm_data = g_malloc((gsize)height * width * spp);
+  bm_data = g_new(unsigned char, size);
   bm.bitmap = bm_data; // Point struct member to autofree'd memory
-  memcpy(bm.bitmap, image->bitmap, height * width * spp);
+  memcpy(bm.bitmap, image->bitmap, size);
   /* that clones the image */
 
   num_pixels = height * width;
@@ -167,7 +168,7 @@ static void thin3(at_bitmap *image, Pixel colour)
   DEBUG(" Thinning image.....\n ");
   xsize = AT_BITMAP_WIDTH(image);
   ysize = AT_BITMAP_HEIGHT(image);
-  qb = g_malloc(xsize * sizeof(unsigned char));
+  qb = g_new(unsigned char, xsize);
   qb[xsize - 1] = 0; /* Used for lower-right pixel   */
   ptr = (Pixel *)AT_BITMAP_BITS(image);
 
@@ -254,7 +255,7 @@ static void thin1(at_bitmap *image, unsigned char colour)
   DEBUG(" Thinning image.....\n ");
   xsize = AT_BITMAP_WIDTH(image);
   ysize = AT_BITMAP_HEIGHT(image);
-  qb = g_malloc(xsize * sizeof(unsigned char));
+  qb = g_new(unsigned char, xsize);
   qb[xsize - 1] = 0; /* Used for lower-right pixel   */
   ptr = AT_BITMAP_BITS(image);
 
