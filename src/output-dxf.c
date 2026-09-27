@@ -33,25 +33,11 @@
 Definitions for spline to line transformation
 **************************************************************************************/
 
-typedef enum { NATURAL, TANGENT, PERIODIC, CYCLIC, ANTICYCLIC } SPLINE_END_TYPE;
-
-#define MAX_VERTICES 10000
 #define RESOLUTION 10000 /* asume no pixels bigger than 1000000.0 */
-#define RADIAN 57.295779513082
 
 typedef struct xypnt_t {
   int xp, yp;
 } xypnt;
-
-typedef struct xypnt_point_t {
-  xypnt point;
-  struct xypnt_point_t *next_point;
-} xypnt_point_rec;
-
-typedef struct xypnt_head_t {
-  xypnt_point_rec *first_point, *last_point, *current_point;
-  struct xypnt_head_t *next_head;
-} xypnt_head_rec;
 
 typedef struct Colors_t {
   int red, green, blue;
@@ -319,83 +305,6 @@ struct Colors_t dxftable[MAX_COLORS] = {
     /* 255 */ {255, 255, 255}};
 
 /******************************************************************************
- * Moves the current_point pointer to the next point in the list.
- * If current_point is at last point then it becomes NULL.
- * finished is 1 if coord_point has not been set, that is current_point is NULL.
- */
-static void xypnt_next_pnt(xypnt_head_rec *head_xypnt /*  */, xypnt *coord_point /*  */,
-                           char *finished /*  */)
-{
-  if (head_xypnt && head_xypnt->current_point) {
-    head_xypnt->current_point = head_xypnt->current_point->next_point;
-    if (head_xypnt->current_point == NULL)
-      *finished = 1;
-    else {
-      *coord_point = head_xypnt->current_point->point;
-      *finished = 0;
-    }
-  } else
-    *finished = 1;
-}
-
-/******************************************************************************
- * Moves the current_point pointer to the begining of the list
- */
-static void xypnt_first_pnt(xypnt_head_rec *head_xypnt /*  */, xypnt *coord_point /*  */,
-                            char *finished /*  */)
-{
-  if (head_xypnt) {
-    head_xypnt->current_point = head_xypnt->first_point;
-    if (head_xypnt->current_point == NULL)
-      *finished = 1;
-    else {
-      *coord_point = head_xypnt->current_point->point;
-      *finished = 0;
-    }
-  } else
-    *finished = 1;
-}
-
-/******************************************************************************
- * This routine will add the "coord_point" to the end of the xypnt list
- * which is specified by the "head_xypnt". Does not change current_point.
- */
-static void xypnt_add_pnt(xypnt_head_rec *head_xypnt /*  */, xypnt coord_point /*  */)
-{
-  xypnt_point_rec *temp_point;
-
-  if (!head_xypnt)
-    return;
-  temp_point = g_malloc0(sizeof(struct xypnt_point_t));
-  temp_point->point = coord_point;
-  temp_point->next_point = NULL;
-  if (head_xypnt->first_point == NULL)
-    head_xypnt->first_point = temp_point;
-  else
-    head_xypnt->last_point->next_point = temp_point;
-  head_xypnt->last_point = temp_point;
-}
-
-/******************************************************************************
- * This routine will dispose a list of points and the head pointer to
- * which they are connected to. The pointer is returned as a NIL.
- */
-static void xypnt_dispose_list(xypnt_head_rec **head_xypnt /*  */)
-{
-  xypnt_point_rec *p, *old;
-  if (head_xypnt && *head_xypnt) {
-    if ((*head_xypnt)->last_point && (*head_xypnt)->first_point) {
-      p = (*head_xypnt)->first_point;
-      while (p) {
-        old = p;
-        p = p->next_point;
-        g_free(old);
-      }
-    }
-  }
-}
-
-/******************************************************************************
  * Searches color by closest rgb values (distance of 2 3D points)
  * not os specific.
  * returns: index of color
@@ -424,24 +333,6 @@ static int GetIndexByRGBValue(int red /*  */, int green /*  */, int blue /*  */)
 }
 
 /******************************************************************************
- * Moves the current_point pointer to the end of the list
- */
-static void xypnt_last_pnt(xypnt_head_rec *head_xypnt /*  */, xypnt *coord_point /*  */,
-                           char *finished /*  */)
-{
-  if (head_xypnt) {
-    head_xypnt->current_point = head_xypnt->last_point;
-    if (head_xypnt->current_point == NULL)
-      *finished = 1;
-    else {
-      *coord_point = head_xypnt->current_point->point;
-      *finished = 0;
-    }
-  } else
-    *finished = 1;
-}
-
-/******************************************************************************
  * computes the distance between p1 and p2
  *
  * returns:
@@ -463,84 +354,71 @@ static double distpt2pt(xypnt p1 /*  */, xypnt p2 /*  */)
 /******************************************************************************
  * returns: length of all vectors in vertex list
  */
-static double get_total_length(xypnt_head_rec *vtx_list /*  */)
+static double get_total_length(const xypnt *vtx, int vtx_count)
 {
-  double total_length;
-  xypnt curr_pnt, next_pnt;
-  char end_of_list;
+  double total_length = 0.0;
 
-  total_length = 0.0;
-  xypnt_first_pnt(vtx_list, &curr_pnt, &end_of_list);
-  while (!end_of_list) {
-    xypnt_next_pnt(vtx_list, &next_pnt, &end_of_list);
-    total_length += distpt2pt(curr_pnt, next_pnt);
-    curr_pnt = next_pnt;
-  }
-  return (total_length);
+  for (int i = 1; i < vtx_count; i++)
+    total_length += distpt2pt(vtx[i - 1], vtx[i]);
+  return total_length;
 }
 
 /******************************************************************************
  * Convert B-Spline to list of lines.
+ *
+ * returns: the polyline vertices, as an array of xypnt
  */
-static int bspline_to_lines(xypnt_head_rec *vtx_list /*  */, xypnt_head_rec **new_vtx_list /*  */,
-                            int vtx_count /*  */, int spline_order /*  */,
-                            int spline_resolution /*  */)
+static GArray *bspline_to_lines(const xypnt *vtx, int vtx_count, int spline_order,
+                                int spline_resolution)
 {
-  int i, j, knot_index, number_of_segments, knot[MAX_VERTICES + 1], n, m;
+  GArray *lines = g_array_new(FALSE, FALSE, sizeof(xypnt));
+  int i, j, knot_index, number_of_segments;
+  int n = vtx_count + spline_order + 1;
+  int m = spline_order + 1;
+  int nweights = n * m;
+  g_autofree int *knot = g_new0(int, n);
+  g_autofree double *weight = g_new(double, nweights);
   double spline_step, total_length, t, spline_pnt_x, spline_pnt_y, r;
-  xypnt curr_pnt, spline_pnt;
-  char end_of_list;
+  xypnt spline_pnt;
 
-  *new_vtx_list = g_malloc0(sizeof(struct xypnt_head_t));
-  if (vtx_list) {
-    n = vtx_count + spline_order + 1;
-    m = spline_order + 1;
-    g_autofree double *weight = g_malloc((gsize)n * m * sizeof(double));
-
-    for (i = 0; i < vtx_count + spline_order; i++)
-      knot[i] = (i < spline_order) ? 0 : (i > vtx_count) ? knot[i - 1] : knot[i - 1] + 1;
-    total_length = get_total_length(vtx_list);
-    r = (spline_resolution == 0) ? sqrt(total_length) : total_length / spline_resolution;
-    number_of_segments = lround(r);
-    spline_step = ((double)knot[vtx_count + spline_order - 1]) / number_of_segments;
-    for (knot_index = spline_order - 1; knot_index < vtx_count; knot_index++) {
-      for (i = 0; i <= vtx_count + spline_order - 2; i++)
-        weight[i] = (i == knot_index && knot[i] != knot[i + 1]);
-      t = knot[knot_index];
-      while (t < knot[knot_index + 1] - spline_step / 2.0) {
-        spline_pnt_x = 0.0;
-        spline_pnt_y = 0.0;
-        for (j = 2; j <= spline_order; j++) {
-          i = 0;
-          xypnt_first_pnt(vtx_list, &curr_pnt, &end_of_list);
-          while (!end_of_list) {
-            weight[(j - 1) * n + i] = 0;
-            if (weight[(j - 2) * n + i])
-              weight[(j - 1) * n + i] +=
-                  (t - knot[i]) * weight[(j - 2) * n + i] / (knot[i + j - 1] - knot[i]);
-            if (weight[(j - 2) * n + i + 1])
-              weight[(j - 1) * n + i] +=
-                  (knot[i + j] - t) * weight[(j - 2) * n + i + 1] / (knot[i + j] - knot[i + 1]);
-            if (j == spline_order) {
-              spline_pnt_x += curr_pnt.xp * weight[(j - 1) * n + i];
-              spline_pnt_y += curr_pnt.yp * weight[(j - 1) * n + i];
-            }
-            i++;
-            xypnt_next_pnt(vtx_list, &curr_pnt, &end_of_list);
-          }
+  for (i = 0; i < vtx_count + spline_order; i++)
+    knot[i] = (i < spline_order) ? 0 : (i > vtx_count) ? knot[i - 1] : knot[i - 1] + 1;
+  total_length = get_total_length(vtx, vtx_count);
+  r = (spline_resolution == 0) ? sqrt(total_length) : total_length / spline_resolution;
+  number_of_segments = lround(r);
+  spline_step = ((double)knot[vtx_count + spline_order - 1]) / number_of_segments;
+  for (knot_index = spline_order - 1; knot_index < vtx_count; knot_index++) {
+    for (i = 0; i <= vtx_count + spline_order - 2; i++)
+      weight[i] = (i == knot_index && knot[i] != knot[i + 1]);
+    t = knot[knot_index];
+    while (t < knot[knot_index + 1] - spline_step / 2.0) {
+      spline_pnt_x = 0.0;
+      spline_pnt_y = 0.0;
+      for (j = 2; j <= spline_order; j++) {
+        for (i = 0; i < vtx_count; i++) {
           weight[(j - 1) * n + i] = 0;
+          if (weight[(j - 2) * n + i])
+            weight[(j - 1) * n + i] +=
+                (t - knot[i]) * weight[(j - 2) * n + i] / (knot[i + j - 1] - knot[i]);
+          if (weight[(j - 2) * n + i + 1])
+            weight[(j - 1) * n + i] +=
+                (knot[i + j] - t) * weight[(j - 2) * n + i + 1] / (knot[i + j] - knot[i + 1]);
+          if (j == spline_order) {
+            spline_pnt_x += vtx[i].xp * weight[(j - 1) * n + i];
+            spline_pnt_y += vtx[i].yp * weight[(j - 1) * n + i];
+          }
         }
-        spline_pnt.xp = lround(spline_pnt_x);
-        spline_pnt.yp = lround(spline_pnt_y);
-        xypnt_add_pnt(*new_vtx_list, spline_pnt);
-        t += spline_step;
+        weight[(j - 1) * n + vtx_count] = 0;
       }
+      spline_pnt.xp = lround(spline_pnt_x);
+      spline_pnt.yp = lround(spline_pnt_y);
+      g_array_append_val(lines, spline_pnt);
+      t += spline_step;
     }
-    xypnt_last_pnt(vtx_list, &spline_pnt, &end_of_list);
-    xypnt_add_pnt(*new_vtx_list, spline_pnt);
   }
+  g_array_append_val(lines, vtx[vtx_count - 1]);
 
-  return (0);
+  return lines;
 }
 
 /******************************************************************************
@@ -550,10 +428,9 @@ static void out_splines(FILE *dxf_file, spline_list_array_type shape)
 {
   unsigned this_list;
   double startx, starty;
-  xypnt_head_rec *vec, *res;
   xypnt pnt, pnt_old = {0, 0};
-  char fin, new_layer = 0, layerstr[10];
-  int i, first_seg = 1, idx;
+  char new_layer = 0, layerstr[10];
+  int first_seg = 1, idx;
 
   strcpy(layerstr, "C1");
   for (this_list = 0; this_list < SPLINE_LIST_ARRAY_LENGTH(shape); this_list++) {
@@ -616,27 +493,16 @@ static void out_splines(FILE *dxf_file, spline_list_array_type shape)
         pnt_old.xp = lround(startx * RESOLUTION);
         pnt_old.yp = lround(starty * RESOLUTION);
       } else {
-        vec = g_malloc0(sizeof(struct xypnt_head_t));
-
-        pnt.xp = lround(startx * RESOLUTION);
-        pnt.yp = lround(starty * RESOLUTION);
-        xypnt_add_pnt(vec, pnt);
-        pnt.xp = lround(CONTROL1(s).x * RESOLUTION);
-        pnt.yp = lround(CONTROL1(s).y * RESOLUTION);
-        xypnt_add_pnt(vec, pnt);
-        pnt.xp = lround(CONTROL2(s).x * RESOLUTION);
-        pnt.yp = lround(CONTROL2(s).y * RESOLUTION);
-        xypnt_add_pnt(vec, pnt);
-        pnt.xp = lround(END_POINT(s).x * RESOLUTION);
-        pnt.yp = lround(END_POINT(s).y * RESOLUTION);
-        xypnt_add_pnt(vec, pnt);
-
-        res = NULL;
+        const xypnt vec[4] = {
+            {lround(startx * RESOLUTION), lround(starty * RESOLUTION)},
+            {lround(CONTROL1(s).x * RESOLUTION), lround(CONTROL1(s).y * RESOLUTION)},
+            {lround(CONTROL2(s).x * RESOLUTION), lround(CONTROL2(s).y * RESOLUTION)},
+            {lround(END_POINT(s).x * RESOLUTION), lround(END_POINT(s).y * RESOLUTION)}};
 
         /* Note that spline order can be max. 4 since we have only 4 spline control points */
-        bspline_to_lines(vec, &res, 4, 4, 10000);
+        g_autoptr(GArray) res = bspline_to_lines(vec, G_N_ELEMENTS(vec), 4, 10000);
 
-        xypnt_first_pnt(res, &pnt, &fin);
+        pnt = g_array_index(res, xypnt, 0);
 
         if (pnt.xp != pnt_old.xp || pnt.yp != pnt_old.yp || new_layer) {
           /* must begin new polyline */
@@ -647,26 +513,16 @@ static void out_splines(FILE *dxf_file, spline_list_array_type shape)
           fprintf(dxf_file, "  0\nVERTEX\n  8\n%s\n  10\n%f\n  20\n%f\n", layerstr,
                   (double)pnt.xp / RESOLUTION, (double)pnt.yp / RESOLUTION);
         }
-        i = 0;
-        while (!fin) {
-          if (i) {
-            fprintf(dxf_file, "  0\nVERTEX\n  8\n%s\n  10\n%f\n  20\n%f\n", layerstr,
-                    (double)pnt.xp / RESOLUTION, (double)pnt.yp / RESOLUTION);
-          }
-          xypnt_next_pnt(res, &pnt, &fin);
-          i++;
+        for (guint i = 1; i < res->len; i++) {
+          pnt = g_array_index(res, xypnt, i);
+          fprintf(dxf_file, "  0\nVERTEX\n  8\n%s\n  10\n%f\n  20\n%f\n", layerstr,
+                  (double)pnt.xp / RESOLUTION, (double)pnt.yp / RESOLUTION);
         }
 
         pnt_old = pnt;
 
-        xypnt_dispose_list(&vec);
-        xypnt_dispose_list(&res);
-
         startx = END_POINT(s).x;
         starty = END_POINT(s).y;
-
-        g_free(res);
-        g_free(vec);
       }
     }
     first_seg = 0;
