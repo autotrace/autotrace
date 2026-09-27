@@ -431,11 +431,11 @@ static void out_splines(FILE *dxf_file, spline_list_array_type shape)
   xypnt pnt, pnt_old = {0, 0};
   char new_layer = 0, layerstr[10];
   int first_seg = 1, idx;
+  at_color last_color = {0, 0, 0};
 
   strcpy(layerstr, "C1");
   for (this_list = 0; this_list < SPLINE_LIST_ARRAY_LENGTH(shape); this_list++) {
     unsigned this_spline;
-    at_color last_color = {0, 0, 0};
 
     spline_list_type list = SPLINE_LIST_ARRAY_ELT(shape, this_list);
     spline_type first = SPLINE_LIST_ELT(list, 0);
@@ -526,7 +526,6 @@ static void out_splines(FILE *dxf_file, spline_list_array_type shape)
       }
     }
     first_seg = 0;
-    last_color = curr_color;
   }
 
   fprintf(dxf_file, "  0\nSEQEND\n  8\n0\n");
