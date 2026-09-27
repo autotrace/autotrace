@@ -21,7 +21,12 @@ for fmt in svg dr2d; do
     if ! cmp -s $DIR/file.$fmt $DIR/stdout.$fmt || [ ! -s $DIR/stdout.$fmt ]; then
         failed="$failed $fmt"
     fi
-    rm -f $DIR/file.$fmt $DIR/stdout.$fmt
+    # "-output-file -" is standard output as well, not a file called "-".
+    (cd $DIR && autotrace ../github-#4/testrect.pbm -output-format $fmt -output-file - > dash.$fmt)
+    if ! cmp -s $DIR/file.$fmt $DIR/dash.$fmt || [ -e $DIR/- ]; then
+        failed="$failed $fmt(dash)"
+    fi
+    rm -f $DIR/file.$fmt $DIR/stdout.$fmt $DIR/dash.$fmt $DIR/-
 done
 
 if [ -n "$failed" ]; then

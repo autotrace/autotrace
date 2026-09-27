@@ -251,7 +251,8 @@ static gfloat parse_real(const gchar *s)
 -log <level>: print diagnostics of this level and above to stderr;\n\
     one of error, warning, info, debug; default is warning.\n\n\
 -noise-removal <real>:: 0.0..1.0; default is 0.99.\n\n\
--output-file <filename>: write to <filename>\n\n\
+-output-file <filename>: write to <filename>; the default, and\n\
+    a <filename> of -, is standard output.\n\n\
 -output-format <format>: use format <format> for the output file. Available formats:\n\
     %s\n\n\
 -preserve-width: preserve line width prior to thinning.\n\n\
@@ -407,7 +408,9 @@ static char *read_command_line(int argc, char *argv[], at_fitting_opts_type *fit
       fitting_opts->noise_removal = parse_real(optarg);
 
     else if (ARGUMENT_IS("output-file"))
-      output_name = optarg;
+      /* "-" is the usual spelling for standard output, which an empty
+         name selects below.  */
+      output_name = strcmp(optarg, "-") == 0 ? "" : optarg;
 
     else if (ARGUMENT_IS("output-format")) {
       output_writer = at_output_get_handler_by_suffix(optarg);
