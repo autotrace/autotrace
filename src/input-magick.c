@@ -50,7 +50,7 @@ static at_bitmap input_magick_reader(gchar *filename, at_input_opts_type *opts,
   GetExceptionInfo(exception_ptr);
 #endif
   image_info = CloneImageInfo((ImageInfo *)NULL);
-  (void)strcpy(image_info->filename, filename);
+  g_strlcpy(image_info->filename, filename, sizeof(image_info->filename));
   image_info->antialias = 0;
 
   image = ReadImage(image_info, exception_ptr);
