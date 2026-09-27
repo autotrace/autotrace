@@ -23,6 +23,7 @@
 #include <string.h>
 #include "byteorder.h"
 #include "spline.h"
+#include "output-emf.h"
 #include <glib.h>
 
 /* EMF record-number definitions */

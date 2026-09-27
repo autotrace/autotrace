@@ -16,6 +16,7 @@
 #include "logreport.h"
 #include "byteorder.h"
 #include "spline.h"
+#include "output-ild.h"
 #include <glib.h>
 
 #define _USE_MATH_DEFINES
@@ -169,7 +170,7 @@ static unsigned char ilda_standard_color_palette[256][3] = {
     {21, 21, 21},    {11, 11, 11},    {0, 0, 0}        // Black
 };
 
-int find_best_match_color(unsigned char r, unsigned char g, unsigned char b)
+static int find_best_match_color(unsigned char r, unsigned char g, unsigned char b)
 {
   unsigned int i, dmin = 195076, d, ret = 0;
   signed int t;
@@ -192,12 +193,12 @@ int find_best_match_color(unsigned char r, unsigned char g, unsigned char b)
   return ret;
 }
 
-pLaserPoint newLaserPoint(void)
+static pLaserPoint newLaserPoint(void)
 {
   return g_new0(LaserPoint, 1);
 }
 
-pLaserFrame newLaserFrame(void)
+static pLaserFrame newLaserFrame(void)
 {
   pLaserFrame p = g_new(LaserFrame, 1);
 
@@ -206,7 +207,7 @@ pLaserFrame newLaserFrame(void)
   return (p);
 }
 
-pLaserPoint frame_point_add(pLaserFrame fra)
+static pLaserPoint frame_point_add(pLaserFrame fra)
 {
   pLaserPoint point = newLaserPoint();
 
@@ -215,12 +216,12 @@ pLaserPoint frame_point_add(pLaserFrame fra)
   return point;
 }
 
-int frame_point_count(LaserFrame *f)
+static int frame_point_count(LaserFrame *f)
 {
   return g_queue_get_length(f->points);
 }
 
-pLaserSequence newLaserSequence(void)
+static pLaserSequence newLaserSequence(void)
 {
   pLaserSequence p = g_new(LaserSequence, 1);
 
@@ -229,12 +230,12 @@ pLaserSequence newLaserSequence(void)
   return (p);
 }
 
-int sequence_frame_count(pLaserSequence seq)
+static int sequence_frame_count(pLaserSequence seq)
 {
   return g_queue_get_length(seq->frames);
 }
 
-pLaserFrame sequence_frame_add(pLaserSequence seq)
+static pLaserFrame sequence_frame_add(pLaserSequence seq)
 {
   pLaserFrame frame = newLaserFrame();
 
@@ -258,7 +259,7 @@ static void free_laser_sequence(pLaserSequence seq)
 }
 
 /** write 2D/3D Frame to file */
-int writeILDAFrame(FILE *file, LaserFrame *f, int format)
+static int writeILDAFrame(FILE *file, LaserFrame *f, int format)
 {
   unsigned char lastr = 0, lastg = 0, lastb = 0;
   unsigned int lastc = 0;
@@ -312,7 +313,7 @@ int writeILDAFrame(FILE *file, LaserFrame *f, int format)
 }
 
 /** write new style header */
-int writeILDAHeader(FILE *file, unsigned int format, unsigned int datalength)
+static int writeILDAHeader(FILE *file, unsigned int format, unsigned int datalength)
 {
   // write ILDA header
   unsigned char fhbuffer[12];
@@ -326,8 +327,8 @@ int writeILDAHeader(FILE *file, unsigned int format, unsigned int datalength)
 }
 
 /** write old-style frame header */
-int writeILDAFrameHeader(FILE *file, LaserFrame *f, int format, unsigned int frames,
-                         unsigned int cframes)
+static int writeILDAFrameHeader(FILE *file, LaserFrame *f, int format, unsigned int frames,
+                                unsigned int cframes)
 {
   unsigned int cpoints = 0;
   unsigned char fhbuffer[24];
@@ -354,7 +355,7 @@ int writeILDAFrameHeader(FILE *file, LaserFrame *f, int format, unsigned int fra
 }
 
 /** write ILDA True Color information to file */
-int writeILDATrueColor(FILE *file, LaserFrame *f)
+static int writeILDATrueColor(FILE *file, LaserFrame *f)
 {
   unsigned char cbuffer[4];
   int cpoints;
@@ -382,7 +383,7 @@ int writeILDATrueColor(FILE *file, LaserFrame *f)
 }
 
 /** write color table to file */
-int writeILDAColorTable(FILE *file)
+static int writeILDAColorTable(FILE *file)
 {
   unsigned int i, palette = 0, colors = ILDA_COLORS_NUM;
   unsigned char fhbuffer[24];
@@ -410,7 +411,7 @@ int writeILDAColorTable(FILE *file)
 }
 
 /** write Sequence to ILDA file */
-int writeILDA(FILE *file, LaserSequence *s)
+static int writeILDA(FILE *file, LaserSequence *s)
 {
   int format = (write3DFrames) ? ILDA_3D_DATA : ILDA_2D_DATA;
   int frames = 0, cframes;
@@ -450,7 +451,7 @@ static inline short int clip(double x)
 }
 
 /** No descriptions */
-void blankingPath(int x1, int y1, int x2, int y2)
+static void blankingPath(int x1, int y1, int x2, int y2)
 {
   int len, steps, i;
   double lx, ly, t;
@@ -482,7 +483,7 @@ void blankingPath(int x1, int y1, int x2, int y2)
 }
 
 /** No descriptions */
-void blankingPathTo(int x, int y)
+static void blankingPathTo(int x, int y)
 {
   LaserPoint *last;
 
@@ -495,7 +496,7 @@ void blankingPathTo(int x, int y)
 }
 
 /** No descriptions */
-void frameDrawInit(int x, int y, unsigned char r, unsigned char g, unsigned char b)
+static void frameDrawInit(int x, int y, unsigned char r, unsigned char g, unsigned char b)
 {
   if (!drawframe)
     drawframe = sequence_frame_add(drawsequence); // we can't do frameInit here, because we don't
@@ -517,7 +518,7 @@ void frameDrawInit(int x, int y, unsigned char r, unsigned char g, unsigned char
   }
 }
 
-double getAngle(double b1x, double b1y, double b2x, double b2y)
+static double getAngle(double b1x, double b1y, double b2x, double b2y)
 {
   double acosa;
   double b1v = sqrt(b1x * b1x + b1y * b1y);
@@ -533,7 +534,7 @@ double getAngle(double b1x, double b1y, double b2x, double b2y)
   return acos(acosa) * 180.0 / G_PI;
 }
 
-void insertAnchorPoints()
+static void insertAnchorPoints()
 {
   GQueue *points = drawframe->points;
   GList *l = points->head;
@@ -586,7 +587,7 @@ void insertAnchorPoints()
   }
 }
 
-void frameDrawFinish()
+static void frameDrawFinish()
 {
   LaserPoint *p;
 
@@ -612,8 +613,8 @@ void frameDrawFinish()
     insertAnchorPoints();
 }
 
-void drawLine(double x1, double y1, double x2, double y2, unsigned char r1, unsigned char g1,
-              unsigned char b1)
+static void drawLine(double x1, double y1, double x2, double y2, unsigned char r1, unsigned char g1,
+                     unsigned char b1)
 {
   int i, len, steps;
   double t, lx, ly;
@@ -648,8 +649,9 @@ void drawLine(double x1, double y1, double x2, double y2, unsigned char r1, unsi
   }
 }
 
-void drawCubicBezier(double x1, double y1, double cx1, double cy1, double cx2, double cy2,
-                     double x2, double y2, unsigned char r1, unsigned char g1, unsigned char b1)
+static void drawCubicBezier(double x1, double y1, double cx1, double cy1, double cx2, double cy2,
+                            double x2, double y2, unsigned char r1, unsigned char g1,
+                            unsigned char b1)
 {
   int len, steps, i;
   double t, lx, ly;

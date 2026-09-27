@@ -9,6 +9,7 @@
 
 #include <stdio.h>
 #include "spline.h"
+#include "output-plt.h"
 
 #define NUM_SPLINES 8
 #define WriteInitialize(fp) (fputs("IN;", fp))

@@ -9,6 +9,7 @@
 
 #include "autotrace.h"
 #include "output.h"
+#include "output-pstoedit.h"
 #include "logreport.h"
 
 #include <stdio.h>

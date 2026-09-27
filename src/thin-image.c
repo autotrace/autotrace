@@ -17,8 +17,8 @@
 
 typedef unsigned char Pixel[3]; /* RGB pixel data type */
 
-void thin3(at_bitmap *image, Pixel colour);
-void thin1(at_bitmap *image, unsigned char colour);
+static void thin3(at_bitmap *image, Pixel colour);
+static void thin1(at_bitmap *image, unsigned char colour);
 
 /* -------------------------------- ThinImage - Thin binary image. --------------------------- *
  *
@@ -145,7 +145,7 @@ void thin_image(at_bitmap *image, const at_color *bg, at_exception_type *exp)
   }
 }
 
-void thin3(at_bitmap *image, Pixel colour)
+static void thin3(at_bitmap *image, Pixel colour)
 {
   Pixel *ptr, *y_ptr, *y1_ptr;
   Pixel bg_color;
@@ -231,7 +231,7 @@ void thin3(at_bitmap *image, Pixel colour)
   }
 }
 
-void thin1(at_bitmap *image, unsigned char colour)
+static void thin1(at_bitmap *image, unsigned char colour)
 {
   unsigned char *ptr, *y_ptr, *y1_ptr;
   unsigned char bg_color;
