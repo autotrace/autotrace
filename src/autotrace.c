@@ -135,7 +135,7 @@ at_bitmap *at_bitmap_copy(const at_bitmap *src)
   planes = at_bitmap_get_planes(src);
 
   dist = at_bitmap_new(width, height, planes);
-  memcpy(dist->bitmap, src->bitmap, width * height * planes * sizeof(unsigned char));
+  memcpy(dist->bitmap, src->bitmap, (gsize)width * height * planes);
   return dist;
 }
 
