@@ -289,7 +289,7 @@ static int WriteCreateSolidPen(FILE *fdes, int hndNum, uint32_t colref)
     write32(fdes, (uint32_t)0x0); /* solid pen style */
     write32(fdes, (uint32_t)0x0); /* 1 pixel ...  */
     write32(fdes, (uint32_t)0x0); /* ... pen size */
-    write32(fdes, (uint32_t)colref);
+    write32(fdes, colref);
   }
   return recsize;
 }
@@ -303,7 +303,7 @@ static int WriteCreateSolidBrush(FILE *fdes, int hndNum, uint32_t colref)
     write32(fdes, (uint32_t)recsize);
     write32(fdes, (uint32_t)hndNum);
     write32(fdes, (uint32_t)0x0); /* solid brush style */
-    write32(fdes, (uint32_t)colref);
+    write32(fdes, colref);
     write32(fdes, (uint32_t)0x0); /* ignored when solid */
   }
   return recsize;
