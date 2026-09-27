@@ -83,7 +83,8 @@ static void mark_dir(unsigned short, unsigned short, direction_type, at_bitmap *
 static gboolean next_unmarked_pixel(unsigned short *, unsigned short *, direction_type *,
                                     at_bitmap *, at_bitmap *);
 
-gboolean is_valid_dir(unsigned short, unsigned short, direction_type, at_bitmap *, at_bitmap *);
+static gboolean is_valid_dir(unsigned short, unsigned short, direction_type, at_bitmap *,
+                             at_bitmap *);
 
 static at_coord next_point(at_bitmap *, edge_type *, unsigned short *, unsigned short *, at_color,
                            gboolean, at_bitmap *, at_exception_type *);
@@ -221,8 +222,8 @@ cleanup:
   return outline;
 }
 
-gboolean is_valid_dir(unsigned short row, unsigned short col, direction_type dir, at_bitmap *bitmap,
-                      at_bitmap *marked)
+static gboolean is_valid_dir(unsigned short row, unsigned short col, direction_type dir,
+                             at_bitmap *bitmap, at_bitmap *marked)
 {
 
   at_color c;

@@ -323,8 +323,8 @@ struct Colors_t dxftable[MAX_COLORS] = {
  * If current_point is at last point then it becomes NULL.
  * finished is 1 if coord_point has not been set, that is current_point is NULL.
  */
-void xypnt_next_pnt(xypnt_head_rec *head_xypnt /*  */, xypnt *coord_point /*  */,
-                    char *finished /*  */)
+static void xypnt_next_pnt(xypnt_head_rec *head_xypnt /*  */, xypnt *coord_point /*  */,
+                           char *finished /*  */)
 {
   if (head_xypnt && head_xypnt->current_point) {
     head_xypnt->current_point = head_xypnt->current_point->next_point;
@@ -341,8 +341,8 @@ void xypnt_next_pnt(xypnt_head_rec *head_xypnt /*  */, xypnt *coord_point /*  */
 /******************************************************************************
  * Moves the current_point pointer to the begining of the list
  */
-void xypnt_first_pnt(xypnt_head_rec *head_xypnt /*  */, xypnt *coord_point /*  */,
-                     char *finished /*  */)
+static void xypnt_first_pnt(xypnt_head_rec *head_xypnt /*  */, xypnt *coord_point /*  */,
+                            char *finished /*  */)
 {
   if (head_xypnt) {
     head_xypnt->current_point = head_xypnt->first_point;
@@ -360,7 +360,7 @@ void xypnt_first_pnt(xypnt_head_rec *head_xypnt /*  */, xypnt *coord_point /*  *
  * This routine will add the "coord_point" to the end of the xypnt list
  * which is specified by the "head_xypnt". Does not change current_point.
  */
-void xypnt_add_pnt(xypnt_head_rec *head_xypnt /*  */, xypnt coord_point /*  */)
+static void xypnt_add_pnt(xypnt_head_rec *head_xypnt /*  */, xypnt coord_point /*  */)
 {
   xypnt_point_rec *temp_point;
 
@@ -380,7 +380,7 @@ void xypnt_add_pnt(xypnt_head_rec *head_xypnt /*  */, xypnt coord_point /*  */)
  * This routine will dispose a list of points and the head pointer to
  * which they are connected to. The pointer is returned as a NIL.
  */
-void xypnt_dispose_list(xypnt_head_rec **head_xypnt /*  */)
+static void xypnt_dispose_list(xypnt_head_rec **head_xypnt /*  */)
 {
   xypnt_point_rec *p, *old;
   if (head_xypnt && *head_xypnt) {
@@ -400,7 +400,7 @@ void xypnt_dispose_list(xypnt_head_rec **head_xypnt /*  */)
  * not os specific.
  * returns: index of color
  */
-int GetIndexByRGBValue(int red /*  */, int green /*  */, int blue /*  */)
+static int GetIndexByRGBValue(int red /*  */, int green /*  */, int blue /*  */)
 {
   int savdis = 1, i;
   double psav = 10000000, pnew, px, py, pz;
@@ -426,8 +426,8 @@ int GetIndexByRGBValue(int red /*  */, int green /*  */, int blue /*  */)
 /******************************************************************************
  * Moves the current_point pointer to the end of the list
  */
-void xypnt_last_pnt(xypnt_head_rec *head_xypnt /*  */, xypnt *coord_point /*  */,
-                    char *finished /*  */)
+static void xypnt_last_pnt(xypnt_head_rec *head_xypnt /*  */, xypnt *coord_point /*  */,
+                           char *finished /*  */)
 {
   if (head_xypnt) {
     head_xypnt->current_point = head_xypnt->last_point;
@@ -446,7 +446,7 @@ void xypnt_last_pnt(xypnt_head_rec *head_xypnt /*  */, xypnt *coord_point /*  */
  *
  * returns:
  */
-double distpt2pt(xypnt p1 /*  */, xypnt p2 /*  */)
+static double distpt2pt(xypnt p1 /*  */, xypnt p2 /*  */)
 {
   double dx, dy;
 
@@ -482,8 +482,9 @@ static double get_total_length(xypnt_head_rec *vtx_list /*  */)
 /******************************************************************************
  * Convert B-Spline to list of lines.
  */
-int bspline_to_lines(xypnt_head_rec *vtx_list /*  */, xypnt_head_rec **new_vtx_list /*  */,
-                     int vtx_count /*  */, int spline_order /*  */, int spline_resolution /*  */)
+static int bspline_to_lines(xypnt_head_rec *vtx_list /*  */, xypnt_head_rec **new_vtx_list /*  */,
+                            int vtx_count /*  */, int spline_order /*  */,
+                            int spline_resolution /*  */)
 {
   int i, j, knot_index, number_of_segments, knot[MAX_VERTICES + 1], n, m;
   double spline_step, total_length, t, spline_pnt_x, spline_pnt_y, r;
@@ -678,7 +679,7 @@ static void out_splines(FILE *dxf_file, spline_list_array_type shape)
 /******************************************************************************
  * This function outputs a complete layer table for all 255 colors.
  */
-void output_layer(FILE *dxf_file, spline_list_array_type shape)
+static void output_layer(FILE *dxf_file, spline_list_array_type shape)
 {
   int i, idx;
   char layerlist[256];
