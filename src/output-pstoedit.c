@@ -13,7 +13,6 @@
 #include "logreport.h"
 
 #include <stdio.h>
-#include <string.h>
 #include <unistd.h>
 #include <glib/gstdio.h>
 
@@ -31,8 +30,6 @@ extern clearPstoeditDriverInfo_plainC_func clearPstoeditDriverInfo_plainC;
 static int output_pstoedit_writer(FILE *file, gchar *name, int llx, int lly, int urx, int ury,
                                   at_output_opts_type *opts, at_spline_list_array_type shape,
                                   at_msg_func msg_func, gpointer msg_data, gpointer user_data);
-
-static gboolean unusable_writer_p(const gchar *name);
 
 static gchar *make_temporary_file(const gchar *template, int *fd);
 
@@ -102,17 +99,15 @@ cleanup:
   return result;
 }
 
-gboolean unusable_writer_p(const gchar *suffix)
+/* pstoedit drivers not offered as output formats: the debugging and
+   PostScript pass-through back ends, and the two whose suffixes clash
+   with autotrace's own SVG and AI writers.  */
+static const gchar *const unusable_writers[] = {
+    "sam", "dbg", "gs", "psf", "fps", "ps", "spsc", "debug", "dump", "ps2as", "svg", "ai", NULL};
+
+static gboolean unusable_writer_p(const gchar *suffix)
 {
-  if (0 == strcmp(suffix, "sam") || 0 == strcmp(suffix, "dbg") || 0 == strcmp(suffix, "gs") ||
-      0 == strcmp(suffix, "psf") || 0 == strcmp(suffix, "fps") || 0 == strcmp(suffix, "ps") ||
-      0 == strcmp(suffix, "spsc") || 0 == strcmp(suffix, "debug") || 0 == strcmp(suffix, "dump") ||
-      0 == strcmp(suffix, "ps2as")
-      /* plot-* drivers crash with segfault */
-      || 0 == strcmp(suffix, "svg") || 0 == strcmp(suffix, "ai"))
-    return TRUE;
-  else
-    return FALSE;
+  return g_strv_contains(unusable_writers, suffix);
 }
 
 /* Create an empty, private file named after TEMPLATE in the temporary
