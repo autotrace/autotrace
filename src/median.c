@@ -762,7 +762,7 @@ static void median_cut_pass2_rgb(QuantizeObj *quantobj, at_bitmap *image, const 
       }
     }
   } else if (spp == 1) {
-    long idx = width * height;
+    long idx = (long)width * height;
     while (--idx >= 0) {
       origR = src[idx];
       R = origR >> R_SHIFT;
