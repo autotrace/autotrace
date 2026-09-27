@@ -16,10 +16,12 @@
 #include "color.h"
 #include "output-dr2d.h"
 
-/* Globals: Values are set by output_dr2d_writer() */
-static float XFactor;
-static float YFactor;
-static float LineThickness;
+/* Scale factors of the drawing, set once per output_dr2d_writer() call. */
+typedef struct {
+  float XFactor;
+  float YFactor;
+  float LineThickness;
+} dr2d_scale;
 
 #define FIXOFFS 10
 
@@ -44,13 +46,13 @@ struct Chunk {
   unsigned char *Data;
 };
 
-static struct Chunk *BuildDRHD(int, int, int, int);
+static struct Chunk *BuildDRHD(int, int, int, int, const dr2d_scale *);
 static struct Chunk *BuildPPRF(char *, int, char *, float);
 static struct Chunk *BuildCMAP(spline_list_array_type);
 static struct Chunk *BuildLAYR(void);
 static struct Chunk *BuildDASH(void);
-static struct Chunk *BuildBBOX(spline_list_type, int);
-static struct Chunk *BuildATTR(at_color, int, struct Chunk *);
+static struct Chunk *BuildBBOX(spline_list_type, int, const dr2d_scale *);
+static struct Chunk *BuildATTR(at_color, int, struct Chunk *, const dr2d_scale *);
 static int GetCMAPEntry(at_color, struct Chunk *);
 static int CountSplines(spline_list_type);
 static void FloatAsIEEEBytes(float, unsigned char *);
@@ -58,9 +60,9 @@ static void FreeChunk(struct Chunk *);
 static void FreeChunks(struct Chunk **, int);
 static int TotalSizeChunks(struct Chunk **, int);
 static int SizeChunk(struct Chunk *);
-static void PushPolyPoint(unsigned char *, int *, float, float);
+static void PushPolyPoint(unsigned char *, int *, float, float, const dr2d_scale *);
 static void PushPolyIndicator(unsigned char *, int *, unsigned int);
-static struct Chunk **GeneratexPLY(struct Chunk *, spline_list_array_type, int);
+static struct Chunk **GeneratexPLY(struct Chunk *, spline_list_array_type, int, const dr2d_scale *);
 
 static struct Chunk *BuildCMAP(spline_list_array_type shape)
 {
@@ -138,7 +140,7 @@ static int GetCMAPEntry(at_color colour, struct Chunk *CMAPChunk)
   return -1;
 }
 
-static struct Chunk *BuildBBOX(spline_list_type list, int height)
+static struct Chunk *BuildBBOX(spline_list_type list, int height, const dr2d_scale *scale)
 {
   unsigned this_spline;
   unsigned this_spline_length;
@@ -181,10 +183,10 @@ static struct Chunk *BuildBBOX(spline_list_type list, int height)
     }
   }
 
-  FloatAsIEEEBytes(x1 * XFactor, BBOXData);
-  FloatAsIEEEBytes(y1 * YFactor, BBOXData + 4);
-  FloatAsIEEEBytes(x2 * XFactor, BBOXData + 8);
-  FloatAsIEEEBytes(y2 * YFactor, BBOXData + 12);
+  FloatAsIEEEBytes(x1 * scale->XFactor, BBOXData);
+  FloatAsIEEEBytes(y1 * scale->YFactor, BBOXData + 4);
+  FloatAsIEEEBytes(x2 * scale->XFactor, BBOXData + 8);
+  FloatAsIEEEBytes(y2 * scale->YFactor, BBOXData + 12);
 
   memcpy(BBOXChunk->ID, "BBOX", 4);
   BBOXChunk->Size = 16;
@@ -193,7 +195,8 @@ static struct Chunk *BuildBBOX(spline_list_type list, int height)
   return BBOXChunk;
 }
 
-static struct Chunk *BuildATTR(at_color colour, int StrokeOrFill, struct Chunk *CMAPChunk)
+static struct Chunk *BuildATTR(at_color colour, int StrokeOrFill, struct Chunk *CMAPChunk,
+                               const dr2d_scale *scale)
 {
   struct Chunk *ATTRChunk;
   unsigned char *ATTRData;
@@ -213,7 +216,7 @@ static struct Chunk *BuildATTR(at_color colour, int StrokeOrFill, struct Chunk *
   at_put_u16be(ATTRData + 8, 0);
   /* Like the coordinates, the thickness goes through the fixed-point
      encoder and must be scaled the same way.  */
-  FloatAsIEEEBytes(LineThickness * (1 << FIXOFFS), ATTRData + 10);
+  FloatAsIEEEBytes(scale->LineThickness * (1 << FIXOFFS), ATTRData + 10);
 
   memcpy(ATTRChunk->ID, "ATTR", 4);
   ATTRChunk->Size = 14;
@@ -222,7 +225,7 @@ static struct Chunk *BuildATTR(at_color colour, int StrokeOrFill, struct Chunk *
   return ATTRChunk;
 }
 
-static struct Chunk *BuildDRHD(int x1, int y1, int x2, int y2)
+static struct Chunk *BuildDRHD(int x1, int y1, int x2, int y2, const dr2d_scale *scale)
 {
   struct Chunk *DRHDChunk;
   unsigned char *DRHDData;
@@ -230,10 +233,10 @@ static struct Chunk *BuildDRHD(int x1, int y1, int x2, int y2)
   DRHDChunk = g_new(struct Chunk, 1);
   DRHDData = g_malloc(16);
 
-  FloatAsIEEEBytes(x1 * XFactor, DRHDData);
-  FloatAsIEEEBytes(y1 * YFactor, DRHDData + 4);
-  FloatAsIEEEBytes(x2 * XFactor, DRHDData + 8);
-  FloatAsIEEEBytes(y2 * YFactor, DRHDData + 12);
+  FloatAsIEEEBytes(x1 * scale->XFactor, DRHDData);
+  FloatAsIEEEBytes(y1 * scale->YFactor, DRHDData + 4);
+  FloatAsIEEEBytes(x2 * scale->XFactor, DRHDData + 8);
+  FloatAsIEEEBytes(y2 * scale->YFactor, DRHDData + 12);
 
   memcpy(DRHDChunk->ID, "DRHD", 4);
   DRHDChunk->Size = 16;
@@ -319,7 +322,8 @@ static struct Chunk *BuildDASH(void)
   return DASHChunk;
 }
 
-static struct Chunk **GeneratexPLY(struct Chunk *CMAP, spline_list_array_type shape, int height)
+static struct Chunk **GeneratexPLY(struct Chunk *CMAP, spline_list_array_type shape, int height,
+                                   const dr2d_scale *scale)
 {
   unsigned this_list;
   unsigned this_list_length;
@@ -347,8 +351,8 @@ static struct Chunk **GeneratexPLY(struct Chunk *CMAP, spline_list_array_type sh
     StrokeOrFill = (shape.centerline || list.open);
     this_spline_length = SPLINE_LIST_LENGTH(list);
 
-    ChunkList[ListPoint++] = BuildBBOX(list, height);
-    ChunkList[ListPoint++] = BuildATTR(curr_color, StrokeOrFill, CMAP);
+    ChunkList[ListPoint++] = BuildBBOX(list, height, scale);
+    ChunkList[ListPoint++] = BuildATTR(curr_color, StrokeOrFill, CMAP, scale);
 
     PolyChunk = g_new(struct Chunk, 1);
 
@@ -367,20 +371,21 @@ static struct Chunk **GeneratexPLY(struct Chunk *CMAP, spline_list_array_type sh
     PolyPoint = 2;
 
     if (SPLINE_DEGREE(first) == LINEARTYPE) {
-      PushPolyPoint(PolyData, &PolyPoint, START_POINT(first).x, height - START_POINT(first).y);
+      PushPolyPoint(PolyData, &PolyPoint, START_POINT(first).x, height - START_POINT(first).y,
+                    scale);
     }
 
     for (this_spline = 0; this_spline < this_spline_length; this_spline++) {
       s = SPLINE_LIST_ELT(list, this_spline);
 
       if (SPLINE_DEGREE(s) == LINEARTYPE) {
-        PushPolyPoint(PolyData, &PolyPoint, END_POINT(s).x, height - END_POINT(s).y);
+        PushPolyPoint(PolyData, &PolyPoint, END_POINT(s).x, height - END_POINT(s).y, scale);
       } else {
         PushPolyIndicator(PolyData, &PolyPoint, IND_SPLINE);
-        PushPolyPoint(PolyData, &PolyPoint, START_POINT(s).x, height - START_POINT(s).y);
-        PushPolyPoint(PolyData, &PolyPoint, CONTROL1(s).x, height - CONTROL1(s).y);
-        PushPolyPoint(PolyData, &PolyPoint, CONTROL2(s).x, height - CONTROL2(s).y);
-        PushPolyPoint(PolyData, &PolyPoint, END_POINT(s).x, height - END_POINT(s).y);
+        PushPolyPoint(PolyData, &PolyPoint, START_POINT(s).x, height - START_POINT(s).y, scale);
+        PushPolyPoint(PolyData, &PolyPoint, CONTROL1(s).x, height - CONTROL1(s).y, scale);
+        PushPolyPoint(PolyData, &PolyPoint, CONTROL2(s).x, height - CONTROL2(s).y, scale);
+        PushPolyPoint(PolyData, &PolyPoint, END_POINT(s).x, height - END_POINT(s).y, scale);
       }
     }
   }
@@ -412,15 +417,16 @@ static int CountSplines(spline_list_type list)
   return Total;
 }
 
-static void PushPolyPoint(unsigned char *PolyData, int *PolyPoint, float x, float y)
+static void PushPolyPoint(unsigned char *PolyData, int *PolyPoint, float x, float y,
+                          const dr2d_scale *scale)
 {
   int PolyLocal;
 
   PolyLocal = *PolyPoint;
 
-  FloatAsIEEEBytes(x * XFactor, PolyData + PolyLocal);
+  FloatAsIEEEBytes(x * scale->XFactor, PolyData + PolyLocal);
   PolyLocal += 4;
-  FloatAsIEEEBytes(y * YFactor, PolyData + PolyLocal);
+  FloatAsIEEEBytes(y * scale->YFactor, PolyData + PolyLocal);
 
   *PolyPoint = PolyLocal + 4;
 }
@@ -513,6 +519,7 @@ int output_dr2d_writer(FILE *file, gchar *name, int llx, int lly, int urx, int u
   int height = ury - lly;
   int NumSplines, FORMSize;
   int Portrait;
+  dr2d_scale scale;
   struct Chunk *DRHDChunk;
   struct Chunk *PPRFChunk;
   struct Chunk *LAYRChunk;
@@ -524,22 +531,22 @@ int output_dr2d_writer(FILE *file, gchar *name, int llx, int lly, int urx, int u
   Portrait = width < height;
 
   if (Portrait) {
-    XFactor = ((float)11.6930 / (float)width) * (1 << FIXOFFS);
-    YFactor = XFactor;
+    scale.XFactor = ((float)11.6930 / (float)width) * (1 << FIXOFFS);
+    scale.YFactor = scale.XFactor;
   } else {
-    YFactor = ((float)8.2681 / (float)height) * (1 << FIXOFFS);
-    XFactor = YFactor;
+    scale.YFactor = ((float)8.2681 / (float)height) * (1 << FIXOFFS);
+    scale.XFactor = scale.YFactor;
   }
 
-  LineThickness = (float)1.0 / opts->dpi;
+  scale.LineThickness = (float)1.0 / opts->dpi;
 
-  DRHDChunk = BuildDRHD(llx, lly, urx, ury);
+  DRHDChunk = BuildDRHD(llx, lly, urx, ury, &scale);
   PPRFChunk = BuildPPRF("Inch", Portrait, "A4", 1.0);
   LAYRChunk = BuildLAYR();
   DASHChunk = BuildDASH();
   CMAPChunk = BuildCMAP(shape);
 
-  ChunkList = GeneratexPLY(CMAPChunk, shape, height);
+  ChunkList = GeneratexPLY(CMAPChunk, shape, height, &scale);
 
   NumSplines = SPLINE_LIST_ARRAY_LENGTH(shape) * 3;
   FORMSize = 4 + (SizeChunk(DRHDChunk) + 8) + (SizeChunk(PPRFChunk) + 8) +
