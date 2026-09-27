@@ -667,9 +667,6 @@ static unsigned char *ReadImage(FILE *fd, int width, int height, unsigned char c
            *   row_buf[1] == pixel data
            */
           for (j = 0; ((unsigned char)j < (unsigned char)row_buf[0]) && (xpos < width);) {
-#ifdef DEBUG2
-            printf("%u %u | ", xpos, width);
-#endif
             for (i = 1; ((i <= (8 / bpp)) && (xpos < width) &&
                          ((unsigned char)j < (unsigned char)row_buf[0]));
                  i++, xpos++, j++) {

@@ -37,7 +37,7 @@ static gboolean write8(FILE *fdes, uint8_t data)
 
   count = fwrite(&data, 1, 1, fdes);
 
-  return (count == sizeof(uint8_t)) ? TRUE : FALSE;
+  return count == sizeof(uint8_t);
 }
 
 static gboolean output_beginmetafilename(FILE *fdes, const char *string)

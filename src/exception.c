@@ -19,7 +19,7 @@ at_exception_type at_exception_new(at_msg_func client_func, gpointer client_data
 
 gboolean at_exception_got_fatal(at_exception_type *exception)
 {
-  return (exception->msg_type == AT_MSG_FATAL) ? TRUE : FALSE;
+  return exception->msg_type == AT_MSG_FATAL;
 }
 
 void at_exception_fatal(at_exception_type *exception, const gchar *message)
