@@ -60,10 +60,10 @@
 #define MAKE_COLREF(r, g, b) (((r) & 0x0FF) | (((g) & 0x0FF) << 8) | (((b) & 0x0FF) << 16))
 #define MK_PEN(n) ((n) * 2 + 1)
 #define MK_BRUSH(n) ((n) * 2 + 2)
-#define X_FLOAT_TO_UI32(num) ((uint32_t)(num * SCALE))
-#define X_FLOAT_TO_UI16(num) ((uint16_t)(num * SCALE))
-#define Y_FLOAT_TO_UI32(num) ((uint32_t)(y_offset - num * SCALE))
-#define Y_FLOAT_TO_UI16(num) ((uint16_t)(y_offset - num * SCALE))
+#define X_FLOAT_TO_UI32(num) ((uint32_t)((num) * SCALE))
+#define X_FLOAT_TO_UI16(num) ((uint16_t)((num) * SCALE))
+#define Y_FLOAT_TO_UI32(num) ((uint32_t)(y_offset - (num) * SCALE))
+#define Y_FLOAT_TO_UI16(num) ((uint16_t)(y_offset - (num) * SCALE))
 
 /* Emf stats needed for outputting EHNMETAHEADER*/
 

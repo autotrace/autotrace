@@ -52,11 +52,11 @@ extern int at_output_add_handler_full(const gchar *suffix, const gchar *descript
 #define AT_SPLINE_LIST_LENGTH_VALUE(spll) ((spll).length)
 #define AT_SPLINE_LIST_LENGTH(spll) AT_SPLINE_LIST_LENGTH_VALUE(*(spll))
 #define AT_SPLINE_LIST_DATA_VALUE(spll) ((spll).data)
-#define AT_SPLINE_LIST_DATA(spll) AT_SPLINE_LIST_DATA_VALUE((*spll))
+#define AT_SPLINE_LIST_DATA(spll) AT_SPLINE_LIST_DATA_VALUE(*(spll))
 #define AT_SPLINE_LIST_ELT_VALUE(spll, index) AT_SPLINE_LIST_DATA_VALUE(spll)[(index)]
-#define AT_SPLINE_LIST_ELT(spll, index) (&(AT_SPLINE_LIST_ELT_VALUE((*spll), (index))))
+#define AT_SPLINE_LIST_ELT(spll, index) (&(AT_SPLINE_LIST_ELT_VALUE(*(spll), (index))))
 #define AT_SPLINE_LIST_COLOR_VALUE(spll) ((spll).color)
-#define AT_SPLINE_LIST_COLOR(spll) (&(AT_SPLINE_LIST_COLOR_VALUE(*spll)))
+#define AT_SPLINE_LIST_COLOR(spll) (&(AT_SPLINE_LIST_COLOR_VALUE(*(spll))))
 #define AT_SPLINE_LIST_IS_OPENED_VALUE(spll) ((spll).open)
 #define AT_SPLINE_LIST_IS_OPENED(spll) AT_SPLINE_LIST_IS_OPENED_VALUE(*(spll))
 
