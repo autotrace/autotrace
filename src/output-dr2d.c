@@ -17,9 +17,9 @@
 #include "output-dr2d.h"
 
 /* Globals: Values are set by output_dr2d_writer() */
-float XFactor;
-float YFactor;
-float LineThickness;
+static float XFactor;
+static float YFactor;
+static float LineThickness;
 
 #define FIXOFFS 10
 

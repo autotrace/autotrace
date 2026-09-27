@@ -32,7 +32,7 @@ typedef struct {
   gfloat dpi;
 } BboxT;
 
-BboxT cbox;
+static BboxT cbox;
 
 /*===========================================================================
   Return a color name based on RGB value
