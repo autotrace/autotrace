@@ -1,0 +1,31 @@
+symbol 0x42 design-size 1063
+	advance-width 83
+	contour
+		path
+			dot-on 0 83
+			dot-on 0 1
+			dot-on 1 1
+			dot-on 41 83
+			dot-on 0 83
+		end path
+		path
+			dot-on 41 83
+			dot-on 0 0
+			dot-on 83 0
+			dot-on 57 52
+			dot-on 41 83
+		end path
+		path
+			dot-on 42 83
+			dot-on 82 1
+			dot-on 83 1
+			dot-on 83 83
+			dot-on 42 83
+		end path
+	end contour
+	left-bearing 0
+	right-bearing -1
+	ascend 84
+	descend 0
+end symbol
+
