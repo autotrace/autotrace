@@ -32,8 +32,6 @@ typedef struct {
   gfloat dpi;
 } BboxT;
 
-static BboxT cbox;
-
 /*===========================================================================
   Return a color name based on RGB value
 ===========================================================================*/
@@ -88,9 +86,9 @@ static gfloat bezpnt(gfloat t, gfloat z1, gfloat z2, gfloat z3, gfloat z4)
 /*===========================================================================
   Print a point
 ===========================================================================*/
-static void print_coord(FILE *f, gfloat x, gfloat y)
+static void print_coord(FILE *f, const BboxT *cbox, gfloat x, gfloat y)
 {
-  fprintf(f, "  <Point %.2f %.2f>\n", x * 72.0 / cbox.dpi, (cbox.ury - y + 1) * 72.0 / cbox.dpi);
+  fprintf(f, "  <Point %.2f %.2f>\n", x * 72.0 / cbox->dpi, (cbox->ury - y + 1) * 72.0 / cbox->dpi);
 }
 
 /*===========================================================================
@@ -105,12 +103,7 @@ int output_mif_writer(FILE *ps_file, gchar *name, int llx, int lly, int urx, int
   ColorT col_tbl[256];
   int n_ctbl = 0;
   at_color curr_color = {0, 0, 0};
-
-  cbox.llx = llx;
-  cbox.lly = lly;
-  cbox.urx = urx;
-  cbox.ury = ury;
-  cbox.dpi = (gfloat)opts->dpi;
+  BboxT cbox = {llx, lly, urx, ury, (gfloat)opts->dpi};
 
   for (this_list = 0; this_list < SPLINE_LIST_ARRAY_LENGTH(shape); this_list++) {
     spline_list_type list = SPLINE_LIST_ARRAY_ELT(shape, this_list);
@@ -180,19 +173,19 @@ int output_mif_writer(FILE *ps_file, gchar *name, int llx, int lly, int urx, int
                                             : "<Polygon <Fill 0><Pen 15>");
     fprintf(ps_file, "  <ObColor `%s'>\n", col_tbl[i].tag);
 
-    print_coord(ps_file, START_POINT(first).x, START_POINT(first).y);
+    print_coord(ps_file, &cbox, START_POINT(first).x, START_POINT(first).y);
     smooth = FALSE;
     for (this_spline = 0; this_spline < SPLINE_LIST_LENGTH(list); this_spline++) {
       spline_type s = SPLINE_LIST_ELT(list, this_spline);
 
       if (SPLINE_DEGREE(s) == LINEARTYPE) {
-        print_coord(ps_file, END_POINT(s).x, END_POINT(s).y);
+        print_coord(ps_file, &cbox, END_POINT(s).x, END_POINT(s).y);
       } else {
         gfloat temp;
         gfloat dt = (gfloat)(1.0 / 7.0);
         /*smooth = TRUE; */
         for (temp = dt; fabs(temp - (gfloat)1.0) > dt; temp += dt) {
-          print_coord(ps_file,
+          print_coord(ps_file, &cbox,
                       bezpnt(temp, START_POINT(s).x, CONTROL1(s).x, CONTROL2(s).x, END_POINT(s).x),
                       bezpnt(temp, START_POINT(s).y, CONTROL1(s).y, CONTROL2(s).y, END_POINT(s).y));
         }
