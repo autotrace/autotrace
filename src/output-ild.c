@@ -30,17 +30,17 @@
 
 #define POINT_ATTRIB_BLANKED 0x01
 
-int write3DFrames = 0;
-int trueColorWrite = 1;
-int writeTable = 0;
-int fromToZero = 1;
-int insert_anchor_points = 1;
+static int write3DFrames = 0;
+static int trueColorWrite = 1;
+static int writeTable = 0;
+static int fromToZero = 1;
+static int insert_anchor_points = 1;
 
-int lineDistance = 800;
-int blankDistance = 1200;
-int anchor_thresh = 40;
+static int lineDistance = 800;
+static int blankDistance = 1200;
+static int anchor_thresh = 40;
 
-int inserted_anchor_points = 0;
+static int inserted_anchor_points = 0;
 
 typedef struct tagLaserPoint {
   short int x;
@@ -66,8 +66,8 @@ typedef struct tagLaserSequence {
 
 typedef LaserSequence *pLaserSequence;
 
-pLaserFrame drawframe = NULL;
-pLaserSequence drawsequence = NULL;
+static pLaserFrame drawframe = NULL;
+static pLaserSequence drawsequence = NULL;
 static unsigned char ilda[4] = {'I', 'L', 'D', 'A'};
 
 // ILDA standard color palette

@@ -47,7 +47,7 @@ typedef struct Colors_t {
 
 #define MAX_COLORS 255
 
-struct Colors_t dxftable[MAX_COLORS] = {
+static const Colors dxftable[MAX_COLORS] = {
     /*   1 */ {255, 0, 0},
     /*   2 */ {255, 255, 0},
     /*   3 */ {0, 255, 0},
