@@ -27,8 +27,6 @@
 /* These output their arguments, preceded by the indentation.  */
 #define OUT(s, ...) fprintf(dxf_file, s, __VA_ARGS__)
 
-#define color_check FALSE
-
 /**************************************************************************************
 Definitions for spline to line transformation
 **************************************************************************************/
@@ -429,11 +427,10 @@ static void out_splines(FILE *dxf_file, spline_list_array_type shape)
   unsigned this_list;
   double startx, starty;
   xypnt pnt, pnt_old = {0, 0};
-  char new_layer = 0, layerstr[10];
+  char new_layer = 0, layerstr[10] = "C1";
   int first_seg = 1, idx;
   at_color last_color = {0, 0, 0};
 
-  strcpy(layerstr, "C1");
   for (this_list = 0; this_list < SPLINE_LIST_ARRAY_LENGTH(shape); this_list++) {
     unsigned this_spline;
 
@@ -443,12 +440,10 @@ static void out_splines(FILE *dxf_file, spline_list_array_type shape)
         (list.clockwise && shape.background_color != NULL) ? *(shape.background_color) : list.color;
 
     if (this_list == 0 || !at_color_equal(&curr_color, &last_color)) {
-      if (!(curr_color.r == 0 && curr_color.g == 0 && curr_color.b == 0) || !color_check) {
-        idx = GetIndexByRGBValue(curr_color.r, curr_color.g, curr_color.b);
-        sprintf(layerstr, "C%d", idx);
-        new_layer = 1;
-        last_color = curr_color;
-      }
+      idx = GetIndexByRGBValue(curr_color.r, curr_color.g, curr_color.b);
+      g_snprintf(layerstr, sizeof(layerstr), "C%d", idx);
+      new_layer = 1;
+      last_color = curr_color;
     }
     startx = START_POINT(first).x;
     starty = START_POINT(first).y;
@@ -548,11 +543,9 @@ static void output_layer(FILE *dxf_file, spline_list_array_type shape)
         (list.clockwise && shape.background_color != NULL) ? *(shape.background_color) : list.color;
 
     if (this_list == 0 || !at_color_equal(&curr_color, &last_color)) {
-      if (!(curr_color.r == 0 && curr_color.g == 0 && curr_color.b == 0) || !color_check) {
-        idx = GetIndexByRGBValue(curr_color.r, curr_color.g, curr_color.b);
-        layerlist[idx - 1] = 1;
-        last_color = curr_color;
-      }
+      idx = GetIndexByRGBValue(curr_color.r, curr_color.g, curr_color.b);
+      layerlist[idx - 1] = 1;
+      last_color = curr_color;
     }
   }
 
