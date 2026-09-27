@@ -60,7 +60,7 @@ input_native_src=src/input-bmp.c src/input-bmp.h \
 		   src/input-tga.c src/input-tga.h
 endif
 
-input_src=src/input-gf.c src/input-gf.h \
+input_src=src/input-gf.c src/input-gf.h src/glyph-metrics.h \
 	  $(input_magick_src) \
 	  $(input_native_src) \
 	  $(input_png_src)

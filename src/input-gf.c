@@ -12,7 +12,7 @@
 #include <setjmp.h>
 #include <stdarg.h>
 #include "input-gf.h"
-#include "output-ugs.h"
+#include "glyph-metrics.h"
 #include "logreport.h"
 #include <glib.h>
 
@@ -646,6 +646,7 @@ at_bitmap input_gf_reader(gchar *filename, at_input_opts_type *opts, at_msg_func
   at_bitmap bitmap = at_bitmap_init(NULL, 0, 0, 0);
   gf_font_t fontdata, *font = &fontdata;
   gf_char_t chardata, *sym = &chardata;
+  at_glyph_metrics *metrics = user_data;
   unsigned int i, j, ptr;
 
   font->exp = &exp;
@@ -677,13 +678,15 @@ at_bitmap input_gf_reader(gchar *filename, at_input_opts_type *opts, at_msg_func
     return bitmap;
   }
 
-  ugs_design_pixels = font->design_size * font->v_pixels_per_point + 0.5;
-  ugs_charcode = opts->charcode;
-  ugs_advance_width = sym->h_escapement;
-  ugs_left_bearing = sym->bbox_min_col;
-  ugs_descend = sym->bbox_min_row;
-  ugs_max_col = sym->bbox_max_col;
-  ugs_max_row = sym->bbox_max_row;
+  if (metrics) {
+    metrics->design_pixels = font->design_size * font->v_pixels_per_point + 0.5;
+    metrics->charcode = opts->charcode;
+    metrics->advance_width = sym->h_escapement;
+    metrics->left_bearing = sym->bbox_min_col;
+    metrics->descend = sym->bbox_min_row;
+    metrics->max_col = sym->bbox_max_col;
+    metrics->max_row = sym->bbox_max_row;
+  }
 
   bitmap = at_bitmap_init(NULL, sym->width, sym->height, 1);
   for (j = 0, ptr = 0; j < sym->height; j++) {
