@@ -7,9 +7,6 @@
  * SPDX-License-Identifier: LGPL-2.1-or-later
  */
 
-#undef ILD_DEBUG
-#undef ANCHOR_DEBUG
-
 #include <stdio.h>
 #include <string.h>
 
@@ -557,11 +554,8 @@ static void insertAnchorPoints()
     dx = next->x - p->x;
     dy = next->y - p->y;
 
-#ifdef ANCHOR_DEBUG
-    printf("x:%d y:%d", p->x, p->y);
-    printf(" x:%d y:%d", next->x, next->y);
-    printf(" dx1: %f dy1:%f dx: %f dy:%f\n", dx1, dy1, dx, dy);
-#endif
+    DEBUG("anchor: x:%d y:%d x:%d y:%d dx1: %f dy1:%f dx: %f dy:%f", p->x, p->y, next->x, next->y,
+          dx1, dy1, dx, dy);
 
     if (dx || dy) {
       a = getAngle(dx1, dy1, dx, dy);
@@ -569,11 +563,6 @@ static void insertAnchorPoints()
         /* Dwell on a sharp corner: repeat the point after itself. */
         pn = newLaserPoint();
         *pn = *p;
-#ifdef ANCHOR_DEBUG
-        pn->r = 255;
-        pn->g = 255;
-        pn->b = 0;
-#endif
         g_queue_insert_after(points, l, pn);
         inserted_anchor_points++;
         l = l->next;
@@ -619,10 +608,7 @@ static void drawLine(double x1, double y1, double x2, double y2, unsigned char r
   int i, len, steps;
   double t, lx, ly;
   LaserPoint *p;
-#ifdef ILD_DEBUG
-  printf("Line from %f %f to %f %f", x1, y1, x2, y2);
-  printf(" color %d %d %d\n", r1, g1, b1);
-#endif
+  DEBUG("Line from %f %f to %f %f color %d %d %d", x1, y1, x2, y2, r1, g1, b1);
 
   frameDrawInit(rint(x1), rint(y1), r1, g1, b1);
 
@@ -656,10 +642,8 @@ static void drawCubicBezier(double x1, double y1, double cx1, double cy1, double
   int len, steps, i;
   double t, lx, ly;
   LaserPoint *p;
-#ifdef ILD_DEBUG
-  printf("Cubic from %f %f over %f %f and %f %f to %f %f", x1, y1, cx1, cy1, cx2, cy2, x2, y2);
-  printf(" color %d %d %d\n", r1, g1, b1);
-#endif
+  DEBUG("Cubic from %f %f over %f %f and %f %f to %f %f color %d %d %d", x1, y1, cx1, cy1, cx2, cy2,
+        x2, y2, r1, g1, b1);
 
   frameDrawInit(rint(x1), rint(y1), r1, g1, b1);
 
