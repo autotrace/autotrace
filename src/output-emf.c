@@ -38,7 +38,6 @@
 #define ENMT_CREATEPEN 38
 #define ENMT_CREATEBRUSHINDIRECT 39
 #define ENMT_SELECTOBJECT 37
-#define ENMT_SETWORLDTRANSFORM 35
 #define ENMT_SETPOLYFILLMODE 19
 #define ENMT_STROKEPATH 64
 #define ENMT_LINETO 54
@@ -331,37 +330,6 @@ static int WriteStrokePath(FILE *fdes)
   }
   return recsize;
 }
-
-#if 0
-static int WriteSetWorldTransform(FILE * fdes, uint32_t height)
-{
-  int recsize = sizeof(uint32_t) * 8;
-  float fHeight;
-
-  if (fdes != NULL) {
-    float s1 = (float)(1.0 / SCALE);
-    float s2 = (float)(1.0 / SCALE);
-    uint32_t t1;
-    uint32_t t2;
-    /* conversion to float */
-    fHeight = (float)height;
-    /* binary copy for serialization */
-    memcpy((void *)&height, (void *)&fHeight, sizeof(uint32_t));
-    memcpy((void *)&t1, (void *)&s1, sizeof(uint32_t));
-    memcpy((void *)&t2, (void *)&s2, sizeof(uint32_t));
-
-    write32(fdes, ENMT_SETWORLDTRANSFORM);
-    write32(fdes, (uint32_t) recsize);
-    write32(fdes, (uint32_t) t1);
-    write32(fdes, (uint32_t) 0x0);
-    write32(fdes, (uint32_t) 0x0);
-    write32(fdes, (uint32_t) t2);
-    write32(fdes, (uint32_t) 0x0);
-    write32(fdes, (uint32_t) 0x0);
-  }
-  return recsize;
-}
-#endif /* 0 */
 
 static int WriteCreateSolidPen(FILE *fdes, int hndNum, uint32_t colref)
 {

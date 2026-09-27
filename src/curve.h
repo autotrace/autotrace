@@ -113,7 +113,6 @@ typedef struct {
 #define CURVE_LIST_CLOCKWISE(c_l) ((c_l).clockwise)
 
 extern curve_list_type new_curve_list(void);
-extern void free_curve_list(curve_list_type *);
 extern void append_curve(curve_list_type *, curve_type);
 
 /* And a character is a list of outlines.  I named this
