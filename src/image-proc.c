@@ -12,14 +12,9 @@
 #include "logreport.h"
 #include "image-proc.h"
 
-#define BLACK 0
-#define WHITE 0xff
 #ifndef M_SQRT2
 #define M_SQRT2 1.41421356237
 #endif
-
-/* Threshold for binarizing a monochrome image */
-#define GRAY_THRESHOLD 225
 
 /* RGB to grayscale */
 #define LUMINANCE(r, g, b) ((r) * 0.30 + (g) * 0.59 + (b) * 0.11 + 0.5)
@@ -187,126 +182,5 @@ void free_distance_map(at_distance_map *dist)
     for (y = 0; y < h; y++)
       g_free((gpointer *)dist->weight[y]);
     g_free((gpointer *)dist->weight);
-  }
-}
-
-#if 0
-void medial_axis(bitmap_type * bitmap, at_distance_map * dist, const at_color * bg_color)
-{
-  unsigned x, y, test;
-  unsigned w, h;
-  unsigned char *b;
-  float **d, f;
-  at_color bg;
-
-  assert(bitmap != NULL);
-
-  assert(AT_BITMAP_PLANES(*bitmap) == 1);
-
-  b = AT_BITMAP_BITS(*bitmap);
-  assert(b != NULL);
-  assert(dist != NULL);
-  d = dist->d;
-  assert(d != NULL);
-
-  h = AT_BITMAP_HEIGHT(*dist);
-  w = AT_BITMAP_WIDTH(*dist);
-  assert(AT_BITMAP_WIDTH(*bitmap) == w && AT_BITMAP_HEIGHT(*bitmap) == h);
-
-  if (bg_color)
-    bg = *bg_color;
-  else
-    bg.r = bg.g = bg.b = 255;
-
-  f = d[0][0] + 0.5;
-  test = (f < d[1][0]) + (f < d[1][1]) + (f < d[0][1]);
-  if (test > 1)
-    b[0] = bg.r;
-
-  f = d[0][w - 1] + 0.5;
-  test = (f < d[1][w - 1]) + (f < d[1][w - 2]) + (f < d[0][w - 2]);
-  if (test > 1)
-    b[w - 1] = bg.r;
-
-  for (x = 1; x < w - 1; x++) {
-    f = d[0][x] + 0.5;
-    test = (f < d[0][x - 1]) + (f < d[0][x + 1]) + (f < d[1][x - 1])
-        + (f < d[1][x]) + (f < d[1][x + 1]);
-    if (test > 1)
-      b[x] = bg.r;
-  }
-  b += w;
-
-  for (y = 1; y < h - 1; y++) {
-    f = d[y][0] + 0.5;
-    test = (f < d[y - 1][0]) + (f < d[y - 1][1]) + (f < d[y][1])
-        + (f < d[y + 1][0]) + (f < d[y + 1][1]);
-    if (test > 1)
-      b[0] = bg.r;
-
-    for (x = 1; x < w - 1; x++) {
-      f = d[y][x] + 0.5;
-      test = (f < d[y - 1][x - 1]) + (f < d[y - 1][x]) + (f < d[y - 1][x + 1])
-          + (f < d[y][x - 1]) + (f < d[y][x + 1])
-          + (f < d[y + 1][x - 1]) + (f < d[y + 1][x]) + (f < d[y + 1][x + 1]);
-      if (test > 1)
-        b[x] = bg.r;
-    }
-
-    f = d[y][w - 1] + 0.5;
-    test = (f < d[y - 1][w - 1]) + (f < d[y - 1][w - 2]) + (f < d[y][w - 2])
-        + (f < d[y + 1][w - 1]) + (f < d[y + 1][w - 2]);
-    if (test > 1)
-      b[w - 1] = bg.r;
-
-    b += w;
-  }
-
-  for (x = 1; x < w - 1; x++) {
-    f = d[h - 1][x] + 0.5;
-    test = (f < d[h - 1][x - 1]) + (f < d[h - 1][x + 1])
-        + (f < d[h - 2][x - 1]) + (f < d[h - 2][x]) + (f < d[h - 2][x + 1]);
-    if (test > 1)
-      b[x] = bg.r;
-  }
-
-  f = d[h - 1][0] + 0.5;
-  test = (f < d[h - 2][0]) + (f < d[h - 2][1]) + (f < d[h - 1][1]);
-  if (test > 1)
-    b[0] = bg.r;
-
-  f = d[h - 1][w - 1] + 0.5;
-  test = (f < d[h - 2][w - 1]) + (f < d[h - 2][w - 2]) + (f < d[h - 1][w - 2]);
-  if (test > 1)
-    b[w - 1] = bg.r;
-}
-#endif
-
-/* Binarize a grayscale or color image. */
-
-void binarize(at_bitmap *bitmap)
-{
-  unsigned i, npixels, spp;
-  unsigned char *b;
-
-  assert(bitmap != NULL);
-  assert(AT_BITMAP_BITS(bitmap) != NULL);
-
-  b = AT_BITMAP_BITS(bitmap);
-  spp = AT_BITMAP_PLANES(bitmap);
-  npixels = AT_BITMAP_WIDTH(bitmap) * AT_BITMAP_HEIGHT(bitmap);
-
-  if (spp == 1) {
-    for (i = 0; i < npixels; i++)
-      b[i] = (b[i] > GRAY_THRESHOLD ? WHITE : BLACK);
-  } else if (spp == 3) {
-    unsigned char *rgb = b;
-    for (i = 0; i < npixels; i++, rgb += 3) {
-      b[i] = (LUMINANCE(rgb[0], rgb[1], rgb[2]) > GRAY_THRESHOLD ? WHITE : BLACK);
-    }
-    AT_BITMAP_BITS(bitmap) = g_realloc(AT_BITMAP_BITS(bitmap), npixels);
-    AT_BITMAP_PLANES(bitmap) = 1;
-  } else {
-    WARNING("binarize: %u-plane images are not supported", spp);
   }
 }

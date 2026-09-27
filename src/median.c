@@ -14,17 +14,10 @@
 
 #define MAXNUMCOLORS 256
 
-#if 0
-#define R_SCALE 1
-#define G_SCALE 1
-#define B_SCALE 1
-#else
-
 /* scale RGB distances by *2,*3,*1 */
 #define R_SCALE 2
 #define G_SCALE 3
 #define B_SCALE 1
-#endif
 
 #define BITS_IN_SAMPLE 8
 

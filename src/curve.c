@@ -172,7 +172,7 @@ curve_list_type new_curve_list(void)
 
 /* Free a curve list and all the curves it contains.  */
 
-void free_curve_list(curve_list_type *curve_list)
+static void free_curve_list(curve_list_type *curve_list)
 {
   unsigned this_curve;
 
