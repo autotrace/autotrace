@@ -92,12 +92,17 @@ autotrace -debug-bitmap testrect.pbm -output-format svg -output-file debug.svg 2
 check_binary testrect.dump.pgm expected/testrect.dump.pgm
 rm -f testrect.dump.pgm debug.svg
 
-# -log debug must turn on the tracing diagnostics.  GLib's default log
-# handler prints debug messages on stdout, so capture both streams.
+# -log debug must turn on the tracing diagnostics, and they must all go
+# to stderr: stdout carries the traced image when no output file is given.
 autotrace -log debug "$INPUT" -output-format svg -output-file log.svg >log.out 2>log.err
-if ! grep -q "DEBUG" log.out log.err; then
-    echo "-log debug produced no debug messages"
+if ! grep -q "DEBUG" log.err; then
+    echo "-log debug produced no debug messages on stderr"
     failed="$failed log"
+fi
+if [ -s log.out ]; then
+    echo "-log debug wrote to stdout:"
+    head -3 log.out
+    failed="$failed log-stdout"
 fi
 rm -f log.svg log.out log.err
 
