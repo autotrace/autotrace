@@ -1,0 +1,1488 @@
+<Units Upt>
+<ColorCatalog
+ <Color <ColorTag White><ColorCyan 0><ColorMagenta 0><ColorYellow 0><ColorBlack 0>>
+ <Color <ColorTag Black><ColorCyan 0><ColorMagenta 0><ColorYellow 0><ColorBlack 100>>
+>
+<Frame
+ <Pen 15>
+ <Fill 15>
+ <PenWidth  0.2 pt>
+ <Separation 0>
+ <BRect  0.0 pt 0.0 pt 137.8 pt 107.5 pt>
+ <Polygon <Fill 0><Pen 15>
+  <ObColor `White'>
+  <Point 0.0 0.2>
+  <Point 0.0 107.7>
+  <Point 137.7 107.7>
+  <Point 137.7 0.2>
+  <Point 0.0 0.2>
+  <Smoothed No>
+ >
+ <Polygon <Fill 0><Pen 15>
+  <ObColor `Black'>
+  <Point 72.9 19.4>
+  <Point 69.9 18.9>
+  <Point 66.9 18.6>
+  <Point 63.9 18.4>
+  <Point 60.9 18.5>
+  <Point 58.0 18.8>
+  <Point 46.2 22.4>
+  <Point 40.9 25.6>
+  <Point 36.2 29.6>
+  <Point 32.1 34.4>
+  <Point 28.9 39.7>
+  <Point 24.9 53.8>
+  <Point 24.7 56.2>
+  <Point 24.6 58.6>
+  <Point 24.7 61.1>
+  <Point 25.1 63.5>
+  <Point 24.7 67.2>
+  <Point 22.8 66.4>
+  <Point 20.9 65.7>
+  <Point 19.0 64.8>
+  <Point 17.2 64.0>
+  <Point 12.8 62.2>
+  <Point 12.1 61.9>
+  <Point 11.3 61.5>
+  <Point 10.5 61.2>
+  <Point 9.8 61.1>
+  <Point 8.0 61.6>
+  <Point 7.8 62.0>
+  <Point 7.6 62.5>
+  <Point 7.5 63.1>
+  <Point 7.4 63.7>
+  <Point 7.5 66.4>
+  <Point 8.0 68.0>
+  <Point 8.7 69.5>
+  <Point 9.6 70.9>
+  <Point 10.6 72.2>
+  <Point 17.1 78.4>
+  <Point 21.7 81.9>
+  <Point 26.5 85.2>
+  <Point 31.6 88.2>
+  <Point 36.8 90.8>
+  <Point 51.2 95.9>
+  <Point 55.0 96.9>
+  <Point 58.9 97.8>
+  <Point 62.9 98.5>
+  <Point 66.8 99.0>
+  <Point 76.3 98.7>
+  <Point 78.2 98.0>
+  <Point 80.1 97.0>
+  <Point 81.6 95.8>
+  <Point 82.3 94.5>
+  <Point 82.0 91.1>
+  <Point 83.3 90.6>
+  <Point 84.6 89.9>
+  <Point 85.8 89.2>
+  <Point 87.0 88.4>
+  <Point 89.6 86.2>
+  <Point 90.0 85.7>
+  <Point 90.5 85.2>
+  <Point 91.0 84.7>
+  <Point 91.6 84.3>
+  <Point 93.7 84.4>
+  <Point 94.6 85.0>
+  <Point 95.5 85.7>
+  <Point 96.3 86.5>
+  <Point 97.1 87.3>
+  <Point 99.1 89.3>
+  <Point 99.5 89.6>
+  <Point 100.0 89.9>
+  <Point 100.5 90.1>
+  <Point 101.0 90.3>
+  <Point 102.4 91.2>
+  <Point 102.8 91.6>
+  <Point 103.2 92.0>
+  <Point 103.6 92.4>
+  <Point 104.0 92.9>
+  <Point 105.8 94.2>
+  <Point 106.8 94.5>
+  <Point 107.9 94.8>
+  <Point 108.9 95.1>
+  <Point 110.0 95.4>
+  <Point 112.4 97.0>
+  <Point 112.7 97.6>
+  <Point 113.0 98.1>
+  <Point 113.2 98.8>
+  <Point 113.4 99.4>
+  <Point 114.7 101.6>
+  <Point 115.7 102.6>
+  <Point 116.9 103.3>
+  <Point 118.1 103.9>
+  <Point 119.4 104.4>
+  <Point 125.2 103.7>
+  <Point 127.6 101.9>
+  <Point 129.2 99.5>
+  <Point 130.0 96.7>
+  <Point 129.9 93.8>
+  <Point 125.6 88.0>
+  <Point 124.5 87.4>
+  <Point 123.2 87.1>
+  <Point 122.0 87.0>
+  <Point 120.7 87.0>
+  <Point 117.8 87.7>
+  <Point 117.3 88.0>
+  <Point 116.9 88.2>
+  <Point 116.4 88.5>
+  <Point 115.9 88.8>
+  <Point 114.4 88.9>
+  <Point 113.7 88.8>
+  <Point 112.9 88.7>
+  <Point 112.1 88.7>
+  <Point 111.3 88.5>
+  <Point 109.9 88.1>
+  <Point 109.7 87.8>
+  <Point 109.4 87.6>
+  <Point 109.2 87.3>
+  <Point 109.0 87.0>
+  <Point 108.1 86.1>
+  <Point 107.6 85.8>
+  <Point 107.0 85.5>
+  <Point 106.4 85.4>
+  <Point 105.8 85.2>
+  <Point 104.2 83.8>
+  <Point 103.4 82.4>
+  <Point 102.3 81.1>
+  <Point 101.0 79.9>
+  <Point 99.6 78.8>
+  <Point 98.3 75.1>
+  <Point 99.5 72.7>
+  <Point 100.5 70.2>
+  <Point 101.3 67.6>
+  <Point 101.9 64.9>
+  <Point 104.2 60.2>
+  <Point 105.7 60.1>
+  <Point 107.0 59.7>
+  <Point 108.0 58.9>
+  <Point 109.0 57.8>
+  <Point 111.2 54.7>
+  <Point 111.5 54.3>
+  <Point 111.9 53.9>
+  <Point 112.2 53.5>
+  <Point 112.5 53.1>
+  <Point 113.0 51.4>
+  <Point 113.0 50.8>
+  <Point 112.9 50.2>
+  <Point 112.8 49.6>
+  <Point 112.8 49.0>
+  <Point 112.8 46.9>
+  <Point 112.9 46.2>
+  <Point 113.0 45.5>
+  <Point 113.0 44.9>
+  <Point 113.0 44.2>
+  <Point 112.5 42.2>
+  <Point 112.2 41.7>
+  <Point 111.9 41.2>
+  <Point 111.6 40.8>
+  <Point 111.2 40.4>
+  <Point 110.5 38.9>
+  <Point 110.4 38.5>
+  <Point 110.3 37.9>
+  <Point 110.2 37.4>
+  <Point 110.1 36.9>
+  <Point 109.6 35.5>
+  <Point 109.3 35.1>
+  <Point 108.9 34.6>
+  <Point 108.6 34.2>
+  <Point 108.3 33.8>
+  <Point 107.4 31.6>
+  <Point 107.0 30.4>
+  <Point 106.6 29.2>
+  <Point 106.2 28.2>
+  <Point 105.4 27.3>
+  <Point 103.2 23.9>
+  <Point 103.3 22.1>
+  <Point 103.1 20.4>
+  <Point 102.6 18.8>
+  <Point 102.1 17.2>
+  <Point 100.6 13.2>
+  <Point 100.6 12.8>
+  <Point 100.5 12.4>
+  <Point 100.5 12.0>
+  <Point 100.5 11.6>
+  <Point 99.8 9.5>
+  <Point 99.1 8.4>
+  <Point 98.3 7.3>
+  <Point 97.4 6.4>
+  <Point 96.3 5.5>
+  <Point 92.6 3.8>
+  <Point 91.3 3.6>
+  <Point 90.1 3.6>
+  <Point 88.9 3.7>
+  <Point 87.8 4.0>
+  <Point 84.2 4.8>
+  <Point 83.2 4.9>
+  <Point 82.3 4.9>
+  <Point 81.3 4.9>
+  <Point 80.4 5.0>
+  <Point 76.0 6.5>
+  <Point 74.2 8.1>
+  <Point 73.1 10.0>
+  <Point 72.5 12.1>
+  <Point 72.3 14.5>
+  <Smoothed No>
+ >
+ <Polygon <Fill 0><Pen 15>
+  <ObColor `White'>
+  <Point 87.8 4.2>
+  <Point 86.6 4.7>
+  <Point 85.9 5.5>
+  <Point 85.4 6.5>
+  <Point 85.3 7.6>
+  <Point 85.5 8.7>
+  <Point 87.0 11.1>
+  <Point 87.5 11.4>
+  <Point 88.1 11.5>
+  <Point 88.7 11.5>
+  <Point 89.3 11.6>
+  <Point 91.5 12.6>
+  <Point 92.4 13.4>
+  <Point 93.2 14.3>
+  <Point 94.1 15.1>
+  <Point 95.1 15.6>
+  <Point 98.8 15.0>
+  <Point 99.6 14.1>
+  <Point 99.9 13.1>
+  <Point 99.9 11.9>
+  <Point 99.6 10.8>
+  <Point 97.5 7.3>
+  <Point 96.1 6.1>
+  <Point 94.6 5.2>
+  <Point 93.0 4.4>
+  <Point 91.3 4.0>
+  <Smoothed No>
+ >
+ <Polygon <Fill 0><Pen 15>
+  <ObColor `White'>
+  <Point 75.8 20.1>
+  <Point 75.5 18.4>
+  <Point 75.2 16.6>
+  <Point 74.9 14.9>
+  <Point 74.9 13.3>
+  <Point 75.3 11.7>
+  <Point 78.5 8.2>
+  <Point 79.8 7.8>
+  <Point 81.2 7.5>
+  <Point 82.5 7.2>
+  <Point 83.7 6.8>
+  <Point 83.4 5.3>
+  <Point 81.6 5.4>
+  <Point 79.8 5.7>
+  <Point 78.1 6.1>
+  <Point 76.5 6.9>
+  <Point 73.3 10.8>
+  <Point 72.8 12.6>
+  <Point 72.6 14.6>
+  <Point 72.7 16.5>
+  <Point 73.3 18.2>
+  <Smoothed No>
+ >
+ <Polygon <Fill 0><Pen 15>
+  <ObColor `White'>
+  <Point 76.5 19.4>
+  <Point 77.0 18.6>
+  <Point 77.5 17.7>
+  <Point 78.0 16.9>
+  <Point 78.6 16.2>
+  <Point 79.3 15.6>
+  <Point 81.6 14.9>
+  <Point 82.1 14.9>
+  <Point 82.7 15.0>
+  <Point 83.3 15.1>
+  <Point 83.9 15.2>
+  <Point 85.2 14.8>
+  <Point 85.5 14.4>
+  <Point 85.8 14.0>
+  <Point 86.1 13.5>
+  <Point 86.3 13.0>
+  <Point 86.6 11.7>
+  <Point 86.2 10.9>
+  <Point 85.8 10.1>
+  <Point 85.4 9.2>
+  <Point 85.0 8.5>
+  <Point 83.7 7.4>
+  <Point 83.2 7.4>
+  <Point 82.6 7.4>
+  <Point 82.1 7.5>
+  <Point 81.5 7.7>
+  <Point 78.7 8.7>
+  <Point 77.1 10.0>
+  <Point 76.0 11.7>
+  <Point 75.3 13.5>
+  <Point 75.2 15.5>
+  <Smoothed No>
+ >
+ <Polygon <Fill 0><Pen 15>
+  <ObColor `White'>
+  <Point 85.4 15.8>
+  <Point 90.9 18.9>
+  <Point 91.2 18.5>
+  <Point 91.6 18.0>
+  <Point 91.9 17.5>
+  <Point 92.2 16.9>
+  <Point 92.5 16.4>
+  <Point 92.6 14.5>
+  <Point 92.1 13.7>
+  <Point 91.4 13.0>
+  <Point 90.5 12.5>
+  <Point 89.6 12.2>
+  <Point 87.3 12.7>
+  <Point 86.9 13.1>
+  <Point 86.5 13.6>
+  <Point 86.2 14.1>
+  <Point 85.9 14.7>
+  <Smoothed No>
+ >
+ <Polygon <Fill 0><Pen 15>
+  <ObColor `White'>
+  <Point 100.0 14.4>
+  <Point 99.6 15.3>
+  <Point 99.5 16.3>
+  <Point 99.6 17.4>
+  <Point 99.9 18.4>
+  <Point 100.3 19.4>
+  <Point 100.5 23.6>
+  <Point 99.8 25.3>
+  <Point 98.6 26.8>
+  <Point 97.0 27.9>
+  <Point 95.2 28.7>
+  <Point 92.2 30.8>
+  <Point 93.6 31.2>
+  <Point 95.3 30.9>
+  <Point 97.2 30.2>
+  <Point 98.9 29.1>
+  <Point 102.4 25.3>
+  <Point 102.9 23.5>
+  <Point 102.9 21.6>
+  <Point 102.6 19.8>
+  <Point 102.0 17.9>
+  <Point 100.0 14.4>
+  <Smoothed No>
+ >
+ <Polygon <Fill 0><Pen 15>
+  <ObColor `White'>
+  <Point 76.8 20.6>
+  <Point 78.2 21.2>
+  <Point 79.6 21.8>
+  <Point 81.0 22.5>
+  <Point 82.4 23.2>
+  <Point 83.7 24.0>
+  <Point 86.8 26.1>
+  <Point 87.3 26.5>
+  <Point 87.9 27.1>
+  <Point 88.5 27.6>
+  <Point 89.1 28.0>
+  <Point 91.1 28.2>
+  <Point 91.8 27.5>
+  <Point 92.2 26.4>
+  <Point 92.6 25.2>
+  <Point 92.7 24.0>
+  <Point 92.1 21.3>
+  <Point 91.6 20.7>
+  <Point 91.1 20.1>
+  <Point 90.5 19.6>
+  <Point 89.8 19.1>
+  <Point 86.6 17.0>
+  <Point 84.5 16.2>
+  <Point 82.5 15.8>
+  <Point 80.6 15.9>
+  <Point 79.0 16.6>
+  <Smoothed No>
+ >
+ <Polygon <Fill 0><Pen 15>
+  <ObColor `White'>
+  <Point 91.2 29.0>
+  <Point 92.1 28.9>
+  <Point 93.1 28.7>
+  <Point 94.1 28.5>
+  <Point 95.0 28.2>
+  <Point 95.9 27.9>
+  <Point 98.9 25.7>
+  <Point 99.7 24.2>
+  <Point 100.0 22.6>
+  <Point 100.0 20.9>
+  <Point 99.7 19.2>
+  <Point 97.7 16.2>
+  <Point 96.9 16.2>
+  <Point 96.2 16.1>
+  <Point 95.4 16.1>
+  <Point 94.6 16.1>
+  <Point 92.2 17.2>
+  <Point 91.7 18.3>
+  <Point 91.8 19.3>
+  <Point 92.3 20.5>
+  <Point 92.8 21.6>
+  <Point 93.3 24.7>
+  <Point 93.1 25.5>
+  <Point 92.7 26.2>
+  <Point 92.3 26.9>
+  <Point 91.9 27.6>
+  <Smoothed No>
+ >
+ <Polygon <Fill 0><Pen 15>
+  <ObColor `White'>
+  <Point 38.4 72.9>
+  <Point 38.0 72.0>
+  <Point 37.5 71.1>
+  <Point 37.0 70.2>
+  <Point 36.5 69.3>
+  <Point 36.0 68.3>
+  <Point 34.4 63.0>
+  <Point 33.9 59.5>
+  <Point 33.8 56.1>
+  <Point 34.1 52.6>
+  <Point 34.8 49.2>
+  <Point 40.0 38.9>
+  <Point 43.0 35.5>
+  <Point 46.6 32.6>
+  <Point 50.6 30.2>
+  <Point 54.8 28.5>
+  <Point 65.3 27.2>
+  <Point 66.8 27.4>
+  <Point 68.3 27.7>
+  <Point 69.7 28.0>
+  <Point 71.2 28.4>
+  <Point 74.6 29.0>
+  <Point 75.0 28.9>
+  <Point 75.3 28.6>
+  <Point 75.6 28.3>
+  <Point 76.0 28.0>
+  <Point 77.5 27.8>
+  <Point 78.5 28.1>
+  <Point 79.5 28.7>
+  <Point 80.5 29.3>
+  <Point 81.5 29.9>
+  <Point 83.3 31.5>
+  <Point 83.4 32.1>
+  <Point 83.4 32.6>
+  <Point 83.3 33.1>
+  <Point 83.2 33.7>
+  <Point 85.3 37.0>
+  <Point 87.0 39.1>
+  <Point 88.6 41.2>
+  <Point 90.0 43.4>
+  <Point 91.2 45.8>
+  <Point 93.5 56.2>
+  <Point 93.2 61.2>
+  <Point 92.1 66.1>
+  <Point 90.2 70.8>
+  <Point 87.5 75.0>
+  <Point 78.7 82.9>
+  <Point 77.2 83.8>
+  <Point 75.7 84.5>
+  <Point 74.1 85.2>
+  <Point 72.4 85.6>
+  <Point 69.6 86.6>
+  <Point 70.2 87.0>
+  <Point 70.9 87.3>
+  <Point 71.6 87.6>
+  <Point 72.3 87.9>
+  <Point 74.4 88.9>
+  <Point 75.2 89.3>
+  <Point 76.1 89.8>
+  <Point 77.0 90.3>
+  <Point 77.9 90.7>
+  <Point 80.7 91.0>
+  <Point 81.8 90.7>
+  <Point 82.8 90.2>
+  <Point 83.8 89.7>
+  <Point 84.8 89.1>
+  <Point 88.9 86.0>
+  <Point 91.0 84.0>
+  <Point 92.9 81.9>
+  <Point 94.7 79.6>
+  <Point 96.3 77.1>
+  <Point 101.2 64.4>
+  <Point 101.9 56.7>
+  <Point 101.0 49.1>
+  <Point 98.7 41.9>
+  <Point 95.0 35.2>
+  <Point 76.3 20.9>
+  <Point 68.4 19.2>
+  <Point 60.4 19.1>
+  <Point 52.5 20.6>
+  <Point 45.1 23.7>
+  <Point 30.7 37.5>
+  <Point 28.9 41.1>
+  <Point 27.4 44.8>
+  <Point 26.2 48.6>
+  <Point 25.5 52.6>
+  <Point 25.7 61.5>
+  <Point 25.8 62.7>
+  <Point 25.9 63.9>
+  <Point 26.1 65.1>
+  <Point 26.4 66.3>
+  <Point 27.9 68.5>
+  <Point 28.3 68.8>
+  <Point 28.8 69.0>
+  <Point 29.3 69.2>
+  <Point 29.8 69.4>
+  <Point 31.8 70.2>
+  <Point 32.8 70.7>
+  <Point 33.9 71.2>
+  <Point 35.0 71.7>
+  <Point 36.1 72.1>
+  <Smoothed No>
+ >
+ <Polygon <Fill 0><Pen 15>
+  <ObColor `White'>
+  <Point 102.4 26.1>
+  <Point 102.2 26.9>
+  <Point 102.4 27.6>
+  <Point 102.8 28.2>
+  <Point 103.3 28.7>
+  <Point 103.9 29.3>
+  <Point 105.0 31.3>
+  <Point 105.0 31.9>
+  <Point 104.8 32.5>
+  <Point 104.6 33.2>
+  <Point 104.4 33.8>
+  <Point 106.0 34.2>
+  <Point 106.9 33.0>
+  <Point 107.0 31.4>
+  <Point 106.4 29.7>
+  <Point 105.3 28.2>
+  <Smoothed No>
+ >
+ <Polygon <Fill 0><Pen 15>
+  <ObColor `White'>
+  <Point 92.4 62.4>
+  <Point 87.1 63.5>
+  <Point 82.3 62.6>
+  <Point 82.0 63.6>
+  <Point 81.6 64.7>
+  <Point 81.2 65.7>
+  <Point 80.7 66.6>
+  <Point 80.1 67.6>
+  <Point 74.1 73.6>
+  <Point 68.5 76.0>
+  <Point 62.6 76.6>
+  <Point 56.8 75.4>
+  <Point 51.6 72.6>
+  <Point 44.3 60.6>
+  <Point 44.1 58.8>
+  <Point 44.0 57.0>
+  <Point 44.1 55.1>
+  <Point 44.4 53.3>
+  <Point 46.0 48.7>
+  <Point 46.8 47.4>
+  <Point 47.7 46.2>
+  <Point 48.5 45.0>
+  <Point 49.1 43.7>
+  <Point 49.4 40.5>
+  <Point 49.2 39.9>
+  <Point 49.0 39.4>
+  <Point 48.8 38.9>
+  <Point 48.5 38.4>
+  <Point 49.0 37.7>
+  <Point 49.9 38.1>
+  <Point 50.7 38.5>
+  <Point 51.6 39.0>
+  <Point 52.5 39.4>
+  <Point 55.2 39.7>
+  <Point 55.6 39.6>
+  <Point 56.1 39.4>
+  <Point 56.6 39.1>
+  <Point 57.1 38.9>
+  <Point 59.0 38.2>
+  <Point 60.0 38.0>
+  <Point 61.0 37.8>
+  <Point 62.0 37.7>
+  <Point 63.0 37.6>
+  <Point 69.3 38.5>
+  <Point 73.3 40.3>
+  <Point 76.7 42.9>
+  <Point 79.5 46.2>
+  <Point 81.6 50.0>
+  <Point 92.6 61.9>
+  <Point 92.5 57.5>
+  <Point 92.2 53.3>
+  <Point 91.5 49.3>
+  <Point 90.3 45.4>
+  <Point 88.6 41.7>
+  <Point 76.2 30.8>
+  <Point 68.8 28.5>
+  <Point 61.2 28.1>
+  <Point 53.9 29.6>
+  <Point 47.1 32.9>
+  <Point 36.3 46.2>
+  <Point 35.8 47.5>
+  <Point 35.3 48.9>
+  <Point 35.0 50.4>
+  <Point 34.7 51.8>
+  <Point 34.2 57.4>
+  <Point 34.3 60.3>
+  <Point 34.7 63.3>
+  <Point 35.4 66.3>
+  <Point 36.5 69.1>
+  <Point 40.4 74.0>
+  <Point 41.1 74.4>
+  <Point 41.9 74.7>
+  <Point 42.6 75.0>
+  <Point 43.4 75.3>
+  <Point 46.3 76.5>
+  <Point 47.7 77.1>
+  <Point 49.2 77.8>
+  <Point 50.6 78.4>
+  <Point 52.0 79.0>
+  <Point 56.6 81.1>
+  <Point 58.5 82.1>
+  <Point 60.6 83.2>
+  <Point 62.6 84.1>
+  <Point 64.7 84.9>
+  <Point 73.5 84.8>
+  <Point 78.2 82.8>
+  <Point 82.4 79.8>
+  <Point 86.1 76.1>
+  <Point 89.1 71.8>
+  <Smoothed No>
+ >
+ <Polygon <Fill 0><Pen 15>
+  <ObColor `White'>
+  <Point 75.6 29.7>
+  <Point 82.3 33.6>
+  <Point 83.0 31.6>
+  <Point 82.0 31.1>
+  <Point 80.9 30.3>
+  <Point 79.6 29.5>
+  <Point 78.4 28.9>
+  <Point 77.2 28.6>
+  <Smoothed No>
+ >
+ <Polygon <Fill 0><Pen 15>
+  <ObColor `White'>
+  <Point 100.8 28.5>
+  <Point 100.1 29.2>
+  <Point 99.7 30.1>
+  <Point 99.5 31.1>
+  <Point 99.6 32.0>
+  <Point 99.9 32.9>
+  <Point 101.4 33.5>
+  <Point 101.5 32.7>
+  <Point 101.5 31.8>
+  <Point 101.4 30.9>
+  <Point 101.2 30.1>
+  <Smoothed No>
+ >
+ <Polygon <Fill 0><Pen 15>
+  <ObColor `White'>
+  <Point 101.7 28.5>
+  <Point 102.0 31.9>
+  <Point 102.7 31.4>
+  <Point 103.2 30.9>
+  <Point 103.4 30.3>
+  <Point 103.4 29.8>
+  <Point 103.1 29.3>
+  <Smoothed No>
+ >
+ <Polygon <Fill 0><Pen 15>
+  <ObColor `White'>
+  <Point 98.6 30.0>
+  <Point 93.3 31.9>
+  <Point 93.7 32.7>
+  <Point 94.2 33.5>
+  <Point 94.8 34.3>
+  <Point 95.3 35.1>
+  <Point 95.9 35.8>
+  <Point 98.1 39.5>
+  <Point 99.2 41.7>
+  <Point 100.2 44.1>
+  <Point 101.0 46.4>
+  <Point 101.6 48.9>
+  <Point 105.6 51.3>
+  <Point 105.5 50.6>
+  <Point 105.4 49.8>
+  <Point 105.4 49.2>
+  <Point 105.5 48.5>
+  <Point 105.6 47.8>
+  <Point 106.3 46.3>
+  <Point 105.6 45.5>
+  <Point 105.0 44.7>
+  <Point 104.6 43.9>
+  <Point 104.4 43.1>
+  <Point 104.3 42.3>
+  <Point 103.5 39.8>
+  <Point 102.7 39.2>
+  <Point 102.0 38.6>
+  <Point 101.5 37.8>
+  <Point 101.1 36.9>
+  <Point 100.3 34.3>
+  <Point 99.8 33.7>
+  <Point 99.5 33.0>
+  <Point 99.3 32.3>
+  <Point 99.1 31.6>
+  <Smoothed No>
+ >
+ <Polygon <Fill 0><Pen 15>
+  <ObColor `White'>
+  <Point 103.9 30.7>
+  <Point 103.0 32.1>
+  <Point 102.2 33.6>
+  <Point 101.8 35.1>
+  <Point 101.7 36.5>
+  <Point 102.1 37.9>
+  <Point 105.3 38.4>
+  <Point 104.3 37.4>
+  <Point 103.8 36.4>
+  <Point 103.7 35.3>
+  <Point 103.9 34.2>
+  <Point 104.1 33.1>
+  <Point 103.9 30.7>
+  <Smoothed No>
+ >
+ <Polygon <Fill 0><Pen 15>
+  <ObColor `White'>
+  <Point 107.2 33.6>
+  <Point 106.9 34.3>
+  <Point 106.9 35.0>
+  <Point 107.2 35.6>
+  <Point 107.5 36.1>
+  <Point 107.9 36.7>
+  <Point 108.3 38.6>
+  <Point 108.2 39.2>
+  <Point 108.0 39.7>
+  <Point 107.8 40.2>
+  <Point 107.6 40.7>
+  <Point 108.8 41.3>
+  <Point 109.6 40.3>
+  <Point 109.9 39.0>
+  <Point 109.6 37.5>
+  <Point 109.0 35.9>
+  <Smoothed No>
+ >
+ <Polygon <Fill 0><Pen 15>
+  <ObColor `White'>
+  <Point 104.1 35.7>
+  <Point 104.3 36.4>
+  <Point 104.6 37.0>
+  <Point 105.0 37.3>
+  <Point 105.4 37.4>
+  <Point 106.0 37.4>
+  <Point 107.0 36.5>
+  <Point 106.6 36.1>
+  <Point 106.3 35.8>
+  <Point 105.8 35.6>
+  <Point 105.3 35.6>
+  <Smoothed No>
+ >
+ <Polygon <Fill 0><Pen 15>
+  <ObColor `White'>
+  <Point 107.7 37.6>
+  <Point 106.7 38.0>
+  <Point 106.0 38.8>
+  <Point 105.4 39.7>
+  <Point 105.0 40.8>
+  <Point 104.8 42.0>
+  <Point 105.3 44.4>
+  <Point 105.6 44.7>
+  <Point 105.9 45.1>
+  <Point 106.2 45.4>
+  <Point 106.6 45.5>
+  <Point 107.3 44.8>
+  <Point 107.3 44.2>
+  <Point 107.1 43.6>
+  <Point 107.0 43.0>
+  <Point 106.8 42.3>
+  <Point 107.1 40.5>
+  <Point 107.3 40.0>
+  <Point 107.4 39.6>
+  <Point 107.6 39.1>
+  <Point 107.7 38.7>
+  <Smoothed No>
+ >
+ <Polygon <Fill 0><Pen 15>
+  <ObColor `White'>
+  <Point 55.6 40.0>
+  <Point 56.6 42.0>
+  <Point 59.9 40.9>
+  <Point 63.3 40.5>
+  <Point 66.6 40.7>
+  <Point 69.8 41.6>
+  <Point 72.7 43.0>
+  <Point 78.1 48.8>
+  <Point 78.6 49.6>
+  <Point 79.0 50.5>
+  <Point 79.4 51.4>
+  <Point 79.7 52.3>
+  <Point 80.3 54.7>
+  <Point 80.3 55.2>
+  <Point 80.3 55.8>
+  <Point 80.3 56.4>
+  <Point 80.3 57.0>
+  <Point 80.8 58.1>
+  <Point 81.1 58.2>
+  <Point 81.3 58.3>
+  <Point 81.7 58.3>
+  <Point 82.0 58.3>
+  <Point 82.5 56.4>
+  <Point 82.3 54.6>
+  <Point 82.0 52.9>
+  <Point 81.6 51.2>
+  <Point 81.0 49.5>
+  <Point 76.7 43.4>
+  <Point 73.7 41.1>
+  <Point 70.3 39.4>
+  <Point 66.7 38.4>
+  <Point 62.9 38.2>
+  <Smoothed No>
+ >
+ <Polygon <Fill 0><Pen 15>
+  <ObColor `White'>
+  <Point 49.4 38.8>
+  <Point 50.2 44.6>
+  <Point 54.2 47.0>
+  <Point 60.9 54.9>
+  <Point 61.2 54.9>
+  <Point 62.1 54.2>
+  <Point 56.1 45.4>
+  <Point 55.1 40.8>
+  <Point 49.4 38.8>
+  <Smoothed No>
+ >
+ <Polygon <Fill 0><Pen 15>
+  <ObColor `White'>
+  <Point 110.1 40.5>
+  <Point 111.0 45.1>
+  <Point 108.7 48.0>
+  <Point 110.3 47.6>
+  <Point 111.5 46.8>
+  <Point 112.3 45.6>
+  <Point 112.5 44.2>
+  <Point 112.3 42.8>
+  <Smoothed No>
+ >
+ <Polygon <Fill 0><Pen 15>
+  <ObColor `White'>
+  <Point 62.6 54.0>
+  <Point 63.6 53.9>
+  <Point 64.4 54.1>
+  <Point 64.9 54.5>
+  <Point 65.4 54.9>
+  <Point 65.9 55.5>
+  <Point 68.4 56.9>
+  <Point 69.7 57.1>
+  <Point 71.1 57.3>
+  <Point 72.5 57.4>
+  <Point 73.9 57.5>
+  <Point 76.9 57.8>
+  <Point 77.3 57.8>
+  <Point 77.8 57.9>
+  <Point 78.3 58.0>
+  <Point 78.7 58.0>
+  <Point 79.9 57.1>
+  <Point 80.0 56.2>
+  <Point 79.9 55.0>
+  <Point 79.6 53.8>
+  <Point 79.3 52.6>
+  <Point 77.4 48.4>
+  <Point 75.8 46.3>
+  <Point 73.9 44.6>
+  <Point 71.8 43.1>
+  <Point 69.4 42.0>
+  <Point 62.9 40.8>
+  <Point 61.2 40.9>
+  <Point 59.5 41.3>
+  <Point 58.0 42.0>
+  <Point 56.9 42.9>
+  <Point 57.8 47.0>
+  <Point 58.6 48.2>
+  <Point 59.4 49.3>
+  <Point 60.3 50.4>
+  <Point 61.1 51.6>
+  <Smoothed No>
+ >
+ <Polygon <Fill 0><Pen 15>
+  <ObColor `White'>
+  <Point 107.2 42.7>
+  <Point 107.4 43.4>
+  <Point 107.7 43.9>
+  <Point 108.1 44.1>
+  <Point 108.5 44.2>
+  <Point 109.1 44.1>
+  <Point 110.0 43.3>
+  <Point 109.6 42.9>
+  <Point 109.3 42.7>
+  <Point 108.9 42.5>
+  <Point 108.4 42.5>
+  <Smoothed No>
+ >
+ <Polygon <Fill 0><Pen 15>
+  <ObColor `White'>
+  <Point 49.2 44.6>
+  <Point 48.1 46.2>
+  <Point 47.2 47.8>
+  <Point 46.4 49.4>
+  <Point 45.7 51.1>
+  <Point 45.1 52.8>
+  <Point 45.5 62.8>
+  <Point 48.3 68.1>
+  <Point 52.5 72.3>
+  <Point 57.8 75.0>
+  <Point 63.6 76.0>
+  <Point 76.4 71.2>
+  <Point 77.6 69.9>
+  <Point 78.7 68.6>
+  <Point 79.6 67.2>
+  <Point 80.5 65.8>
+  <Point 79.6 62.1>
+  <Point 76.8 68.1>
+  <Point 72.2 72.0>
+  <Point 66.5 73.8>
+  <Point 60.5 73.6>
+  <Point 54.7 71.4>
+  <Point 46.9 60.1>
+  <Point 46.7 58.5>
+  <Point 46.6 57.0>
+  <Point 46.7 55.4>
+  <Point 47.0 53.9>
+  <Point 48.4 49.9>
+  <Point 49.0 49.0>
+  <Point 49.5 48.1>
+  <Point 49.9 47.2>
+  <Point 50.1 46.3>
+  <Smoothed No>
+ >
+ <Polygon <Fill 0><Pen 15>
+  <ObColor `White'>
+  <Point 106.0 50.8>
+  <Point 107.5 50.6>
+  <Point 107.6 49.5>
+  <Point 108.0 48.6>
+  <Point 108.4 47.8>
+  <Point 109.0 47.2>
+  <Point 109.6 46.5>
+  <Point 109.2 44.7>
+  <Point 108.1 45.2>
+  <Point 107.3 46.0>
+  <Point 106.7 47.1>
+  <Point 106.2 48.4>
+  <Smoothed No>
+ >
+ <Polygon <Fill 0><Pen 15>
+  <ObColor `White'>
+  <Point 79.2 61.9>
+  <Point 77.4 61.6>
+  <Point 75.7 61.1>
+  <Point 74.0 60.7>
+  <Point 72.3 60.2>
+  <Point 70.6 59.7>
+  <Point 66.4 59.3>
+  <Point 65.6 59.6>
+  <Point 64.9 59.9>
+  <Point 64.2 60.2>
+  <Point 63.5 60.4>
+  <Point 61.2 59.2>
+  <Point 60.8 58.6>
+  <Point 60.7 58.0>
+  <Point 60.6 57.4>
+  <Point 60.6 56.8>
+  <Point 60.2 55.0>
+  <Point 60.0 54.7>
+  <Point 59.8 54.3>
+  <Point 59.5 54.0>
+  <Point 59.2 53.6>
+  <Point 57.9 52.0>
+  <Point 57.0 50.9>
+  <Point 56.1 49.7>
+  <Point 55.2 48.7>
+  <Point 54.1 47.7>
+  <Point 51.2 47.0>
+  <Point 50.7 47.3>
+  <Point 50.2 47.8>
+  <Point 49.8 48.4>
+  <Point 49.5 49.0>
+  <Point 48.3 51.7>
+  <Point 47.8 53.4>
+  <Point 47.5 55.1>
+  <Point 47.3 56.8>
+  <Point 47.4 58.5>
+  <Point 51.0 67.2>
+  <Point 55.5 70.9>
+  <Point 61.0 72.9>
+  <Point 66.7 73.1>
+  <Point 72.1 71.3>
+  <Smoothed No>
+ >
+ <Polygon <Fill 0><Pen 15>
+  <ObColor `White'>
+  <Point 110.6 48.7>
+  <Point 110.8 50.1>
+  <Point 110.6 51.1>
+  <Point 110.2 51.8>
+  <Point 109.5 52.3>
+  <Point 108.6 52.7>
+  <Point 106.5 53.7>
+  <Point 108.3 54.3>
+  <Point 109.7 54.3>
+  <Point 110.8 53.7>
+  <Point 111.6 52.7>
+  <Point 112.0 51.4>
+  <Point 110.6 48.7>
+  <Smoothed No>
+ >
+ <Polygon <Fill 0><Pen 15>
+  <ObColor `White'>
+  <Point 108.0 48.7>
+  <Point 108.0 50.4>
+  <Point 110.4 50.8>
+  <Point 110.1 48.9>
+  <Point 108.0 48.7>
+  <Smoothed No>
+ >
+ <Polygon <Fill 0><Pen 15>
+  <ObColor `White'>
+  <Point 102.7 54.9>
+  <Point 104.8 55.2>
+  <Point 105.0 54.7>
+  <Point 105.3 54.2>
+  <Point 105.6 53.8>
+  <Point 105.9 53.5>
+  <Point 106.3 53.2>
+  <Point 107.6 52.6>
+  <Point 108.0 52.6>
+  <Point 108.4 52.6>
+  <Point 108.9 52.5>
+  <Point 109.2 52.4>
+  <Point 109.6 51.4>
+  <Point 109.3 51.2>
+  <Point 108.9 51.1>
+  <Point 108.3 51.1>
+  <Point 107.8 51.1>
+  <Point 106.2 51.5>
+  <Point 105.4 51.8>
+  <Point 104.7 52.3>
+  <Point 104.0 52.8>
+  <Point 103.5 53.4>
+  <Smoothed No>
+ >
+ <Polygon <Fill 0><Pen 15>
+  <ObColor `White'>
+  <Point 62.8 54.6>
+  <Point 61.7 55.2>
+  <Point 61.1 56.2>
+  <Point 61.0 57.3>
+  <Point 61.4 58.4>
+  <Point 62.1 59.2>
+  <Point 65.6 59.0>
+  <Point 66.1 58.0>
+  <Point 66.2 56.9>
+  <Point 65.8 55.9>
+  <Point 65.1 55.0>
+  <Smoothed No>
+ >
+ <Polygon <Fill 0><Pen 15>
+  <ObColor `White'>
+  <Point 105.3 55.4>
+  <Point 107.2 56.4>
+  <Point 107.7 54.9>
+  <Point 107.3 54.8>
+  <Point 106.9 54.8>
+  <Point 106.5 54.7>
+  <Point 106.2 54.7>
+  <Point 105.9 54.8>
+  <Smoothed No>
+ >
+ <Polygon <Fill 0><Pen 15>
+  <ObColor `White'>
+  <Point 109.6 54.9>
+  <Point 105.3 58.1>
+  <Point 102.4 57.6>
+  <Point 102.9 58.9>
+  <Point 104.1 59.5>
+  <Point 105.7 59.4>
+  <Point 107.3 58.8>
+  <Point 108.7 57.7>
+  <Smoothed No>
+ >
+ <Polygon <Fill 0><Pen 15>
+  <ObColor `White'>
+  <Point 102.4 55.6>
+  <Point 102.4 57.1>
+  <Point 102.9 57.2>
+  <Point 103.4 57.3>
+  <Point 103.9 57.4>
+  <Point 104.5 57.5>
+  <Point 105.0 57.6>
+  <Point 106.0 56.7>
+  <Point 105.7 56.3>
+  <Point 105.1 56.0>
+  <Point 104.4 55.8>
+  <Point 103.6 55.7>
+  <Smoothed No>
+ >
+ <Polygon <Fill 0><Pen 15>
+  <ObColor `White'>
+  <Point 66.9 57.1>
+  <Point 66.7 58.5>
+  <Point 70.2 59.2>
+  <Point 73.6 60.0>
+  <Point 77.1 61.0>
+  <Point 80.5 61.8>
+  <Point 84.0 62.4>
+  <Point 90.2 61.3>
+  <Point 89.3 60.6>
+  <Point 88.3 60.1>
+  <Point 87.2 59.8>
+  <Point 86.1 59.5>
+  <Point 81.5 58.9>
+  <Point 79.1 58.6>
+  <Point 76.7 58.3>
+  <Point 74.2 58.0>
+  <Point 71.8 57.7>
+  <Smoothed No>
+ >
+ <Polygon <Fill 0><Pen 15>
+  <ObColor `White'>
+  <Point 8.7 61.9>
+  <Point 8.4 62.2>
+  <Point 8.2 62.7>
+  <Point 8.1 63.2>
+  <Point 8.1 63.7>
+  <Point 8.1 64.3>
+  <Point 8.3 66.8>
+  <Point 8.9 68.4>
+  <Point 9.7 70.0>
+  <Point 10.8 71.5>
+  <Point 12.0 72.9>
+  <Point 17.0 75.9>
+  <Point 19.4 76.9>
+  <Point 21.9 77.8>
+  <Point 24.4 78.6>
+  <Point 26.9 79.5>
+  <Point 36.2 83.0>
+  <Point 40.6 84.8>
+  <Point 44.9 86.6>
+  <Point 49.2 88.5>
+  <Point 53.4 90.5>
+  <Point 64.2 95.8>
+  <Point 66.7 96.9>
+  <Point 69.3 98.0>
+  <Point 72.0 98.6>
+  <Point 74.7 98.7>
+  <Point 80.0 96.3>
+  <Point 80.4 95.9>
+  <Point 80.9 95.5>
+  <Point 81.3 95.1>
+  <Point 81.7 94.6>
+  <Point 81.7 93.2>
+  <Point 81.3 92.8>
+  <Point 80.9 92.5>
+  <Point 80.3 92.2>
+  <Point 79.8 92.0>
+  <Point 77.6 90.9>
+  <Point 76.2 90.3>
+  <Point 74.8 89.7>
+  <Point 73.5 89.0>
+  <Point 72.1 88.4>
+  <Point 63.1 84.5>
+  <Point 56.8 81.8>
+  <Point 50.6 79.0>
+  <Point 44.4 76.3>
+  <Point 38.1 73.6>
+  <Point 23.9 67.4>
+  <Point 22.1 66.6>
+  <Point 20.3 65.9>
+  <Point 18.5 65.2>
+  <Point 16.7 64.4>
+  <Point 12.6 62.8>
+  <Point 12.0 62.5>
+  <Point 11.3 62.1>
+  <Point 10.6 61.9>
+  <Point 9.9 61.7>
+  <Smoothed No>
+ >
+ <Polygon <Fill 0><Pen 15>
+  <ObColor `White'>
+  <Point 15.8 76.0>
+  <Point 17.1 77.5>
+  <Point 18.7 78.8>
+  <Point 20.3 80.1>
+  <Point 22.1 81.3>
+  <Point 23.9 82.5>
+  <Point 32.5 87.7>
+  <Point 38.0 90.5>
+  <Point 43.8 93.0>
+  <Point 49.7 95.1>
+  <Point 55.7 96.7>
+  <Point 66.0 97.0>
+  <Point 63.9 95.7>
+  <Point 61.6 94.6>
+  <Point 59.3 93.5>
+  <Point 57.0 92.5>
+  <Point 48.9 88.9>
+  <Point 45.2 87.3>
+  <Point 41.5 85.7>
+  <Point 37.8 84.2>
+  <Point 34.1 82.7>
+  <Point 25.1 79.3>
+  <Point 23.6 78.6>
+  <Point 22.0 78.0>
+  <Point 20.5 77.4>
+  <Point 18.9 76.8>
+  <Smoothed No>
+ >
+ <Polygon <Fill 0><Pen 15>
+  <ObColor `White'>
+  <Point 96.4 77.7>
+  <Point 95.7 79.2>
+  <Point 100.0 80.6>
+  <Point 99.7 80.0>
+  <Point 99.3 79.5>
+  <Point 98.8 79.0>
+  <Point 98.2 78.6>
+  <Point 97.7 78.3>
+  <Smoothed No>
+ >
+ <Polygon <Fill 0><Pen 15>
+  <ObColor `White'>
+  <Point 95.0 82.3>
+  <Point 95.2 82.3>
+  <Point 97.2 81.1>
+  <Point 96.6 80.4>
+  <Point 96.0 80.1>
+  <Point 95.5 80.0>
+  <Point 95.0 80.3>
+  <Point 94.7 80.8>
+  <Smoothed No>
+ >
+ <Polygon <Fill 0><Pen 15>
+  <ObColor `White'>
+  <Point 95.7 82.8>
+  <Point 96.9 83.1>
+  <Point 98.0 83.1>
+  <Point 99.1 83.1>
+  <Point 100.1 83.1>
+  <Point 101.1 83.4>
+  <Point 104.1 85.2>
+  <Point 103.6 83.8>
+  <Point 102.6 82.6>
+  <Point 101.2 81.7>
+  <Point 99.6 81.2>
+  <Point 98.1 81.1>
+  <Smoothed No>
+ >
+ <Polygon <Fill 0><Pen 15>
+  <ObColor `White'>
+  <Point 99.6 83.5>
+  <Point 98.6 83.5>
+  <Point 97.7 83.5>
+  <Point 96.9 83.5>
+  <Point 96.2 83.3>
+  <Point 95.4 83.0>
+  <Point 93.4 82.6>
+  <Point 93.6 83.5>
+  <Point 94.6 84.5>
+  <Point 95.9 85.1>
+  <Point 97.3 85.4>
+  <Smoothed No>
+ >
+ <Polygon <Fill 0><Pen 15>
+  <ObColor `White'>
+  <Point 100.3 83.5>
+  <Point 100.0 84.1>
+  <Point 99.8 84.6>
+  <Point 99.7 85.1>
+  <Point 99.7 85.5>
+  <Point 99.8 86.0>
+  <Point 100.9 86.5>
+  <Point 101.3 86.0>
+  <Point 101.6 85.5>
+  <Point 101.6 84.9>
+  <Point 101.4 84.4>
+  <Smoothed No>
+ >
+ <Polygon <Fill 0><Pen 15>
+  <ObColor `White'>
+  <Point 97.4 85.9>
+  <Point 98.1 87.1>
+  <Point 99.3 88.3>
+  <Point 100.8 89.3>
+  <Point 102.3 90.0>
+  <Point 103.7 90.0>
+  <Point 104.1 87.9>
+  <Point 103.1 88.0>
+  <Point 102.1 88.0>
+  <Point 101.2 87.9>
+  <Point 100.4 87.5>
+  <Point 97.4 85.9>
+  <Smoothed No>
+ >
+ <Polygon <Fill 0><Pen 15>
+  <ObColor `White'>
+  <Point 101.0 87.3>
+  <Point 102.1 87.6>
+  <Point 103.2 87.6>
+  <Point 104.3 87.5>
+  <Point 105.3 87.5>
+  <Point 106.3 87.7>
+  <Point 108.4 89.1>
+  <Point 108.8 88.7>
+  <Point 108.9 88.2>
+  <Point 108.8 87.7>
+  <Point 108.5 87.2>
+  <Point 106.6 85.9>
+  <Point 105.6 85.7>
+  <Point 104.5 85.6>
+  <Point 103.5 85.7>
+  <Point 102.5 86.1>
+  <Smoothed No>
+ >
+ <Polygon <Fill 0><Pen 15>
+  <ObColor `White'>
+  <Point 113.5 93.8>
+  <Point 115.2 94.3>
+  <Point 115.3 93.7>
+  <Point 115.5 93.2>
+  <Point 115.7 92.7>
+  <Point 116.0 92.2>
+  <Point 116.3 91.8>
+  <Point 119.8 89.4>
+  <Point 122.5 89.4>
+  <Point 124.9 90.5>
+  <Point 126.8 92.4>
+  <Point 127.8 94.9>
+  <Point 125.6 100.6>
+  <Point 125.3 100.9>
+  <Point 124.9 101.1>
+  <Point 124.5 101.4>
+  <Point 124.1 101.6>
+  <Point 122.9 102.1>
+  <Point 122.4 102.1>
+  <Point 121.9 102.2>
+  <Point 121.4 102.2>
+  <Point 120.9 102.2>
+  <Point 118.7 101.5>
+  <Point 117.7 100.8>
+  <Point 116.9 99.9>
+  <Point 116.1 98.9>
+  <Point 115.3 98.1>
+  <Point 114.7 100.3>
+  <Point 117.3 102.5>
+  <Point 120.4 103.5>
+  <Point 123.6 103.5>
+  <Point 126.5 102.2>
+  <Point 128.9 92.5>
+  <Point 126.9 89.8>
+  <Point 124.1 88.1>
+  <Point 120.8 87.6>
+  <Point 117.7 88.3>
+  <Smoothed No>
+ >
+ <Polygon <Fill 0><Pen 15>
+  <ObColor `White'>
+  <Point 106.0 88.0>
+  <Point 105.8 88.6>
+  <Point 105.6 89.2>
+  <Point 105.5 89.7>
+  <Point 105.5 90.2>
+  <Point 105.6 90.6>
+  <Point 106.8 90.8>
+  <Point 107.0 90.3>
+  <Point 107.1 89.8>
+  <Point 107.0 89.4>
+  <Point 106.9 88.9>
+  <Smoothed No>
+ >
+ <Polygon <Fill 0><Pen 15>
+  <ObColor `White'>
+  <Point 107.0 91.9>
+  <Point 107.7 91.9>
+  <Point 108.4 91.9>
+  <Point 109.1 91.6>
+  <Point 109.7 91.4>
+  <Point 110.4 91.1>
+  <Point 112.3 90.5>
+  <Point 112.8 90.5>
+  <Point 113.3 90.5>
+  <Point 113.7 90.5>
+  <Point 114.1 90.3>
+  <Point 113.7 89.2>
+  <Point 112.4 89.0>
+  <Point 111.1 89.0>
+  <Point 109.9 89.3>
+  <Point 108.7 89.9>
+  <Smoothed No>
+ >
+ <Polygon <Fill 0><Pen 15>
+  <ObColor `White'>
+  <Point 118.5 90.4>
+  <Point 118.6 91.1>
+  <Point 118.7 91.8>
+  <Point 118.8 92.4>
+  <Point 118.8 93.1>
+  <Point 118.7 93.7>
+  <Point 118.0 95.4>
+  <Point 117.6 95.8>
+  <Point 117.1 96.2>
+  <Point 116.7 96.6>
+  <Point 116.3 97.0>
+  <Point 116.3 98.9>
+  <Point 116.9 99.7>
+  <Point 117.7 100.5>
+  <Point 118.7 101.0>
+  <Point 119.8 101.4>
+  <Point 123.8 101.2>
+  <Point 125.4 100.1>
+  <Point 126.5 98.7>
+  <Point 127.2 97.0>
+  <Point 127.3 95.2>
+  <Point 125.5 91.3>
+  <Point 125.0 91.0>
+  <Point 124.6 90.7>
+  <Point 124.1 90.4>
+  <Point 123.6 90.2>
+  <Point 122.0 89.8>
+  <Point 121.4 89.8>
+  <Point 120.8 89.8>
+  <Point 120.2 89.9>
+  <Point 119.7 90.0>
+  <Smoothed No>
+ >
+ <Polygon <Fill 0><Pen 15>
+  <ObColor `White'>
+  <Point 102.9 90.7>
+  <Point 103.8 91.7>
+  <Point 105.1 92.7>
+  <Point 106.5 93.5>
+  <Point 108.0 94.0>
+  <Point 109.3 93.9>
+  <Point 107.2 92.5>
+  <Point 102.9 90.7>
+  <Smoothed No>
+ >
+ <Polygon <Fill 0><Pen 15>
+  <ObColor `White'>
+  <Point 111.6 91.2>
+  <Point 111.3 92.8>
+  <Point 113.0 93.6>
+  <Point 113.7 91.4>
+  <Point 111.6 91.2>
+  <Smoothed No>
+ >
+ <Polygon <Fill 0><Pen 15>
+  <ObColor `White'>
+  <Point 109.9 94.5>
+  <Point 111.2 95.2>
+  <Point 112.7 95.8>
+  <Point 114.3 96.3>
+  <Point 115.7 96.4>
+  <Point 117.0 96.0>
+  <Point 118.3 92.8>
+  <Point 118.3 92.5>
+  <Point 118.2 92.2>
+  <Point 118.2 92.0>
+  <Point 118.2 91.7>
+  <Point 117.4 91.5>
+  <Point 116.9 92.0>
+  <Point 116.6 92.6>
+  <Point 116.4 93.2>
+  <Point 116.2 93.7>
+  <Point 114.5 94.7>
+  <Point 113.6 94.5>
+  <Point 112.8 94.1>
+  <Point 112.0 93.8>
+  <Point 111.2 93.6>
+  <Smoothed No>
+ >
+>

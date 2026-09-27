@@ -1,0 +1,112 @@
+#!/bin/sh
+
+# SPDX-FileCopyrightText: © 2026 Peter Lemenkov
+#
+# SPDX-License-Identifier: CC0-1.0
+
+# Golden-file regression test for the fitting, despeckling and command
+# line options that no other test exercises.
+#
+# Each case traces watch.png with one group of options and compares the SVG
+# with the recorded file in expected/.  Two more cases cover -dpi, which
+# only the MIF writer uses, and -debug-bitmap, which dumps the loaded
+# bitmap as PNM.  To regenerate every expected file
+# from the current binary run:
+#
+#     REGENERATE=1 tests/other-fitting-options/run tests/other-fitting-options
+
+. "`dirname "$0"`/../functions"
+
+DIR=$1
+
+cd "$DIR" || fail "cannot enter $DIR"
+
+INPUT=watch.png
+
+# name|options; the name is the expected file's base name.
+CASES='corners|-corner-threshold 30 -corner-surround 3 -corner-always-threshold 45
+tangents|-tangent-surround 5 -remove-adjacent-corners
+lines|-line-threshold 2 -line-reversion-threshold 0.05 -error-threshold 1
+noise|-noise-removal 0.5 -filter-iterations 8
+width|-centerline -preserve-width -width-weight-factor 4
+despeckle|-despeckle-level 10 -despeckle-tightness 1.5 -color-count 8
+background|-background-color FFFFFF'
+
+# Drop the volatile header lines, and cut every coordinate to one decimal:
+# the least-squares fitting is sensitive to the last bits of floating
+# point arithmetic, and builds against different image libraries were
+# seen to disagree in the fourth decimal of a few coordinates.
+normalize() {
+    sed -e '/AutoTrace version/d' -e '/CreationDate/d' -e '/Title:/d' \
+        -e 's/\([0-9]*\.[0-9]\)[0-9]*/\1/g' "$1"
+}
+
+failed=""
+
+check_text() {
+    # $1 = produced file, $2 = expected file
+    if [ -n "$REGENERATE" ]; then
+        normalize "$1" > "$2"
+    elif [ ! -f "$2" ]; then
+        echo "$1: no expected file $2"
+        failed="$failed $1(missing)"
+    elif ! normalize "$1" | diff -u -w --strip-trailing-cr "$2" -; then
+        failed="$failed $1"
+    fi
+}
+
+check_binary() {
+    if [ -n "$REGENERATE" ]; then
+        cp "$1" "$2"
+    elif [ ! -f "$2" ]; then
+        echo "$1: no expected file $2"
+        failed="$failed $1(missing)"
+    elif ! cmp "$2" "$1"; then
+        failed="$failed $1"
+    fi
+}
+
+echo "$CASES" | while IFS='|' read name opts; do
+    out="$name.svg"
+    if ! autotrace $opts "$INPUT" -output-format svg -output-file "$out" 2>"$name.log"; then
+        echo "$out: autotrace failed:"
+        cat "$name.log"
+        echo "$out" >> failed.list
+        rm -f "$out" "$name.log"
+        continue
+    fi
+    check_text "$out" "expected/$name.svg"
+    [ -n "$failed" ] && echo "$out" >> failed.list
+    failed=""
+    rm -f "$out" "$name.log"
+done
+
+# -dpi is only used by the MIF writer, which scales its points by it.
+autotrace -dpi 300 "$INPUT" -output-format mif -output-file dpi.mif 2>/dev/null
+check_text dpi.mif expected/dpi.mif
+rm -f dpi.mif
+
+# -debug-bitmap writes the loaded bitmap as PNM into the current directory
+# before tracing; a small bilevel input keeps the expected file small.
+autotrace -debug-bitmap testrect.pbm -output-format svg -output-file debug.svg 2>/dev/null
+check_binary testrect.dump.pgm expected/testrect.dump.pgm
+rm -f testrect.dump.pgm debug.svg
+
+# -log debug must turn on the tracing diagnostics.  GLib's default log
+# handler prints debug messages on stdout, so capture both streams.
+autotrace -log debug "$INPUT" -output-format svg -output-file log.svg >log.out 2>log.err
+if ! grep -q "DEBUG" log.out log.err; then
+    echo "-log debug produced no debug messages"
+    failed="$failed log"
+fi
+rm -f log.svg log.out log.err
+
+if [ -f failed.list ]; then
+    failed="$failed `tr '\n' ' ' < failed.list`"
+    rm -f failed.list
+fi
+
+if [ -n "$failed" ]; then
+    fail "mismatch:$failed"
+fi
+ok
