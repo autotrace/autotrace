@@ -77,7 +77,6 @@ typedef struct {
 
 static GArray *color_list = NULL;    /* colours (uint32_t) in order of first use */
 static uint32_t *color_table = NULL; /* Color table */
-static float y_offset;
 
 /* color list & table functions */
 
@@ -146,7 +145,7 @@ static gboolean write16(FILE *fdes, uint16_t data)
 
 /* EMF record-type function definitions */
 
-static int WriteMoveTo(FILE *fdes, at_real_coord *pt)
+static int WriteMoveTo(FILE *fdes, at_real_coord *pt, float y_offset)
 {
   int recsize = sizeof(uint32_t) * 4;
 
@@ -159,7 +158,7 @@ static int WriteMoveTo(FILE *fdes, at_real_coord *pt)
   return recsize;
 }
 
-static int WriteLineTo(FILE *fdes, spline_type *spl)
+static int WriteLineTo(FILE *fdes, spline_type *spl, float y_offset)
 {
   int recsize = sizeof(uint32_t) * 4;
 
@@ -174,14 +173,14 @@ static int WriteLineTo(FILE *fdes, spline_type *spl)
 
 /* CorelDraw 9 can't handle PolyLineTo nor PolyLineTo16, so the polyline is
    written as single lines instead. */
-static int MyWritePolyLineTo(FILE *fdes, spline_type *spl, int nlines)
+static int MyWritePolyLineTo(FILE *fdes, spline_type *spl, int nlines, float y_offset)
 {
   int i;
-  int recsize = nlines * WriteLineTo(NULL, NULL);
+  int recsize = nlines * WriteLineTo(NULL, NULL, y_offset);
 
   if (fdes != NULL) {
     for (i = 0; i < nlines; i++) {
-      WriteLineTo(fdes, &spl[i]);
+      WriteLineTo(fdes, &spl[i], y_offset);
     }
   }
   return recsize;
@@ -189,7 +188,7 @@ static int MyWritePolyLineTo(FILE *fdes, spline_type *spl, int nlines)
 
 /* CorelDraw 9 can't handle PolyBezierTo, so the curves are written with
    PolyBezierTo16 instead. */
-static int WritePolyBezierTo16(FILE *fdes, spline_type *spl, int ncurves)
+static int WritePolyBezierTo16(FILE *fdes, spline_type *spl, int ncurves, float y_offset)
 {
   int i;
   int recsize = sizeof(uint32_t) * 7 + sizeof(uint16_t) * ncurves * 6;
@@ -466,7 +465,7 @@ static void GetEmfStats(EMFStats *stats, gchar *name, spline_list_array_type sha
     filesize += WriteBeginPath(NULL);
     // emf stats :: MoveTo
     nrecords++;
-    filesize += WriteMoveTo(NULL, NULL);
+    filesize += WriteMoveTo(NULL, NULL, 0);
     // visit each spline
     this_spline = 0;
     last_degree = -1;
@@ -490,12 +489,12 @@ static void GetEmfStats(EMFStats *stats, gchar *name, spline_list_array_type sha
       case LINEARTYPE:
         // emf stats :: PolyLineTo
         nrecords += nlines;
-        filesize += MyWritePolyLineTo(NULL, NULL, nlines);
+        filesize += MyWritePolyLineTo(NULL, NULL, nlines, 0);
         break;
       default:
         // emf stats :: PolyBezierTo
         nrecords++;
-        filesize += WritePolyBezierTo16(NULL, NULL, nlines);
+        filesize += WritePolyBezierTo16(NULL, NULL, nlines, 0);
         break;
       }
     }
@@ -547,7 +546,7 @@ static void OutputEmf(FILE *fdes, EMFStats *stats, gchar *name, int width, int h
   WriteHeader(fdes, name, width, height, stats->filesize, stats->nrecords,
               (stats->ncolors * 2) + 1);
 
-  y_offset = SCALE * height;
+  float y_offset = SCALE * height;
 
   // output fill mode
   WriteSetPolyFillMode(fdes);
@@ -582,7 +581,7 @@ static void OutputEmf(FILE *fdes, EMFStats *stats, gchar *name, int width, int h
 
     // output MoveTo first point
     curr_spline = SPLINE_LIST_ELT(curr_list, 0);
-    WriteMoveTo(fdes, &(START_POINT(curr_spline)));
+    WriteMoveTo(fdes, &(START_POINT(curr_spline)), y_offset);
 
     // visit each spline
     this_spline = 0;
@@ -605,11 +604,13 @@ static void OutputEmf(FILE *fdes, EMFStats *stats, gchar *name, int width, int h
       switch ((polynomial_degree)last_degree) {
       case LINEARTYPE:
         // output PolyLineTo
-        MyWritePolyLineTo(fdes, &(SPLINE_LIST_ELT(curr_list, this_spline - nlines)), nlines);
+        MyWritePolyLineTo(fdes, &(SPLINE_LIST_ELT(curr_list, this_spline - nlines)), nlines,
+                          y_offset);
         break;
       default:
         // output PolyBezierTo
-        WritePolyBezierTo16(fdes, &(SPLINE_LIST_ELT(curr_list, this_spline - nlines)), nlines);
+        WritePolyBezierTo16(fdes, &(SPLINE_LIST_ELT(curr_list, this_spline - nlines)), nlines,
+                            y_offset);
         break;
       }
     }
