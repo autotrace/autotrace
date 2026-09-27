@@ -19,8 +19,8 @@
 /* assume 1 pixel is equal to 1/80 inches (old FIG unit) */
 /* Offset by 300 units (1/4 inch) */
 
-#define FIG_X(x) (int)((x * 15.0) + 300.0)
-#define FIG_Y(y) (int)(((ury - y) * 15.0) + 300.0)
+#define FIG_X(x) (int)(((x) * 15.0) + 300.0)
+#define FIG_Y(y) (int)(((ury - (y)) * 15.0) + 300.0)
 
 /* the basic colours */
 #define FIG_BLACK 0

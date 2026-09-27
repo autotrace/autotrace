@@ -29,8 +29,8 @@
 #define SCALE (gfloat)1.0
 
 #define MAKE_COLREF(r, g, b) (((r) & 0x0FF) | (((g) & 0x0FF) << 8) | (((b) & 0x0FF) << 16))
-#define X_FLOAT_TO_UI32(num) ((uint32_t)(num * SCALE))
-#define Y_FLOAT_TO_UI32(num) ((uint32_t)(num * SCALE))
+#define X_FLOAT_TO_UI32(num) ((uint32_t)((num) * SCALE))
+#define Y_FLOAT_TO_UI32(num) ((uint32_t)((num) * SCALE))
 
 /*
   Searches color by closest rgb values (distance**2 of 2 3D points)

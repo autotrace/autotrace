@@ -58,7 +58,7 @@ typedef at_spline_list_type spline_list_type;
 #define NEXT_SPLINE_LIST_ELT(s_l, index)                                                           \
   SPLINE_LIST_ELT(s_l, ((index) + 1) % SPLINE_LIST_LENGTH(s_l))
 #define PREV_SPLINE_LIST_ELT(s_l, index)                                                           \
-  SPLINE_LIST_ELT(s_l, index == 0 ? SPLINE_LIST_LENGTH(s_l) - 1 : index - 1)
+  SPLINE_LIST_ELT(s_l, (index) == 0 ? SPLINE_LIST_LENGTH(s_l) - 1 : (index) - 1)
 
 /* Construct and destroy new `spline_list_type' objects.  */
 extern spline_list_type *new_spline_list(void);  /* Allocate new memory */

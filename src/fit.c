@@ -700,16 +700,16 @@ static void remove_adjacent_corners(index_list_type *list, unsigned last_index,
    Perhaps there is some simple pattern to the
    clockwise/counterclockwise differences, but I don't see one.  */
 #define CLOCKWISE_KNEE(prev_delta, next_delta)                                                     \
-  ((prev_delta.dx == -1.0 && next_delta.dy == 1.0) ||                                              \
-   (prev_delta.dy == 1.0 && next_delta.dx == 1.0) ||                                               \
-   (prev_delta.dx == 1.0 && next_delta.dy == -1.0) ||                                              \
-   (prev_delta.dy == -1.0 && next_delta.dx == -1.0))
+  (((prev_delta).dx == -1.0 && (next_delta).dy == 1.0) ||                                          \
+   ((prev_delta).dy == 1.0 && (next_delta).dx == 1.0) ||                                           \
+   ((prev_delta).dx == 1.0 && (next_delta).dy == -1.0) ||                                          \
+   ((prev_delta).dy == -1.0 && (next_delta).dx == -1.0))
 
 #define COUNTERCLOCKWISE_KNEE(prev_delta, next_delta)                                              \
-  ((prev_delta.dy == 1.0 && next_delta.dx == -1.0) ||                                              \
-   (prev_delta.dx == 1.0 && next_delta.dy == 1.0) ||                                               \
-   (prev_delta.dy == -1.0 && next_delta.dx == 1.0) ||                                              \
-   (prev_delta.dx == -1.0 && next_delta.dy == -1.0))
+  (((prev_delta).dy == 1.0 && (next_delta).dx == -1.0) ||                                          \
+   ((prev_delta).dx == 1.0 && (next_delta).dy == 1.0) ||                                           \
+   ((prev_delta).dy == -1.0 && (next_delta).dx == 1.0) ||                                          \
+   ((prev_delta).dx == -1.0 && (next_delta).dy == -1.0))
 
 static void remove_knee_points(curve_type curve, gboolean clockwise)
 {
