@@ -1090,7 +1090,7 @@ static spline_type fit_one_spline(curve_type curve, at_exception_type *exception
   gfloat C[2][2] = {{0.0, 0.0}, {0.0, 0.0}};
   gfloat X[2] = {0.0, 0.0};
 
-  A = g_malloc(CURVE_LENGTH(curve) * 2 * sizeof(vector_type)); /* A dynamically allocated array. */
+  A = g_new(vector_type, CURVE_LENGTH(curve) * 2); /* A dynamically allocated array. */
 
   START_POINT(spline) = CURVE_POINT(curve, 0);
   END_POINT(spline) = LAST_CURVE_POINT(curve);
@@ -1193,7 +1193,7 @@ static void find_tangent(curve_type curve, gboolean to_start_point, gboolean cro
   DEBUG("  tangent to %s: ", (to_start_point == TRUE) ? "start" : "end");
 
   if (*curve_tangent == NULL) {
-    *curve_tangent = g_malloc(sizeof(vector_type));
+    *curve_tangent = g_new(vector_type, 1);
     do {
       tangent = find_half_tangent(curve, to_start_point, &n_points, tangent_surround);
 

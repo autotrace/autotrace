@@ -418,7 +418,8 @@ static void despeckle_iteration(/* in */ int planes,
   current_size = 1 << level;
   tightness = (int)(noise_max / (1.0 + adaptive_tightness * level));
 
-  g_autofree unsigned char *mask = g_malloc0((gsize)width * height * sizeof(unsigned char));
+  gsize npixels = (gsize)width * height;
+  g_autofree unsigned char *mask = g_new0(unsigned char, npixels);
   for (y = 0; y < height; y++) {
     for (x = 0; x < width; x++) {
       if (mask[y * width + x] == 0) {

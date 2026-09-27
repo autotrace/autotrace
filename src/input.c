@@ -58,7 +58,7 @@ static at_input_format_entry *at_input_format_new(const gchar *descr, at_input_f
                                                   GDestroyNotify user_data_destroy_func)
 {
   at_input_format_entry *entry;
-  entry = g_malloc(sizeof(at_input_format_entry));
+  entry = g_new(at_input_format_entry, 1);
   if (entry) {
     entry->reader.func = reader;
     entry->reader.data = user_data;

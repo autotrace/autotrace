@@ -38,11 +38,11 @@ at_distance_map new_distance_map(at_bitmap *bitmap, unsigned char target_value, 
 
   dist.height = h;
   dist.width = w;
-  dist.d = g_malloc(h * sizeof(float *));
-  dist.weight = g_malloc(h * sizeof(float *));
+  dist.d = g_new(float *, h);
+  dist.weight = g_new(float *, h);
   for (y = 0; y < (signed)h; y++) {
-    dist.d[y] = g_malloc0(w * sizeof(float));
-    dist.weight[y] = g_malloc(w * sizeof(float));
+    dist.d[y] = g_new0(float, w);
+    dist.weight[y] = g_new(float, w);
   }
 
   if (spp == 3) {

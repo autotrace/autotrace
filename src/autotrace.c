@@ -38,7 +38,7 @@
 
 at_fitting_opts_type *at_fitting_opts_new(void)
 {
-  at_fitting_opts_type *opts = g_malloc(sizeof(at_fitting_opts_type));
+  at_fitting_opts_type *opts = g_new(at_fitting_opts_type, 1);
   *opts = new_fitting_opts();
   return opts;
 }
@@ -64,7 +64,7 @@ void at_fitting_opts_free(at_fitting_opts_type *opts)
 
 at_input_opts_type *at_input_opts_new(void)
 {
-  at_input_opts_type *opts = g_malloc0(sizeof(at_input_opts_type));
+  at_input_opts_type *opts = g_new0(at_input_opts_type, 1);
   return opts;
 }
 
@@ -86,7 +86,7 @@ void at_input_opts_free(at_input_opts_type *opts)
 
 at_output_opts_type *at_output_opts_new(void)
 {
-  at_output_opts_type *opts = g_malloc(sizeof(at_output_opts_type));
+  at_output_opts_type *opts = g_new(at_output_opts_type, 1);
   opts->dpi = AT_DEFAULT_DPI;
   return opts;
 }
@@ -107,7 +107,7 @@ at_bitmap *at_bitmap_read(at_bitmap_reader *reader, gchar *filename, at_input_op
                           at_msg_func msg_func, gpointer msg_data)
 {
   gboolean new_opts = FALSE;
-  at_bitmap *bitmap = g_malloc(sizeof(at_bitmap));
+  at_bitmap *bitmap = g_new(at_bitmap, 1);
   if (opts == NULL) {
     opts = at_input_opts_new();
     new_opts = TRUE;
@@ -120,7 +120,7 @@ at_bitmap *at_bitmap_read(at_bitmap_reader *reader, gchar *filename, at_input_op
 
 at_bitmap *at_bitmap_new(unsigned short width, unsigned short height, unsigned int planes)
 {
-  at_bitmap *bitmap = g_malloc(sizeof(at_bitmap));
+  at_bitmap *bitmap = g_new(at_bitmap, 1);
   *bitmap = at_bitmap_init(NULL, width, height, planes);
   return bitmap;
 }
@@ -143,6 +143,7 @@ at_bitmap at_bitmap_init(unsigned char *area, unsigned short width, unsigned sho
                          unsigned int planes)
 {
   at_bitmap bitmap;
+  gsize size = (gsize)width * height * planes;
 
   if (area)
     bitmap.bitmap = area;
@@ -150,7 +151,7 @@ at_bitmap at_bitmap_init(unsigned char *area, unsigned short width, unsigned sho
     if (0 == (width * height))
       bitmap.bitmap = NULL;
     else
-      bitmap.bitmap = g_malloc0((gsize)width * height * planes * sizeof(unsigned char));
+      bitmap.bitmap = g_new0(unsigned char, size);
   }
 
   bitmap.width = width;
@@ -222,7 +223,7 @@ at_splines_type *at_splines_new_full(at_bitmap *bitmap, at_fitting_opts_type *op
                                      at_testcancel_func test_cancel, gpointer testcancel_data)
 {
   image_header_type image_header;
-  at_splines_type *splines = g_malloc(sizeof(at_splines_type));
+  at_splines_type *splines = g_new(at_splines_type, 1);
   pixel_outline_list_type pixels;
   QuantizeObj *myQuant = NULL; /* curently not used */
   at_exception_type exp = at_exception_new(msg_func, msg_data);
