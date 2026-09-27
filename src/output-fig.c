@@ -49,61 +49,64 @@ static fig_colour_table *fig_col_init(void);
 static void fig_col_free(fig_colour_table *);
 static int get_fig_colour(fig_colour_table *, at_color, at_exception_type *);
 
-/* Bounding Box data and routines */
-static float glob_min_x, glob_max_x, glob_min_y, glob_max_y;
-static float loc_min_x, loc_max_x, loc_min_y, loc_max_y;
-static int glo_bbox_flag = 0, loc_bbox_flag = 0, fig_depth;
+/* Bounding Box data and routines.  The depth of each object is derived
+   from whether its bounding box lies inside the previous ones.  */
+typedef struct {
+  float glob_min_x, glob_max_x, glob_min_y, glob_max_y;
+  float loc_min_x, loc_max_x, loc_min_y, loc_max_y;
+  int glo_bbox_flag, loc_bbox_flag, fig_depth;
+} fig_bbox;
 
-static void fig_new_depth()
+static void fig_new_depth(fig_bbox *bb)
 {
-  if (glo_bbox_flag == 0) {
-    glob_max_y = loc_max_y;
-    glob_min_y = loc_min_y;
-    glob_max_x = loc_max_x;
-    glob_min_x = loc_min_x;
-    glo_bbox_flag = 1;
+  if (bb->glo_bbox_flag == 0) {
+    bb->glob_max_y = bb->loc_max_y;
+    bb->glob_min_y = bb->loc_min_y;
+    bb->glob_max_x = bb->loc_max_x;
+    bb->glob_min_x = bb->loc_min_x;
+    bb->glo_bbox_flag = 1;
   } else {
-    if ((loc_max_y <= glob_min_y) || (loc_min_y >= glob_max_y) || (loc_max_x <= glob_min_x) ||
-        (loc_min_x >= glob_max_x)) {
+    if ((bb->loc_max_y <= bb->glob_min_y) || (bb->loc_min_y >= bb->glob_max_y) ||
+        (bb->loc_max_x <= bb->glob_min_x) || (bb->loc_min_x >= bb->glob_max_x)) {
       /* outside global bounds, increase global box */
-      if (loc_max_y > glob_max_y)
-        glob_max_y = loc_max_y;
-      if (loc_min_y < glob_min_y)
-        glob_min_y = loc_min_y;
-      if (loc_max_x > glob_max_x)
-        glob_max_x = loc_max_x;
-      if (loc_min_x < glob_min_x)
-        glob_min_x = loc_min_x;
+      if (bb->loc_max_y > bb->glob_max_y)
+        bb->glob_max_y = bb->loc_max_y;
+      if (bb->loc_min_y < bb->glob_min_y)
+        bb->glob_min_y = bb->loc_min_y;
+      if (bb->loc_max_x > bb->glob_max_x)
+        bb->glob_max_x = bb->loc_max_x;
+      if (bb->loc_min_x < bb->glob_min_x)
+        bb->glob_min_x = bb->loc_min_x;
     } else {
       /* inside global bounds, decrease depth and create new bounds */
-      glob_max_y = loc_max_y;
-      glob_min_y = loc_min_y;
-      glob_max_x = loc_max_x;
-      glob_min_x = loc_min_x;
-      if (fig_depth)
-        fig_depth--; /* don't let it get < 0 */
+      bb->glob_max_y = bb->loc_max_y;
+      bb->glob_min_y = bb->loc_min_y;
+      bb->glob_max_x = bb->loc_max_x;
+      bb->glob_min_x = bb->loc_min_x;
+      if (bb->fig_depth)
+        bb->fig_depth--; /* don't let it get < 0 */
     }
   }
-  loc_bbox_flag = 0;
+  bb->loc_bbox_flag = 0;
 }
 
-static void fig_addtobbox(float x, float y)
+static void fig_addtobbox(fig_bbox *bb, float x, float y)
 {
-  if (loc_bbox_flag == 0) {
-    loc_max_y = y;
-    loc_min_y = y;
-    loc_max_x = x;
-    loc_min_x = x;
-    loc_bbox_flag = 1;
+  if (bb->loc_bbox_flag == 0) {
+    bb->loc_max_y = y;
+    bb->loc_min_y = y;
+    bb->loc_max_x = x;
+    bb->loc_min_x = x;
+    bb->loc_bbox_flag = 1;
   } else {
-    if (loc_max_y < y)
-      loc_max_y = y;
-    if (loc_min_y > y)
-      loc_min_y = y;
-    if (loc_max_x < x)
-      loc_max_x = x;
-    if (loc_min_x > x)
-      loc_min_x = x;
+    if (bb->loc_max_y < y)
+      bb->loc_max_y = y;
+    if (bb->loc_min_y > y)
+      bb->loc_min_y = y;
+    if (bb->loc_max_x < x)
+      bb->loc_max_x = x;
+    if (bb->loc_min_x > x)
+      bb->loc_min_x = x;
   }
 }
 
@@ -129,8 +132,8 @@ static void out_fig_splines(FILE *file, spline_list_array_type shape, int llx, i
                             int ury, at_exception_type *exp)
 {
   unsigned this_list;
-  /*    int fig_colour, fig_depth, i; */
   int fig_colour, fig_fill, fig_width, fig_subt, fig_spline_close, i;
+  fig_bbox bb = {0};
 
   /*
           add an array of colours for splines (one for each group)
@@ -157,9 +160,9 @@ static void out_fig_splines(FILE *file, spline_list_array_type shape, int llx, i
   }
   fig_col_free(colours);
   /*	Each "spline list" in the array appears to be a group of splines */
-  fig_depth = SPLINE_LIST_ARRAY_LENGTH(shape) + 20;
-  if (fig_depth > 999) {
-    fig_depth = 999;
+  bb.fig_depth = SPLINE_LIST_ARRAY_LENGTH(shape) + 20;
+  if (bb.fig_depth > 999) {
+    bb.fig_depth = 999;
   }
 
   for (this_list = 0; this_list < SPLINE_LIST_ARRAY_LENGTH(shape); this_list++) {
@@ -189,7 +192,7 @@ static void out_fig_splines(FILE *file, spline_list_array_type shape, int llx, i
         pointx[pointcount] = FIG_X(START_POINT(s).x);
         pointy[pointcount] = FIG_Y(START_POINT(s).y);
         contrl[pointcount] = (gfloat)0.0;
-        fig_addtobbox(START_POINT(s).x, START_POINT(s).y);
+        fig_addtobbox(&bb, START_POINT(s).x, START_POINT(s).y);
         pointcount++;
       }
       /* Apparently START_POINT for one spline section is same as END_POINT
@@ -198,7 +201,7 @@ static void out_fig_splines(FILE *file, spline_list_array_type shape, int llx, i
         pointx[pointcount] = FIG_X(END_POINT(s).x);
         pointy[pointcount] = FIG_Y(END_POINT(s).y);
         contrl[pointcount] = (gfloat)0.0;
-        fig_addtobbox(START_POINT(s).x, START_POINT(s).y);
+        fig_addtobbox(&bb, START_POINT(s).x, START_POINT(s).y);
         pointcount++;
       } else { /* Assume Bezier like spline */
 
@@ -215,10 +218,10 @@ static void out_fig_splines(FILE *file, spline_list_array_type shape, int llx, i
         pointx[pointcount] = FIG_X(END_POINT(s).x);
         pointy[pointcount] = FIG_Y(END_POINT(s).y);
         contrl[pointcount] = (gfloat)0.0;
-        fig_addtobbox(START_POINT(s).x, START_POINT(s).y);
-        fig_addtobbox(CONTROL1(s).x, CONTROL1(s).y);
-        fig_addtobbox(CONTROL2(s).x, CONTROL2(s).y);
-        fig_addtobbox(END_POINT(s).x, END_POINT(s).y);
+        fig_addtobbox(&bb, START_POINT(s).x, START_POINT(s).y);
+        fig_addtobbox(&bb, CONTROL1(s).x, CONTROL1(s).y);
+        fig_addtobbox(&bb, CONTROL2(s).x, CONTROL2(s).y);
+        fig_addtobbox(&bb, END_POINT(s).x, END_POINT(s).y);
         pointcount++;
         is_spline = 1;
       }
@@ -234,9 +237,9 @@ static void out_fig_splines(FILE *file, spline_list_array_type shape, int llx, i
       fig_spline_close = 5;
     }
     if (is_spline != 0) {
-      fig_new_depth();
+      fig_new_depth(&bb);
       fprintf(file, "3 %d 0 %d %d %d %d 0 %d 0.00 0 0 0 %d\n", fig_spline_close, fig_width,
-              fig_colour, fig_colour, fig_depth, fig_fill, pointcount);
+              fig_colour, fig_colour, bb.fig_depth, fig_fill, pointcount);
       /* Print out points */
       j = 0;
       for (i = 0; i < pointcount; i++) {
@@ -275,23 +278,23 @@ static void out_fig_splines(FILE *file, spline_list_array_type shape, int llx, i
       if (pointcount == 2) {
         if ((pointx[0] == pointx[1]) && (pointy[0] == pointy[1])) {
           /* Point */
-          fig_new_depth();
+          fig_new_depth(&bb);
           fprintf(file, "2 1 0 1 %d %d %d 0 -1 0.000 0 0 -1 0 0 1\n", fig_colour, fig_colour,
-                  fig_depth);
+                  bb.fig_depth);
           fprintf(file, "\t%d %d\n", pointx[0], pointy[0]);
         } else {
           /* Line segment? */
-          fig_new_depth();
+          fig_new_depth(&bb);
           fprintf(file, "2 1 0 1 %d %d %d 0 -1 0.000 0 0 -1 0 0 2\n", fig_colour, fig_colour,
-                  fig_depth);
+                  bb.fig_depth);
           fprintf(file, "\t%d %d %d %d\n", pointx[0], pointy[0], pointx[1], pointy[1]);
         }
       } else {
         if ((pointcount == 3) && (pointx[0] == pointx[2]) && (pointy[0] == pointy[2])) {
           /* Line segment? */
-          fig_new_depth();
+          fig_new_depth(&bb);
           fprintf(file, "2 1 0 1 %d %d %d 0 -1 0.000 0 0 -1 0 0 2\n", fig_colour, fig_colour,
-                  fig_depth);
+                  bb.fig_depth);
           fprintf(file, "\t%d %d %d %d\n", pointx[0], pointy[0], pointx[1], pointy[1]);
         } else {
           if ((pointx[0] != pointx[pointcount - 1]) || (pointy[0] != pointy[pointcount - 1])) {
@@ -304,9 +307,9 @@ static void out_fig_splines(FILE *file, spline_list_array_type shape, int llx, i
               pointcount++;
             }
           }
-          fig_new_depth();
+          fig_new_depth(&bb);
           fprintf(file, "2 %d 0 %d %d %d %d 0 %d 0.00 0 0 0 0 0 %d\n", fig_subt, fig_width,
-                  fig_colour, fig_colour, fig_depth, fig_fill, pointcount);
+                  fig_colour, fig_colour, bb.fig_depth, fig_fill, pointcount);
           /* Print out points */
           j = 0;
           for (i = 0; i < pointcount; i++) {
@@ -326,9 +329,8 @@ static void out_fig_splines(FILE *file, spline_list_array_type shape, int llx, i
         }
       }
     }
-    /*	fig_depth--; */
-    if (fig_depth < 0) {
-      fig_depth = 0;
+    if (bb.fig_depth < 0) {
+      bb.fig_depth = 0;
     }
   }
 }
