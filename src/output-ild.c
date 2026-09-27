@@ -334,7 +334,10 @@ static int writeILDAFrameHeader(FILE *file, LaserFrame *f, int format, unsigned 
   writeILDAHeader(file, format, 0);
 
   if (f) {
-    snprintf((char *)(fhbuffer), 17, "Frame #%04d     ", frames);
+    /* A 16 byte label, padded with spaces and without a terminator. */
+    int n = snprintf((char *)fhbuffer, sizeof(fhbuffer), "Frame #%04u", frames);
+    if (n < 16)
+      memset(fhbuffer + n, ' ', 16 - n);
   } else {
     memcpy(fhbuffer, emptys, 16); /* 16 bytes, no terminator */
   }
