@@ -283,7 +283,7 @@ static struct Chunk *BuildPPRF(char *Units, int Portrait, char *PageType, float 
   return PPRFChunk;
 }
 
-static struct Chunk *BuildLAYR()
+static struct Chunk *BuildLAYR(void)
 {
   struct Chunk *LAYRChunk;
   unsigned char *LAYRData;

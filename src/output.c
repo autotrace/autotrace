@@ -18,13 +18,12 @@
 #include "private.h"
 #include "output.h"
 #include "filename.h"
-#include <string.h>
 #include <glib.h>
 
 typedef struct _at_output_format_entry at_output_format_entry;
 struct _at_output_format_entry {
   at_spline_writer writer;
-  const char *descr;
+  gchar *descr;
   GDestroyNotify user_data_destroy_func;
 };
 
@@ -68,7 +67,7 @@ static at_output_format_entry *at_output_format_new(const gchar *descr, at_outpu
 
 static void at_output_format_free(at_output_format_entry *entry)
 {
-  g_free((gpointer)entry->descr);
+  g_free(entry->descr);
   if (entry->user_data_destroy_func)
     entry->user_data_destroy_func(entry->writer.data);
   g_free(entry);
@@ -84,7 +83,6 @@ int at_output_add_handler_full(const gchar *suffix, const gchar *description, at
                                GDestroyNotify user_data_destroy_func)
 {
   gchar *gsuffix;
-  const gchar *gdescription;
   at_output_format_entry *old_entry;
   at_output_format_entry *new_entry;
 
@@ -92,11 +90,7 @@ int at_output_add_handler_full(const gchar *suffix, const gchar *description, at
   g_return_val_if_fail(description, 0);
   g_return_val_if_fail(writer, 0);
 
-  g_autofree gchar *gsuffix_raw = g_strdup((gchar *)suffix);
-  g_return_val_if_fail(gsuffix_raw, 0);
-  gsuffix = g_ascii_strdown(gsuffix_raw, strlen(gsuffix_raw));
-
-  gdescription = (const gchar *)description;
+  gsuffix = g_ascii_strdown(suffix, -1);
 
   old_entry = g_hash_table_lookup(at_output_formats, gsuffix);
   if (old_entry && !override) {
@@ -104,7 +98,7 @@ int at_output_add_handler_full(const gchar *suffix, const gchar *description, at
     return 1;
   }
 
-  new_entry = at_output_format_new(gdescription, writer, user_data, user_data_destroy_func);
+  new_entry = at_output_format_new(description, writer, user_data, user_data_destroy_func);
   g_return_val_if_fail(new_entry, 0);
 
   g_hash_table_replace(at_output_formats, gsuffix, new_entry);
@@ -125,9 +119,7 @@ at_spline_writer *at_output_get_handler_by_suffix(const gchar *suffix)
   if (!suffix || suffix[0] == '\0')
     return NULL;
 
-  g_autofree gchar *gsuffix_raw = g_strdup(suffix);
-  g_return_val_if_fail(gsuffix_raw, NULL);
-  g_autofree gchar *gsuffix = g_ascii_strdown(gsuffix_raw, strlen(gsuffix_raw));
+  g_autofree gchar *gsuffix = g_ascii_strdown(suffix, -1);
   format = g_hash_table_lookup(at_output_formats, gsuffix);
 
   if (format)
