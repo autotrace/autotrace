@@ -141,7 +141,6 @@ static void output_pdf_content(pdf_writer *pdf, spline_list_array_type shape)
       if (this_list > 0) {
         SOUT_LINE((shape.centerline || list.open) ? "S" : "f");
         /* In PDF a Stroke (S) or fill (f) causes an implicit closepath (h) -Paul Sladen */
-        /* SOUT_LINE("h"); */
       }
       SOUT("%.3f %.3f %.3f %s\n", (double)list.color.r / 255.0, (double)list.color.g / 255.0,
            (double)list.color.b / 255.0, (shape.centerline || list.open) ? "RG" : "rg");

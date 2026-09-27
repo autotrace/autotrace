@@ -735,14 +735,6 @@ static void median_cut_pass2_rgb(QuantizeObj *quantobj, at_bitmap *image, const 
         origG = (*src++);
         origB = (*src++);
 
-        /*
-           if (origR > 253 && origG > 253 && origB > 253)
-           {
-           (*dest++) = 255; (*dest++) = 255; (*dest++) = 255;
-           continue;
-           }
-         */
-
         /* get pixel value and index into the cache */
         R = origR >> R_SHIFT;
         G = origG >> G_SHIFT;

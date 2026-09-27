@@ -55,7 +55,6 @@ static at_bitmap input_magick_reader(gchar *filename, at_input_opts_type *opts,
 
   image = ReadImage(image_info, exception_ptr);
   if (image == (Image *)NULL) {
-    /* MagickError(exception.severity,exception.reason,exception.description); */
     if (msg_func)
       msg_func(exception_ptr->reason, AT_MSG_FATAL, msg_data);
     goto cleanup;

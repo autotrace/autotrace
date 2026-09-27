@@ -148,8 +148,6 @@ static void OutputPlt(FILE *fdes, int llx, int lly, int urx, int ury, spline_lis
 
   // output PLT header and sizing information
   WriteInitialize(fdes);
-  //            CView *pView=GetNextView(pos);
-  //            int LOGXPIXELS = pView->GetDC()->GetDeviceCaps(LOGPIXELSX);
   WriteInitPt(fdes, (uint32_t)(Scale * llx), (uint32_t)(Scale * lly), (uint32_t)(Scale * urx),
               (uint32_t)(Scale * ury));
   WriteScale(fdes, llx, urx, lly, ury);
