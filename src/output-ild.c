@@ -27,17 +27,16 @@
 
 #define POINT_ATTRIB_BLANKED 0x01
 
-static int write3DFrames = 0;
-static int trueColorWrite = 1;
-static int writeTable = 0;
-static int fromToZero = 1;
-static int insert_anchor_points = 1;
+/* These should be user-adjustable. */
+#define write3DFrames 0
+#define trueColorWrite 1
+#define writeTable 0
+#define fromToZero 1
+#define insert_anchor_points 1
 
-static int lineDistance = 800;
-static int blankDistance = 1200;
-static int anchor_thresh = 40;
-
-static int inserted_anchor_points = 0;
+#define lineDistance 800
+#define blankDistance 1200
+#define anchor_thresh 40
 
 typedef struct tagLaserPoint {
   short int x;
@@ -63,8 +62,12 @@ typedef struct tagLaserSequence {
 
 typedef LaserSequence *pLaserSequence;
 
-static pLaserFrame drawframe = NULL;
-static pLaserSequence drawsequence = NULL;
+/* The frames drawn so far, the one being drawn, and a statistic.  */
+typedef struct {
+  pLaserSequence sequence;
+  pLaserFrame frame;
+  int inserted_anchor_points;
+} ild_drawing;
 static unsigned char ilda[4] = {'I', 'L', 'D', 'A'};
 
 // ILDA standard color palette
@@ -451,7 +454,7 @@ static inline short int clip(double x)
 }
 
 /** No descriptions */
-static void blankingPath(int x1, int y1, int x2, int y2)
+static void blankingPath(ild_drawing *d, int x1, int y1, int x2, int y2)
 {
   int len, steps, i;
   double lx, ly, t;
@@ -471,7 +474,7 @@ static void blankingPath(int x1, int y1, int x2, int y2)
 
   for (i = 0; i <= steps; i++) {
     t = (double)i / steps;
-    p = frame_point_add(drawframe);
+    p = frame_point_add(d->frame);
     p->x = clip((1 - t) * x1 + x2 * t);
     p->y = clip((1 - t) * y1 + y2 * t);
     p->z = 0;
@@ -483,38 +486,39 @@ static void blankingPath(int x1, int y1, int x2, int y2)
 }
 
 /** No descriptions */
-static void blankingPathTo(int x, int y)
+static void blankingPathTo(ild_drawing *d, int x, int y)
 {
   LaserPoint *last;
 
-  if (!drawframe)
+  if (!d->frame)
     return;
-  last = g_queue_peek_tail(drawframe->points);
+  last = g_queue_peek_tail(d->frame->points);
   if (!last)
     return;
-  blankingPath(last->x, last->y, x, y);
+  blankingPath(d, last->x, last->y, x, y);
 }
 
 /** No descriptions */
-static void frameDrawInit(int x, int y, unsigned char r, unsigned char g, unsigned char b)
+static void frameDrawInit(ild_drawing *d, int x, int y, unsigned char r, unsigned char g,
+                          unsigned char b)
 {
-  if (!drawframe)
-    drawframe = sequence_frame_add(drawsequence); // we can't do frameInit here, because we don't
-                                                  // know where the first point will be.
-  if (!frame_point_count(drawframe)) {
+  if (!d->frame)
+    d->frame = sequence_frame_add(d->sequence); // we can't do frameInit here, because we don't
+                                                // know where the first point will be.
+  if (!frame_point_count(d->frame)) {
     /* Continue from where the previous frame, if any, left off. */
-    GList *link = g_queue_find(drawsequence->frames, drawframe);
+    GList *link = g_queue_find(d->sequence->frames, d->frame);
     LaserFrame *previous = (link && link->prev) ? link->prev->data : NULL;
     LaserPoint *last = previous ? g_queue_peek_tail(previous->points) : NULL;
 
     if (last) {
-      blankingPath(last->x, last->y, x, y);
+      blankingPath(d, last->x, last->y, x, y);
     } else {
       if (fromToZero)
-        blankingPath(0, 0, x, y);
+        blankingPath(d, 0, 0, x, y);
     }
   } else {
-    blankingPathTo(x, y);
+    blankingPathTo(d, x, y);
   }
 }
 
@@ -534,9 +538,9 @@ static double getAngle(double b1x, double b1y, double b2x, double b2y)
   return acos(acosa) * 180.0 / G_PI;
 }
 
-static void insertAnchorPoints()
+static void insertAnchorPoints(ild_drawing *d)
 {
-  GQueue *points = drawframe->points;
+  GQueue *points = d->frame->points;
   GList *l = points->head;
   LaserPoint *p, *next, *pn;
   double dx, dy, dx1, dy1, a;
@@ -567,7 +571,7 @@ static void insertAnchorPoints()
         pn = newLaserPoint();
         *pn = *p;
         g_queue_insert_after(points, l, pn);
-        inserted_anchor_points++;
+        d->inserted_anchor_points++;
         l = l->next;
         a -= anchor_thresh;
       }
@@ -579,18 +583,18 @@ static void insertAnchorPoints()
   }
 }
 
-static void frameDrawFinish()
+static void frameDrawFinish(ild_drawing *d)
 {
   LaserPoint *p;
 
   if (fromToZero)
-    blankingPathTo(0, 0);
+    blankingPathTo(d, 0, 0);
 
-  if (sequence_frame_count(drawsequence) < 1) {
-    frameDrawInit(0, 0, 0, 0, 0);
+  if (sequence_frame_count(d->sequence) < 1) {
+    frameDrawInit(d, 0, 0, 0, 0, 0);
 
-    if (frame_point_count(drawframe) < 1) {
-      p = frame_point_add(drawframe); // add 0 point, else ILDA write will fail
+    if (frame_point_count(d->frame) < 1) {
+      p = frame_point_add(d->frame); // add 0 point, else ILDA write will fail
       p->x = 0;
       p->y = 0;
       p->z = 0;
@@ -602,18 +606,18 @@ static void frameDrawFinish()
   }
 
   if (insert_anchor_points)
-    insertAnchorPoints();
+    insertAnchorPoints(d);
 }
 
-static void drawLine(double x1, double y1, double x2, double y2, unsigned char r1, unsigned char g1,
-                     unsigned char b1)
+static void drawLine(ild_drawing *d, double x1, double y1, double x2, double y2, unsigned char r1,
+                     unsigned char g1, unsigned char b1)
 {
   int i, len, steps;
   double t, lx, ly;
   LaserPoint *p;
   DEBUG("Line from %f %f to %f %f color %d %d %d", x1, y1, x2, y2, r1, g1, b1);
 
-  frameDrawInit(rint(x1), rint(y1), r1, g1, b1);
+  frameDrawInit(d, rint(x1), rint(y1), r1, g1, b1);
 
   lx = x2 - x1;
   ly = y2 - y1;
@@ -627,7 +631,7 @@ static void drawLine(double x1, double y1, double x2, double y2, unsigned char r
 
   for (i = 0; i <= steps; i++) {
     t = (double)i / steps;
-    p = frame_point_add(drawframe);
+    p = frame_point_add(d->frame);
     p->x = clip((1 - t) * x1 + x2 * t);
     p->y = clip((1 - t) * y1 + y2 * t);
     p->z = 0;
@@ -638,9 +642,9 @@ static void drawLine(double x1, double y1, double x2, double y2, unsigned char r
   }
 }
 
-static void drawCubicBezier(double x1, double y1, double cx1, double cy1, double cx2, double cy2,
-                            double x2, double y2, unsigned char r1, unsigned char g1,
-                            unsigned char b1)
+static void drawCubicBezier(ild_drawing *d, double x1, double y1, double cx1, double cy1,
+                            double cx2, double cy2, double x2, double y2, unsigned char r1,
+                            unsigned char g1, unsigned char b1)
 {
   int len, steps, i;
   double t, lx, ly;
@@ -648,7 +652,7 @@ static void drawCubicBezier(double x1, double y1, double cx1, double cy1, double
   DEBUG("Cubic from %f %f over %f %f and %f %f to %f %f color %d %d %d", x1, y1, cx1, cy1, cx2, cy2,
         x2, y2, r1, g1, b1);
 
-  frameDrawInit(rint(x1), rint(y1), r1, g1, b1);
+  frameDrawInit(d, rint(x1), rint(y1), r1, g1, b1);
 
   // estimate arclength by convex hull FIXME: more precision
   lx = cx1 - x1;
@@ -669,7 +673,7 @@ static void drawCubicBezier(double x1, double y1, double cx1, double cy1, double
 
   for (i = 0; i <= steps; i++) {
     t = (double)i / steps;
-    p = frame_point_add(drawframe);
+    p = frame_point_add(d->frame);
     p->x = clip((1 - t) * (1 - t) * (1 - t) * x1 + cx1 * 3 * t * (1 - t) * (1 - t) +
                 cx2 * 3 * t * t * (1 - t) + x2 * t * t * t);
     p->y = clip((1 - t) * (1 - t) * (1 - t) * y1 + cy1 * 3 * t * (1 - t) * (1 - t) +
@@ -683,7 +687,8 @@ static void drawCubicBezier(double x1, double y1, double cx1, double cy1, double
 }
 
 /* Parses the spline data and writes out ILDA (*.ILD) formatted file */
-static void OutputILDA(FILE *fdes, int llx, int lly, int urx, int ury, spline_list_array_type shape)
+static void OutputILDA(ild_drawing *d, FILE *fdes, int llx, int lly, int urx, int ury,
+                       spline_list_array_type shape)
 {
   unsigned int this_list, this_spline;
   spline_list_type curr_list;
@@ -700,7 +705,7 @@ static void OutputILDA(FILE *fdes, int llx, int lly, int urx, int ury, spline_li
   if (fdes == NULL)
     return;
 
-  drawsequence = newLaserSequence();
+  d->sequence = newLaserSequence();
 
   LastPoint.x = 0;
   LastPoint.y = 0;
@@ -720,7 +725,7 @@ static void OutputILDA(FILE *fdes, int llx, int lly, int urx, int ury, spline_li
       switch ((polynomial_degree)last_degree) {
       case LINEARTYPE:
         // output Line
-        drawLine((LastPoint.x - ox) * sx, (LastPoint.y - oy) * sy,
+        drawLine(d, (LastPoint.x - ox) * sx, (LastPoint.y - oy) * sy,
                  (END_POINT(curr_spline).x - ox) * sx, (END_POINT(curr_spline).y - oy) * sy,
                  curr_list.color.r, curr_list.color.g, curr_list.color.b);
         LastPoint = END_POINT(curr_spline);
@@ -728,7 +733,7 @@ static void OutputILDA(FILE *fdes, int llx, int lly, int urx, int ury, spline_li
 
       default:
         // output Bezier curve
-        drawCubicBezier((LastPoint.x - ox) * sx, (LastPoint.y - oy) * sy,
+        drawCubicBezier(d, (LastPoint.x - ox) * sx, (LastPoint.y - oy) * sy,
                         (CONTROL1(curr_spline).x - ox) * sx, (CONTROL1(curr_spline).y - oy) * sy,
                         (CONTROL2(curr_spline).x - ox) * sx, (CONTROL2(curr_spline).y - oy) * sy,
                         (END_POINT(curr_spline).x - ox) * sx, (END_POINT(curr_spline).y - oy) * sy,
@@ -739,8 +744,8 @@ static void OutputILDA(FILE *fdes, int llx, int lly, int urx, int ury, spline_li
     }
   }
 
-  frameDrawFinish();
-  writeILDA(fdes, drawsequence);
+  frameDrawFinish(d);
+  writeILDA(fdes, d->sequence);
 }
 
 int output_ild_writer(FILE *file, gchar *name, int llx, int lly, int urx, int ury,
@@ -748,28 +753,16 @@ int output_ild_writer(FILE *file, gchar *name, int llx, int lly, int urx, int ur
                       at_msg_func msg_func, gpointer msg_data, gpointer user_data)
 {
 
-  /* This should be user-adjustable. */
-  write3DFrames = 0;
-  trueColorWrite = 1;
-  writeTable = 0;
-  fromToZero = 1;
-  lineDistance = 800;
-  blankDistance = 1200;
-  insert_anchor_points = 1;
-  anchor_thresh = 40;
+  ild_drawing d = {0};
 
   /* Output ILDA */
-  OutputILDA(file, llx, lly, urx, ury, shape);
+  OutputILDA(&d, file, llx, lly, urx, ury, shape);
 
-  LOG("Wrote %d frame with %d points (%d anchors%s%s)", sequence_frame_count(drawsequence),
-      frame_point_count(drawframe), inserted_anchor_points,
+  LOG("Wrote %d frame with %d points (%d anchors%s%s)", sequence_frame_count(d.sequence),
+      frame_point_count(d.frame), d.inserted_anchor_points,
       trueColorWrite ? ", True Color Header" : "", writeTable ? ", Color Table" : "");
 
-  /* Release the frame data and start afresh on the next call. */
-  free_laser_sequence(drawsequence);
-  drawsequence = NULL;
-  drawframe = NULL;
-  inserted_anchor_points = 0;
+  free_laser_sequence(d.sequence);
 
   return 0;
 }
