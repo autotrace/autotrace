@@ -54,9 +54,6 @@ at_distance_map new_distance_map(at_bitmap *bitmap, unsigned char target_value, 
         dist.d[y][x] = (gray == target_value ? 0.0F : 1.0e10F);
         fgray = gray * 0.0039215686F; /* = gray / 255.0F */
         dist.weight[y][x] = 1.0F - fgray;
-        /*        dist.weight[y][x] = 1.0F - (fgray * fgray);*/
-        /*        dist.weight[y][x] = (fgray < 0.5F ? 1.0F - fgray : -2.0F * fgray * (fgray
-         * - 1.0F));*/
       }
     }
   } else {
@@ -68,9 +65,6 @@ at_distance_map new_distance_map(at_bitmap *bitmap, unsigned char target_value, 
         dist.d[y][x] = (gray == target_value ? 0.0F : 1.0e10F);
         fgray = gray * 0.0039215686F; /* = gray / 255.0F */
         dist.weight[y][x] = 1.0F - fgray;
-        /*        dist.weight[y][x] = 1.0F - (fgray * fgray);*/
-        /*        dist.weight[y][x] = (fgray < 0.5F ? 1.0F - fgray : -2.0F * fgray * (fgray
-         * - 1.0F)); */
       }
     }
   }

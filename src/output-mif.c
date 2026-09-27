@@ -183,7 +183,6 @@ int output_mif_writer(FILE *ps_file, gchar *name, int llx, int lly, int urx, int
       } else {
         gfloat temp;
         gfloat dt = (gfloat)(1.0 / 7.0);
-        /*smooth = TRUE; */
         for (temp = dt; fabs(temp - (gfloat)1.0) > dt; temp += dt) {
           print_coord(ps_file, &cbox,
                       bezpnt(temp, START_POINT(s).x, CONTROL1(s).x, CONTROL2(s).x, END_POINT(s).x),
