@@ -1199,10 +1199,7 @@ static void find_tangent(curve_type curve, gboolean to_start_point, gboolean cro
       if ((cross_curve == TRUE) || (CURVE_CYCLIC(curve) == TRUE)) {
         curve_type adjacent_curve =
             (to_start_point == TRUE) ? PREVIOUS_CURVE(curve) : NEXT_CURVE(curve);
-        vector_type tangent2 =
-            (to_start_point == FALSE)
-                ? find_half_tangent(adjacent_curve, TRUE, &n_points, tangent_surround)
-                : find_half_tangent(adjacent_curve, TRUE, &n_points, tangent_surround);
+        vector_type tangent2 = find_half_tangent(adjacent_curve, TRUE, &n_points, tangent_surround);
 
         DEBUG("(adjacent curve half tangent (%.3f,%.3f,%.3f)) ", tangent2.dx, tangent2.dy,
               tangent2.dz);
@@ -1328,7 +1325,7 @@ static gboolean spline_linear_enough(spline_type *spline, curve_type curve,
   B = END_POINT(*spline).y - START_POINT(*spline).y;
   C = END_POINT(*spline).z - START_POINT(*spline).z;
 
-  start_end_dist = (gfloat)(SQUARE(A) + SQUARE(B) + SQUARE(C));
+  start_end_dist = SQUARE(A) + SQUARE(B) + SQUARE(C);
   DEBUG("start_end_distance is %.3f.\n", sqrt(start_end_dist));
 
   DEBUG("  Line endpoints are (%.3f, %.3f, %.3f) and ", START_POINT(*spline).x,

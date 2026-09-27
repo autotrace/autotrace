@@ -77,7 +77,7 @@ int at_module_init(void)
      For a while, these are staticly added. */
   r = install_input_readers();
   w = install_output_writers();
-  return (int)(r << 2 | w);
+  return r << 2 | w;
 }
 
 static int install_input_readers(void)
