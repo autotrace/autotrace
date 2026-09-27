@@ -25,7 +25,6 @@
 #include "atou.h"
 #include "input.h"
 
-#include <strings.h>
 #include <assert.h>
 #include <errno.h>
 #ifdef _WIN32
@@ -105,7 +104,7 @@ int main(int argc, char *argv[])
 
   input_name = read_command_line(argc, argv, fitting_opts, input_opts, output_opts);
 
-  if (output_name != NULL && input_name != NULL && 0 == strcasecmp(output_name, input_name))
+  if (output_name != NULL && input_name != NULL && 0 == g_ascii_strcasecmp(output_name, input_name))
     FATAL(_("Input and output file may not be the same"));
 
   /* Set input_reader if it is not set in command line args */
@@ -157,32 +156,18 @@ int main(int argc, char *argv[])
 
   /* Dump loaded bitmap if needed */
   if (dumping_bitmap) {
-    char *dumpfile_name = NULL;
-    char *input_rootname = NULL;
-    char *basename = g_path_get_basename(input_name);
-    if ((input_rootname = remove_suffix(basename)) == NULL)
-      FATAL(_("Not a valid input file name %s"), input_name);
+    gboolean gray = at_bitmap_get_planes(bitmap) == 1;
+    g_autofree gchar *input_rootname = remove_suffix(input_name);
+    g_autofree gchar *dumpfile_name =
+        g_strconcat(input_rootname, gray ? ".dump.pgm" : ".dump.ppm", NULL);
 
-    g_free(basename); // No longer needed. And we don't need to free dumpfile_name - it's just a
-                      // pointer to bytes in basename.
-    if (at_bitmap_get_planes(bitmap) == 1)
-      dumpfile_name = g_strconcat(input_rootname, ".dump.pgm", NULL);
-    else
-      dumpfile_name = g_strconcat(input_rootname, ".dump.ppm", NULL);
     dump_file = fopen(dumpfile_name, "wb");
     if (dump_file == NULL) {
       perror(dumpfile_name);
-      g_free(dumpfile_name);
       exit(errno);
     }
-    g_free(dumpfile_name); // No longer needed
-    if (at_bitmap_get_planes(bitmap) == 1)
-      fprintf(dump_file, "%s\n", "P5");
-    else
-      fprintf(dump_file, "%s\n", "P6");
-    fprintf(dump_file, "%s\n", "# Created by AutoTrace");
-    fprintf(dump_file, "%d %d\n", at_bitmap_get_width(bitmap), at_bitmap_get_height(bitmap));
-    fprintf(dump_file, "%d\n", 255);
+    fprintf(dump_file, "%s\n# Created by AutoTrace\n%d %d\n255\n", gray ? "P5" : "P6",
+            at_bitmap_get_width(bitmap), at_bitmap_get_height(bitmap));
     dump(bitmap, dump_file);
     fclose(dump_file);
   }
@@ -321,7 +306,7 @@ static char *read_command_line(int argc, char *argv[], at_fitting_opts_type *fit
      Assumes the option index is in the variable `option_index', and the
      option table in a variable `long_options'.  */
 
-#define ARGUMENT_IS(a) (0 == strcasecmp(long_options[option_index].name, a))
+#define ARGUMENT_IS(a) (0 == g_ascii_strcasecmp(long_options[option_index].name, a))
 
   while (TRUE) {
 
@@ -385,8 +370,8 @@ static char *read_command_line(int argc, char *argv[], at_fitting_opts_type *fit
       fprintf(stderr, USAGE1);
       fprintf(stderr, USAGE2, ishortlist = at_input_shortlist(),
               oshortlist = at_output_shortlist());
-      free(ishortlist);
-      free(oshortlist);
+      g_free(ishortlist);
+      g_free(oshortlist);
       fprintf(stderr, _("\nYou can get the source code of autotrace from \n%s\n"), at_home_site());
       exit(0);
     }
@@ -464,7 +449,6 @@ static char *read_command_line(int argc, char *argv[], at_fitting_opts_type *fit
   return NULL; /* stop warnings */
 }
 
-/* Convert hex char to integer */
 static void input_list_formats(FILE *file)
 {
   const char **list = at_input_list_new();
@@ -513,14 +497,10 @@ static void dot_printer(gfloat percentage, gpointer client_data)
 
 static void dump(at_bitmap *bitmap, FILE *fp)
 {
-  unsigned short width, height;
-  unsigned int np;
+  gsize size = (gsize)at_bitmap_get_width(bitmap) * at_bitmap_get_height(bitmap) *
+               at_bitmap_get_planes(bitmap);
 
-  width = at_bitmap_get_width(bitmap);
-  height = at_bitmap_get_height(bitmap);
-  np = at_bitmap_get_planes(bitmap);
-
-  fwrite(AT_BITMAP_BITS(bitmap), sizeof(unsigned char), width * height * np, fp);
+  fwrite(AT_BITMAP_BITS(bitmap), 1, size, fp);
 }
 
 static void exception_handler(const gchar *msg, at_msg_type type, gpointer data)

@@ -7,7 +7,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: autotrace 0.31.10\n"
 "Report-Msgid-Bugs-To: https://github.com/autotrace/autotrace/issues\n"
-"POT-Creation-Date: 2026-09-26 01:32+0200\n"
+"POT-Creation-Date: 2026-09-27 13:54+0200\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
@@ -141,11 +141,6 @@ msgstr ""
 
 #: src/main.c
 msgid "Unsupported input format"
-msgstr ""
-
-#: src/main.c
-#, c-format
-msgid "Not a valid input file name %s"
 msgstr ""
 
 #: src/main.c
