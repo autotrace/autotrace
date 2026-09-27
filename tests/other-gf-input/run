@@ -13,12 +13,16 @@
 DIR=$1
 
 failed=""
+# SVG checks the traced outline; UGS also checks the font metrics that the
+# GF reader hands to the UGS writer (design size, escapement, bearings).
 for code in 65 66; do
-    autotrace -input-format gf -charcode $code $DIR/shapes.600gf -output-format svg -output-file $DIR/char$code.svg
-    if ! diff -q -w --strip-trailing-cr $DIR/char$code.output.svg $DIR/char$code.svg >/dev/null; then
-        failed="$failed $code"
-    fi
-    rm -f $DIR/char$code.svg
+    for fmt in svg ugs; do
+        autotrace -input-format gf -charcode $code $DIR/shapes.600gf -output-format $fmt -output-file $DIR/char$code.$fmt
+        if ! diff -q -w --strip-trailing-cr $DIR/char$code.output.$fmt $DIR/char$code.$fmt >/dev/null; then
+            failed="$failed $code.$fmt"
+        fi
+        rm -f $DIR/char$code.$fmt
+    done
 done
 
 # A malformed font must be reported as an error (exit status 1 from the
