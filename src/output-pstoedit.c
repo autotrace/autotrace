@@ -14,6 +14,8 @@
 
 #include <stdio.h>
 #include <string.h>
+#include <unistd.h>
+#include <glib/gstdio.h>
 
 /* pstoedit.h is a C++ header; pstoedll.h is the C-compatible description of
    the plain C entry points, meant for clients like us.  */
@@ -32,7 +34,7 @@ static int output_pstoedit_writer(FILE *file, gchar *name, int llx, int lly, int
 
 static gboolean unusable_writer_p(const gchar *name);
 
-static FILE *make_temporary_file(char *template, char *mode);
+static gchar *make_temporary_file(const gchar *template, int *fd);
 
 /* This output routine uses two temporary files to keep the
    both the command line syntax of autotrace and the
@@ -46,13 +48,12 @@ static int output_pstoedit_writer(FILE *file, gchar *name, int llx, int lly, int
                                   at_msg_func msg_func, gpointer msg_data, gpointer user_data)
 {
   at_spline_writer *p2e_writer = NULL;
-  char tmpfile_name_p2e[] = "/tmp/at-bo-XXXXXX";
-  char tmpfile_name_pstoedit[] = "/tmp/at-fo-XXXXXX";
+  int p2e_fd = -1;
+  g_autofree gchar *tmpfile_name_p2e = make_temporary_file("at-bo-XXXXXX", &p2e_fd);
+  g_autofree gchar *tmpfile_name_pstoedit = make_temporary_file("at-fo-XXXXXX", NULL);
+  g_autofree gchar *contents = NULL;
+  gsize length;
   const gchar *symbolicname = (const gchar *)user_data;
-  FILE *tmpfile;
-  int result = 0;
-  int c;
-  int argc = 6;
   const char *argv[] = {
       "pstoedit", // argv[0] - program name
       "-f",       // format flag
@@ -61,44 +62,43 @@ static int output_pstoedit_writer(FILE *file, gchar *name, int llx, int lly, int
       tmpfile_name_p2e,     // input file
       tmpfile_name_pstoedit // output file
   };
+  FILE *tmpfile;
+  int result = -1;
 
-  tmpfile = make_temporary_file(tmpfile_name_p2e, "w");
-  if (NULL == tmpfile) {
-    result = -1;
-    goto remove_tmp_p2e;
-  }
+  if (tmpfile_name_p2e == NULL || tmpfile_name_pstoedit == NULL)
+    goto cleanup;
 
   /*
    * shape -> bo file
    */
+  tmpfile = fdopen(p2e_fd, "w");
+  if (tmpfile == NULL)
+    goto cleanup;
+  p2e_fd = -1; /* now owned by tmpfile */
   p2e_writer = at_output_get_handler_by_suffix("p2e");
   at_splines_write(p2e_writer, tmpfile, tmpfile_name_p2e, opts, &shape, msg_func, msg_data);
-
   fclose(tmpfile);
-
-  tmpfile = make_temporary_file(tmpfile_name_pstoedit, "r");
-  if (NULL == tmpfile) {
-    result = -1;
-    goto remove_tmp_pstoedit;
-  }
 
   /*
    * bo file -> specified formatted file
    */
-  pstoedit_plainC(argc, argv, NULL);
+  pstoedit_plainC(G_N_ELEMENTS(argv), argv, NULL);
 
   /*
    * specified formatted file(tmpfile_name_pstoedit) -> file
    */
-  /* fseek(tmpfile, 0, SEEK_SET); */
-  while (EOF != (c = fgetc(tmpfile)))
-    fputc(c, file);
-  fclose(tmpfile);
+  if (g_file_get_contents(tmpfile_name_pstoedit, &contents, &length, NULL)) {
+    fwrite(contents, 1, length, file);
+    result = 0;
+  }
 
-remove_tmp_pstoedit:
-  remove(tmpfile_name_pstoedit);
-remove_tmp_p2e:
-  remove(tmpfile_name_p2e);
+cleanup:
+  if (p2e_fd >= 0)
+    close(p2e_fd);
+  if (tmpfile_name_pstoedit)
+    g_remove(tmpfile_name_pstoedit);
+  if (tmpfile_name_p2e)
+    g_remove(tmpfile_name_p2e);
   return result;
 }
 
@@ -115,14 +115,21 @@ gboolean unusable_writer_p(const gchar *suffix)
     return FALSE;
 }
 
-/* make_temporary_file --- Make a temporary file */
-static FILE *make_temporary_file(char *template, char *mode)
+/* Create an empty, private file named after TEMPLATE in the temporary
+   directory and return its name, or NULL if that fails.  The open
+   descriptor is stored in *FD when FD is not NULL and closed otherwise.  */
+static gchar *make_temporary_file(const gchar *template, int *fd)
 {
-  int tmpfd;
-  tmpfd = g_mkstemp(template);
+  gchar *name = NULL;
+  int tmpfd = g_file_open_tmp(template, &name, NULL);
+
   if (tmpfd < 0)
     return NULL;
-  return fdopen(tmpfd, mode);
+  if (fd)
+    *fd = tmpfd;
+  else
+    close(tmpfd);
+  return name;
 }
 
 int install_output_pstoedit_writers(void)
