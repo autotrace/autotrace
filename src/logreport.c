@@ -18,8 +18,18 @@ static void custom_log_handler(const gchar *log_domain, GLogLevelFlags log_level
 {
   /* GLib log levels are bit flags where lower values = higher severity,
    * so >= comparison creates the right threshold */
-  if (current_log_level >= log_level)
+  if (current_log_level < log_level)
+    return;
+
+  if (log_level & (G_LOG_LEVEL_INFO | G_LOG_LEVEL_DEBUG)) {
+    /* GLib's default handler prints these two levels on stdout, which is
+       where the traced image goes when no output file is given.  Keep
+       every diagnostic on stderr.  */
+    g_printerr("%s-%s: %s\n", log_domain ? log_domain : "autotrace",
+               (log_level & G_LOG_LEVEL_INFO) ? "INFO" : "DEBUG", message);
+  } else {
     g_log_default_handler(log_domain, log_level, message, user_data);
+  }
 }
 
 void set_log_level(const gchar *level)
