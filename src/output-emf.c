@@ -485,17 +485,14 @@ static void GetEmfStats(EMFStats *stats, gchar *name, spline_list_array_type sha
           break;
         curr_spline = SPLINE_LIST_ELT(curr_list, this_spline);
       }
-      switch ((polynomial_degree)last_degree) {
-      case LINEARTYPE:
+      if (last_degree == LINEARTYPE) {
         // emf stats :: PolyLineTo
         nrecords += nlines;
         filesize += MyWritePolyLineTo(NULL, NULL, nlines, 0);
-        break;
-      default:
+      } else {
         // emf stats :: PolyBezierTo
         nrecords++;
         filesize += WritePolyBezierTo16(NULL, NULL, nlines, 0);
-        break;
       }
     }
 
@@ -601,17 +598,14 @@ static void OutputEmf(FILE *fdes, EMFStats *stats, gchar *name, int width, int h
           break;
         curr_spline = SPLINE_LIST_ELT(curr_list, this_spline);
       }
-      switch ((polynomial_degree)last_degree) {
-      case LINEARTYPE:
+      if (last_degree == LINEARTYPE) {
         // output PolyLineTo
         MyWritePolyLineTo(fdes, &(SPLINE_LIST_ELT(curr_list, this_spline - nlines)), nlines,
                           y_offset);
-        break;
-      default:
+      } else {
         // output PolyBezierTo
         WritePolyBezierTo16(fdes, &(SPLINE_LIST_ELT(curr_list, this_spline - nlines)), nlines,
                             y_offset);
-        break;
       }
     }
 
