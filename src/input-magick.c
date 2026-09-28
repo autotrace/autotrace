@@ -33,7 +33,7 @@ static at_bitmap input_magick_reader(gchar *filename, at_input_opts_type *opts,
   ImageType image_type;
   unsigned int i, j, point, np;
   unsigned char red, green, blue;
-  at_bitmap bitmap;
+  at_bitmap bitmap = at_bitmap_init(NULL, 0, 0, 0);
 #if defined(HAVE_IMAGEMAGICK7)
   Quantum q[MaxPixelChannels];
 #else
