@@ -27,9 +27,12 @@
 
 #include <assert.h>
 #include <errno.h>
-#ifdef _WIN32
 #include <fcntl.h>
+#ifdef _WIN32
 #include <io.h>
+#endif
+#ifndef O_BINARY
+#define O_BINARY 0
 #endif
 
 #undef N_
@@ -38,6 +41,7 @@
 #include <locale.h>
 #endif
 #include <glib.h>
+#include <glib/gstdio.h>
 
 /* Pointers to functions based on input format.  (-input-format)  */
 static at_bitmap_reader *input_reader = NULL;
@@ -65,6 +69,11 @@ static char *read_command_line(int, char *[], at_fitting_opts_type *, at_input_o
                                at_output_opts_type *);
 
 static void dump(at_bitmap *bitmap, FILE *fp);
+
+/* Create NAME for writing with an explicit mode of 0644 (the umask still
+   applies), rather than the 0666 that fopen() would ask for, and as a
+   binary stream.  Returns NULL with errno set on failure.  */
+static FILE *create_output_file(const char *name);
 
 static void input_list_formats(FILE *file);
 static void output_list_formats(FILE *file);
@@ -131,7 +140,7 @@ int main(int argc, char *argv[])
     _setmode(_fileno(stdout), _O_BINARY);
 #endif
   } else {
-    output_file = fopen(output_name, "wb");
+    output_file = create_output_file(output_name);
     if (output_file == NULL) {
       perror(output_name);
       exit(errno);
@@ -161,7 +170,7 @@ int main(int argc, char *argv[])
     g_autofree gchar *dumpfile_name =
         g_strconcat(input_rootname, gray ? ".dump.pgm" : ".dump.ppm", NULL);
 
-    dump_file = fopen(dumpfile_name, "wb");
+    dump_file = create_output_file(dumpfile_name);
     if (dump_file == NULL) {
       perror(dumpfile_name);
       exit(errno);
@@ -496,6 +505,19 @@ static void dot_printer(gfloat percentage, gpointer client_data)
     fputc(dot_printer_char, stderr);
     (*current)++;
   }
+}
+
+static FILE *create_output_file(const char *name)
+{
+  int fd = g_open(name, O_WRONLY | O_CREAT | O_TRUNC | O_BINARY, 0644);
+  FILE *file;
+
+  if (fd < 0)
+    return NULL;
+  file = fdopen(fd, "wb");
+  if (file == NULL)
+    g_close(fd, NULL);
+  return file;
 }
 
 static void dump(at_bitmap *bitmap, FILE *fp)
