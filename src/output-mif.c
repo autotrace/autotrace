@@ -48,7 +48,7 @@ static void colorstring(gchar *tag, gsize size, const at_color *c)
 {
   for (gsize i = 0; i < G_N_ELEMENTS(named_colors); i++) {
     if (at_color_equal(c, &named_colors[i].c)) {
-      g_strlcpy(tag, named_colors[i].name, size);
+      g_snprintf(tag, size, "%s", named_colors[i].name);
       return;
     }
   }
