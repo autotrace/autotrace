@@ -175,7 +175,8 @@ static int find_best_match_color(unsigned char r, unsigned char g, unsigned char
   unsigned int i, dmin = 195076, d, ret = 0;
   signed int t;
 
-  // FIXME inefficent algorithm
+  /* A linear scan of the 256 palette entries per point is cheap next to
+     the point generation itself.  */
   for (i = 0; i < 256; i++) {
     t = r - ilda_standard_color_palette[i][0];
     d = t * t;
@@ -722,25 +723,20 @@ static void OutputILDA(ild_drawing *d, FILE *fdes, int llx, int lly, int urx, in
       curr_spline = SPLINE_LIST_ELT(curr_list, this_spline);
       last_degree = ((int)SPLINE_DEGREE(curr_spline));
 
-      switch ((polynomial_degree)last_degree) {
-      case LINEARTYPE:
+      if (last_degree == LINEARTYPE) {
         // output Line
         drawLine(d, (LastPoint.x - ox) * sx, (LastPoint.y - oy) * sy,
                  (END_POINT(curr_spline).x - ox) * sx, (END_POINT(curr_spline).y - oy) * sy,
                  curr_list.color.r, curr_list.color.g, curr_list.color.b);
-        LastPoint = END_POINT(curr_spline);
-        break;
-
-      default:
+      } else {
         // output Bezier curve
         drawCubicBezier(d, (LastPoint.x - ox) * sx, (LastPoint.y - oy) * sy,
                         (CONTROL1(curr_spline).x - ox) * sx, (CONTROL1(curr_spline).y - oy) * sy,
                         (CONTROL2(curr_spline).x - ox) * sx, (CONTROL2(curr_spline).y - oy) * sy,
                         (END_POINT(curr_spline).x - ox) * sx, (END_POINT(curr_spline).y - oy) * sy,
                         curr_list.color.r, curr_list.color.g, curr_list.color.b);
-        LastPoint = END_POINT(curr_spline);
-        break;
       }
+      LastPoint = END_POINT(curr_spline);
     }
   }
 

@@ -178,16 +178,13 @@ static void OutputPlt(FILE *fdes, int llx, int lly, int urx, int ury, spline_lis
       curr_spline = SPLINE_LIST_ELT(curr_list, this_spline);
       last_degree = ((int)SPLINE_DEGREE(curr_spline));
 
-      switch ((polynomial_degree)last_degree) {
-      case LINEARTYPE:
+      if (last_degree == LINEARTYPE) {
         // output Line
         LastPoint = END_POINT(curr_spline);
         WritePenDown(fdes, LastPoint.x, LastPoint.y);
-        break;
-      default:
+      } else {
         // output Bezier curve
         WriteBezier(fdes, curr_spline, &LastPoint);
-        break;
       }
     }
   }

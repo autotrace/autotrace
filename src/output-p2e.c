@@ -62,7 +62,7 @@ static int output_p2e_header(FILE *ps_file, gchar *name, int llx, int lly, int u
 {
   unsigned this_list, with_curves = 1;
 
-  for (this_list = 0; this_list < SPLINE_LIST_ARRAY_LENGTH(shape); this_list++) {
+  for (this_list = 0; with_curves && this_list < SPLINE_LIST_ARRAY_LENGTH(shape); this_list++) {
     unsigned this_spline;
 
     spline_list_type list = SPLINE_LIST_ARRAY_ELT(shape, this_list);
@@ -72,7 +72,6 @@ static int output_p2e_header(FILE *ps_file, gchar *name, int llx, int lly, int u
 
       if (SPLINE_DEGREE(s) != LINEARTYPE) {
         with_curves = 0;
-        this_list = SPLINE_LIST_ARRAY_LENGTH(shape);
         break;
       }
     }

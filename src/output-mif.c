@@ -105,6 +105,8 @@ int output_mif_writer(FILE *ps_file, gchar *name, int llx, int lly, int urx, int
   at_color curr_color = {0, 0, 0};
   BboxT cbox = {llx, lly, urx, ury, (gfloat)opts->dpi};
 
+  /* Collect the colours in use into a table; MIF wants them declared up
+     front as a colour catalog and referenced by tag from the objects.  */
   for (this_list = 0; this_list < SPLINE_LIST_ARRAY_LENGTH(shape); this_list++) {
     spline_list_type list = SPLINE_LIST_ARRAY_ELT(shape, this_list);
     curr_color = list_color(&shape, &list);
@@ -126,6 +128,7 @@ int output_mif_writer(FILE *ps_file, gchar *name, int llx, int lly, int urx, int
     }
   }
 
+  /* File header and the catalog, one CMYK entry per colour.  */
   fprintf(ps_file, "<MIFFile 4.00> #%s\n<Units Upt>\n<ColorCatalog\n", at_version(TRUE));
 
   for (i = 0; i < n_ctbl; i++) {
@@ -156,6 +159,7 @@ int output_mif_writer(FILE *ps_file, gchar *name, int llx, int lly, int urx, int
           " <BRect  0.0 pt 0.0 pt %.1f pt %.1f pt>\n",
           (urx - llx) * 72.0 / cbox.dpi, (ury - lly) * 72.0 / cbox.dpi);
 
+  /* One PolyLine per outline, curves flattened into line segments.  */
   for (this_list = 0; this_list < SPLINE_LIST_ARRAY_LENGTH(shape); this_list++) {
     unsigned this_spline;
     gboolean smooth;
