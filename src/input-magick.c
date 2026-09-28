@@ -50,7 +50,12 @@ static at_bitmap input_magick_reader(gchar *filename, at_input_opts_type *opts,
   GetExceptionInfo(exception_ptr);
 #endif
   image_info = CloneImageInfo((ImageInfo *)NULL);
-  g_strlcpy(image_info->filename, filename, sizeof(image_info->filename));
+  if (g_strlcpy(image_info->filename, filename, sizeof(image_info->filename)) >=
+      sizeof(image_info->filename)) {
+    if (msg_func)
+      msg_func("input file name is too long", AT_MSG_FATAL, msg_data);
+    goto cleanup;
+  }
   image_info->antialias = 0;
 
   image = ReadImage(image_info, exception_ptr);
