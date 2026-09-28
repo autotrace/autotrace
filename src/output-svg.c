@@ -13,11 +13,31 @@
 #include "color.h"
 #include "output-svg.h"
 
+/* With -preserve-width the centerline fitter stores the distance from each
+   point to the edge of the stroke, scaled by the width weight factor, in the
+   z coordinate.  Average it over the stroke and double it to get a stroke
+   width in pixels.  */
+static gfloat stroke_width(spline_list_type list, gfloat width_weight_factor)
+{
+  gfloat sum = 0;
+  unsigned n = 0;
+
+  for (unsigned i = 0; i < SPLINE_LIST_LENGTH(list); i++) {
+    spline_type s = SPLINE_LIST_ELT(list, i);
+
+    sum += START_POINT(s).z + END_POINT(s).z;
+    n += 2;
+  }
+  return n ? 2 * sum / n / width_weight_factor : 0;
+}
+
 static void out_splines(FILE *file, spline_list_array_type shape, int height)
 {
   unsigned this_list;
   spline_list_type list;
   at_color last_color = {0, 0, 0};
+  /* Every stroke gets its own width, and so its own path element.  */
+  gboolean widths = shape.centerline && shape.preserve_width;
 
   for (this_list = 0; this_list < SPLINE_LIST_ARRAY_LENGTH(shape); this_list++) {
     unsigned this_spline;
@@ -26,15 +46,20 @@ static void out_splines(FILE *file, spline_list_array_type shape, int height)
     list = SPLINE_LIST_ARRAY_ELT(shape, this_list);
     first = SPLINE_LIST_ELT(list, 0);
 
-    if (this_list == 0 || !at_color_equal(&list.color, &last_color)) {
+    if (this_list == 0 || widths || !at_color_equal(&list.color, &last_color)) {
       if (this_list > 0) {
         if (!(shape.centerline || list.open))
           fputs("z", file);
         fputs("\"/>\n", file);
       }
-      fprintf(file, "<path style=\"%s:#%02x%02x%02x; %s:none;\" d=\"",
+      fprintf(file, "<path style=\"%s:#%02x%02x%02x; %s:none;",
               (shape.centerline || list.open) ? "stroke" : "fill", list.color.r, list.color.g,
               list.color.b, (shape.centerline || list.open) ? "fill" : "stroke");
+      if (widths)
+        /* Round caps make a dot, whose centerline has no length, visible.  */
+        fprintf(file, " stroke-width:%.2f; stroke-linecap:round; stroke-linejoin:round;",
+                stroke_width(list, shape.width_weight_factor));
+      fputs("\" d=\"", file);
     }
     fprintf(file, "M%g %g", START_POINT(first).x, height - START_POINT(first).y);
     for (this_spline = 0; this_spline < SPLINE_LIST_LENGTH(list); this_spline++) {
