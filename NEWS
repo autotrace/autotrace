@@ -1,3 +1,50 @@
+What's new in AutoTrace 0.31.11?
+This release is API and ABI compatible with 0.31.10 (libautotrace.so.3).
+
+Packaging and platforms:
+- the Windows installers (win32 and win64) contain the real autotrace.exe
+  again; those of 0.31.10 shipped libtool's wrapper script, which exited
+  with status 127 and printed nothing (#223).  They are now built by CI
+  for every tag.
+- works with pstoedit 4.x; 0.31.10 printed "wrong version of pstoedit"
+  and disabled the pstoedit formats (#159, #213).
+- libautotrace.so is linked against the libraries it uses, so programs
+  can link with just `pkg-config --libs autotrace` or load it with
+  dlopen() (#124, #324).
+- autotrace.pc: the Magick libraries are substituted for static linking,
+  and GLib 2.58 is required, as by configure (#160, #325).
+- requires GLib >= 2.58 and a C17 compiler.  Translations moved from
+  intltool to plain GNU gettext and to Weblate; new: Brazilian
+  Portuguese, Italian, Spanish, Simplified Chinese, Tamil, Georgian.
+- removed: SWF output (libming, #137) and the native macOS installer;
+  install from Homebrew or MacPorts instead.
+
+Reading images:
+- native BMP reader: RLE4/RLE8, 2 bpp, 32 bpp with an alpha mask and
+  grey-palette images were traced as garbage (#319, #320, #321); pixels
+  with an index beyond the palette, and grey palettes, read uninitialised
+  memory, which could reach the output (GHSA-75xg-mchm-ch42).  Top-down
+  BMPs are read.
+- the BMP and TGA readers crashed library callers whose message handler
+  returns when the input file could not be opened (#322).
+- PNG: transparent pixels are composited against the background (#97).
+- GraphicsMagick: an uninitialised exception structure was passed to
+  AcquireOnePixel() (#323).
+- malformed GF fonts are reported instead of terminating the program.
+
+Tracing and output:
+- -despeckle no longer overflows the stack on large regions (#154), and
+  -error-threshold 0 no longer recurses without bound (#247).
+- the library no longer calls exit() or changes the host program's
+  locale; real-valued options are parsed in the C locale.
+- "-" writes to standard output, and binary formats written to standard
+  output are no longer corrupted on Windows.
+- SVG honours -preserve-width; DXF puts each shape on the layer of its
+  colour; MIF colours each object with its own colour; DR2D stores the
+  line thickness.
+- invalid -background-color values are rejected; output files are created
+  with mode 0644.
+
 What's new in AutoTrace 0.31.2?
 - improved spec file(Dag Wieers).
 - gettextized (Masatake(ja), Martin(de)).
