@@ -79,8 +79,7 @@ static at_bitmap input_magick_reader(gchar *filename, at_input_opts_type *opts,
   for (j = 0, point = 0; j < image->rows; j++)
     for (i = 0; i < image->columns; i++) {
 #ifdef HAVE_GRAPHICSMAGICK
-      ExceptionInfo exception;
-      p = AcquireOnePixel(image, i, j, &exception);
+      p = AcquireOnePixel(image, i, j, exception_ptr);
       red = pixel->red;
       green = pixel->green;
       blue = pixel->blue;
@@ -112,9 +111,7 @@ static at_bitmap input_magick_reader(gchar *filename, at_input_opts_type *opts,
   DestroyImage(image);
 cleanup:
   DestroyImageInfo(image_info);
-#if defined(HAVE_IMAGEMAGICK7)
   DestroyExceptionInfo(exception_ptr);
-#endif
   return (bitmap);
 }
 
