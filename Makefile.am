@@ -132,6 +132,19 @@ autotraceinclude_HEADERS=\
 
 libautotrace_la_LDFLAGS = -version-info $(LT_CURRENT):$(LT_REVISION):$(LT_AGE)
 
+# The libraries libautotrace itself calls, so that they end up as its
+# NEEDED entries (and in libautotrace.la's dependency_libs).  Without them
+# a program linking only -lautotrace, or loading it with dlopen(), fails
+# with undefined symbols.
+libautotrace_la_LIBADD =			\
+		$(GRAPHICSMAGICK_LIBS)		\
+		$(IMAGEMAGICK_LIBS)		\
+		$(LIBPNG_LIBS)			\
+		$(LIBPSTOEDIT_LIBS)		\
+		$(GLIB2_LIBS)			\
+		$(LTLIBINTL)			\
+		-lm
+
 #
 # noinst_HEADERS: headers shared between lib and bin.
 # File not installed and not shared should be in
