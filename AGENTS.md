@@ -178,9 +178,14 @@ Before opening it, check locally that `make distcheck` passes and that
   the release commit, so that the version inside the tagged sources matches the
   tag. 0.31.10 got this wrong: its tag still said 0.40.0.
 - Pushing the tag runs `windows.yml`, which builds the win32 and win64 NSIS
-  installers and uploads them to the release itself. The source tarball from
-  `make dist` is attached to the release by hand, because GitHub's
-  auto-generated archives have no `configure` script.
+  installers and uploads them to the release itself. Nothing else is
+  attached: the source release is GitHub's automatic archive of the tag,
+  which is what distributions package (they run `autoreconf` anyway).
+  `make distcheck` is a local check before the release pull request, not a
+  release artifact.
+- Never delete old releases or pre-releases, or their assets. That includes
+  the `travis-20200219.*` builds labelled 0.40.0, which are older than
+  0.31.x: something may still download them by URL.
 - Test the uploaded installers on real Windows: install silently with
   `setup.exe /S /D=<dir>`, run `autotrace -version`, then trace a PNG. A
   65 KB `autotrace.exe` means the libtool wrapper script was packaged instead of
