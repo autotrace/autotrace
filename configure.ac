@@ -116,11 +116,15 @@ else
     )
   fi
   if test "x${with_magick}" = xImageMagick; then
-      PKG_CHECK_MODULES([IMAGEMAGICK7],
-          [ImageMagick >= 7.0.1],
+      dnl Only a version probe: the flags come from the IMAGEMAGICK check below,
+      dnl so don't define a second set of IMAGEMAGICK7_* variables.
+      AC_MSG_CHECKING([for ImageMagick >= 7.0.1])
+      PKG_CHECK_EXISTS([ImageMagick >= 7.0.1],
 	 [HAVE_IMAGEMAGICK7=yes
 	  AC_DEFINE(HAVE_IMAGEMAGICK7, 1, [ImageMagick version 7 or higher is available.])
-	 ],[]
+	  AC_MSG_RESULT([yes])
+	 ],
+	 [AC_MSG_RESULT([no])]
 	)
       PKG_CHECK_MODULES([IMAGEMAGICK],
          [ImageMagick >= 5.2.1],
