@@ -126,7 +126,9 @@ at_bitmap input_bmp_reader(gchar *filename, at_input_opts_type *opts, at_msg_fun
   int ColormapSize, rowbytes, Maps;
   gboolean Grey = FALSE;
   gboolean topdown = FALSE;
-  unsigned char ColorMap[256][3];
+  /* Zeroed: ReadColorMap() fills only the entries the file declares, and a
+     pixel index beyond them must read black, not stack garbage.  */
+  unsigned char ColorMap[256][3] = {{0}};
   at_bitmap image = at_bitmap_init(0, 0, 0, 1);
   unsigned char *image_storage;
   at_exception_type exp = at_exception_new(msg_func, msg_data);
@@ -530,7 +532,7 @@ static unsigned char *ReadImage(FILE *fd, int width, int height, unsigned char c
   int xpos = 0;
   int ypos = 0;
   unsigned char *image;
-  unsigned char *dest, *temp, *row_buf;
+  unsigned char *temp, *row_buf;
   long rowstride, channels;
   unsigned short rgb;
   int i, i_max, j;
@@ -546,22 +548,20 @@ static unsigned char *ReadImage(FILE *fd, int width, int height, unsigned char c
   }
 
   if (bpp >= 16) { /* color image */
-    if (masks[3].mask != 0)
-      channels = 4;
-    else
-      channels = 3;
+    /* Only red, green and blue are stored, whatever the masks say: an alpha
+       mask is ignored (AutoTrace has no alpha channel), and the bitmap is
+       handed on as 3-channel.  */
+    channels = 3;
   } else if (Grey) /* Grey image */
   {
     channels = 1;
   } else { /* indexed image */
     channels = 1;
   }
-  image = g_malloc(width * height * channels * sizeof(unsigned char));
-
-  /* use g_malloc0 to initialize the dest row_buf so that unspecified
-         pixels in RLE bitmaps show up as the zeroth element in the palette.
-  */
-  dest = g_malloc0(width * height * channels);
+  /* Zero-filled, so that pixels an RLE bitmap leaves unspecified (skipped
+     by a delta record or an early end of line or bitmap) show up as the
+     zeroth palette entry.  */
+  image = g_malloc0(width * height * channels * sizeof(unsigned char));
   row_buf = g_malloc(rowbytes);
   rowstride = width * channels;
 
@@ -632,14 +632,13 @@ static unsigned char *ReadImage(FILE *fd, int width, int height, unsigned char c
 
   case 8:
   case 4:
+  case 2:
   case 1: {
     if (compression == 0) {
       while (ReadOK(fd, &v, 1)) {
         for (i = 1; (i <= (8 / bpp)) && (xpos < width); i++, xpos++) {
           temp = image + (ypos * rowstride) + (xpos * channels);
           *temp = (v & (((1 << bpp) - 1) << (8 - (i * bpp)))) >> (8 - (i * bpp));
-          if (Grey)
-            *temp = cmap[*temp][0];
         }
 
         if (xpos == width) {
@@ -670,11 +669,9 @@ static unsigned char *ReadImage(FILE *fd, int width, int height, unsigned char c
             for (i = 1; ((i <= (8 / bpp)) && (xpos < width) &&
                          ((unsigned char)j < (unsigned char)row_buf[0]));
                  i++, xpos++, j++) {
-              temp = dest + (ypos * rowstride) + (xpos * channels);
+              temp = image + (ypos * rowstride) + (xpos * channels);
               *temp = (unsigned char)((row_buf[1] & (((1 << bpp) - 1) << (8 - (i * bpp)))) >>
                                       (8 - (i * bpp)));
-              if (Grey)
-                *temp = cmap[*temp][0];
             }
           }
         }
@@ -701,10 +698,8 @@ static unsigned char *ReadImage(FILE *fd, int width, int height, unsigned char c
 
             i = 1;
             while ((i <= i_max) && (xpos < width)) {
-              temp = dest + (ypos * rowstride) + (xpos * channels);
+              temp = image + (ypos * rowstride) + (xpos * channels);
               *temp = (v >> (8 - (i * bpp))) & ((1 << bpp) - 1);
-              if (Grey)
-                *temp = cmap[*temp][0];
               i++;
               xpos++;
             }
@@ -764,7 +759,6 @@ static unsigned char *ReadImage(FILE *fd, int width, int height, unsigned char c
   }
 
   g_free(row_buf);
-  g_free(dest);
   return image;
 }
 
