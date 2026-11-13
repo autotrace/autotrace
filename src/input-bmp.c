@@ -140,7 +140,7 @@ at_bitmap input_bmp_reader(gchar *filename, at_input_opts_type *opts, at_msg_fun
   if (!fd) {
     LOG("Can't open \"%s\"\n", filename);
     at_exception_fatal(&exp, "bmp: cannot open input file");
-    goto cleanup;
+    return image; /* nothing to close yet */
   }
 
   /* It is a File. Now is it a Bitmap? Read the shortest possible header. */
