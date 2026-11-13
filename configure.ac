@@ -13,7 +13,7 @@ dnl SPDX-License-Identifier: LGPL-2.1-or-later
 #
 # Author: Masatake YAMATO (yamato@redhat.com)
 #
-AC_INIT([autotrace],[0.31.10])
+AC_INIT([autotrace],[0.31.11])
 AC_CONFIG_SRCDIR([src/main.c])
 AM_INIT_AUTOMAKE([subdir-objects])
 AC_CONFIG_MACRO_DIR([m4])
@@ -34,7 +34,7 @@ AC_SUBST(AUTOTRACE_VERSION)
 # version setting up for libtool
 #
 LT_CURRENT=3
-LT_REVISION=0
+LT_REVISION=1
 LT_AGE=0
 dnl AC_SUBST(LT_RELEASE)
 AC_SUBST(LT_CURRENT)
