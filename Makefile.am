@@ -176,5 +176,19 @@ pkgconfig_DATA= autotrace.pc
 
 ACLOCAL_AMFLAGS = -I m4
 
+# Helper programs that exercise libautotrace directly, for tests the
+# autotrace program can't reach (its message handler exits on any fatal
+# error).  The tests find them next to $(bin_PROGRAMS).
+check_PROGRAMS = tests/helpers/read-missing
+tests_helpers_read_missing_SOURCES = tests/helpers/read-missing.c
+tests_helpers_read_missing_CPPFLAGS = $(AM_CPPFLAGS) -I$(srcdir)/src
+tests_helpers_read_missing_LDADD = libautotrace.la $(GLIB2_LIBS)
+
+# EXTRA_DIST ships tests/ as a whole, which would include the helpers'
+# in-tree build products and break an out-of-tree build of the tarball.
+dist-hook:
+	cd $(distdir)/tests/helpers && \
+	  rm -rf .deps .libs .dirstamp *.o read-missing read-missing.exe
+
 check-local:
 	AUTOTRACE="$(abs_builddir)/$(bin_PROGRAMS)" $(srcdir)/tests/runtests.sh

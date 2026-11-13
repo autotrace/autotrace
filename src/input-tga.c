@@ -89,6 +89,7 @@ at_bitmap input_tga_reader(gchar *filename, at_input_opts_type *opts, at_msg_fun
   if (!fp) {
     LOG("TGA: can't open \"%s\"\n", filename);
     at_exception_fatal(&exp, "Cannot open input tga file");
+    return image;
   }
 
   /* Read the header. */

@@ -94,6 +94,10 @@ semantic.cache
 src/*.c.smatch
 src/*.o
 src/.dirstamp
+tests/helpers/*.o
+tests/helpers/.dirstamp
+tests/helpers/read-missing
+tests/helpers/read-missing.exe
 stamp-*
 
 # Recorded output of the golden-file test, regardless of extension

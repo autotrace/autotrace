@@ -1,0 +1,29 @@
+#!/bin/sh
+
+# SPDX-FileCopyrightText: 2026 AutoTrace contributors
+#
+# SPDX-License-Identifier: CC0-1.0
+
+# A library caller whose message handler returns (unlike the autotrace
+# program's, which exits) asks every reader for a file that doesn't exist.
+# Each must report the error and return; the BMP and TGA readers used to
+# crash on the NULL FILE pointer (#322).  The helper is built by
+# "make check" next to the autotrace program.
+
+. "`dirname "$0"`/../functions"
+
+helper=`dirname "\`get_autotrace\`"`/tests/helpers/read-missing
+test -x "$helper" || test -x "$helper.exe" || skip "helper program not built"
+
+DIR=$1
+missing=$DIR/does-not-exist
+"$helper" $missing.bmp $missing.tga $missing.pnm $missing.pgm $missing.ppm $missing.pbm \
+    $missing.png $missing.gf > $DIR/out.log 2>&1
+RESULT=$?
+
+if [ $RESULT -eq 0 ]; then
+    rm -f $DIR/out.log
+    ok
+else
+    fail "exit $RESULT: `grep -v 'error reported' $DIR/out.log | tr '\n' ' '`"
+fi
