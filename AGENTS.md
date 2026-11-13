@@ -5,6 +5,51 @@ They complement [README.md](README.md) and [TRANSLATING.md](TRANSLATING.md). If
 anything here conflicts with a maintainer's explicit instruction, the
 maintainer wins.
 
+## Every finding becomes an issue
+
+Any bug you find gets a public GitHub issue, whatever you were doing at the time:
+a crash, wrong output, a build or packaging problem, a misleading message. That
+applies whether you found it while working on something else, reviewing a pull
+request, or triaging, and whether or not you intend to fix it. Security
+vulnerabilities are the one exception (see below).
+
+- **No time limit.** You may work on a fix in a private branch first and open
+  the issue when you're ready. But the issue must exist **no later than the pull
+  request that fixes it**, and the pull request must reference it (`Closes #N`
+  or `Refs #N`). A fix with no issue leaves no trace of what was broken.
+- **A finding that exists only in a review comment, a commit message or an
+  agent's chat transcript is lost.** For example, the library's missing link
+  dependencies were reported inside a comment on #124 in 2024, but only got
+  their own issue (#324) two years later.
+- **Search first**, including closed issues (`gh issue list --state all
+  --search ...`). If a closed issue covers it but the bug is back, or was never
+  fully fixed, open a new issue that links the old one, rather than silently
+  commenting on a closed thread.
+- **Write it so that someone else can act on it:** exact reproduction steps
+  using files anyone can create (for example, `magick` commands rather than
+  private test files), expected versus actual behaviour, the cause with
+  `file:line` if known, and whether you confirmed it by running it or only by
+  reading the code.
+- **Credit earlier reporters and earlier attempts at a fix** (issues, closed
+  pull requests).
+
+### Security vulnerabilities
+
+[SECURITY.md](SECURITY.md) is the policy: what counts as a vulnerability, how to
+report one, and how it is fixed and disclosed. For agents, it comes down to this:
+
+- **Don't open a public issue or pull request.** Report through private
+  vulnerability reporting, and develop the fix in the advisory's private fork. A
+  public "fix overflow in X" pull request discloses the bug just as surely as an
+  issue does.
+- **Don't decide on your own that something is harmless.** Check every finding
+  against SECURITY.md's scope before filing it. Memory-safety bugs reachable
+  from input data are in scope, including uninitialised memory that can reach
+  the output. Wrong output, NULL-pointer crashes and assertion failures are not.
+- **When in doubt, report privately.** A private report can be made public in a
+  minute, but a public one can't be taken back. Say in the report why you think
+  it is or isn't exploitable; the maintainer decides.
+
 ## Versioning and releases
 
 ### Who does what
