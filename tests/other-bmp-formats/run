@@ -1,0 +1,55 @@
+#!/bin/sh
+
+# SPDX-FileCopyrightText: 2026 AutoTrace contributors
+#
+# SPDX-License-Identifier: CC0-1.0
+
+# The same 4-colour picture stored as a plain 24 bpp BMP and in the encodings
+# the native BMP reader used to get wrong: RLE8 and RLE4 (#319), 2 bpp (#320),
+# 32 bpp BITFIELDS with an alpha mask (#321), and indexed images with a grey
+# palette, which were looked up in the palette twice.  Every variant must
+# trace to exactly the same output as its 24 bpp reference.  oob8.bmp has
+# pixel indexes beyond its palette, which must read as black.  mkbmp.py
+# regenerates the images.
+#
+# A build with *Magick readers enabled reads BMP through that library; only a
+# build configured with --without-magick or --disable-magick-readers
+# exercises the native reader.  ImageMagick does not read 2 bpp BMPs at all,
+# and treats out-of-palette indexes its own way, so those images are only
+# checked with the native reader.
+
+. "`dirname "$0"`/../functions"
+
+DIR=$1
+
+colour="rle8 rle4 bpp32-alpha"
+grey="grey4 grey8 grey-rle8 grey-rle4"
+oob=""
+if autotrace -list-input-formats 2>&1 | grep -q 'bmp.*(native)'; then
+    colour="$colour bpp2"
+    grey="$grey grey2"
+    oob="oob8"
+fi
+
+trace() {
+    autotrace -input-format bmp $DIR/$1.bmp -output-format svg -output-file $DIR/$1.svg ||
+        fail "cannot trace $1.bmp"
+    test -s $DIR/$1.svg || fail "empty output for $1.bmp"
+}
+
+check() {
+    ref=$1
+    shift
+    trace $ref
+    for v in "$@"; do
+        trace $v
+        cmp -s $DIR/$ref.svg $DIR/$v.svg || fail "$v.bmp not read like $ref.bmp"
+    done
+}
+
+check ref24 $colour
+check grey-ref24 $grey
+test -n "$oob" && check oob-ref24 $oob
+
+rm -f $DIR/*.svg
+ok
