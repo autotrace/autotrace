@@ -169,8 +169,11 @@ Areas where help is needed:
    bumps `CURRENT` and resets `REVISION`; added interfaces also bump `AGE`,
    removed ones reset `AGE` to 0.
 4. Tag the commit and push the tag. The Windows workflow builds the
-   installers for every tag; attach them and `make dist`'s tarball to the
-   GitHub release.
+   installers for every tag and uploads them to the GitHub release; attach
+   `make dist`'s tarball by hand.
+
+[AGENTS.md](AGENTS.md) has the details, including how to check API/ABI
+compatibility against the previous release.
 
 ## License
 
