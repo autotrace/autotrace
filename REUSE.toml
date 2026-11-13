@@ -7,6 +7,11 @@ SPDX-PackageSupplier = "Peter Lemenkov <lemenkov@gmail.com>"
 SPDX-PackageDownloadLocation = "https://github.com/autotrace/autotrace"
 
 [[annotations]]
+path = "AGENTS.md"
+SPDX-FileCopyrightText = "2026 AutoTrace contributors"
+SPDX-License-Identifier = "CC0-1.0"
+
+[[annotations]]
 path = "AUTHORS"
 precedence = "aggregate"
 SPDX-FileCopyrightText = "2000 Martin Weber"
