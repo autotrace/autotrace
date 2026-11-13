@@ -60,7 +60,11 @@ static void pdf_begin_object(pdf_writer *pdf, int number)
 #define SOUT_LINE(s) g_string_append_printf(stream, "%s\n", s)
 #define SOUT(...) g_string_append_printf(stream, __VA_ARGS__)
 #define SOUT_REAL(r)                                                                               \
-  g_string_append_printf(stream, (r) == lround(r) ? "%.0f " : "%.3f ", (double)(r))
+  do {                                                                                             \
+    double _r = (r);                                                                               \
+    double _frac = fabs(_r - round(_r));                                                           \
+    g_string_append_printf(stream, _frac < 0.0001 ? "%.0f " : "%.3f ", _r);                        \
+  } while (0)
 
 /* For a PostScript command with two real arguments, e.g., lineto.  OP
    should be a constant string.  */
