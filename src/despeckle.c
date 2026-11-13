@@ -422,7 +422,9 @@ static void despeckle_iteration(/* in */ int planes,
   g_autofree unsigned char *mask = g_new0(unsigned char, npixels);
   for (y = 0; y < height; y++) {
     for (x = 0; x < width; x++) {
-      if (mask[y * width + x] == 0) {
+      /* A pixel recolor() changed is looked at again, since it may now
+         belong to a bigger region.  */
+      while (mask[y * width + x] == 0) {
         int size;
 
         size = find_size(planes, PIXEL(bitmap, planes, width, x, y), x, y, width, height, bitmap,
@@ -430,11 +432,12 @@ static void despeckle_iteration(/* in */ int planes,
 
         assert(size > 0);
 
-        if (size < current_size) {
-          if (recolor(planes, tightness, x, y, width, height, bitmap, mask))
-            x--;
-        } else
+        if (size >= current_size) {
           ignore(x, y, width, height, mask);
+          break;
+        }
+        if (!recolor(planes, tightness, x, y, width, height, bitmap, mask))
+          break;
       }
     }
   }

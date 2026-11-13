@@ -467,7 +467,7 @@ static curve_list_array_type split_at_corners(pixel_outline_list_type pixel_list
 static index_list_type find_corners(pixel_outline_type pixel_outline,
                                     fitting_opts_type *fitting_opts, at_exception_type *exception)
 {
-  unsigned p, start_p, end_p;
+  unsigned p, next_p, start_p, end_p;
   index_list_type corner_list = new_index_list();
 
   start_p = 0;
@@ -481,9 +481,11 @@ static index_list_type find_corners(pixel_outline_type pixel_outline,
   }
 
   /* Consider each pixel on the outline in turn.  */
-  for (p = start_p; p <= end_p; p++) {
+  for (p = start_p; p <= end_p; p = next_p) {
     gfloat corner_angle;
     vector_type in_vector, out_vector;
+
+    next_p = p + 1;
 
     /* Check if the angle is small enough.  */
     find_vectors(p, pixel_outline, &in_vector, &out_vector, fitting_opts->corner_surround);
@@ -568,7 +570,7 @@ static index_list_type find_corners(pixel_outline_type pixel_outline,
       /* If we wrapped around in our search, we're done; otherwise,
          we don't want the outer loop to look at the pixels that we
          already looked at in searching for the best corner.  */
-      p = (q < p) ? O_LENGTH(pixel_outline) : q;
+      next_p = ((q < p) ? O_LENGTH(pixel_outline) : q) + 1;
     } /* End of searching for the best corner.  */
   } /* End of considering each pixel.  */
 
@@ -625,7 +627,7 @@ static void find_vectors(unsigned test_index, pixel_outline_type outline, vector
 static void remove_adjacent_corners(index_list_type *list, unsigned last_index,
                                     gboolean remove_adj_corners, at_exception_type *exception)
 {
-  unsigned j;
+  unsigned j, step = 1;
   unsigned last;
   index_list_type new_list = new_index_list();
 
@@ -653,14 +655,14 @@ static void remove_adjacent_corners(index_list_type *list, unsigned last_index,
   /* The list is sorted.  Now look for adjacent entries.  Each time
      through the loop we insert the current entry and, if appropriate,
      the next entry.  */
-  for (j = 0; j < INDEX_LIST_LENGTH(*list) - 1; j++) {
+  for (j = 0; j < INDEX_LIST_LENGTH(*list) - 1; j += step) {
     unsigned current = GET_INDEX(*list, j);
     unsigned next = GET_INDEX(*list, j + 1);
 
     /* We should never have inserted the same element twice.  */
 
-    if ((remove_adj_corners) && ((next == current + 1) || (next == current)))
-      j++;
+    /* Skip the next entry when it is adjacent to this one.  */
+    step = ((remove_adj_corners) && ((next == current + 1) || (next == current))) ? 2 : 1;
 
     append_index(&new_list, current);
   }
