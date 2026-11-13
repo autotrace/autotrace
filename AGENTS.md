@@ -162,6 +162,12 @@ One commit that contains, and only contains:
    `./autogen.sh && ./configure --without-magick --without-pstoedit`), so that
    its `Project-Id-Version` matches. The `check-pot` CI job only runs when
    sources or the POT change, so it won't catch a stale header for you.
+5. the EMF and CGM golden files in `tests/other-output-formats/expected/`,
+   regenerated with the new version: from `tests/`, run
+   `REGENERATE=1 AUTOTRACE=$PWD/../autotrace sh other-output-formats/run other-output-formats`.
+   Both formats embed "AutoTrace version X" in the binary output, which the
+   test can't normalise away the way it does for text formats. Check that
+   only the version bytes changed (`cmp -l` against the old file).
 
 Before opening it, check locally that `make distcheck` passes and that
 `autotrace -version` prints the new version.
