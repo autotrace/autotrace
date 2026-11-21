@@ -25,6 +25,9 @@ struct _at_spline_writer {
 };
 
 int at_input_init(void);
+/* Set the reader that at_input_get_handler() returns for a file name whose
+   suffix no reader is registered for.  */
+void at_input_set_fallback_handler(at_input_func reader, gpointer user_data);
 int at_output_init(void);
 int at_param_init(void);
 int at_module_init(void);
