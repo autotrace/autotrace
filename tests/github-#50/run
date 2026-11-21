@@ -1,0 +1,50 @@
+#!/bin/sh
+
+# SPDX-FileCopyrightText: © 2026 Peter Lemenkov
+#
+# SPDX-License-Identifier: CC0-1.0
+
+# Centerline tracing of a square must give four straight sides meeting at
+# right angles (issue #50).  Thinning cuts each corner to a one-pixel
+# diagonal step, which with the default -corner-threshold was traced as a
+# rounded corner, and with the options from the issue as a corner one pixel
+# off on one side plus a spurious extra corner.
+#
+# square.pbm is a 3-pixel-wide outline whose centre runs along rows and
+# columns 20 and 79, made with
+#   magick -size 100x100 xc:white +antialias -fill none -stroke black \
+#     -strokewidth 3 -draw "rectangle 20,20 79,79" -monochrome square.pbm
+
+. "`dirname "$0"`/../functions"
+
+DIR=$1
+
+# The y values are one more than the x values because centerline points are
+# placed half a pixel off in opposite directions on the two axes (issue #366).
+EXPECTED='M20 21L79 21L79 80L20 80L20 21'
+
+failed=""
+
+# check NAME OPTIONS...
+check() {
+    name=$1
+    shift
+    autotrace "$@" -centerline -output-format svg -output-file $DIR/$name.svg $DIR/square.pbm
+    path=`sed -n 's/.* d="\([^"]*\)".*/\1/p' $DIR/$name.svg`
+    if [ "$path" != "$EXPECTED" ]; then
+        failed="$failed $name($path)"
+    fi
+    rm -f $DIR/$name.svg
+}
+
+check defaults
+check issue-options -remove-adjacent-corners -line-threshold 10 \
+    -line-reversion-threshold 0.01 -corner-surround 12 \
+    -corner-always-threshold 60 -corner-threshold 120 -error-threshold 3 \
+    -filter-iterations 0 -despeckle-level 20 -despeckle-tightness 2.0 \
+    -noise-removal 0.99
+
+if [ -n "$failed" ]; then
+    fail "not a square:$failed"
+fi
+ok
