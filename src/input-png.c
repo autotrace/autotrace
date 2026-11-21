@@ -134,8 +134,15 @@ static int load_image(at_bitmap *image, FILE *stream, at_input_opts_type *opts,
   set_up_transforms(png, info, opts);
   CHECK_ERROR();
 
-  width = (unsigned short)png_get_image_width(png, info);
-  height = (unsigned short)png_get_image_height(png, info);
+  /* at_bitmap holds the size as unsigned short.  */
+  if (png_get_image_width(png, info) > G_MAXUSHORT ||
+      png_get_image_height(png, info) > G_MAXUSHORT) {
+    at_exception_fatal(exp, "PNG: image is too large (the maximum is 65535x65535 pixels)");
+    result = 0;
+    goto cleanup;
+  }
+  width = png_get_image_width(png, info);
+  height = png_get_image_height(png, info);
   pixel_size = (png_get_color_type(png, info) == PNG_COLOR_TYPE_GRAY) ? 1 : 3;
   if (png_get_rowbytes(png, info) != (png_size_t)width * pixel_size) {
     at_exception_fatal(exp, "PNG: unexpected row layout");

@@ -1,0 +1,52 @@
+#!/bin/sh
+
+# SPDX-FileCopyrightText: © 2026 Peter Lemenkov
+#
+# SPDX-License-Identifier: CC0-1.0
+
+# at_bitmap stores the width and height as unsigned short, so an image wider
+# or taller than 65535 pixels must be rejected with an error.  The readers
+# used to allocate the bitmap with the size truncated to 16 bits and then
+# decode the whole image into it (GHSA-f57q-wgfx-9vp3).
+#
+# The fixtures were made with
+#   magick -size 1x65536 xc:black -depth 8 -strip PNG24:tall.png
+#   magick -size 65536x1 xc:black -compress lzw -strip wide.tiff
+
+. "`dirname "$0"`/../functions"
+
+DIR=$1
+
+failed=""
+
+# expect_too_large NAME FILE [OPTIONS...]
+expect_too_large() {
+    name=$1
+    file=$2
+    shift 2
+    autotrace "$@" -output-format svg -output-file $DIR/$name.svg $file 2> $DIR/$name.err
+    RESULT=$?
+    if [ $RESULT -ne 1 ] || ! grep -q "too large" $DIR/$name.err; then
+        failed="$failed $name(exit=$RESULT)"
+    fi
+    rm -f $DIR/$name.svg $DIR/$name.err
+}
+
+# PNM, read by the native reader or by ImageMagick/GraphicsMagick.
+printf 'P5\n65536 1\n255\n' > $DIR/wide.pgm
+head -c 65536 /dev/zero >> $DIR/wide.pgm
+expect_too_large wide-pgm $DIR/wide.pgm
+rm -f $DIR/wide.pgm
+
+# PNG always goes to the native libpng reader.
+expect_too_large tall-png $DIR/tall.png
+
+# TIFF only exists in ImageMagick/GraphicsMagick builds.
+if autotrace -list-input-formats 2>&1 | grep -qi '^ *tiff '; then
+    expect_too_large wide-tiff $DIR/wide.tiff
+fi
+
+if [ -n "$failed" ]; then
+    fail "not rejected as too large:$failed"
+fi
+ok

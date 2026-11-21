@@ -388,6 +388,13 @@ at_bitmap input_bmp_reader(gchar *filename, at_input_opts_type *opts, at_msg_fun
     goto cleanup;
   }
 
+  /* at_bitmap holds the size as unsigned short.  */
+  if (Bitmap_Head.biWidth > G_MAXUSHORT || Bitmap_Head.biHeight > G_MAXUSHORT) {
+    LOG("%s is too large (the maximum is 65535x65535 pixels)", filename);
+    at_exception_fatal(&exp, "bmp: image is too large (the maximum is 65535x65535 pixels)");
+    goto cleanup;
+  }
+
   /* protect against integer overflows caused by malicious BMPs */
   /* use divisions in comparisons to avoid type overflows */
 
@@ -443,8 +450,7 @@ at_bitmap input_bmp_reader(gchar *filename, at_input_opts_type *opts, at_msg_fun
     }
   }
 
-  image = at_bitmap_init(image_storage, (unsigned short)Bitmap_Head.biWidth,
-                         (unsigned short)Bitmap_Head.biHeight, Grey ? 1 : 3);
+  image = at_bitmap_init(image_storage, Bitmap_Head.biWidth, Bitmap_Head.biHeight, Grey ? 1 : 3);
 cleanup:
   fclose(fd);
   return (image);

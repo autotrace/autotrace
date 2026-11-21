@@ -68,6 +68,14 @@ static at_bitmap input_magick_reader(gchar *filename, at_input_opts_type *opts,
   else
     np = 3;
 
+  /* at_bitmap holds the size as unsigned short.  */
+  if (image->columns > G_MAXUSHORT || image->rows > G_MAXUSHORT) {
+    if (msg_func)
+      msg_func("image is too large (the maximum is 65535x65535 pixels)", AT_MSG_FATAL, msg_data);
+    DestroyImage(image);
+    goto cleanup;
+  }
+
   bitmap = at_bitmap_init(NULL, image->columns, image->rows, np);
 
   /* Fetch one row at a time.  The samples are Quantum-sized (usually 16 bits,

@@ -186,8 +186,15 @@ at_bitmap input_pnm_reader(gchar *filename, at_input_opts_type *opts, at_msg_fun
     }
   }
 
-  bitmap = at_bitmap_init(NULL, (unsigned short)pnminfo->xres, (unsigned short)pnminfo->yres,
-                          (pnminfo->np) ? (pnminfo->np) : 1);
+  /* at_bitmap holds the size as unsigned short.  */
+  if (pnminfo->xres > G_MAXUSHORT || pnminfo->yres > G_MAXUSHORT) {
+    LOG("pnm filter: image is too large\n");
+    at_exception_fatal(&excep,
+                       "pnm filter: image is too large (the maximum is 65535x65535 pixels)");
+    goto cleanup;
+  }
+
+  bitmap = at_bitmap_init(NULL, pnminfo->xres, pnminfo->yres, (pnminfo->np) ? (pnminfo->np) : 1);
   pnminfo->loader(scan, pnminfo, AT_BITMAP_BITS(&bitmap), &excep);
 
 cleanup:
