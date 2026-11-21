@@ -68,6 +68,7 @@ static pixel_outline_type new_pixel_outline(void);
 static void free_pixel_outline(pixel_outline_type *);
 static void concat_pixel_outline(pixel_outline_type *, const pixel_outline_type *);
 static void append_outline_pixel(pixel_outline_type *, at_coord);
+static void restore_square_corners(pixel_outline_type *);
 static gboolean is_marked_edge(edge_type, unsigned short, unsigned short, at_bitmap *);
 static gboolean is_outline_edge(edge_type, at_bitmap *, unsigned short, unsigned short, at_color,
                                 at_exception_type *);
@@ -381,8 +382,10 @@ pixel_outline_list_type find_centerline_pixels(at_bitmap *bitmap, at_color bg_co
          bottom edge, and move clockwise.  This happens because of
          the order in which we look at the edges. */
       O_CLOCKWISE(outline) = clockwise;
-      if (O_LENGTH(outline) > 1)
+      if (O_LENGTH(outline) > 1) {
+        restore_square_corners(&outline);
         append_pixel_outline(&outline_list, outline);
+      }
       DEBUG("(%s)", (outline.open ? " open" : " closed"));
       DEBUG(" [%u].\n", O_LENGTH(outline));
       if (O_LENGTH(outline) == 1)
@@ -932,3 +935,76 @@ cleanup:
 }
 
 #undef UNMARKED_OUTLINE_EDGE
+
+/* The step from A to B, which must be one pixel in each direction at most.  */
+static at_coord step(at_coord a, at_coord b)
+{
+  at_coord d;
+
+  d.x = (unsigned short)(b.x - a.x);
+  d.y = (unsigned short)(b.y - a.y);
+  return d;
+}
+
+static gboolean same_step(at_coord a, at_coord b)
+{
+  return a.x == b.x && a.y == b.y;
+}
+
+/* A horizontal or vertical step.  Steps are stored as unsigned short, so -1
+   is 0xffff; only zero matters here.  */
+static gboolean is_straight_step(at_coord d)
+{
+  return (d.x == 0) != (d.y == 0);
+}
+
+/* Thinning turns the corner of a right angle into a one-pixel diagonal
+   step: a horizontal run ends at A, and a vertical run starts at B, one
+   pixel diagonally from A (or the other way round).  find_corners() then
+   sees two pixels with an angle of more than 100 degrees each instead of
+   one with 90 degrees, so with the default -corner-threshold the corner is
+   lost and fitted as a curve, and with a lower threshold it lands one
+   pixel off on one side (issue #50).
+
+   Put the corner pixel back where the two runs meet.  It was part of the
+   line before thinning.  Both runs must be at least two steps long, so
+   that the one-pixel diagonals on small curves are left alone.  */
+static void restore_square_corners(pixel_outline_type *outline)
+{
+  unsigned n = O_LENGTH(*outline), k;
+  gboolean closed = !outline->open;
+  GArray *out;
+
+  if (n < 6)
+    return;
+
+  out = g_array_sized_new(FALSE, FALSE, sizeof(at_coord), n + 4);
+  for (k = 0; k < n; k++) {
+    /* Is the step from point k-1 to point k a diagonal corner step?  For
+       an open outline the runs must lie within it.  */
+    if (closed || (k >= 3 && k + 2 < n)) {
+      at_coord pm3 = O_COORDINATE(*outline, (k + n - 3) % n);
+      at_coord pm2 = O_COORDINATE(*outline, (k + n - 2) % n);
+      at_coord pm1 = O_COORDINATE(*outline, (k + n - 1) % n);
+      at_coord p0 = O_COORDINATE(*outline, k);
+      at_coord p1 = O_COORDINATE(*outline, (k + 1) % n);
+      at_coord p2 = O_COORDINATE(*outline, (k + 2) % n);
+      at_coord before = step(pm2, pm1), after = step(p0, p1), diag = step(pm1, p0);
+
+      if (is_straight_step(before) && same_step(before, step(pm3, pm2)) &&
+          is_straight_step(after) && same_step(after, step(p1, p2)) &&
+          (before.x == 0) != (after.x == 0) && (unsigned short)(before.x + after.x) == diag.x &&
+          (unsigned short)(before.y + after.y) == diag.y) {
+        at_coord corner;
+
+        corner.x = (unsigned short)(pm1.x + before.x);
+        corner.y = (unsigned short)(pm1.y + before.y);
+        g_array_append_val(out, corner);
+      }
+    }
+    g_array_append_val(out, O_COORDINATE(*outline, k));
+  }
+
+  g_array_free(outline->data, TRUE);
+  outline->data = out;
+}
