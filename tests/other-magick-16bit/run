@@ -1,0 +1,31 @@
+#!/bin/sh
+
+# SPDX-FileCopyrightText: © 2026 Peter Lemenkov
+#
+# SPDX-License-Identifier: CC0-1.0
+
+# A 16-bit image must be scaled down to 8 bits, not truncated to the low byte
+# of each sample.  ImageMagick 6 and GraphicsMagick builds (Q16) read
+# #123456789abc as #3478bc instead of #12569a (issue #359).
+#
+# in16.tiff was made with
+#   magick -size 16x16 xc:'#123456789abc' -fill '#ffffffffffff' \
+#     -draw "rectangle 4,4 11,11" -depth 16 -compress none -strip in16.tiff
+# TIFF, because PNG goes to the native libpng reader.
+
+. "`dirname "$0"`/../functions"
+
+DIR=$1
+
+autotrace -list-input-formats 2>&1 | grep -qi '^ *tiff ' ||
+    skip "other-magick-16bit: this build cannot read TIFF"
+
+autotrace -output-format svg -output-file $DIR/in16.svg $DIR/in16.tiff
+colours=`grep -o 'fill:#[0-9a-f]*' $DIR/in16.svg | sort -u | tr '\n' ' '`
+rm -f $DIR/in16.svg
+
+if [ "$colours" = "fill:#12569a fill:#ffffff " ]; then
+    ok
+else
+    fail "expected fill:#12569a and fill:#ffffff, got: $colours"
+fi

@@ -35,12 +35,6 @@ static at_bitmap input_magick_reader(gchar *filename, at_input_opts_type *opts,
   unsigned char red, green, blue;
   at_bitmap bitmap = at_bitmap_init(NULL, 0, 0, 0);
 #if defined(HAVE_IMAGEMAGICK7)
-  Quantum q[MaxPixelChannels];
-#else
-  PixelPacket p;
-  PixelPacket *pixel = &p;
-#endif
-#if defined(HAVE_IMAGEMAGICK7)
   ExceptionInfo *exception_ptr = AcquireExceptionInfo();
   MagickCoreGenesis("", MagickFalse);
 #else
@@ -76,30 +70,37 @@ static at_bitmap input_magick_reader(gchar *filename, at_input_opts_type *opts,
 
   bitmap = at_bitmap_init(NULL, image->columns, image->rows, np);
 
-  for (j = 0, point = 0; j < image->rows; j++)
-    for (i = 0; i < image->columns; i++) {
-#ifdef HAVE_GRAPHICSMAGICK
-      p = AcquireOnePixel(image, i, j, exception_ptr);
-      red = pixel->red;
-      green = pixel->green;
-      blue = pixel->blue;
-#elif defined(HAVE_IMAGEMAGICK)
+  /* Fetch one row at a time.  The samples are Quantum-sized (usually 16 bits,
+     or a float in HDRI builds), so scale every one of them down to 8 bits.  */
+  for (j = 0, point = 0; j < image->rows; j++) {
 #if defined(HAVE_IMAGEMAGICK7)
-      ClearMagickException(exception_ptr);
-      GetOneAuthenticPixel(image, i, j, q, exception_ptr);
-      red = ScaleQuantumToChar(q[RedPixelChannel]);
-      green = ScaleQuantumToChar(q[GreenPixelChannel]);
-      blue = ScaleQuantumToChar(q[BluePixelChannel]);
+    const Quantum *p = GetVirtualPixels(image, 0, j, image->columns, 1, exception_ptr);
+#elif defined(HAVE_GRAPHICSMAGICK)
+    const PixelPacket *p = AcquireImagePixels(image, 0, j, image->columns, 1, exception_ptr);
 #else
-#if ((MagickLibVersion < 0x0645) || (MagickLibVersion >= 0x0649))
-      p = GetOnePixel(image, i, j);
+    const PixelPacket *p = GetVirtualPixels(image, 0, j, image->columns, 1, exception_ptr);
+#endif
+
+    if (p == NULL) {
+      if (msg_func)
+        msg_func(exception_ptr->reason ? exception_ptr->reason : "cannot read the image pixels",
+                 AT_MSG_FATAL, msg_data);
+      g_free(AT_BITMAP_BITS(&bitmap));
+      bitmap = at_bitmap_init(NULL, 0, 0, 0);
+      break;
+    }
+
+    for (i = 0; i < image->columns; i++) {
+#if defined(HAVE_IMAGEMAGICK7)
+      red = ScaleQuantumToChar(GetPixelRed(image, p));
+      green = ScaleQuantumToChar(GetPixelGreen(image, p));
+      blue = ScaleQuantumToChar(GetPixelBlue(image, p));
+      p += GetPixelChannels(image);
 #else
-      GetOnePixel(image, i, j, pixel);
-#endif
-      red = pixel->red;
-      green = pixel->green;
-      blue = pixel->blue;
-#endif
+      red = ScaleQuantumToChar(p->red);
+      green = ScaleQuantumToChar(p->green);
+      blue = ScaleQuantumToChar(p->blue);
+      p++;
 #endif
       AT_BITMAP_BITS(&bitmap)[point++] = red; /* if gray: red=green=blue */
       if (np == 3) {
@@ -107,6 +108,7 @@ static at_bitmap input_magick_reader(gchar *filename, at_input_opts_type *opts,
         AT_BITMAP_BITS(&bitmap)[point++] = blue;
       }
     }
+  }
 
   DestroyImage(image);
 cleanup:
