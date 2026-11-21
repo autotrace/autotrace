@@ -267,8 +267,9 @@ static void get_character_bitmap(gf_char_t *sym)
   /* We expect these to be >= 0, but if the GF file is improper,
    * they might turn to be negative.
    */
-  int height, width, painting_black = 0;
-  int cur_x, cur_y; /* This will be the GF position. */
+  long height, width;
+  int painting_black = 0;
+  long cur_x, cur_y; /* This will be the GF position. */
 
   cur_x = sym->bbox_min_col;
   cur_y = sym->bbox_max_row;
@@ -294,6 +295,11 @@ static void get_character_bitmap(gf_char_t *sym)
       gf_fatal(sym->font, "expected eoc (for a blank character), found %u", c);
     return;
   }
+
+  /* sym->width and sym->height, and at_bitmap after them, are unsigned
+     short.  */
+  if (width > G_MAXUSHORT || height > G_MAXUSHORT)
+    gf_fatal(sym->font, "character %u is too large (%ldx%ld pixels)", sym->charcode, width, height);
 
   sym->height = height;
   sym->width = width;
@@ -330,6 +336,12 @@ static void get_character_bitmap(gf_char_t *sym)
           gf_fatal(sym->font, "invalid painting command %u", c);
         }
       }
+
+      /* Every run, black or white, must stay inside the bounding box
+       * that the bitmap was allocated for: columns bbox_min_col up to,
+       * but not including, bbox_max_col (see `width' above).  */
+      if (cur_x < sym->bbox_min_col || (long)length > sym->bbox_max_col - cur_x)
+        gf_fatal(sym->font, "character %u paints outside its bounding box", sym->charcode);
 
       /* We have to translate from Cartesian to
        * C coordinates.  That means the x's are the same,
@@ -370,6 +382,8 @@ static void get_character_bitmap(gf_char_t *sym)
       default:
         gf_fatal(sym->font, "invalid skip command %u", c);
       }
+      if ((long)rows_to_skip + 1 > cur_y - sym->bbox_min_row)
+        gf_fatal(sym->font, "character %u skips past its bounding box", sym->charcode);
       cur_y -= rows_to_skip + 1;
       cur_x = sym->bbox_min_col;
       painting_black = 0;
@@ -377,6 +391,8 @@ static void get_character_bitmap(gf_char_t *sym)
     } else if (NEW_ROW_0 <= c && c <= NEW_ROW_164) {
       /* `new_row' commands move to the next line down
        * and then over. */
+      if (cur_y <= sym->bbox_min_row)
+        gf_fatal(sym->font, "character %u has more rows than its bounding box", sym->charcode);
       cur_y--;
       cur_x = sym->bbox_min_col + c - NEW_ROW_0;
       painting_black = 1;

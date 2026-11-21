@@ -47,6 +47,34 @@ if [ $RESULT -ne 1 ] || ! grep -q "invalid signature" $DIR/truncated.err || grep
 fi
 rm -f $DIR/truncated.600gf $DIR/truncated.svg $DIR/truncated.err
 
+# Painting or moving outside the character's bounding box must be rejected:
+# the bitmap is allocated for that box, and the reader used to write past it
+# (GHSA-4cx5-xpv3-hqq5).  Character 65 starts at byte 35 with boc1 (an
+# 83x83 box); bytes 41-43 are "paint 0, paint1 83" (a full first row) and
+# byte 44 is new_row_0.
+# expect_box_error NAME MESSAGE OFFSET BYTES...
+expect_box_error() {
+    name=$1
+    message=$2
+    offset=$3
+    shift 3
+    cp $DIR/shapes.600gf $DIR/$name.600gf
+    for b in "$@"; do
+        printf "\\`printf '%03o' $b`" | dd of=$DIR/$name.600gf bs=1 seek=$offset conv=notrunc 2>/dev/null
+        offset=`expr $offset + 1`
+    done
+    autotrace -input-format gf -charcode 65 $DIR/$name.600gf -output-format svg -output-file $DIR/$name.svg 2>$DIR/$name.err
+    RESULT=$?
+    if [ $RESULT -ne 1 ] || ! grep -q "$message" $DIR/$name.err; then
+        failed="$failed $name(exit=$RESULT)"
+    fi
+    rm -f $DIR/$name.600gf $DIR/$name.svg $DIR/$name.err
+}
+# The first row paints 84 pixels instead of 83.
+expect_box_error long-paint "paints outside its bounding box" 43 84
+# skip1 200 moves 201 rows down, past the bottom of the box.
+expect_box_error long-skip "skips past its bounding box" 44 71 200
+
 if [ -n "$failed" ]; then
     fail "unexpected output for:$failed"
 fi
