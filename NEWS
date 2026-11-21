@@ -1,3 +1,30 @@
+What's new in AutoTrace 0.31.12?
+This release is API and ABI compatible with 0.31.11 (libautotrace.so.3).
+
+Security:
+- images wider or taller than 65535 pixels overflowed a heap buffer in
+  the ImageMagick/GraphicsMagick and PNM readers, and in the PNG reader
+  of 0.31.11; they are now rejected (GHSA-f57q-wgfx-9vp3).  So are such
+  BMP images, which were cropped.
+- GF fonts whose characters paint or move outside their bounding box
+  wrote past a heap buffer; they are now rejected (GHSA-4cx5-xpv3-hqq5).
+
+Reading images:
+- ImageMagick 6 and GraphicsMagick: 16-bit images lost the high byte of
+  every sample and got wrong colours (#359).
+- the ImageMagick/GraphicsMagick reader reads whole rows, reports a
+  failed pixel read instead of tracing whatever the buffer held, and is
+  faster (#340).
+- files ending in .tif, or in any other suffix ImageMagick or
+  GraphicsMagick doesn't register, or with no suffix, are read by the
+  *Magick reader, which detects the format from the content (#360).
+
+Other changes:
+- -list-input-formats and -list-output-formats line up the descriptions
+  when a suffix is longer than five characters (#339).
+- the test suite passes with ImageMagick builds whose policy.xml limits
+  the image size, as on Ubuntu 22.04 (#362).
+
 What's new in AutoTrace 0.31.11?
 This release is API and ABI compatible with 0.31.10 (libautotrace.so.3).
 
