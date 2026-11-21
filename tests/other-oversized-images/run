@@ -19,6 +19,10 @@ DIR=$1
 
 failed=""
 
+# A *Magick library may refuse the image itself before AutoTrace looks at its
+# size: distributions ship a policy.xml that limits the width and height,
+# and ImageMagick then reports "width or height exceeds limit" (issue #362).
+# That is a refusal too.
 # expect_too_large NAME FILE [OPTIONS...]
 expect_too_large() {
     name=$1
@@ -26,7 +30,7 @@ expect_too_large() {
     shift 2
     autotrace "$@" -output-format svg -output-file $DIR/$name.svg $file 2> $DIR/$name.err
     RESULT=$?
-    if [ $RESULT -ne 1 ] || ! grep -q "too large" $DIR/$name.err; then
+    if [ $RESULT -ne 1 ] || ! grep -qiE "too large|exceeds limit" $DIR/$name.err; then
         failed="$failed $name(exit=$RESULT)"
     fi
     rm -f $DIR/$name.svg $DIR/$name.err
