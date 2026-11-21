@@ -17,6 +17,7 @@
 
 #include "input.h"
 #include "input-magick.h"
+#include "private.h"
 
 #include <string.h>
 #ifdef HAVE_IMAGEMAGICK7
@@ -163,6 +164,9 @@ int install_input_magick_readers(void)
   }
   RelinquishMagickMemory(infos);
 #endif // HAVE_GRAPHICSMAGICK
+
+  /* Files with an unregistered suffix, such as .tif, or with none.  */
+  at_input_set_fallback_handler(input_magick_reader, NULL);
 
   DestroyExceptionInfo(exception_ptr);
   return 0;

@@ -1,0 +1,33 @@
+#!/bin/sh
+
+# SPDX-FileCopyrightText: © 2026 Peter Lemenkov
+#
+# SPDX-License-Identifier: CC0-1.0
+
+# ImageMagick and GraphicsMagick register "TIFF" but not "TIF", so files
+# ending in .tif were rejected as an unsupported format (issue #360).  A file
+# whose suffix no reader is registered for, or that has no suffix, must go to
+# the *Magick reader, which detects the format from the content.
+
+. "`dirname "$0"`/../functions"
+
+DIR=$1
+
+autotrace -list-input-formats 2>&1 | grep -qi '^ *tiff ' ||
+    skip "other-tif-suffix: this build cannot read TIFF"
+
+failed=""
+for name in picture.tif picture; do
+    cp $DIR/../other-magick-16bit/in16.tiff $DIR/$name
+    autotrace -output-format svg -output-file $DIR/out.svg $DIR/$name 2> $DIR/out.err
+    RESULT=$?
+    if [ $RESULT -ne 0 ] || ! grep -q 'fill:#12569a' $DIR/out.svg; then
+        failed="$failed $name(exit=$RESULT)"
+    fi
+    rm -f $DIR/$name $DIR/out.svg $DIR/out.err
+done
+
+if [ -n "$failed" ]; then
+    fail "not traced:$failed"
+fi
+ok

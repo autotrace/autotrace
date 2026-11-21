@@ -24,6 +24,12 @@ struct _at_input_format_entry {
 };
 
 static GHashTable *at_input_formats = NULL;
+
+/* The reader for file names whose suffix nothing is registered for, or that
+   have none.  ImageMagick and GraphicsMagick detect the format from the
+   file's content, so they can read such files: they register "TIFF" but
+   not "TIF", for example.  */
+static at_bitmap_reader at_input_fallback = {NULL, NULL};
 static at_input_format_entry *at_input_format_new(const char *descr, at_input_func reader,
                                                   gpointer user_data,
                                                   GDestroyNotify user_data_destroy_func);
@@ -110,8 +116,17 @@ int at_input_add_handler_full(const gchar *suffix, const gchar *description, at_
 at_bitmap_reader *at_input_get_handler(gchar *filename)
 {
   g_autofree gchar *ext = find_suffix(filename);
+  at_bitmap_reader *reader = at_input_get_handler_by_suffix(ext);
 
-  return at_input_get_handler_by_suffix(ext);
+  if (!reader && at_input_fallback.func)
+    reader = &at_input_fallback;
+  return reader;
+}
+
+void at_input_set_fallback_handler(at_input_func reader, gpointer user_data)
+{
+  at_input_fallback.func = reader;
+  at_input_fallback.data = user_data;
 }
 
 at_bitmap_reader *at_input_get_handler_by_suffix(const gchar *suffix)
