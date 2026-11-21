@@ -53,7 +53,7 @@ jobs:
             mingw-w64-x86_64-libpng
             mingw-w64-x86_64-pkgconf
             mingw-w64-x86_64-toolchain
-            procps
+            procps-ng
 
       - name: Build AutoTrace
         shell: msys2 {0}
