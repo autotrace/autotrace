@@ -1,0 +1,36 @@
+#!/bin/sh
+
+# SPDX-FileCopyrightText: © 2026 Peter Lemenkov
+#
+# SPDX-License-Identifier: CC0-1.0
+
+# -list-input-formats and -list-output-formats print one "suffix description"
+# pair per line.  The suffixes must be padded to the longest one, so that every
+# description starts in the same column.  A fixed width (5 for input, 10 for
+# output) broke this as soon as a reader such as ImageMagick 7 offered a longer
+# suffix (issue #339).
+
+. "`dirname "$0"`/../functions"
+
+DIR=$1
+
+failed=""
+for kind in input output; do
+    # The list goes to stderr, after a "Supported ... formats:" header line.
+    autotrace -list-$kind-formats 2> $DIR/$kind.txt
+    if [ `wc -l < $DIR/$kind.txt` -lt 2 ]; then
+        failed="$failed $kind(empty)"
+        continue
+    fi
+    # Where the first word (the suffix) ends must be the same on every line.
+    columns=`sed 1d $DIR/$kind.txt | awk '{ match($0, /^ *[^ ]+/); print RLENGTH }' | sort -u | wc -l`
+    if [ "$columns" -ne 1 ]; then
+        failed="$failed $kind"
+    fi
+    rm -f $DIR/$kind.txt
+done
+
+if [ -n "$failed" ]; then
+    fail "descriptions are not aligned for:$failed"
+fi
+ok

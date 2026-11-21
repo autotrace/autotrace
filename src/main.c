@@ -28,6 +28,7 @@
 #include <assert.h>
 #include <errno.h>
 #include <fcntl.h>
+#include <string.h>
 #ifdef _WIN32
 #include <io.h>
 #endif
@@ -461,38 +462,37 @@ static char *read_command_line(int argc, char *argv[], at_fitting_opts_type *fit
   return NULL; /* stop warnings */
 }
 
+/* Print a NULL-terminated list of suffix/description pairs, with the
+   suffixes right-aligned to the longest one so that the descriptions line
+   up.  */
+static void print_format_list(FILE *file, const char **list)
+{
+  const char **pair;
+  int width = 0;
+
+  for (pair = list; *pair; pair += 2) {
+    int len = (int)strlen(pair[0]);
+    if (len > width)
+      width = len;
+  }
+  for (pair = list; *pair; pair += 2)
+    fprintf(file, "%*s %s\n", width, pair[0], pair[1]);
+}
+
 static void input_list_formats(FILE *file)
 {
   const char **list = at_input_list_new();
-  const char **tmp;
 
-  const char *suffix;
-  const char *descr;
-  tmp = list;
-  while (*list) {
-    suffix = *list++;
-    descr = *list++;
-    fprintf(file, "%5s %s\n", suffix, descr);
-  }
-
-  at_input_list_free(tmp);
+  print_format_list(file, list);
+  at_input_list_free(list);
 }
 
 static void output_list_formats(FILE *file)
 {
   const char **list = at_output_list_new();
-  const char **tmp;
 
-  const char *suffix;
-  const char *descr;
-  tmp = list;
-  while (*list) {
-    suffix = *list++;
-    descr = *list++;
-    fprintf(file, "%10s %s\n", suffix, descr);
-  }
-
-  at_output_list_free(tmp);
+  print_format_list(file, list);
+  at_output_list_free(list);
 }
 
 static void dot_printer(gfloat percentage, gpointer client_data)
