@@ -27,6 +27,16 @@ gboolean log_level_enabled(GLogLevelFlags level)
   return TRUE;
 }
 
+gboolean log_shows_debug(void)
+{
+  return own_handler && current_log_level >= G_LOG_LEVEL_DEBUG;
+}
+
+gboolean log_filters_messages(void)
+{
+  return own_handler;
+}
+
 static void custom_log_handler(const gchar *log_domain, GLogLevelFlags log_level,
                                const gchar *message, gpointer user_data)
 {

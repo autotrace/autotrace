@@ -23,6 +23,13 @@
    handler to drop them took most of the running time.  */
 gboolean log_level_enabled(GLogLevelFlags level);
 
+/* Whether the autotrace program prints debugging messages (-log debug).  */
+gboolean log_shows_debug(void);
+
+/* Whether the autotrace program filters the messages (init_logging()), so
+   that DEBUG and LOG skip the ones it would drop.  */
+gboolean log_filters_messages(void);
+
 #define LOG_IF_ENABLED(level, ...)                                                                 \
   G_STMT_START                                                                                     \
   {                                                                                                \
