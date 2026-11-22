@@ -150,6 +150,26 @@ spline_list_array_type fitted_splines(pixel_outline_list_type pixel_outline_list
     }
     curve_list_splines.clockwise = curves.clockwise;
 
+    /* Centerline curves run through pixel indices, but a pixel's centre is
+       half a pixel further on both axes (issue #366).  Outline curves run
+       along pixel edges and are already in place.  Shifting all four
+       control points shifts each Bezier curve exactly.  */
+    if (fitting_opts->centerline) {
+      unsigned this_spline;
+
+      for (this_spline = 0; this_spline < SPLINE_LIST_LENGTH(curve_list_splines); this_spline++) {
+        spline_type *spline = &SPLINE_LIST_ELT(curve_list_splines, this_spline);
+        at_real_coord *points[] = {&START_POINT(*spline), &CONTROL1(*spline), &CONTROL2(*spline),
+                                   &END_POINT(*spline)};
+        unsigned k;
+
+        for (k = 0; k < G_N_ELEMENTS(points); k++) {
+          points[k]->x += 0.5;
+          points[k]->y += 0.5;
+        }
+      }
+    }
+
     memcpy(&(curve_list_splines.color), &(O_LIST_OUTLINE(pixel_outline_list, this_list).color),
            sizeof(at_color));
     append_spline_list(&char_splines, curve_list_splines);
