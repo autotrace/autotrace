@@ -60,18 +60,208 @@ static vector_type find_half_tangent(curve_type, gboolean start, unsigned *, uns
 static void find_tangent(curve_type, gboolean, gboolean, unsigned);
 static spline_type fit_one_spline(curve_type, at_exception_type *exception);
 static spline_list_type *fit_curve(curve_type, fitting_opts_type *, at_exception_type *exception);
-static spline_list_type fit_curve_list(curve_list_type, fitting_opts_type *, at_distance_map *,
-                                       at_exception_type *exception);
 static spline_list_type *fit_with_least_squares(curve_type, fitting_opts_type *,
                                                 at_exception_type *exception);
 static spline_list_type *fit_with_line(curve_type);
 static void remove_knee_points(curve_type, gboolean);
 static void set_initial_parameter_values(curve_type);
 static gboolean spline_linear_enough(spline_type *, curve_type, fitting_opts_type *);
-static curve_list_array_type split_at_corners(pixel_outline_list_type, fitting_opts_type *,
-                                              at_exception_type *exception);
 static at_coord real_to_int_coord(at_real_coord);
 static gfloat distance(at_real_coord, at_real_coord);
+
+/* Borders shared by two outlines (issue #338).
+
+   Two colour regions that touch both trace the pixel border between them,
+   in opposite directions.  Fitted separately, the two traces give two
+   different curves, and the background shows through between them.  So each
+   shared border is fitted once, by the outline that comes first (its owner),
+   and the other outline reuses the owner's splines in reverse.
+
+   For that, both outlines must split the border at the same points.  A point
+   where the outline on the other side changes (a junction) is always a
+   corner, and between junctions both outlines use the owner's corners.  A
+   curve then runs between two corners on one border only, and its fit
+   depends on nothing but its own points.  */
+
+typedef struct {
+  unsigned start;       /* the point on this outline where the curve starts */
+  int owner;            /* the outline that fits the curve, or -1 for this one */
+  unsigned owner_start; /* the point on the owner where its copy starts */
+} curve_border_type;
+
+typedef struct {
+  /* For the edge from point I to point I+1: the outline on its other side,
+     or -1 for none, and the index of the same edge in that outline.  */
+  int *partner;
+  unsigned *partner_edge;
+  /* Whether the outline has a junction.  Without one it shares nothing.  */
+  gboolean shared;
+  /* One entry per curve, in the order of the outline's curve list.  */
+  GArray *curves; /* of curve_border_type */
+  /* Once fitted: for the curve starting at point I, the index of its first
+     spline in the outline's spline list (-1 for other points) and the
+     number of its splines.  */
+  int *first_spline;
+  unsigned *n_splines;
+} shared_border_type;
+
+typedef struct {
+  guint64 key;
+  unsigned outline, edge;
+} edge_key_type;
+
+static int compare_edge_keys(const void *a, const void *b)
+{
+  guint64 key_a = ((const edge_key_type *)a)->key;
+  guint64 key_b = ((const edge_key_type *)b)->key;
+
+  return key_a < key_b ? -1 : key_a > key_b;
+}
+
+static void free_shared_borders(shared_border_type *borders, unsigned n_outlines)
+{
+  unsigned o;
+
+  if (borders == NULL)
+    return;
+  for (o = 0; o < n_outlines; o++) {
+    g_free(borders[o].partner);
+    g_free(borders[o].partner_edge);
+    if (borders[o].curves)
+      g_array_free(borders[o].curves, TRUE);
+    g_free(borders[o].first_spline);
+    g_free(borders[o].n_splines);
+  }
+  g_free(borders);
+}
+
+/* Pair up the edges that two closed outlines share.  Every edge of an
+   outline is one pixel long; sorting them all brings the two copies of a
+   shared edge together.  Returns NULL if no edge is shared.  */
+
+static shared_border_type *find_shared_borders(pixel_outline_list_type list)
+{
+  unsigned n_outlines = O_LIST_LENGTH(list), total = 0, n_keys = 0, o, i;
+  edge_key_type *keys;
+  shared_border_type *borders;
+  gboolean found = FALSE;
+
+  for (o = 0; o < n_outlines; o++)
+    total += O_LENGTH(O_LIST_OUTLINE(list, o));
+  if (total == 0)
+    return NULL;
+
+  keys = g_new(edge_key_type, total);
+  borders = g_new0(shared_border_type, n_outlines);
+
+  for (o = 0; o < n_outlines; o++) {
+    pixel_outline_type outline = O_LIST_OUTLINE(list, o);
+    unsigned n = O_LENGTH(outline);
+
+    borders[o].partner = g_new(int, n);
+    borders[o].partner_edge = g_new0(unsigned, n);
+    for (i = 0; i < n; i++) {
+      at_coord a = O_COORDINATE(outline, i), b = O_COORDINATE(outline, O_NEXT(outline, i));
+      guint64 horizontal;
+
+      borders[o].partner[i] = -1;
+      if (outline.open)
+        continue;
+      if (a.y == b.y && (a.x + 1 == b.x || b.x + 1 == a.x))
+        horizontal = 1;
+      else if (a.x == b.x && (a.y + 1 == b.y || b.y + 1 == a.y))
+        horizontal = 0;
+      else
+        continue;
+
+      keys[n_keys].key =
+          ((guint64)MIN(a.x, b.x) << 33) | ((guint64)MIN(a.y, b.y) << 1) | horizontal;
+      keys[n_keys].outline = o;
+      keys[n_keys].edge = i;
+      n_keys++;
+    }
+  }
+
+  qsort(keys, n_keys, sizeof(edge_key_type), compare_edge_keys);
+
+  /* An edge lies between two pixels, so at most two outlines share it, and
+     its two copies are next to each other after sorting.  */
+  for (i = 0; i + 1 < n_keys; i++) {
+    edge_key_type *k1 = &keys[i], *k2 = &keys[i + 1];
+    pixel_outline_type o1, o2;
+    at_coord start1, end2;
+
+    if (k1->key != k2->key || k1->outline == k2->outline)
+      continue;
+
+    /* The two outlines must run along the edge in opposite directions.  */
+    o1 = O_LIST_OUTLINE(list, k1->outline);
+    o2 = O_LIST_OUTLINE(list, k2->outline);
+    start1 = O_COORDINATE(o1, k1->edge);
+    end2 = O_COORDINATE(o2, O_NEXT(o2, k2->edge));
+    if (start1.x != end2.x || start1.y != end2.y)
+      continue;
+
+    borders[k1->outline].partner[k1->edge] = k2->outline;
+    borders[k1->outline].partner_edge[k1->edge] = k2->edge;
+    borders[k2->outline].partner[k2->edge] = k1->outline;
+    borders[k2->outline].partner_edge[k2->edge] = k1->edge;
+    found = TRUE;
+  }
+  g_free(keys);
+
+  if (!found) {
+    free_shared_borders(borders, n_outlines);
+    return NULL;
+  }
+  return borders;
+}
+
+/* Whether point V of outline O is a junction: the edges before and after
+   it have different outlines on their other side, or the same one but not
+   next to each other there.  */
+
+static gboolean is_junction(pixel_outline_list_type list, shared_border_type *borders, unsigned o,
+                            unsigned v)
+{
+  shared_border_type *b = &borders[o];
+  unsigned n = O_LENGTH(O_LIST_OUTLINE(list, o));
+  unsigned in = v == 0 ? n - 1 : v - 1;
+  int q = b->partner[v];
+
+  if (b->partner[in] != q)
+    return TRUE;
+  if (q < 0)
+    return FALSE;
+  return b->partner_edge[in] != (b->partner_edge[v] + 1) % O_LENGTH(O_LIST_OUTLINE(list, q));
+}
+
+/* Append the splines FROM[FIRST..FIRST+COUNT) to LIST in reverse order,
+   each one reversed.  */
+
+static void append_reversed_splines(spline_list_type *list, spline_list_type from, unsigned first,
+                                    unsigned count)
+{
+  unsigned k;
+
+  for (k = count; k > 0; k--) {
+    spline_type s = SPLINE_LIST_ELT(from, first + k - 1);
+    at_real_coord p = START_POINT(s);
+
+    START_POINT(s) = END_POINT(s);
+    END_POINT(s) = p;
+    p = CONTROL1(s);
+    CONTROL1(s) = CONTROL2(s);
+    CONTROL2(s) = p;
+    append_spline(list, s);
+  }
+}
+
+static curve_list_array_type split_at_corners(pixel_outline_list_type, fitting_opts_type *,
+                                              shared_border_type *, at_exception_type *exception);
+static spline_list_type fit_curve_list(curve_list_type, fitting_opts_type *, at_distance_map *,
+                                       shared_border_type *, unsigned, spline_list_array_type *,
+                                       at_exception_type *exception);
 
 /* Get a new set of fitting options */
 fitting_opts_type new_fitting_opts(void)
@@ -114,7 +304,11 @@ spline_list_array_type fitted_splines(pixel_outline_list_type pixel_outline_list
   unsigned this_list;
 
   spline_list_array_type char_splines = new_spline_list_array();
-  curve_list_array_type curve_array = split_at_corners(pixel_outline_list, fitting_opts, exception);
+  /* Centerlines are open and never share a border.  */
+  shared_border_type *borders =
+      fitting_opts->centerline ? NULL : find_shared_borders(pixel_outline_list);
+  curve_list_array_type curve_array =
+      split_at_corners(pixel_outline_list, fitting_opts, borders, exception);
 
   char_splines.centerline = fitting_opts->centerline;
   char_splines.preserve_width = fitting_opts->preserve_width;
@@ -142,7 +336,8 @@ spline_list_array_type fitted_splines(pixel_outline_list_type pixel_outline_list
 
     DEBUG("\nFitting curve list #%u:\n", this_list);
 
-    curve_list_splines = fit_curve_list(curves, fitting_opts, dist, exception);
+    curve_list_splines =
+        fit_curve_list(curves, fitting_opts, dist, borders, this_list, &char_splines, exception);
     if (at_exception_got_fatal(exception)) {
       if (char_splines.background_color)
         at_color_free(char_splines.background_color);
@@ -176,6 +371,7 @@ spline_list_array_type fitted_splines(pixel_outline_list_type pixel_outline_list
   }
 cleanup:
   free_curve_list_array(&curve_array, notify_progress, progress_data);
+  free_shared_borders(borders, O_LIST_LENGTH(pixel_outline_list));
 
   return char_splines;
 }
@@ -184,13 +380,26 @@ cleanup:
    it.  CURVE_LIST represents a single closed paths, e.g., either the
    inside or outside outline of an `o'.  */
 
+/* BORDERS (NULL if no border is shared) describes the shared borders of
+   every outline; CURVE_LIST is outline number THIS_OUTLINE.  A curve on a
+   border that an earlier outline owns is not fitted again: its splines are
+   the owner's, in reverse, taken from DONE, the spline lists of the earlier
+   outlines.  */
+
 static spline_list_type fit_curve_list(curve_list_type curve_list, fitting_opts_type *fitting_opts,
-                                       at_distance_map *dist, at_exception_type *exception)
+                                       at_distance_map *dist, shared_border_type *borders,
+                                       unsigned this_outline, spline_list_array_type *done,
+                                       at_exception_type *exception)
 {
   curve_type curve;
   unsigned this_curve, this_spline;
   unsigned curve_list_length = CURVE_LIST_LENGTH(curve_list);
   spline_list_type curve_list_splines = empty_spline_list();
+  shared_border_type *border =
+      borders != NULL && borders[this_outline].shared ? &borders[this_outline] : NULL;
+
+#define CURVE_BORDER(n) g_array_index(border->curves, curve_border_type, n)
+#define BORROWED(n) (border != NULL && CURVE_BORDER(n).owner >= 0)
 
   curve_list_splines.open = curve_list.open;
 
@@ -201,7 +410,8 @@ static spline_list_type fit_curve_list(curve_list_type curve_list, fitting_opts_
   DEBUG("\nRemoving knees:\n");
   for (this_curve = 0; this_curve < curve_list_length; this_curve++) {
     DEBUG("#%u:", this_curve);
-    remove_knee_points(CURVE_LIST_ELT(curve_list, this_curve), CURVE_LIST_CLOCKWISE(curve_list));
+    if (!BORROWED(this_curve))
+      remove_knee_points(CURVE_LIST_ELT(curve_list, this_curve), CURVE_LIST_CLOCKWISE(curve_list));
   }
 
   if (dist != NULL) {
@@ -256,7 +466,8 @@ static spline_list_type fit_curve_list(curve_list_type curve_list, fitting_opts_
   DEBUG("\nFiltering curves:\n");
   for (this_curve = 0; this_curve < CURVE_LIST_LENGTH(curve_list); this_curve++) {
     DEBUG("#%u: ", this_curve);
-    filter(CURVE_LIST_ELT(curve_list, this_curve), fitting_opts);
+    if (!BORROWED(this_curve))
+      filter(CURVE_LIST_ELT(curve_list, this_curve), fitting_opts);
   }
 
   /* Make the first point in the first curve also be the last point in
@@ -278,6 +489,23 @@ static spline_list_type fit_curve_list(curve_list_type curve_list, fitting_opts_
   for (this_curve = 0; this_curve < curve_list_length; this_curve++) {
     spline_list_type *curve_splines;
     curve_type current_curve = CURVE_LIST_ELT(curve_list, this_curve);
+    unsigned first = SPLINE_LIST_LENGTH(curve_list_splines);
+
+    if (BORROWED(this_curve)) {
+      curve_border_type cb = CURVE_BORDER(this_curve);
+      shared_border_type *owner = &borders[cb.owner];
+      int owner_first = owner->first_spline ? owner->first_spline[cb.owner_start] : -1;
+
+      DEBUG("\nCurve #%u is the reverse of one on outline #%d.\n", this_curve, cb.owner);
+      if (owner_first < 0)
+        at_exception_warning(exception, "Could not find the fit of a shared border");
+      else
+        append_reversed_splines(&curve_list_splines, SPLINE_LIST_ARRAY_ELT(*done, cb.owner),
+                                owner_first, owner->n_splines[cb.owner_start]);
+      border->first_spline[cb.start] = first;
+      border->n_splines[cb.start] = SPLINE_LIST_LENGTH(curve_list_splines) - first;
+      continue;
+    }
 
     DEBUG("\nFitting curve #%u:\n", this_curve);
 
@@ -303,7 +531,14 @@ static spline_list_type fit_curve_list(curve_list_type curve_list, fitting_opts_
       free_spline_list(*curve_splines);
       g_free(curve_splines);
     }
+    if (border != NULL) {
+      border->first_spline[CURVE_BORDER(this_curve).start] = first;
+      border->n_splines[CURVE_BORDER(this_curve).start] =
+          SPLINE_LIST_LENGTH(curve_list_splines) - first;
+    }
   }
+#undef BORROWED
+#undef CURVE_BORDER
 
   DEBUG("\nFitted splines are:\n");
   for (this_spline = 0; this_spline < SPLINE_LIST_LENGTH(curve_list_splines); this_spline++) {
@@ -361,46 +596,142 @@ static spline_list_type *fit_curve(curve_type curve, fitting_opts_type *fitting_
    element (which in turn consists of several curves, one between each
    pair of corners) for each element in PIXEL_LIST.  */
 
+/* The corners of PIXEL_O on its own, before any border is shared.  */
+
+static index_list_type outline_corners(pixel_outline_type pixel_o, fitting_opts_type *fitting_opts,
+                                       at_exception_type *exception)
+{
+  index_list_type corner_list;
+
+  /* If the outline does not have enough points, we can't do
+     anything.  The endpoints of the outlines are automatically
+     corners.  We need at least `corner_surround' more pixels on
+     either side of a point before it is conceivable that we might
+     want another corner.  */
+  if (O_LENGTH(pixel_o) > fitting_opts->corner_surround * 2 + 2)
+    corner_list = find_corners(pixel_o, fitting_opts, exception);
+
+  else {
+    int surround;
+    if ((surround = (int)(O_LENGTH(pixel_o) - 3) / 2) >= 2) {
+      unsigned save_corner_surround = fitting_opts->corner_surround;
+      fitting_opts->corner_surround = surround;
+      corner_list = find_corners(pixel_o, fitting_opts, exception);
+      fitting_opts->corner_surround = save_corner_surround;
+    } else {
+      corner_list = new_index_list();
+    }
+  }
+  return corner_list;
+}
+
+/* Replace the corners of outline O by the ones its shared borders need:
+   every junction, its own corners on the borders it fits, and the owner's
+   corners on the borders it reuses.  IS_CORNER[Q][I] tells whether point I
+   is one of outline Q's own corners.  Leaves CORNERS[O] alone if O has no
+   junction.  */
+
+static void share_corners(pixel_outline_list_type pixel_list, shared_border_type *borders,
+                          unsigned o, gboolean **is_corner, index_list_type *corners)
+{
+  shared_border_type *b = &borders[o];
+  unsigned n = O_LENGTH(O_LIST_OUTLINE(pixel_list, o)), v;
+  index_list_type shared = new_index_list();
+
+  for (v = 0; v < n; v++) {
+    int q = b->partner[v];
+    gboolean corner;
+
+    if (is_junction(pixel_list, borders, o, v))
+      corner = b->shared = TRUE;
+    else if (q < 0 || (unsigned)q > o)
+      corner = is_corner[o][v];
+    else /* On outline Q, point V is where edge V ends.  */
+      corner = is_corner[q][(b->partner_edge[v] + 1) % O_LENGTH(O_LIST_OUTLINE(pixel_list, q))];
+    if (corner)
+      append_index(&shared, v);
+  }
+
+  if (b->shared) {
+    free_index_list(&corners[o]);
+    corners[o] = shared;
+    b->curves = g_array_new(FALSE, FALSE, sizeof(curve_border_type));
+    b->first_spline = g_new(int, n);
+    for (v = 0; v < n; v++)
+      b->first_spline[v] = -1;
+    b->n_splines = g_new0(unsigned, n);
+  } else
+    free_index_list(&shared);
+}
+
+/* Record that the curve of outline O from point START to point END is the
+   next one in its curve list, and who fits it.  */
+
+static void add_curve_border(pixel_outline_list_type pixel_list, shared_border_type *borders,
+                             unsigned o, unsigned start, unsigned end)
+{
+  shared_border_type *b = &borders[o];
+  unsigned n = O_LENGTH(O_LIST_OUTLINE(pixel_list, o));
+  curve_border_type cb;
+  int q = b->partner[start];
+
+  cb.start = start;
+  cb.owner = -1;
+  cb.owner_start = 0;
+  if (q >= 0 && (unsigned)q < o) {
+    /* The copy on Q starts where this curve ends, at the end of the
+       curve's last edge.  */
+    cb.owner = q;
+    cb.owner_start = b->partner_edge[(end + n - 1) % n];
+  }
+  g_array_append_val(b->curves, cb);
+}
+
 static curve_list_array_type split_at_corners(pixel_outline_list_type pixel_list,
                                               fitting_opts_type *fitting_opts,
+                                              shared_border_type *borders,
                                               at_exception_type *exception)
 {
-  unsigned this_pixel_o;
+  unsigned this_pixel_o, n_outlines = O_LIST_LENGTH(pixel_list);
   curve_list_array_type curve_array = new_curve_list_array();
+  index_list_type *corners = g_new(index_list_type, n_outlines);
 
   DEBUG("\nFinding corners:\n");
 
-  for (this_pixel_o = 0; this_pixel_o < O_LIST_LENGTH(pixel_list); this_pixel_o++) {
+  for (this_pixel_o = 0; this_pixel_o < n_outlines; this_pixel_o++) {
+    DEBUG("#%u:", this_pixel_o);
+    corners[this_pixel_o] =
+        outline_corners(O_LIST_OUTLINE(pixel_list, this_pixel_o), fitting_opts, exception);
+    DEBUG(" [%u].\n", INDEX_LIST_LENGTH(corners[this_pixel_o]));
+  }
+
+  if (borders != NULL) {
+    gboolean **is_corner = g_new(gboolean *, n_outlines);
+    unsigned i;
+
+    for (this_pixel_o = 0; this_pixel_o < n_outlines; this_pixel_o++) {
+      is_corner[this_pixel_o] =
+          g_new0(gboolean, O_LENGTH(O_LIST_OUTLINE(pixel_list, this_pixel_o)));
+      for (i = 0; i < INDEX_LIST_LENGTH(corners[this_pixel_o]); i++)
+        is_corner[this_pixel_o][GET_INDEX(corners[this_pixel_o], i)] = TRUE;
+    }
+    for (this_pixel_o = 0; this_pixel_o < n_outlines; this_pixel_o++)
+      share_corners(pixel_list, borders, this_pixel_o, is_corner, corners);
+    for (this_pixel_o = 0; this_pixel_o < n_outlines; this_pixel_o++)
+      g_free(is_corner[this_pixel_o]);
+    g_free(is_corner);
+  }
+
+  for (this_pixel_o = 0; this_pixel_o < n_outlines; this_pixel_o++) {
     curve_type curve, first_curve;
-    index_list_type corner_list;
+    index_list_type corner_list = corners[this_pixel_o];
     unsigned p, this_corner;
     curve_list_type curve_list = new_curve_list();
     pixel_outline_type pixel_o = O_LIST_OUTLINE(pixel_list, this_pixel_o);
+    gboolean shared = borders != NULL && borders[this_pixel_o].shared;
 
     CURVE_LIST_CLOCKWISE(curve_list) = O_CLOCKWISE(pixel_o);
     curve_list.open = pixel_o.open;
-
-    DEBUG("#%u:", this_pixel_o);
-
-    /* If the outline does not have enough points, we can't do
-       anything.  The endpoints of the outlines are automatically
-       corners.  We need at least `corner_surround' more pixels on
-       either side of a point before it is conceivable that we might
-       want another corner.  */
-    if (O_LENGTH(pixel_o) > fitting_opts->corner_surround * 2 + 2)
-      corner_list = find_corners(pixel_o, fitting_opts, exception);
-
-    else {
-      int surround;
-      if ((surround = (int)(O_LENGTH(pixel_o) - 3) / 2) >= 2) {
-        unsigned save_corner_surround = fitting_opts->corner_surround;
-        fitting_opts->corner_surround = surround;
-        corner_list = find_corners(pixel_o, fitting_opts, exception);
-        fitting_opts->corner_surround = save_corner_surround;
-      } else {
-        corner_list = new_index_list();
-      }
-    }
 
     /* Remember the first curve so we can make it be the `next' of the
        last one.  (And vice versa.)  */
@@ -428,6 +759,8 @@ static curve_list_array_type split_at_corners(pixel_outline_list_type pixel_list
           append_pixel(curve, O_COORDINATE(pixel_o, p));
 
         append_curve(&curve_list, curve);
+        if (shared)
+          add_curve_border(pixel_list, borders, this_pixel_o, corner, next_corner);
         curve = new_curve();
         NEXT_CURVE(previous_curve) = curve;
         PREVIOUS_CURVE(curve) = previous_curve;
@@ -442,6 +775,9 @@ static curve_list_array_type split_at_corners(pixel_outline_list_type pixel_list
       if (!pixel_o.open) {
         for (p = 0; p <= GET_INDEX(corner_list, 0); p++)
           append_pixel(curve, O_COORDINATE(pixel_o, p));
+        if (shared)
+          add_curve_border(pixel_list, borders, this_pixel_o, GET_LAST_INDEX(corner_list),
+                           GET_INDEX(corner_list, 0));
       } else {
         curve_type last_curve = PREVIOUS_CURVE(curve);
         PREVIOUS_CURVE(first_curve) = NULL;
@@ -450,7 +786,6 @@ static curve_list_array_type split_at_corners(pixel_outline_list_type pixel_list
       }
     }
 
-    DEBUG(" [%u].\n", INDEX_LIST_LENGTH(corner_list));
     free_index_list(&corner_list);
 
     /* Add `curve' to the end of the list, updating the pointers in
@@ -463,6 +798,7 @@ static curve_list_array_type split_at_corners(pixel_outline_list_type pixel_list
     append_curve_list(&curve_array, curve_list);
   } /* End of considering each pixel outline.  */
 
+  g_free(corners);
   return curve_array;
 }
 

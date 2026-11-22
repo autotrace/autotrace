@@ -4,8 +4,6 @@ in the issue tracker: https://github.com/autotrace/autotrace/issues
 Tracing:
 - Recognise circle and ellipse pieces.
 - Recognise lines, splines and circles in noisy input.
-- Trace and fit every outline only once (outlines are currently traced
-  twice, which is slow and leaves unwanted gaps).
 - A better thinning algorithm for -centerline, e.g. the Chordal Axis
   Transform.
 - An algorithm that copes with anti-aliased input.

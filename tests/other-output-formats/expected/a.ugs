@@ -21,8 +21,10 @@ symbol 0 design-size 0
 			dot-on 10 123
 			dot-on 10 24
 			dot-on 43 24
+			dot-on 43 40
 			dot-on 43 57
 			dot-on 93 57
+			dot-on 93 40
 			dot-on 93 24
 			dot-on 126 24
 			dot-on 126 123
@@ -34,6 +36,7 @@ symbol 0 design-size 0
 			dot-on 110 140
 			dot-on 110 123
 			dot-on 126 123
+			dot-on 126 24
 			dot-on 126 7
 			dot-on 143 7
 			dot-on 143 140
@@ -62,8 +65,10 @@ symbol 0 design-size 0
 		end path
 		path
 			dot-on 43 40
+			dot-on 43 24
 			dot-on 43 7
 			dot-on 93 7
+			dot-on 93 24
 			dot-on 93 40
 			dot-on 43 40
 		end path
