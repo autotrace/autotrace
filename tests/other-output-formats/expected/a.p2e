@@ -60,8 +60,10 @@ newpath
  10 123 lineto
  10 24 lineto
  43 24 lineto
+ 43 40 lineto
  43 57 lineto
  93 57 lineto
+ 93 40 lineto
  93 24 lineto
  126 24 lineto
  126 123 lineto
@@ -79,6 +81,7 @@ newpath
  110 140 moveto
  110 123 lineto
  126 123 lineto
+ 126 24 lineto
  126 7 lineto
  143 7 lineto
  143 140 lineto
@@ -131,8 +134,10 @@ fill
 0.000 0.000 0.000 1.000 setcmykcolor
 newpath
  43 40 moveto
+ 43 24 lineto
  43 7 lineto
  93 7 lineto
+ 93 24 lineto
  93 40 lineto
  43 40 lineto
 closepath

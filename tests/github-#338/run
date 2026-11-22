@@ -1,0 +1,66 @@
+#!/bin/sh
+
+# SPDX-FileCopyrightText: © 2026 Peter Lemenkov
+#
+# SPDX-License-Identifier: CC0-1.0
+
+# A border shared by two colour regions must be fitted once, so that both
+# regions' paths use the same curve for it (issue #338).  Each outline used
+# to be fitted on its own, the two fits of a shared border differed, and the
+# background showed through between them.
+#
+# side.png is a red and a green region that share a curved border, on a blue
+# background, made with
+#   magick -size 120x120 xc:'#0000ff' +antialias \
+#     -fill '#00ff00' -draw "path 'M 60,10 C 30,40 90,80 60,110 L 110,110 L 110,10 Z'" \
+#     -fill '#ff0000' -draw "path 'M 10,10 L 60,10 C 30,40 90,80 60,110 L 10,110 Z'" side.png
+
+. "`dirname "$0"`/../functions"
+
+DIR=$1
+
+failed=""
+
+# The path of colour $2 in the SVG file $1, one segment per line, each as
+# its start point and the rest of its points.
+segments() {
+    sed -n "s/.*fill:#$2;.* d=\"\([^\"]*\)\".*/\1/p" $1 | awk '
+    {
+        gsub(/[MLCz]/, " & ")
+        n = split($0, t, " ")
+        for (i = 1; i <= n; i++) {
+            if (t[i] == "M") { x = t[i+1]; y = t[i+2]; i += 2 }
+            else if (t[i] == "L") { print "L", x, y, t[i+1], t[i+2]; x = t[i+1]; y = t[i+2]; i += 2 }
+            else if (t[i] == "C") {
+                print "C", x, y, t[i+1], t[i+2], t[i+3], t[i+4], t[i+5], t[i+6]
+                x = t[i+5]; y = t[i+6]; i += 6
+            }
+        }
+    }'
+}
+
+# check NAME OPTIONS...
+check() {
+    name=$1
+    shift
+    autotrace "$@" -output-format svg -output-file $DIR/$name.svg $DIR/side.png
+    segments $DIR/$name.svg ff0000 | awk '$1 == "C" { print "C", $8, $9, $6, $7, $4, $5, $2, $3 }' > $DIR/$name.red
+    segments $DIR/$name.svg 00ff00 > $DIR/$name.green
+    # The border is curved, so it must give at least one cubic segment, and
+    # every cubic segment of the red path must be in the green one, reversed.
+    if [ ! -s $DIR/$name.red ]; then
+        failed="$failed $name(no curve)"
+    elif grep -vxFf $DIR/$name.green $DIR/$name.red >/dev/null; then
+        failed="$failed $name"
+    fi
+    rm -f $DIR/$name.svg $DIR/$name.red $DIR/$name.green
+}
+
+check background -background-color 0000FF
+# Without a background colour the blue region is traced as well.
+check no-background
+
+if [ -n "$failed" ]; then
+    fail "shared border fitted differently:$failed"
+fi
+ok
