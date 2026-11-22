@@ -50,6 +50,33 @@ report one, and how it is fixed and disclosed. For agents, it comes down to this
   minute, but a public one can't be taken back. Say in the report why you think
   it is or isn't exploitable; the maintainer decides.
 
+## Before pushing a change to the sources
+
+Go through [.claude/skills/code-quality/SKILL.md](.claude/skills/code-quality/SKILL.md)
+(Claude Code loads it as the `code-quality` skill; other agents read it as a
+checklist). It is written for any C library. Here it means:
+
+- **Two review bots** comment on pull requests:
+  - CodeQL (`github-advanced-security[bot]`; the "CodeQL" and "Analyze (cpp)"
+    checks);
+  - Codex (`chatgpt-codex-connector[bot]`).
+
+  Read both on the final head. Codex's findings here have been changes in
+  what library clients observe: a client's own log handler losing messages
+  (#371), a cancel taking effect later (#373), 2-bpp BMP samples changing
+  meaning (#327).
+- **The library's clients** include Inkscape and the GIMP plugins, so check
+  the callbacks of `at_splines_new_full()` (`msg_func`, `notify_progress`,
+  `test_cancel`), its documented NULL on cancel (#372) and the `autotrace`
+  GLib log domain with a client program, not only with `autotrace`.
+- **Formatting:** the "format" job runs `clang-format-20 --dry-run --Werror
+  src/*.[ch]`.
+- **valgrind:** run it through `./libtool --mode=execute valgrind ./autotrace`.
+  `.libs/autotrace` alone may load an installed `libautotrace`.
+- **Large test inputs** can be made with ImageMagick, e.g. `magick -size
+  3000x3000 plasma:fractal -seed 1 -blur 0x8 -colors 12 -type truecolor
+  big.png`.
+
 ## Versioning and releases
 
 ### Who does what
