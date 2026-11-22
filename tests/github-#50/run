@@ -19,9 +19,9 @@
 
 DIR=$1
 
-# The y values are one more than the x values because centerline points are
-# placed half a pixel off in opposite directions on the two axes (issue #366).
-EXPECTED='M20 21L79 21L79 80L20 80L20 21'
+# The centre line runs through the centres of the pixels in rows and columns
+# 20 and 79, at 20.5 and 79.5 (issue #366).
+EXPECTED='M20.5 20.5L79.5 20.5L79.5 79.5L20.5 79.5L20.5 20.5'
 
 failed=""
 
