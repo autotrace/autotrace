@@ -257,11 +257,206 @@ static void append_reversed_splines(spline_list_type *list, spline_list_type fro
   }
 }
 
+/* Work on all the outlines at once (issue #155).
+
+   Most of the work on an outline depends on nothing but the outline
+   itself: finding its corners, splitting it into curves, and fitting
+   them.  (A curve on a shared border is fitted only by its owner, and
+   the other outline copies the result when the spline lists are put
+   together, in order.)  So each of these steps runs on a pool of
+   threads, and the calling thread takes the results in the order of the
+   outlines.  The pool hands out runs of consecutive outlines: one
+   outline at a time costs more in locking than finding its corners does.
+
+   The client's message function is called on the calling thread, and in
+   the same order as without threads.  So a task raises its messages on an
+   exception of its own, which keeps them, and the calling thread passes
+   them on when it takes the task's outline.  */
+
+typedef void (*outline_task_func)(unsigned outline, at_exception_type *exception, gpointer data);
+
+typedef struct {
+  at_msg_type type;
+  gchar *text;
+} kept_message_type;
+
+typedef struct {
+  GArray *messages; /* of kept_message_type, or NULL if none */
+  gboolean done;
+} outline_task_type;
+
+typedef struct {
+  outline_task_func func;
+  gpointer data;
+  unsigned n_outlines;
+  unsigned chunk; /* the number of outlines in one item of the pool */
+  outline_task_type *tasks;
+  GThreadPool *pool; /* NULL: run each task when the calling thread takes it */
+  gint cancelled;
+  GMutex lock;
+  GCond done;
+} outline_tasks_type;
+
+/* How many threads to use: in the autotrace program, the number in the
+   environment variable AUTOTRACE_THREADS, or else one per processor.
+
+   One in a library client: it gets every debugging message formatted
+   (see log_level_enabled()), and g_log() takes one lock for all threads,
+   so that threads mostly wait for each other there; with 22 of them,
+   tracing took three times as long as with one.  One as well when the
+   program prints debugging messages, so that the messages of each
+   outline stay together.  */
+static unsigned n_threads(unsigned n_outlines)
+{
+  const gchar *env = g_getenv("AUTOTRACE_THREADS");
+  guint64 n = 0;
+
+  if (!log_filters_messages() || log_shows_debug())
+    return 1;
+  if (env == NULL || !g_ascii_string_to_unsigned(env, 10, 1, G_MAXUINT, &n, NULL))
+    n = g_get_num_processors();
+  return MAX(1, MIN((unsigned)n, n_outlines));
+}
+
+static void keep_message(const gchar *msg, at_msg_type msg_type, gpointer client_data)
+{
+  outline_task_type *task = client_data;
+  kept_message_type m;
+
+  m.type = msg_type;
+  m.text = g_strdup(msg);
+  if (task->messages == NULL)
+    task->messages = g_array_new(FALSE, FALSE, sizeof(kept_message_type));
+  g_array_append_val(task->messages, m);
+}
+
+static void free_kept_messages(outline_task_type *task)
+{
+  unsigned i;
+
+  if (task->messages == NULL)
+    return;
+  for (i = 0; i < task->messages->len; i++)
+    g_free(g_array_index(task->messages, kept_message_type, i).text);
+  g_array_free(task->messages, TRUE);
+  task->messages = NULL;
+}
+
+static void run_outline_task(outline_tasks_type *t, unsigned o)
+{
+  at_exception_type exception = at_exception_new(keep_message, &t->tasks[o]);
+
+  t->func(o, &exception, t->data);
+}
+
+static void outline_worker(gpointer data, gpointer user_data)
+{
+  outline_tasks_type *t = user_data;
+  unsigned first = (GPOINTER_TO_UINT(data) - 1) * t->chunk;
+  unsigned end = MIN(first + t->chunk, t->n_outlines), o;
+
+  for (o = first; o < end; o++)
+    if (!g_atomic_int_get(&t->cancelled))
+      run_outline_task(t, o);
+  g_mutex_lock(&t->lock);
+  for (o = first; o < end; o++)
+    t->tasks[o].done = TRUE;
+  g_cond_broadcast(&t->done);
+  g_mutex_unlock(&t->lock);
+}
+
+/* Start FUNC (O, exception, DATA) for each outline O below N_OUTLINES.
+   FUNC may run on any thread, so it must change nothing that the task of
+   another outline uses.  */
+static void start_outline_tasks(outline_tasks_type *t, unsigned n_outlines, outline_task_func func,
+                                gpointer data)
+{
+  unsigned threads = n_threads(n_outlines), o;
+
+  t->func = func;
+  t->data = data;
+  t->n_outlines = n_outlines;
+  /* Enough items to keep all threads busy while the outlines differ in
+     size, but not so many that the threads keep waiting for the lock.  */
+  t->chunk = MAX(1, n_outlines / (threads * 16));
+  t->tasks = g_new0(outline_task_type, n_outlines);
+  t->pool = NULL;
+  t->cancelled = FALSE;
+  g_mutex_init(&t->lock);
+  g_cond_init(&t->done);
+  if (threads > 1)
+    t->pool = g_thread_pool_new(outline_worker, t, threads, FALSE, NULL);
+  /* The pool takes the tasks in order, so the first outlines, which the
+     calling thread waits for first, are done first.  */
+  for (o = 0; t->pool != NULL && o * t->chunk < n_outlines; o++)
+    g_thread_pool_push(t->pool, GUINT_TO_POINTER(o + 1), NULL);
+}
+
+/* Wait until the task of outline O is done (without threads, run it now),
+   and pass its messages on to EXCEPTION.  Nothing is passed on after a
+   fatal error: with one exception shared by all outlines, as before
+   threads, the outlines after it stopped at once and raised nothing.  */
+static void take_outline_task(outline_tasks_type *t, unsigned o, at_exception_type *exception)
+{
+  outline_task_type *task = &t->tasks[o];
+  unsigned i;
+
+  if (t->pool == NULL)
+    run_outline_task(t, o);
+  else {
+    g_mutex_lock(&t->lock);
+    while (!task->done)
+      g_cond_wait(&t->done, &t->lock);
+    g_mutex_unlock(&t->lock);
+  }
+  for (i = 0; task->messages != NULL && i < task->messages->len; i++) {
+    kept_message_type *m = &g_array_index(task->messages, kept_message_type, i);
+
+    if (at_exception_got_fatal(exception))
+      break;
+    if (m->type == AT_MSG_FATAL)
+      at_exception_fatal(exception, m->text);
+    else
+      at_exception_warning(exception, m->text);
+  }
+  free_kept_messages(task);
+}
+
+/* Drop the tasks not started yet, and wait for the ones running.  */
+static void end_outline_tasks(outline_tasks_type *t)
+{
+  unsigned o;
+
+  if (t->pool != NULL) {
+    g_atomic_int_set(&t->cancelled, TRUE);
+    g_thread_pool_free(t->pool, TRUE, TRUE);
+  }
+  for (o = 0; o < t->n_outlines; o++)
+    free_kept_messages(&t->tasks[o]);
+  g_free(t->tasks);
+  g_mutex_clear(&t->lock);
+  g_cond_clear(&t->done);
+}
+
+/* Run FUNC on every outline, and wait for all of them.  */
+static void for_each_outline(unsigned n_outlines, outline_task_func func, gpointer data,
+                             at_exception_type *exception)
+{
+  outline_tasks_type t;
+  unsigned o;
+
+  start_outline_tasks(&t, n_outlines, func, data);
+  for (o = 0; o < n_outlines; o++)
+    take_outline_task(&t, o, exception);
+  end_outline_tasks(&t);
+}
+
 static curve_list_array_type split_at_corners(pixel_outline_list_type, fitting_opts_type *,
                                               shared_border_type *, at_exception_type *exception);
-static spline_list_type fit_curve_list(curve_list_type, fitting_opts_type *, at_distance_map *,
-                                       shared_border_type *, unsigned, spline_list_array_type *,
-                                       at_exception_type *exception);
+static void fit_outline(unsigned, at_exception_type *, gpointer);
+static spline_list_type assemble_outline(curve_list_type, shared_border_type *, unsigned,
+                                         spline_list_array_type *, spline_list_type **,
+                                         at_exception_type *exception);
 
 /* Get a new set of fitting options */
 fitting_opts_type new_fitting_opts(void)
@@ -294,6 +489,42 @@ fitting_opts_type new_fitting_opts(void)
    of the original character to a list of spline lists fitted to those
    pixels.  */
 
+typedef struct {
+  curve_list_array_type *curves;
+  fitting_opts_type *fitting_opts;
+  at_distance_map *dist;
+  shared_border_type *borders;
+  /* Per outline, per curve: its splines, or NULL if the curve is
+     borrowed or could not be fitted.  */
+  spline_list_type ***fits;
+} fit_job_type;
+
+static void free_outline_fits(spline_list_type **fits, unsigned n_curves)
+{
+  unsigned i;
+
+  if (fits == NULL)
+    return;
+  for (i = 0; i < n_curves; i++)
+    if (fits[i] != NULL) {
+      free_spline_list(*fits[i]);
+      g_free(fits[i]);
+    }
+  g_free(fits);
+}
+
+/* Report the progress before outline THIS_LIST of N_LISTS is put together,
+   and return whether the client cancelled.  */
+static gboolean progress_then_cancelled(unsigned this_list, unsigned n_lists,
+                                        at_progress_func notify_progress, gpointer progress_data,
+                                        at_testcancel_func test_cancel, gpointer testcancel_data)
+{
+  if (notify_progress)
+    notify_progress((((gfloat)this_list) / ((gfloat)n_lists * (gfloat)3.0) + (gfloat)0.333),
+                    progress_data);
+  return test_cancel && test_cancel(testcancel_data);
+}
+
 spline_list_array_type fitted_splines(pixel_outline_list_type pixel_outline_list,
                                       fitting_opts_type *fitting_opts, at_distance_map *dist,
                                       unsigned short width, unsigned short height,
@@ -301,7 +532,10 @@ spline_list_array_type fitted_splines(pixel_outline_list_type pixel_outline_list
                                       at_progress_func notify_progress, gpointer progress_data,
                                       at_testcancel_func test_cancel, gpointer testcancel_data)
 {
-  unsigned this_list;
+  unsigned this_list, n_lists;
+  fit_job_type job;
+  outline_tasks_type tasks;
+  gboolean cancelled;
 
   spline_list_array_type char_splines = new_spline_list_array();
   /* Centerlines are open and never share a border.  */
@@ -322,27 +556,38 @@ spline_list_array_type fitted_splines(pixel_outline_list_type pixel_outline_list
   char_splines.width = width;
   char_splines.height = height;
 
-  for (this_list = 0; this_list < CURVE_LIST_ARRAY_LENGTH(curve_array); this_list++) {
+  n_lists = CURVE_LIST_ARRAY_LENGTH(curve_array);
+  job.curves = &curve_array;
+  job.fitting_opts = fitting_opts;
+  job.dist = dist;
+  job.borders = borders;
+  job.fits = g_new0(spline_list_type **, n_lists);
+  /* Ask about the first outline before any is fitted, as without threads.
+     After that, a cancel waits only for the outlines being fitted, at most
+     one per thread.  */
+  cancelled = n_lists > 0 && progress_then_cancelled(0, n_lists, notify_progress, progress_data,
+                                                     test_cancel, testcancel_data);
+  start_outline_tasks(&tasks, cancelled ? 0 : n_lists, fit_outline, &job);
+
+  for (this_list = 0; this_list < n_lists; this_list++) {
     spline_list_type curve_list_splines;
     curve_list_type curves = CURVE_LIST_ARRAY_ELT(curve_array, this_list);
 
-    if (notify_progress)
-      notify_progress(
-          (((gfloat)this_list) / ((gfloat)CURVE_LIST_ARRAY_LENGTH(curve_array) * (gfloat)3.0) +
-           (gfloat)0.333),
-          progress_data);
-    if (test_cancel && test_cancel(testcancel_data))
+    if (cancelled ||
+        (this_list > 0 && progress_then_cancelled(this_list, n_lists, notify_progress,
+                                                  progress_data, test_cancel, testcancel_data)))
       goto cleanup;
 
-    DEBUG("\nFitting curve list #%u:\n", this_list);
-
-    curve_list_splines =
-        fit_curve_list(curves, fitting_opts, dist, borders, this_list, &char_splines, exception);
+    take_outline_task(&tasks, this_list, exception);
     if (at_exception_got_fatal(exception)) {
       if (char_splines.background_color)
         at_color_free(char_splines.background_color);
       goto cleanup;
     }
+    curve_list_splines =
+        assemble_outline(curves, borders, this_list, &char_splines, job.fits[this_list], exception);
+    free_outline_fits(job.fits[this_list], CURVE_LIST_LENGTH(curves));
+    job.fits[this_list] = NULL;
     curve_list_splines.clockwise = curves.clockwise;
 
     /* Centerline curves run through pixel indices, but a pixel's centre is
@@ -370,38 +615,45 @@ spline_list_array_type fitted_splines(pixel_outline_list_type pixel_outline_list
     append_spline_list(&char_splines, curve_list_splines);
   }
 cleanup:
+  /* After a cancel or a fatal error, outlines may still be fitting.  */
+  end_outline_tasks(&tasks);
+  for (this_list = 0; this_list < n_lists; this_list++)
+    free_outline_fits(job.fits[this_list],
+                      CURVE_LIST_LENGTH(CURVE_LIST_ARRAY_ELT(curve_array, this_list)));
+  g_free(job.fits);
   free_curve_list_array(&curve_array, notify_progress, progress_data);
   free_shared_borders(borders, O_LIST_LENGTH(pixel_outline_list));
 
   return char_splines;
 }
 
-/* Fit the list of curves CURVE_LIST to a list of splines, and return
-   it.  CURVE_LIST represents a single closed paths, e.g., either the
-   inside or outside outline of an `o'.  */
-
-/* BORDERS (NULL if no border is shared) describes the shared borders of
-   every outline; CURVE_LIST is outline number THIS_OUTLINE.  A curve on a
-   border that an earlier outline owns is not fitted again: its splines are
-   the owner's, in reverse, taken from DONE, the spline lists of the earlier
-   outlines.  */
-
-static spline_list_type fit_curve_list(curve_list_type curve_list, fitting_opts_type *fitting_opts,
-                                       at_distance_map *dist, shared_border_type *borders,
-                                       unsigned this_outline, spline_list_array_type *done,
-                                       at_exception_type *exception)
-{
-  curve_type curve;
-  unsigned this_curve, this_spline;
-  unsigned curve_list_length = CURVE_LIST_LENGTH(curve_list);
-  spline_list_type curve_list_splines = empty_spline_list();
-  shared_border_type *border =
-      borders != NULL && borders[this_outline].shared ? &borders[this_outline] : NULL;
-
 #define CURVE_BORDER(n) g_array_index(border->curves, curve_border_type, n)
 #define BORROWED(n) (border != NULL && CURVE_BORDER(n).owner >= 0)
 
-  curve_list_splines.open = curve_list.open;
+/* Fit the curves of outline THIS_OUTLINE of the job DATA.  Its curve list
+   represents a single closed path, e.g., either the inside or outside
+   outline of an `o'.  This changes nothing but the curves of that list and
+   the outline's entry in the job's fits.
+
+   A curve on a border that an earlier outline owns is not fitted again:
+   assemble_outline() takes the owner's splines instead.  */
+
+static void fit_outline(unsigned this_outline, at_exception_type *exception, gpointer data)
+{
+  fit_job_type *job = data;
+  curve_list_type curve_list = CURVE_LIST_ARRAY_ELT(*job->curves, this_outline);
+  fitting_opts_type *fitting_opts = job->fitting_opts;
+  at_distance_map *dist = job->dist;
+  curve_type curve;
+  unsigned this_curve, this_spline;
+  unsigned curve_list_length = CURVE_LIST_LENGTH(curve_list);
+  shared_border_type *border = job->borders != NULL && job->borders[this_outline].shared
+                                   ? &job->borders[this_outline]
+                                   : NULL;
+  spline_list_type **fits = g_new0(spline_list_type *, curve_list_length);
+
+  job->fits[this_outline] = fits;
+  DEBUG("\nFitting curve list #%u:\n", this_outline);
 
   /* Remove the extraneous ``knee'' points before filtering.  Since the
      corners have already been found, we don't need to worry about
@@ -488,31 +740,19 @@ static spline_list_type fit_curve_list(curve_list_type curve_list, fitting_opts_
   /* Finally, fit each curve in the list to a list of splines.  */
   for (this_curve = 0; this_curve < curve_list_length; this_curve++) {
     spline_list_type *curve_splines;
-    curve_type current_curve = CURVE_LIST_ELT(curve_list, this_curve);
-    unsigned first = SPLINE_LIST_LENGTH(curve_list_splines);
 
-    if (BORROWED(this_curve)) {
-      curve_border_type cb = CURVE_BORDER(this_curve);
-      shared_border_type *owner = &borders[cb.owner];
-      int owner_first = owner->first_spline ? owner->first_spline[cb.owner_start] : -1;
-
-      DEBUG("\nCurve #%u is the reverse of one on outline #%d.\n", this_curve, cb.owner);
-      if (owner_first < 0)
-        at_exception_warning(exception, "Could not find the fit of a shared border");
-      else
-        append_reversed_splines(&curve_list_splines, SPLINE_LIST_ARRAY_ELT(*done, cb.owner),
-                                owner_first, owner->n_splines[cb.owner_start]);
-      border->first_spline[cb.start] = first;
-      border->n_splines[cb.start] = SPLINE_LIST_LENGTH(curve_list_splines) - first;
+    if (BORROWED(this_curve))
       continue;
-    }
 
     DEBUG("\nFitting curve #%u:\n", this_curve);
-
-    curve_splines = fit_curve(current_curve, fitting_opts, exception);
-    if (at_exception_got_fatal(exception))
-      goto cleanup;
-    else if (curve_splines == NULL) {
+    curve_splines = fit_curve(CURVE_LIST_ELT(curve_list, this_curve), fitting_opts, exception);
+    if (at_exception_got_fatal(exception)) {
+      if (curve_splines != NULL) {
+        free_spline_list(*curve_splines);
+        g_free(curve_splines);
+      }
+      return;
+    } else if (curve_splines == NULL) {
       DEBUG("Could not fit curve #%u", this_curve);
       at_exception_warning(exception, "Could not fit curve");
     } else {
@@ -526,28 +766,62 @@ static spline_list_type fit_curve_list(curve_list_type curve_list, fitting_opts_
          back to curves, because they are in a list with other
          curves.  */
       change_bad_lines(curve_splines, fitting_opts);
-
-      concat_spline_lists(&curve_list_splines, *curve_splines);
-      free_spline_list(*curve_splines);
-      g_free(curve_splines);
+      fits[this_curve] = curve_splines;
     }
+  }
+}
+
+/* Join the splines that fit_outline() put into FITS into the spline list
+   of CURVE_LIST, outline number THIS_OUTLINE, and return it.  The splines
+   of a borrowed curve are the owner's, in reverse, taken from DONE, the
+   spline lists of the earlier outlines.  Runs on the calling thread, in
+   the order of the outlines.  */
+
+static spline_list_type assemble_outline(curve_list_type curve_list, shared_border_type *borders,
+                                         unsigned this_outline, spline_list_array_type *done,
+                                         spline_list_type **fits, at_exception_type *exception)
+{
+  unsigned this_curve, this_spline;
+  spline_list_type curve_list_splines = empty_spline_list();
+  shared_border_type *border =
+      borders != NULL && borders[this_outline].shared ? &borders[this_outline] : NULL;
+
+  curve_list_splines.open = curve_list.open;
+
+  for (this_curve = 0; this_curve < CURVE_LIST_LENGTH(curve_list); this_curve++) {
+    unsigned first = SPLINE_LIST_LENGTH(curve_list_splines);
+
+    if (BORROWED(this_curve)) {
+      curve_border_type cb = CURVE_BORDER(this_curve);
+      shared_border_type *owner = &borders[cb.owner];
+      int owner_first = owner->first_spline ? owner->first_spline[cb.owner_start] : -1;
+
+      DEBUG("\nCurve #%u is the reverse of one on outline #%d.\n", this_curve, cb.owner);
+      if (owner_first < 0)
+        at_exception_warning(exception, "Could not find the fit of a shared border");
+      else
+        append_reversed_splines(&curve_list_splines, SPLINE_LIST_ARRAY_ELT(*done, cb.owner),
+                                owner_first, owner->n_splines[cb.owner_start]);
+    } else if (fits[this_curve] != NULL)
+      concat_spline_lists(&curve_list_splines, *fits[this_curve]);
+
     if (border != NULL) {
       border->first_spline[CURVE_BORDER(this_curve).start] = first;
       border->n_splines[CURVE_BORDER(this_curve).start] =
           SPLINE_LIST_LENGTH(curve_list_splines) - first;
     }
   }
-#undef BORROWED
-#undef CURVE_BORDER
 
   DEBUG("\nFitted splines are:\n");
   for (this_spline = 0; this_spline < SPLINE_LIST_LENGTH(curve_list_splines); this_spline++) {
     DEBUG("  %u: ", this_spline);
     print_spline(SPLINE_LIST_ELT(curve_list_splines, this_spline));
   }
-cleanup:
   return curve_list_splines;
 }
+
+#undef BORROWED
+#undef CURVE_BORDER
 
 /* Transform a set of locations to a list of splines (the fewer the
    better).  We are guaranteed that CURVE does not contain any corners.
@@ -687,118 +961,152 @@ static void add_curve_border(pixel_outline_list_type pixel_list, shared_border_t
   g_array_append_val(b->curves, cb);
 }
 
+typedef struct {
+  pixel_outline_list_type pixel_list;
+  fitting_opts_type *fitting_opts;
+  shared_border_type *borders;
+  index_list_type *corners;
+  gboolean **is_corner; /* NULL if no border is shared */
+  curve_list_type *curve_lists;
+} split_job_type;
+
+/* Find the corners of outline O alone.  */
+static void find_own_corners(unsigned o, at_exception_type *exception, gpointer data)
+{
+  split_job_type *job = data;
+  pixel_outline_type pixel_o = O_LIST_OUTLINE(job->pixel_list, o);
+  /* outline_corners() changes corner_surround for short outlines.  */
+  fitting_opts_type fitting_opts = *job->fitting_opts;
+  unsigned i;
+
+  DEBUG("#%u:", o);
+  job->corners[o] = outline_corners(pixel_o, &fitting_opts, exception);
+  DEBUG(" [%u].\n", INDEX_LIST_LENGTH(job->corners[o]));
+  if (job->is_corner != NULL) {
+    job->is_corner[o] = g_new0(gboolean, O_LENGTH(pixel_o));
+    for (i = 0; i < INDEX_LIST_LENGTH(job->corners[o]); i++)
+      job->is_corner[o][GET_INDEX(job->corners[o], i)] = TRUE;
+  }
+}
+
+/* Settle the corners of outline O with its neighbours, and split it into
+   curves at them.  Uses the IS_CORNER of other outlines, so it runs only
+   after find_own_corners() is done for all of them.  */
+static void split_outline(unsigned o, at_exception_type *exception, gpointer data)
+{
+  split_job_type *job = data;
+  pixel_outline_list_type pixel_list = job->pixel_list;
+  shared_border_type *borders = job->borders;
+  curve_type curve, first_curve;
+  index_list_type corner_list;
+  unsigned p, this_corner;
+  curve_list_type curve_list = new_curve_list();
+  pixel_outline_type pixel_o = O_LIST_OUTLINE(pixel_list, o);
+  gboolean shared;
+
+  (void)exception;
+  if (borders != NULL)
+    share_corners(pixel_list, borders, o, job->is_corner, job->corners);
+  corner_list = job->corners[o];
+  shared = borders != NULL && borders[o].shared;
+
+  CURVE_LIST_CLOCKWISE(curve_list) = O_CLOCKWISE(pixel_o);
+  curve_list.open = pixel_o.open;
+
+  /* Remember the first curve so we can make it be the `next' of the
+     last one.  (And vice versa.)  */
+  first_curve = new_curve();
+
+  curve = first_curve;
+
+  if (INDEX_LIST_LENGTH(corner_list) == 0) {
+    /* No corners.  Use all of the pixel outline as the curve.  */
+    for (p = 0; p < O_LENGTH(pixel_o); p++)
+      append_pixel(curve, O_COORDINATE(pixel_o, p));
+
+    if (curve_list.open == TRUE)
+      CURVE_CYCLIC(curve) = FALSE;
+    else
+      CURVE_CYCLIC(curve) = TRUE;
+  } else { /* Each curve consists of the points between (inclusive) each pair
+              of corners.  */
+    for (this_corner = 0; this_corner < INDEX_LIST_LENGTH(corner_list) - 1; this_corner++) {
+      curve_type previous_curve = curve;
+      unsigned corner = GET_INDEX(corner_list, this_corner);
+      unsigned next_corner = GET_INDEX(corner_list, this_corner + 1);
+
+      for (p = corner; p <= next_corner; p++)
+        append_pixel(curve, O_COORDINATE(pixel_o, p));
+
+      append_curve(&curve_list, curve);
+      if (shared)
+        add_curve_border(pixel_list, borders, o, corner, next_corner);
+      curve = new_curve();
+      NEXT_CURVE(previous_curve) = curve;
+      PREVIOUS_CURVE(curve) = previous_curve;
+    }
+
+    /* The last curve is different.  It consists of the points
+       (inclusive) between the last corner and the end of the list,
+       and the beginning of the list and the first corner.  */
+    for (p = GET_LAST_INDEX(corner_list); p < O_LENGTH(pixel_o); p++)
+      append_pixel(curve, O_COORDINATE(pixel_o, p));
+
+    if (!pixel_o.open) {
+      for (p = 0; p <= GET_INDEX(corner_list, 0); p++)
+        append_pixel(curve, O_COORDINATE(pixel_o, p));
+      if (shared)
+        add_curve_border(pixel_list, borders, o, GET_LAST_INDEX(corner_list),
+                         GET_INDEX(corner_list, 0));
+    } else {
+      curve_type last_curve = PREVIOUS_CURVE(curve);
+      PREVIOUS_CURVE(first_curve) = NULL;
+      if (last_curve)
+        NEXT_CURVE(last_curve) = NULL;
+    }
+  }
+
+  free_index_list(&job->corners[o]);
+
+  /* Add `curve' to the end of the list, updating the pointers in
+     the chain.  */
+  append_curve(&curve_list, curve);
+  NEXT_CURVE(curve) = first_curve;
+  PREVIOUS_CURVE(first_curve) = curve;
+
+  job->curve_lists[o] = curve_list;
+}
+
 static curve_list_array_type split_at_corners(pixel_outline_list_type pixel_list,
                                               fitting_opts_type *fitting_opts,
                                               shared_border_type *borders,
                                               at_exception_type *exception)
 {
-  unsigned this_pixel_o, n_outlines = O_LIST_LENGTH(pixel_list);
+  unsigned o, n_outlines = O_LIST_LENGTH(pixel_list);
   curve_list_array_type curve_array = new_curve_list_array();
-  index_list_type *corners = g_new(index_list_type, n_outlines);
+  split_job_type job;
+
+  job.pixel_list = pixel_list;
+  job.fitting_opts = fitting_opts;
+  job.borders = borders;
+  job.corners = g_new(index_list_type, n_outlines);
+  job.is_corner = borders != NULL ? g_new(gboolean *, n_outlines) : NULL;
+  job.curve_lists = g_new(curve_list_type, n_outlines);
 
   DEBUG("\nFinding corners:\n");
+  for_each_outline(n_outlines, find_own_corners, &job, exception);
+  for_each_outline(n_outlines, split_outline, &job, exception);
 
-  for (this_pixel_o = 0; this_pixel_o < n_outlines; this_pixel_o++) {
-    DEBUG("#%u:", this_pixel_o);
-    corners[this_pixel_o] =
-        outline_corners(O_LIST_OUTLINE(pixel_list, this_pixel_o), fitting_opts, exception);
-    DEBUG(" [%u].\n", INDEX_LIST_LENGTH(corners[this_pixel_o]));
+  for (o = 0; o < n_outlines; o++)
+    append_curve_list(&curve_array, job.curve_lists[o]);
+
+  if (job.is_corner != NULL) {
+    for (o = 0; o < n_outlines; o++)
+      g_free(job.is_corner[o]);
+    g_free(job.is_corner);
   }
-
-  if (borders != NULL) {
-    gboolean **is_corner = g_new(gboolean *, n_outlines);
-    unsigned i;
-
-    for (this_pixel_o = 0; this_pixel_o < n_outlines; this_pixel_o++) {
-      is_corner[this_pixel_o] =
-          g_new0(gboolean, O_LENGTH(O_LIST_OUTLINE(pixel_list, this_pixel_o)));
-      for (i = 0; i < INDEX_LIST_LENGTH(corners[this_pixel_o]); i++)
-        is_corner[this_pixel_o][GET_INDEX(corners[this_pixel_o], i)] = TRUE;
-    }
-    for (this_pixel_o = 0; this_pixel_o < n_outlines; this_pixel_o++)
-      share_corners(pixel_list, borders, this_pixel_o, is_corner, corners);
-    for (this_pixel_o = 0; this_pixel_o < n_outlines; this_pixel_o++)
-      g_free(is_corner[this_pixel_o]);
-    g_free(is_corner);
-  }
-
-  for (this_pixel_o = 0; this_pixel_o < n_outlines; this_pixel_o++) {
-    curve_type curve, first_curve;
-    index_list_type corner_list = corners[this_pixel_o];
-    unsigned p, this_corner;
-    curve_list_type curve_list = new_curve_list();
-    pixel_outline_type pixel_o = O_LIST_OUTLINE(pixel_list, this_pixel_o);
-    gboolean shared = borders != NULL && borders[this_pixel_o].shared;
-
-    CURVE_LIST_CLOCKWISE(curve_list) = O_CLOCKWISE(pixel_o);
-    curve_list.open = pixel_o.open;
-
-    /* Remember the first curve so we can make it be the `next' of the
-       last one.  (And vice versa.)  */
-    first_curve = new_curve();
-
-    curve = first_curve;
-
-    if (INDEX_LIST_LENGTH(corner_list) == 0) {
-      /* No corners.  Use all of the pixel outline as the curve.  */
-      for (p = 0; p < O_LENGTH(pixel_o); p++)
-        append_pixel(curve, O_COORDINATE(pixel_o, p));
-
-      if (curve_list.open == TRUE)
-        CURVE_CYCLIC(curve) = FALSE;
-      else
-        CURVE_CYCLIC(curve) = TRUE;
-    } else { /* Each curve consists of the points between (inclusive) each pair
-                of corners.  */
-      for (this_corner = 0; this_corner < INDEX_LIST_LENGTH(corner_list) - 1; this_corner++) {
-        curve_type previous_curve = curve;
-        unsigned corner = GET_INDEX(corner_list, this_corner);
-        unsigned next_corner = GET_INDEX(corner_list, this_corner + 1);
-
-        for (p = corner; p <= next_corner; p++)
-          append_pixel(curve, O_COORDINATE(pixel_o, p));
-
-        append_curve(&curve_list, curve);
-        if (shared)
-          add_curve_border(pixel_list, borders, this_pixel_o, corner, next_corner);
-        curve = new_curve();
-        NEXT_CURVE(previous_curve) = curve;
-        PREVIOUS_CURVE(curve) = previous_curve;
-      }
-
-      /* The last curve is different.  It consists of the points
-         (inclusive) between the last corner and the end of the list,
-         and the beginning of the list and the first corner.  */
-      for (p = GET_LAST_INDEX(corner_list); p < O_LENGTH(pixel_o); p++)
-        append_pixel(curve, O_COORDINATE(pixel_o, p));
-
-      if (!pixel_o.open) {
-        for (p = 0; p <= GET_INDEX(corner_list, 0); p++)
-          append_pixel(curve, O_COORDINATE(pixel_o, p));
-        if (shared)
-          add_curve_border(pixel_list, borders, this_pixel_o, GET_LAST_INDEX(corner_list),
-                           GET_INDEX(corner_list, 0));
-      } else {
-        curve_type last_curve = PREVIOUS_CURVE(curve);
-        PREVIOUS_CURVE(first_curve) = NULL;
-        if (last_curve)
-          NEXT_CURVE(last_curve) = NULL;
-      }
-    }
-
-    free_index_list(&corner_list);
-
-    /* Add `curve' to the end of the list, updating the pointers in
-       the chain.  */
-    append_curve(&curve_list, curve);
-    NEXT_CURVE(curve) = first_curve;
-    PREVIOUS_CURVE(first_curve) = curve;
-
-    /* And now add the just-completed curve list to the array.  */
-    append_curve_list(&curve_array, curve_list);
-  } /* End of considering each pixel outline.  */
-
-  g_free(corners);
+  g_free(job.curve_lists);
+  g_free(job.corners);
   return curve_array;
 }
 

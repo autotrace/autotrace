@@ -253,6 +253,16 @@ Print the version number of the program and exit.
 .TP
 .BI \-width-factor " real"
 Weight factor for fitting the linewidth.
+.SH ENVIRONMENT
+.TP
+.B AUTOTRACE_THREADS
+The number of threads that find the corners of the outlines and fit
+curves to them, a positive integer.  The default is one thread per
+processor.  Programs using the library always use one thread.  The output
+does not depend on it.  With
+.BR "\-log debug" ,
+one thread is used, so that the debugging messages of each outline stay
+together.
 .SH FILES
 .TP 2.2i
 /usr/bin/autotrace
