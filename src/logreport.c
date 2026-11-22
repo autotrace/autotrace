@@ -13,6 +13,20 @@
 
 static int current_log_level = G_LOG_LEVEL_WARNING;
 
+/* Set by init_logging(): the command line program filters messages
+   through custom_log_handler.  */
+static gboolean own_handler = FALSE;
+
+gboolean log_level_enabled(GLogLevelFlags level)
+{
+  if (own_handler)
+    return current_log_level >= (int)level;
+  /* A library client may have a handler of its own for our domain
+     (g_log_set_handler()), which GLib gives no way to find out about, so
+     every message goes to g_log(), as before.  */
+  return TRUE;
+}
+
 static void custom_log_handler(const gchar *log_domain, GLogLevelFlags log_level,
                                const gchar *message, gpointer user_data)
 {
@@ -54,4 +68,5 @@ void set_log_level(const gchar *level)
 void init_logging(void)
 {
   g_log_set_default_handler(custom_log_handler, NULL);
+  own_handler = TRUE;
 }

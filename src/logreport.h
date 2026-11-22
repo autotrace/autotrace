@@ -16,9 +16,23 @@
 
 #define LOG_DOMAIN "autotrace"
 
-/* Simple macros using GLib logging */
-#define DEBUG(...) g_debug(__VA_ARGS__)
-#define LOG(...) g_message(__VA_ARGS__)
+/* Whether a message of LEVEL may be shown: FALSE only when the handler of
+   the autotrace program (see init_logging()) would drop it.  DEBUG and LOG
+   ask before they format anything: tracing writes a debugging message for
+   nearly every point and spline, and formatting them all only for the
+   handler to drop them took most of the running time.  */
+gboolean log_level_enabled(GLogLevelFlags level);
+
+#define LOG_IF_ENABLED(level, ...)                                                                 \
+  G_STMT_START                                                                                     \
+  {                                                                                                \
+    if (log_level_enabled(level))                                                                  \
+      g_log(G_LOG_DOMAIN, level, __VA_ARGS__);                                                     \
+  }                                                                                                \
+  G_STMT_END
+
+#define DEBUG(...) LOG_IF_ENABLED(G_LOG_LEVEL_DEBUG, __VA_ARGS__)
+#define LOG(...) LOG_IF_ENABLED(G_LOG_LEVEL_MESSAGE, __VA_ARGS__)
 #define WARNING(...) g_warning(__VA_ARGS__)
 
 /* For the command line program only: print the message and stop with exit
