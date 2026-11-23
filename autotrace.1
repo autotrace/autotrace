@@ -43,6 +43,8 @@ autotrace \- converts bitmap image data into vector graphics
 .RB [ \-list-output-formats ]
 .RB [ \-log
 .IR " level" ]
+.RB [ \-noise-removal
+.IR " real" ]
 .RB [ \-output-file
 .IR " file" ]
 .RB [ \-output-format
@@ -114,12 +116,25 @@ that is smaller than the specified
 (in degrees) as a corner (default: 100).
 .TP
 .BI \-despeckle-level " int"
-Employ the specified integer (range: 1-20) as the value for despeckling
-(default: no despeckling).
+Merge regions smaller than 2^(\fIint\fP\-1) pixels into their most similar
+neighbour (range: 1-20; default: 0, no despeckling).
+Level 1 changes nothing; level 4 merges regions of up to 7 pixels.
+A region is merged only if its colour is close enough to the neighbour's;
+see
+.B \-despeckle-tightness
+and
+.BR \-noise-removal .
 .TP
 .BI \-despeckle-tightness " real"
-Employ the specified real number (range: 0.0-8.0) as the value for despeckle
-tightness (default: 2.0).
+How close in colour a region must be to its neighbour to be merged
+(range: 0.0-8.0; default: 2.0).
+Higher values merge only regions of a similar colour.
+At 0.0, the limit starts at
+.B \-noise-removal
+and grows for larger regions.
+With the defaults, a black speck on white is never removed:
+for two-colour images such as scanned line art, use
+.BR "\-despeckle-tightness 0 \-noise-removal 1" .
 .TP
 .BI \-dpi " int"
 The dots per inch value in the input image, affects scaling
@@ -184,6 +199,16 @@ is one of
 .BR error ", " warning " (the default), " info " or " debug ;
 .B debug
 includes a detailed report of the tracing itself.
+.TP
+.BI \-noise-removal " real"
+The base limit on the colour difference that despeckling merges, as a
+fraction of the full range (range: 0.0-1.0; default: 0.99).
+The limit for each region size follows from it and from
+.BR \-despeckle-tightness :
+a higher tightness lowers it for larger regions, and at 0.0 it grows
+towards the full range.
+Black and white merge only at 1.0, and only with
+.BR "\-despeckle-tightness 0" .
 .TP
 .BI \-output-file " file"
 Send the output to the specified file.
