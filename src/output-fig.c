@@ -177,11 +177,9 @@ static void out_fig_splines(FILE *file, spline_list_array_type shape, int llx, i
     g_autofree int *pointy = g_new(int, maxlength);
     g_autofree gfloat *contrl = g_new(gfloat, maxlength);
 
-    if (list.clockwise) {
-      fig_colour = FIG_WHITE;
-    } else {
-      fig_colour = spline_colours[this_list];
-    }
+    /* A hole (a clockwise list) already got the background colour above
+       (issue #383). */
+    fig_colour = spline_colours[this_list];
 
     fig_spline_close = 5;
 

@@ -1,0 +1,29 @@
+#!/bin/sh
+
+# SPDX-FileCopyrightText: © 2026 Peter Lemenkov
+#
+# SPDX-License-Identifier: CC0-1.0
+
+# The FIG writer must fill a hole with the -background-color, not with white
+# (issue #383).
+#
+# ring.png is a black ring on yellow, made with
+#   magick -size 64x64 xc:'#ffff00' +antialias -fill black \
+#     -draw "circle 32,32 32,4" -fill '#ffff00' -draw "circle 32,32 32,18" \
+#     -strip ring.png
+
+. "`dirname "$0"`/../functions"
+
+DIR=$1
+
+autotrace -background-color FFFF00 -output-format fig -output-file $DIR/ring.fig $DIR/ring.png
+
+# Field 5 of a polyline (2) or spline (3) object is its pen colour; FIG's
+# predefined colour 0 is black, 6 yellow and 7 white.
+colours=`awk '($1 == 2 || $1 == 3) && NF > 10 { print $5 }' $DIR/ring.fig | sort | tr '\n' ' '`
+rm -f $DIR/ring.fig
+
+if [ "$colours" != "0 6 " ]; then
+    fail "expected a black ring (0) and a yellow hole (6), got colours: $colours"
+fi
+ok
