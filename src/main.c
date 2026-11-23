@@ -238,8 +238,13 @@ static gfloat parse_real(const gchar *s)
 -corner-threshold <angle-in-degrees>: if a pixel, its predecessor(s),\n\
     and its successor(s) meet at an angle smaller than this, it's a\n\
     corner; default is 100.\n\n\
--despeckle-level <unsigned>: 0..20; default is 0: no despeckling.\n\n\
--despeckle-tightness <real>: 0.0..8.0; default is 2.0.\n\n\
+-despeckle-level <unsigned>: 0..20; default is 0: no despeckling.\n\
+    Merge regions smaller than 2^(level-1) pixels into their most\n\
+    similar neighbour, if its colour is close enough.\n\n\
+-despeckle-tightness <real>: 0.0..8.0; default is 2.0.  Higher values\n\
+    merge only regions of a similar colour.  With the defaults, black\n\
+    specks on white stay; for black-and-white images, use\n\
+    -despeckle-tightness 0 -noise-removal 1.\n\n\
 -dpi <unsigned>: The dots per inch value in the input image, affects scaling\n\
     of mif output image\n\n"
 #define USAGE2                                                                                     \
@@ -260,7 +265,9 @@ static gfloat parse_real(const gchar *s)
 -list-input-formats: print a list of supported input formats to stderr.\n\n\
 -log <level>: print diagnostics of this level and above to stderr;\n\
     one of error, warning, info, debug; default is warning.\n\n\
--noise-removal <real>:: 0.0..1.0; default is 0.99.\n\n\
+-noise-removal <real>: 0.0..1.0; default is 0.99.  The base limit on the\n\
+    colour difference that despeckling merges, as a fraction of the full\n\
+    range; -despeckle-tightness adjusts it for each region size.\n\n\
 -output-file <filename>: write to <filename>; the default, and\n\
     a <filename> of -, is standard output.\n\n\
 -output-format <format>: use format <format> for the output file. Available formats:\n\
