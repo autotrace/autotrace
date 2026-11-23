@@ -1,0 +1,30 @@
+#!/bin/sh
+
+# SPDX-FileCopyrightText: © 2026 Peter Lemenkov
+#
+# SPDX-License-Identifier: CC0-1.0
+
+# The Sketch writer must cut a hole out of its shape, not fill it
+# (issue #381).
+#
+# ring.png is a black ring on white, made with
+#   magick -size 64x64 xc:white +antialias -fill black \
+#     -draw "circle 32,32 32,4" -fill white -draw "circle 32,32 32,18" \
+#     -strip ring.png
+
+. "`dirname "$0"`/../functions"
+
+DIR=$1
+
+autotrace -background-color FFFFFF -output-format sk -output-file $DIR/ring.sk $DIR/ring.png
+
+# The ring must be one filled Bezier object (b) with a second path (bn),
+# which Sketch fills with the even-odd rule.  Two objects would draw the
+# hole as a black disc on top of the ring.
+outline=`grep -E '^(fp|b|bn)\(' $DIR/ring.sk | sed 's/(.*//' | tr '\n' ' '`
+rm -f $DIR/ring.sk
+
+if [ "$outline" != "fp b bn " ]; then
+    fail "expected one filled object with two paths (fp b bn), got: $outline"
+fi
+ok
