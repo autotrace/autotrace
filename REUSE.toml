@@ -175,3 +175,97 @@ precedence = "override"
 SPDX-FileCopyrightText = "TekuraDF"
 SPDX-License-Identifier = "CC0-1.0"
 SPDX-FileComment = "https://commons.wikimedia.org/wiki/File:TEKURA_NO.png"
+
+# Public-domain corpus images from Wikimedia Commons (#341). The comment
+# gives the source page and why the image is in the public domain.
+
+[[annotations]]
+path = "tests/corpus/images/nand-ansi.png"
+precedence = "override"
+SPDX-FileCopyrightText = "jjbeard"
+SPDX-License-Identifier = "LicenseRef-PublicDomain"
+SPDX-FileComment = "https://commons.wikimedia.org/wiki/File:NAND_ANSI.svg (released by the author)"
+
+[[annotations]]
+path = "tests/corpus/images/and-ansi.png"
+precedence = "override"
+SPDX-FileCopyrightText = "jjbeard"
+SPDX-License-Identifier = "LicenseRef-PublicDomain"
+SPDX-FileComment = "https://commons.wikimedia.org/wiki/File:AND_ANSI.svg (released by the author)"
+
+[[annotations]]
+path = "tests/corpus/images/nor-ansi.png"
+precedence = "override"
+SPDX-FileCopyrightText = "jjbeard"
+SPDX-License-Identifier = "LicenseRef-PublicDomain"
+SPDX-FileComment = "https://commons.wikimedia.org/wiki/File:NOR_ANSI.svg (released by the author)"
+
+[[annotations]]
+path = "tests/corpus/images/xnor-ansi.png"
+precedence = "override"
+SPDX-FileCopyrightText = "jjbeard"
+SPDX-License-Identifier = "LicenseRef-PublicDomain"
+SPDX-FileComment = "https://commons.wikimedia.org/wiki/File:XNOR_ANSI.svg (released by the author)"
+
+[[annotations]]
+path = "tests/corpus/images/not-ansi.png"
+precedence = "override"
+SPDX-FileCopyrightText = "jjbeard"
+SPDX-License-Identifier = "LicenseRef-PublicDomain"
+SPDX-FileComment = "https://commons.wikimedia.org/wiki/File:NOT_ANSI.svg (released by the author)"
+
+[[annotations]]
+path = "tests/corpus/images/buffer-ansi.png"
+precedence = "override"
+SPDX-FileCopyrightText = "Inductiveload"
+SPDX-License-Identifier = "LicenseRef-PublicDomain"
+SPDX-FileComment = "https://commons.wikimedia.org/wiki/File:Buffer_ANSI.svg (released by the author)"
+
+[[annotations]]
+path = "tests/corpus/images/xor-ansi.png"
+precedence = "override"
+SPDX-FileCopyrightText = "jjbeard"
+SPDX-License-Identifier = "LicenseRef-PublicDomain"
+SPDX-FileComment = "https://commons.wikimedia.org/wiki/File:XOR_ANSI.svg (released by the author)"
+
+[[annotations]]
+path = "tests/corpus/images/admin-machine.png"
+precedence = "override"
+SPDX-FileCopyrightText = "Bdd"
+SPDX-License-Identifier = "LicenseRef-PublicDomain"
+SPDX-FileComment = "https://commons.wikimedia.org/wiki/File:AdministrativeMachine.png (released by the author)"
+
+[[annotations]]
+path = "tests/corpus/images/albero.png"
+precedence = "override"
+SPDX-FileCopyrightText = "Corneliae"
+SPDX-License-Identifier = "LicenseRef-PublicDomain"
+SPDX-FileComment = "https://commons.wikimedia.org/wiki/File:Albero_Y_sfondo.jpg (released by the author)"
+
+[[annotations]]
+path = "tests/corpus/images/twist-per-inch.png"
+precedence = "override"
+SPDX-FileCopyrightText = "Loggie-log"
+SPDX-License-Identifier = "LicenseRef-PublicDomain"
+SPDX-FileComment = "https://commons.wikimedia.org/wiki/File:TwistPerInch2.jpg (released by the author)"
+
+[[annotations]]
+path = "tests/corpus/images/litter.png"
+precedence = "override"
+SPDX-FileCopyrightText = "宋仲慧"
+SPDX-License-Identifier = "LicenseRef-PublicDomain"
+SPDX-FileComment = "https://commons.wikimedia.org/wiki/File:丟垃圾.png (released by the author)"
+
+[[annotations]]
+path = "tests/corpus/images/syndicalism.png"
+precedence = "override"
+SPDX-FileCopyrightText = "John Graham Brooks"
+SPDX-License-Identifier = "LicenseRef-PublicDomain"
+SPDX-FileComment = "https://commons.wikimedia.org/wiki/File:American_Syndicalism_(Brooks_1913).djvu-48.jpg (published in 1913; the author died in 1938)"
+
+[[annotations]]
+path = "tests/corpus/images/sunbonnet.png"
+precedence = "override"
+SPDX-FileCopyrightText = "Eulalie Osgood Grover; Rand, McNally & Company"
+SPDX-License-Identifier = "LicenseRef-PublicDomain"
+SPDX-FileComment = "https://commons.wikimedia.org/wiki/File:The_sunbonnet_babies_in_Holland;_a_second_reader_(1915)_(14749842631).jpg (published in the United States in 1915; no known copyright restrictions)"

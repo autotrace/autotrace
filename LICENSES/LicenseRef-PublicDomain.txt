@@ -1,0 +1,12 @@
+Public domain
+
+The files under this identifier are in the public domain: their authors
+released them into the public domain, or their copyright has expired. They
+need no licence, and may be used, changed and shared for any purpose.
+
+REUSE.toml records the source of each file. The source page gives the
+basis: the author's release, or the date of first publication and the
+author's death.
+
+The AutoTrace contributors claim no copyright in these files. If you
+believe one of them is not in the public domain, please open an issue.
