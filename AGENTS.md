@@ -76,6 +76,11 @@ checklist). It is written for any C library. Here it means:
 - **Large test inputs** can be made with ImageMagick, e.g. `magick -size
   3000x3000 plasma:fractal -seed 1 -blur 0x8 -colors 12 -type truecolor
   big.png`.
+- **A change to traced output:** run the trace-quality corpus against the
+  base branch (`tests/corpus/corpus.py run OLD NEW DIR`, see
+  [tests/corpus/README.md](tests/corpus/README.md)) and put its table in
+  the pull request. The golden-file tests only say that output changed,
+  not whether it got better.
 
 ## Versioning and releases
 
