@@ -110,3 +110,68 @@ precedence = "aggregate"
 SPDX-FileCopyrightText = "2018-2025 Peter Lemenkov"
 SPDX-License-Identifier = "CC0-1.0"
 SPDX-FileComment = "Test data is in public domain for easy reuse"
+
+# Corpus images from Wikimedia Commons (#341), converted to PNG on white.
+# Each overrides the rule for test data above, which names other authors.
+[[annotations]]
+path = "tests/corpus/images/directed-graph.png"
+precedence = "override"
+SPDX-FileCopyrightText = "Zacoste.fr"
+SPDX-License-Identifier = "CC0-1.0"
+SPDX-FileComment = "https://commons.wikimedia.org/wiki/File:3_node_Directed_graph.svg"
+
+[[annotations]]
+path = "tests/corpus/images/link-tables.png"
+precedence = "override"
+SPDX-FileCopyrightText = "Pluke"
+SPDX-License-Identifier = "CC0-1.0"
+SPDX-FileComment = "https://commons.wikimedia.org/wiki/File:CPT-Databases-ExampleLinkTables.svg"
+
+[[annotations]]
+path = "tests/corpus/images/hiemalora.png"
+precedence = "override"
+SPDX-FileCopyrightText = "Rugoconites Tenuirugosus"
+SPDX-License-Identifier = "CC0-1.0"
+SPDX-FileComment = "https://commons.wikimedia.org/wiki/File:Hiemalora_diagram.jpg"
+
+[[annotations]]
+path = "tests/corpus/images/partition.png"
+precedence = "override"
+SPDX-FileCopyrightText = "Sylvain Ribault"
+SPDX-License-Identifier = "CC0-1.0"
+SPDX-FileComment = "https://commons.wikimedia.org/wiki/File:Partition_ex_TL.svg"
+
+[[annotations]]
+path = "tests/corpus/images/occidental.png"
+precedence = "override"
+SPDX-FileCopyrightText = "Makuba"
+SPDX-License-Identifier = "CC0-1.0"
+SPDX-FileComment = "https://commons.wikimedia.org/wiki/File:Insigne_de_Occidental-Interlingue.svg"
+
+[[annotations]]
+path = "tests/corpus/images/kotpota.png"
+precedence = "override"
+SPDX-FileCopyrightText = "Clodion"
+SPDX-License-Identifier = "CC0-1.0"
+SPDX-FileComment = "https://commons.wikimedia.org/wiki/File:KOTPOTA_symbol.png"
+
+[[annotations]]
+path = "tests/corpus/images/question-sign.png"
+precedence = "override"
+SPDX-FileCopyrightText = "Okooluje"
+SPDX-License-Identifier = "CC0-1.0"
+SPDX-FileComment = "https://commons.wikimedia.org/wiki/File:PictogramWithAQuestionMark.png"
+
+[[annotations]]
+path = "tests/corpus/images/stadium-guests.png"
+precedence = "override"
+SPDX-FileCopyrightText = "Krisgola"
+SPDX-License-Identifier = "CC0-1.0"
+SPDX-FileComment = "https://commons.wikimedia.org/wiki/File:Stadium-guests.png"
+
+[[annotations]]
+path = "tests/corpus/images/tekura-no.png"
+precedence = "override"
+SPDX-FileCopyrightText = "TekuraDF"
+SPDX-License-Identifier = "CC0-1.0"
+SPDX-FileComment = "https://commons.wikimedia.org/wiki/File:TEKURA_NO.png"
