@@ -1,0 +1,68 @@
+# SPDX-FileCopyrightText: © 2026 AutoTrace contributors
+#
+# SPDX-License-Identifier: CC0-1.0
+#
+# The trace-quality corpus (issue #341).  One image per line:
+#
+#   name | category | option sets | magick arguments
+#
+# corpus.py generate runs "magick ARGUMENTS DIR/NAME.png" for each line, so
+# every image is drawn by a command here and needs no licence of its own.
+# Option sets are separated by ";"; each set is traced separately, and an
+# empty set means autotrace's defaults.  Pairs named NAME and NAME-aa are
+# the same drawing without and with anti-aliasing.
+#
+# Categories: geometry, topology, thin, colour, noise, alpha, centerline,
+# timing.  Images in "timing" get output metrics only, no round trip.
+
+# Geometric primitives
+square        | geometry   | ; -background-color FFFFFF | -size 128x128 xc:white +antialias -fill black -draw "rectangle 32,32 95,95"
+square-aa     | geometry   | ; -background-color FFFFFF | -size 128x128 xc:white -fill black -draw "rectangle 32.5,32.5 95.5,95.5"
+square-rot    | geometry   |  | -size 128x128 xc:white +antialias -fill black -draw "polygon 78.64,118.64 9.36,78.64 49.36,9.36 118.64,49.36"
+square-rot-aa | geometry   |  | -size 128x128 xc:white -fill black -draw "polygon 78.64,118.64 9.36,78.64 49.36,9.36 118.64,49.36"
+circle        | geometry   | ; -background-color FFFFFF | -size 128x128 xc:white +antialias -fill black -draw "circle 64,64 64,20"
+circle-aa     | geometry   | ; -background-color FFFFFF | -size 128x128 xc:white -fill black -draw "circle 64,64 64,20"
+ellipse-aa    | geometry   |  | -size 128x128 xc:white -fill black -draw "ellipse 64,64 54,26 0,360"
+triangle      | geometry   |  | -size 128x128 xc:white +antialias -fill black -draw "polygon 10,100 118,100 20,30"
+triangle-aa   | geometry   |  | -size 128x128 xc:white -fill black -draw "polygon 10,100 118,100 20,30"
+star          | geometry   |  | -size 128x128 xc:white +antialias -fill black -draw "polygon 64.00,8.00 76.93,46.20 117.26,46.70 84.92,70.80 96.92,109.30 64.00,86.00 31.08,109.30 43.08,70.80 10.74,46.70 51.07,46.20"
+star-aa       | geometry   |  | -size 128x128 xc:white -fill black -draw "polygon 64.00,8.00 76.93,46.20 117.26,46.70 84.92,70.80 96.92,109.30 64.00,86.00 31.08,109.30 43.08,70.80 10.74,46.70 51.07,46.20"
+blob-aa       | geometry   |  | -size 128x128 xc:white -fill black -draw "path 'M 16,64 C 16,8 112,8 112,64 C 112,120 16,120 16,64 Z'"
+
+# Topology: holes, nesting, corner contacts, islands
+ring          | topology   |  | -size 128x128 xc:white +antialias -fill black -draw "circle 64,64 64,14" -fill white -draw "circle 64,64 64,36"
+nested        | topology   |  | -size 128x128 xc:white +antialias -fill #c00000 -draw "rectangle 10,10 117,117" -fill #00a000 -draw "rectangle 30,30 97,97" -fill #0000c0 -draw "rectangle 50,50 77,77"
+corner-touch  | topology   |  | -size 128x128 xc:white +antialias -fill black -draw "rectangle 20,20 63,63" -draw "rectangle 64,64 107,107"
+checker       | topology   |  | -size 120x120 pattern:checkerboard -threshold 50% -type truecolor
+islands       | topology   |  | -size 128x128 xc:white +antialias -fill black -draw "circle 20,20 20,12" -draw "circle 100,24 100,10" -draw "circle 60,64 60,58" -draw "circle 24,104 24,98" -draw "circle 104,100 104,84"
+holes         | topology   |  | -size 128x128 xc:white +antialias -fill black -draw "rectangle 16,16 111,111" -fill white -draw "rectangle 32,32 47,47" -draw "rectangle 80,32 95,47" -draw "circle 40,88 40,80" -draw "circle 88,88 88,80"
+
+# Features one or two pixels thin
+thin-1        | thin       |  | -size 128x128 xc:white +antialias -fill none -stroke black -strokewidth 1 -draw "line 10,10 118,10" -draw "line 10,24 118,64" -draw "line 10,40 70,118" -draw "line 100,30 100,118"
+thin-2        | thin       |  | -size 128x128 xc:white +antialias -fill none -stroke black -strokewidth 2 -draw "line 10,10 118,10" -draw "line 10,24 118,64" -draw "line 10,40 70,118" -draw "line 100,30 100,118"
+
+# Colour count and colour closeness
+plasma-2      | colour     |  | -seed 1 -size 192x192 plasma:fractal -blur 0x4 -colors 2 -type truecolor
+plasma-8      | colour     |  | -seed 1 -size 192x192 plasma:fractal -blur 0x4 -colors 8 -type truecolor
+plasma-64     | colour     |  | -seed 1 -size 192x192 plasma:fractal -blur 0x4 -colors 64 -type truecolor
+plasma-smooth | colour     | -color-count 8; -color-count 32 | -seed 1 -size 192x192 plasma:fractal -blur 0x4 -type truecolor
+close-colours | colour     |  | -size 128x128 xc:#808080 +antialias -fill #818181 -draw "rectangle 0,0 63,63" -fill #838383 -draw "rectangle 64,0 127,63" -fill #888888 -draw "rectangle 0,64 63,127" -fill #8a8a8a -draw "circle 96,96 96,76"
+
+# Noise, for despeckling.  With the default tightness and noise removal,
+# despeckling keeps specks that differ much from their surroundings (#376).
+square-noise  | noise      | ; -despeckle-level 4; -despeckle-level 4 -despeckle-tightness 0 -noise-removal 1 | -size 128x128 xc:white +antialias -fill black -draw "rectangle 32,32 95,95" -seed 1 -attenuate 0.4 +noise Impulse -type truecolor
+square-specks | noise      | ; -despeckle-level 4; -despeckle-level 4 -despeckle-tightness 0 -noise-removal 1 | -size 128x128 xc:white +antialias -fill black -draw "rectangle 32,32 95,95" -seed 1 -attenuate 0.4 +noise Impulse -colorspace gray -threshold 50% -type truecolor
+
+# Transparency
+circle-alpha  | alpha      | ; -background-color FFFFFF | -size 128x128 xc:none -fill #c00000 -draw "circle 64,64 64,20"
+
+# Line art for -centerline
+cl-square     | centerline | -centerline | -size 128x128 xc:white +antialias -fill none -stroke black -strokewidth 3 -draw "rectangle 24,24 103,103"
+cl-circle     | centerline | -centerline | -size 128x128 xc:white +antialias -fill none -stroke black -strokewidth 3 -draw "circle 64,64 64,20"
+cl-lines      | centerline | -centerline | -size 128x128 xc:white +antialias -fill none -stroke black -strokewidth 3 -draw "line 10,10 118,10" -draw "line 10,24 118,64" -draw "line 10,40 70,118" -draw "line 100,30 100,118"
+cl-star-aa    | centerline | -centerline | -size 128x128 xc:white -fill none -stroke black -strokewidth 4 -draw "polygon 64.00,14.00 75.76,47.82 111.55,48.55 83.02,70.18 93.39,104.45 64.00,84.00 34.61,104.45 44.98,70.18 16.45,48.55 52.24,47.82"
+cl-curve-aa   | centerline | -centerline | -size 128x128 xc:white -fill none -stroke black -strokewidth 4 -draw "path 'M 12,100 C 30,0 98,128 116,28'"
+cl-cross      | centerline | -centerline | -size 128x128 xc:white +antialias -fill none -stroke black -strokewidth 5 -draw "line 64,8 64,120" -draw "line 8,64 120,64" -draw "line 20,20 108,108"
+
+# Large images for run time and threads (#155)
+big-12        | timing     |  | -seed 1 -size 2000x2000 plasma:fractal -blur 0x8 -colors 12 -type truecolor
