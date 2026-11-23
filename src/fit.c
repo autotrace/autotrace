@@ -579,11 +579,10 @@ spline_list_array_type fitted_splines(pixel_outline_list_type pixel_outline_list
       goto cleanup;
 
     take_outline_task(&tasks, this_list, exception);
-    if (at_exception_got_fatal(exception)) {
-      if (char_splines.background_color)
-        at_color_free(char_splines.background_color);
+    /* The caller frees the result, background colour included, with
+       at_splines_free().  Freeing the colour here as well freed it twice.  */
+    if (at_exception_got_fatal(exception))
       goto cleanup;
-    }
     curve_list_splines =
         assemble_outline(curves, borders, this_list, &char_splines, job.fits[this_list], exception);
     free_outline_fits(job.fits[this_list], CURVE_LIST_LENGTH(curves));
