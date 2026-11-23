@@ -80,5 +80,24 @@ question-sign  | outside   | ; -color-count 8 | images/question-sign.png
 stadium-guests | outside   | ; -color-count 4 | images/stadium-guests.png
 tekura-no      | outside   | ; -centerline | images/tekura-no.png
 
+# Public-domain images from Wikimedia Commons, stored and converted the
+# same way (LICENSES/LicenseRef-PublicDomain.txt).  The ANSI gate symbols
+# are drawn at three times their SVG size; sunbonnet, a scanned book
+# illustration, at half its size and only with -color-count (at full colour
+# it gives 300000 paths).  Suggested in #341.
+nand-ansi      | outside   | ; -background-color FFFFFF; -centerline | images/nand-ansi.png
+and-ansi       | outside   | ; -background-color FFFFFF; -centerline | images/and-ansi.png
+nor-ansi       | outside   | ; -background-color FFFFFF; -centerline | images/nor-ansi.png
+xnor-ansi      | outside   | ; -background-color FFFFFF; -centerline | images/xnor-ansi.png
+not-ansi       | outside   | ; -background-color FFFFFF; -centerline | images/not-ansi.png
+buffer-ansi    | outside   | ; -background-color FFFFFF; -centerline | images/buffer-ansi.png
+xor-ansi       | outside   | ; -background-color FFFFFF; -centerline | images/xor-ansi.png
+admin-machine  | outside   | ; -color-count 4 | images/admin-machine.png
+albero         | outside   | ; -color-count 4 | images/albero.png
+twist-per-inch | outside   | ; -color-count 4 | images/twist-per-inch.png
+litter         | outside   | ; -background-color FFFFFF | images/litter.png
+syndicalism    | outside   | ; -centerline; -color-count 2 | images/syndicalism.png
+sunbonnet      | outside   | -color-count 8 | images/sunbonnet.png
+
 # Large images for run time and threads (#155)
 big-12        | timing     |  | -seed 1 -size 2000x2000 plasma:fractal -blur 0x8 -colors 12 -type truecolor

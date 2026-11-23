@@ -25,7 +25,7 @@ tests/corpus/corpus.py run ../master/autotrace ./autotrace /tmp/corpus
 
 It draws the images into `/tmp/corpus/images`, writes `old.json` and
 `new.json` there, and prints a Markdown table of the cases that changed,
-ready to paste into a pull request. A run takes under a minute.
+ready to paste into a pull request. A run takes about a minute.
 
 - `--repeat 3` reports the best of three run times. Use it when time
   matters, on an otherwise idle machine.
@@ -43,7 +43,9 @@ the file. Each line also gives the option sets to trace the image with.
 Prefer generated images: they need no image files and no licences beyond
 the scripts' own. An image from elsewhere goes into `images/` as a PNG on
 white, with its author, licence and source recorded in `REUSE.toml` (see
-the existing entries).
+the existing entries). A public-domain image takes the licence
+`LicenseRef-PublicDomain`, and its entry says why it is in the public
+domain.
 
 The categories:
 
@@ -58,8 +60,10 @@ The categories:
 - **noise**: impulse noise, traced with and without despeckling (#376).
 - **alpha**: a shape on a transparent background.
 - **centerline**: line art traced with `-centerline` (#112).
-- **outside**: CC0 line art, diagrams and symbols from Wikimedia Commons,
-  among them a JPEG with its compression artefacts (`hiemalora`).
+- **outside**: line art, diagrams and symbols from Wikimedia Commons,
+  either CC0 or in the public domain. Among them are JPEGs with their
+  compression artefacts (`hiemalora`, `syndicalism`), ANSI logic gate
+  symbols, and a scanned book illustration (`sunbonnet`).
 - **timing**: a 2000×2000 image for run time and threads (#155). It gets
   output metrics only.
 
@@ -114,7 +118,4 @@ change of more than 20% or 50 ms.
 
 - Distances to the drawn shape itself (ground truth) rather than to its
   pixels.
-- The public-domain images suggested in #341. REUSE has no SPDX
-  identifier for public domain, so they need a `LicenseRef-` licence text
-  first.
 - Text, which depends on the fonts installed.
