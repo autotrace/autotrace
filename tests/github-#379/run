@@ -1,0 +1,31 @@
+#!/bin/sh
+
+# SPDX-FileCopyrightText: © 2026 Peter Lemenkov
+#
+# SPDX-License-Identifier: CC0-1.0
+
+# With -background-color, the hole in an anti-aliased ring must stay a hole
+# (issue #379).  A hole was only kept when the pixel below its top edge was
+# the background, which in anti-aliased input is an edge shade, so the ring
+# came out as a filled disc.  Kept, it must also go into the ring's own path,
+# not a path of its own, which would fill it just the same.
+#
+# ring.png is a black ring on white, anti-aliased, made with
+#   magick -size 64x64 xc:white -fill black -draw "circle 32,32 32,4" \
+#     -fill white -draw "circle 32,32 32,18" -strip ring.png
+
+. "`dirname "$0"`/../functions"
+
+DIR=$1
+
+autotrace -background-color FFFFFF -output-format svg -output-file $DIR/ring.svg $DIR/ring.png
+
+# One black path, made of the outer circle and the hole.
+paths=`grep -c 'fill:#000000;' $DIR/ring.svg`
+subpaths=`sed -n 's/.*fill:#000000;.* d="\([^"]*\)".*/\1/p' $DIR/ring.svg | tr -cd M | wc -c`
+rm -f $DIR/ring.svg
+
+if [ "$paths" -ne 1 ] || [ "$subpaths" -ne 2 ]; then
+    fail "expected 1 black path with 2 subpaths, got $paths path(s) with $subpaths subpath(s)"
+fi
+ok
