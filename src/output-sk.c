@@ -9,6 +9,7 @@
  * SPDX-License-Identifier: LGPL-2.1-or-later
  */
 
+#include "color.h"
 #include "spline.h"
 #include "output-sk.h"
 
@@ -16,6 +17,9 @@ static void out_splines(FILE *file, spline_list_array_type shape)
 {
   unsigned this_list;
   spline_list_type list;
+  /* The colour of the last list, and whether it was filled */
+  at_color last_color = {0, 0, 0};
+  gboolean last_filled = FALSE;
 
   for (this_list = 0; this_list < SPLINE_LIST_ARRAY_LENGTH(shape); this_list++) {
     unsigned this_spline;
@@ -28,14 +32,23 @@ static void out_splines(FILE *file, spline_list_array_type shape)
 
     stroke = shape.centerline || list.open;
 
-    /* If stroke, set outline color and no fill, otherwise set fill
-     * color and no outline */
-    fprintf(file, "%s((%g,%g,%g))\n", stroke ? "lp" : "fp", list.color.r / 255.0,
-            list.color.g / 255.0, list.color.b / 255.0);
-    fputs(stroke ? "fe()\n" : "le()\n", file);
+    if (!stroke && list.clockwise && last_filled && at_color_equal(&list.color, &last_color)) {
+      /* A hole follows its outline (or another hole of it), in its colour.
+         Make it a further path of the same bezier object, which Sketch fills
+         with the even-odd rule, so the hole is cut out (issue #381).  */
+      fputs("bn()\n", file);
+    } else {
+      /* If stroke, set outline color and no fill, otherwise set fill
+       * color and no outline */
+      fprintf(file, "%s((%g,%g,%g))\n", stroke ? "lp" : "fp", list.color.r / 255.0,
+              list.color.g / 255.0, list.color.b / 255.0);
+      fputs(stroke ? "fe()\n" : "le()\n", file);
 
-    /* Start a bezier object */
-    fputs("b()\n", file);
+      /* Start a bezier object */
+      fputs("b()\n", file);
+    }
+    last_color = list.color;
+    last_filled = !stroke;
 
     /* Move to the start point */
     fprintf(file, "bs(%g,%g,0)\n", START_POINT(first).x, START_POINT(first).y);
