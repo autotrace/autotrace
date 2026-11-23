@@ -64,6 +64,10 @@ static pixel_outline_type find_one_outline(at_bitmap *, edge_type, unsigned shor
 static pixel_outline_type find_one_centerline(at_bitmap *, direction_type, unsigned short,
                                               unsigned short, at_bitmap *);
 static void append_pixel_outline(pixel_outline_list_type *, pixel_outline_type);
+static void record_top_edges(at_bitmap *, const pixel_outline_type *, guint, guint *);
+static guint hole_parent(at_bitmap *, const pixel_outline_list_type *, const GArray *,
+                         const guint *, unsigned short, unsigned short, at_color);
+static void group_holes(pixel_outline_list_type *, const GArray *);
 static pixel_outline_type new_pixel_outline(void);
 static void free_pixel_outline(pixel_outline_type *);
 static void concat_pixel_outline(pixel_outline_type *, const pixel_outline_type *);
@@ -90,6 +94,9 @@ static at_coord next_point(at_bitmap *, edge_type *, unsigned short *, unsigned 
                            gboolean, at_bitmap *, at_exception_type *);
 static unsigned num_neighbors(unsigned short, unsigned short, at_bitmap *);
 
+/* No outside outline: see group_holes(). */
+#define NO_PARENT G_MAXUINT
+
 #define CHECK_FATAL()                                                                              \
   if (at_exception_got_fatal(exp))                                                                 \
     goto cleanup;
@@ -106,6 +113,11 @@ pixel_outline_list_type find_outline_pixels(at_bitmap *bitmap, at_color *bg_colo
   unsigned short row, col;
   at_bitmap *marked = at_bitmap_new(AT_BITMAP_WIDTH(bitmap), AT_BITMAP_HEIGHT(bitmap), 1);
   unsigned int max_progress = AT_BITMAP_HEIGHT(bitmap) * AT_BITMAP_WIDTH(bitmap);
+  /* Only with a background colour, to put holes in place (issue #379). */
+  guint *owner =
+      bg_color ? g_new0(guint, (gsize)AT_BITMAP_WIDTH(bitmap) * AT_BITMAP_HEIGHT(bitmap)) : NULL;
+  GArray *parents = bg_color ? g_array_new(FALSE, FALSE, sizeof(guint)) : NULL;
+  guint no_parent = NO_PARENT;
 
   outline_list.data = g_array_new(FALSE, FALSE, sizeof(pixel_outline_type));
 
@@ -113,7 +125,6 @@ pixel_outline_list_type find_outline_pixels(at_bitmap *bitmap, at_color *bg_colo
     for (col = 0; col < AT_BITMAP_WIDTH(bitmap); col++) {
       edge_type edge;
       at_color color;
-      gboolean is_background;
 
       if (notify_progress)
         notify_progress((gfloat)(row * AT_BITMAP_WIDTH(bitmap) + col) /
@@ -123,7 +134,7 @@ pixel_outline_list_type find_outline_pixels(at_bitmap *bitmap, at_color *bg_colo
       /* A valid edge can be TOP for an outside outline.
          Outside outlines are traced counterclockwise */
       at_bitmap_get_color(bitmap, row, col, &color);
-      if (!(is_background = (gboolean)(bg_color && at_color_equal(&color, bg_color))) &&
+      if (!(bg_color && at_color_equal(&color, bg_color)) &&
           is_unmarked_outline_edge(row, col, edge = TOP, bitmap, marked, color, exp)) {
         pixel_outline_type outline;
 
@@ -135,6 +146,10 @@ pixel_outline_list_type find_outline_pixels(at_bitmap *bitmap, at_color *bg_colo
         CHECK_FATAL(); /* FREE(DONE) outline_list */
 
         O_CLOCKWISE(outline) = FALSE;
+        if (bg_color) {
+          record_top_edges(bitmap, &outline, O_LIST_LENGTH(outline_list), owner);
+          g_array_append_val(parents, no_parent);
+        }
         append_pixel_outline(&outline_list, outline);
 
         DEBUG(" [%u].\n", O_LENGTH(outline));
@@ -151,14 +166,27 @@ pixel_outline_list_type find_outline_pixels(at_bitmap *bitmap, at_color *bg_colo
 
           CHECK_FATAL(); /* FREE(DONE) outline_list */
 
-          /* This lines are for debugging only: */
-          if (is_background) {
+          /* Without a background colour, every region is traced and
+             painted, so the regions inside a hole cover it and the hole
+             itself is only marked. With one, a hole can also contain
+             background, which nothing paints, so keep every hole. It used
+             to be kept only if the pixel below this edge was background,
+             but in anti-aliased input that pixel is usually an edge shade,
+             with the background further in (issue #379). */
+          if (bg_color) {
             DEBUG("#%u: (clockwise)", O_LIST_LENGTH(outline_list));
 
             outline = find_one_outline(bitmap, edge, row - 1, col, marked, TRUE, FALSE, exp);
             CHECK_FATAL(); /* FREE(DONE) outline_list */
 
             O_CLOCKWISE(outline) = TRUE;
+            {
+              guint parent =
+                  hole_parent(bitmap, &outline_list, parents, owner, row - 1, col, color);
+
+              record_top_edges(bitmap, &outline, O_LIST_LENGTH(outline_list), owner);
+              g_array_append_val(parents, parent);
+            }
             append_pixel_outline(&outline_list, outline);
 
             DEBUG(" [%u].\n", O_LENGTH(outline));
@@ -175,8 +203,13 @@ pixel_outline_list_type find_outline_pixels(at_bitmap *bitmap, at_color *bg_colo
       }
     }
   }
+  if (bg_color)
+    group_holes(&outline_list, parents);
 cleanup:
   at_bitmap_free(marked);
+  g_free(owner);
+  if (parents)
+    g_array_free(parents, TRUE);
   if (at_exception_got_fatal(exp))
     free_pixel_outline_list(&outline_list);
   return outline_list;
@@ -459,6 +492,102 @@ static pixel_outline_type find_one_centerline(at_bitmap *bitmap, direction_type 
 static void append_pixel_outline(pixel_outline_list_type *outline_list, pixel_outline_type outline)
 {
   g_array_append_val(outline_list->data, outline);
+}
+
+/* With a background colour, holes are kept, and each must follow the outside
+   outline it is a hole in, together with that outline's other holes. The
+   output formats join consecutive outlines of one colour into one path, so
+   that the hole is cut out of it; with outlines of other colours in between,
+   the hole would be filled instead (issue #379).
+
+   To find that outline, OWNER records, for the top edge of each pixel, the
+   outline of the pixel's colour that runs along it, as its index plus one.
+   PARENTS gives, for each outline in the list, the index of the outside
+   outline a hole belongs to, or NO_PARENT. */
+
+static void record_top_edges(at_bitmap *bitmap, const pixel_outline_type *outline, guint index,
+                             guint *owner)
+{
+  unsigned short width = AT_BITMAP_WIDTH(bitmap), height = AT_BITMAP_HEIGHT(bitmap);
+  unsigned i, n = O_LENGTH(*outline);
+
+  for (i = 0; i < n; i++) {
+    at_coord a = O_COORDINATE(*outline, i), b = O_COORDINATE(*outline, O_NEXT(*outline, i));
+    unsigned short row, col;
+    at_color c;
+
+    /* A horizontal edge at height Y is the top edge of row HEIGHT - Y. */
+    if (a.y != b.y || a.y == 0 || a.y > height || (a.x > b.x ? a.x - b.x : b.x - a.x) != 1)
+      continue;
+    row = height - a.y;
+    col = MIN(a.x, b.x);
+    if (col >= width)
+      continue;
+    at_bitmap_get_color(bitmap, row, col, &c);
+    if (at_color_equal(&c, &outline->color))
+      owner[(gsize)row * width + col] = index + 1;
+  }
+}
+
+/* The outside outline of the region that the pixel at ROW, COL belongs to,
+   for a hole found just below that pixel. Going up from it through the
+   region's colour leads to a top edge of the region, which is either on its
+   outside outline or on one of its holes, traced already in both cases. */
+static guint hole_parent(at_bitmap *bitmap, const pixel_outline_list_type *list,
+                         const GArray *parents, const guint *owner, unsigned short row,
+                         unsigned short col, at_color color)
+{
+  guint index;
+
+  for (; row > 0; row--) {
+    at_color above;
+
+    at_bitmap_get_color(bitmap, row - 1, col, &above);
+    if (!at_color_equal(&above, &color))
+      break;
+  }
+  index = owner[(gsize)row * AT_BITMAP_WIDTH(bitmap) + col];
+  if (index == 0) /* Not expected; the hole stays where it is. */
+    return NO_PARENT;
+  index--;
+  return O_CLOCKWISE(O_LIST_OUTLINE(*list, index)) ? g_array_index(parents, guint, index) : index;
+}
+
+/* Reorder LIST so that each hole follows its outside outline, in the order
+   they were found. */
+static void group_holes(pixel_outline_list_type *list, const GArray *parents)
+{
+  guint n = O_LIST_LENGTH(*list), i;
+  guint *first = g_new(guint, n), *last = g_new(guint, n), *next = g_new(guint, n);
+  GArray *grouped = g_array_sized_new(FALSE, FALSE, sizeof(pixel_outline_type), n);
+
+  for (i = 0; i < n; i++)
+    first[i] = next[i] = NO_PARENT;
+  for (i = 0; i < n; i++) {
+    guint p = g_array_index(parents, guint, i);
+
+    if (p == NO_PARENT)
+      continue;
+    if (first[p] == NO_PARENT)
+      first[p] = i;
+    else
+      next[last[p]] = i;
+    last[p] = i;
+  }
+  for (i = 0; i < n; i++) {
+    guint h;
+
+    if (g_array_index(parents, guint, i) != NO_PARENT)
+      continue;
+    g_array_append_val(grouped, O_LIST_OUTLINE(*list, i));
+    for (h = first[i]; h != NO_PARENT; h = next[h])
+      g_array_append_val(grouped, O_LIST_OUTLINE(*list, h));
+  }
+  g_array_free(list->data, TRUE);
+  list->data = grouped;
+  g_free(first);
+  g_free(last);
+  g_free(next);
 }
 
 /* Free the list of outline lists. */
