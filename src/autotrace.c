@@ -223,7 +223,9 @@ at_splines_type *at_splines_new_full(at_bitmap *bitmap, at_fitting_opts_type *op
                                      at_testcancel_func test_cancel, gpointer testcancel_data)
 {
   image_header_type image_header;
-  at_splines_type *splines = g_new(at_splines_type, 1);
+  /* Allocated just before fitting, so that every earlier exit returns NULL
+     (issue #372).  */
+  at_splines_type *splines = NULL;
   pixel_outline_list_type pixels;
   QuantizeObj *myQuant = NULL; /* curently not used */
   at_exception_type exp = at_exception_new(msg_func, msg_data);
@@ -250,7 +252,7 @@ at_splines_type *at_splines_new_full(at_bitmap *bitmap, at_fitting_opts_type *op
 
 #define FATAL_THEN_RETURN()                                                                        \
   if (FATALP)                                                                                      \
-    return splines;
+    return NULL;
 #define FATAL_THEN_CLEANUP_DIST()                                                                  \
   if (FATALP)                                                                                      \
     goto cleanup_dist;
@@ -304,6 +306,7 @@ at_splines_type *at_splines_new_full(at_bitmap *bitmap, at_fitting_opts_type *op
   FATAL_THEN_CLEANUP_DIST();
   CANCEL_THEN_CLEANUP_DIST();
 
+  splines = g_new(at_splines_type, 1);
   *splines = fitted_splines(pixels, opts, dist, image_header.width, image_header.height, &exp,
                             notify_progress, progress_data, test_cancel, testcancel_data);
   FATAL_THEN_CLEANUP_PIXELS();
