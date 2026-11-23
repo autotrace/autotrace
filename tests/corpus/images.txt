@@ -6,14 +6,16 @@
 #
 #   name | category | option sets | magick arguments
 #
-# corpus.py generate runs "magick ARGUMENTS DIR/NAME.png" for each line, so
-# every image is drawn by a command here and needs no licence of its own.
+# corpus.py generate runs "magick ARGUMENTS DIR/NAME.png" for each line.
+# Most images are drawn by a command here and need no licence of their own;
+# the "outside" ones are files in images/, named as images/NAME.png.
 # Option sets are separated by ";"; each set is traced separately, and an
 # empty set means autotrace's defaults.  Pairs named NAME and NAME-aa are
 # the same drawing without and with anti-aliasing.
 #
 # Categories: geometry, topology, thin, colour, noise, alpha, centerline,
-# timing.  Images in "timing" get output metrics only, no round trip.
+# outside (stored images from other sources), timing.  Images in "timing"
+# get output metrics only, no round trip.
 
 # Geometric primitives
 square        | geometry   | ; -background-color FFFFFF | -size 128x128 xc:white +antialias -fill black -draw "rectangle 32,32 95,95"
@@ -29,8 +31,10 @@ star          | geometry   |  | -size 128x128 xc:white +antialias -fill black -d
 star-aa       | geometry   |  | -size 128x128 xc:white -fill black -draw "polygon 64.00,8.00 76.93,46.20 117.26,46.70 84.92,70.80 96.92,109.30 64.00,86.00 31.08,109.30 43.08,70.80 10.74,46.70 51.07,46.20"
 blob-aa       | geometry   |  | -size 128x128 xc:white -fill black -draw "path 'M 16,64 C 16,8 112,8 112,64 C 112,120 16,120 16,64 Z'"
 
-# Topology: holes, nesting, corner contacts, islands
-ring          | topology   |  | -size 128x128 xc:white +antialias -fill black -draw "circle 64,64 64,14" -fill white -draw "circle 64,64 64,36"
+# Topology: holes, nesting, corner contacts, islands.  With a background
+# colour, holes in anti-aliased shapes are filled in (#379).
+ring          | topology   | ; -background-color FFFFFF | -size 128x128 xc:white +antialias -fill black -draw "circle 64,64 64,14" -fill white -draw "circle 64,64 64,36"
+ring-aa       | topology   | ; -background-color FFFFFF | -size 128x128 xc:white -fill black -draw "circle 64,64 64,14" -fill white -draw "circle 64,64 64,36"
 nested        | topology   |  | -size 128x128 xc:white +antialias -fill #c00000 -draw "rectangle 10,10 117,117" -fill #00a000 -draw "rectangle 30,30 97,97" -fill #0000c0 -draw "rectangle 50,50 77,77"
 corner-touch  | topology   |  | -size 128x128 xc:white +antialias -fill black -draw "rectangle 20,20 63,63" -draw "rectangle 64,64 107,107"
 checker       | topology   |  | -size 120x120 pattern:checkerboard -threshold 50% -type truecolor
@@ -63,6 +67,18 @@ cl-lines      | centerline | -centerline | -size 128x128 xc:white +antialias -fi
 cl-star-aa    | centerline | -centerline | -size 128x128 xc:white -fill none -stroke black -strokewidth 4 -draw "polygon 64.00,14.00 75.76,47.82 111.55,48.55 83.02,70.18 93.39,104.45 64.00,84.00 34.61,104.45 44.98,70.18 16.45,48.55 52.24,47.82"
 cl-curve-aa   | centerline | -centerline | -size 128x128 xc:white -fill none -stroke black -strokewidth 4 -draw "path 'M 12,100 C 30,0 98,128 116,28'"
 cl-cross      | centerline | -centerline | -size 128x128 xc:white +antialias -fill none -stroke black -strokewidth 5 -draw "line 64,8 64,120" -draw "line 8,64 120,64" -draw "line 20,20 108,108"
+
+# Images from Wikimedia Commons, all CC0, stored in images/ and converted to
+# PNG on white; REUSE.toml names each author and source.  Suggested in #341.
+directed-graph | outside   | ; -centerline | images/directed-graph.png
+link-tables    | outside   | ; -centerline | images/link-tables.png
+hiemalora      | outside   | ; -centerline; -color-count 2 | images/hiemalora.png
+partition      | outside   | ; -centerline | images/partition.png
+occidental     | outside   | ; -background-color FFFFFF | images/occidental.png
+kotpota        | outside   | ; -background-color FFFFFF | images/kotpota.png
+question-sign  | outside   | ; -color-count 8 | images/question-sign.png
+stadium-guests | outside   | ; -color-count 4 | images/stadium-guests.png
+tekura-no      | outside   | ; -centerline | images/tekura-no.png
 
 # Large images for run time and threads (#155)
 big-12        | timing     |  | -seed 1 -size 2000x2000 plasma:fractal -blur 0x8 -colors 12 -type truecolor

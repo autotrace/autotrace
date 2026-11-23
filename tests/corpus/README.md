@@ -37,9 +37,13 @@ ready to paste into a pull request. A run takes under a minute.
 ## The images
 
 [`images.txt`](images.txt) lists the images, one per line, with the
-`magick` command that draws each of them. Every image is generated, so the
-corpus needs no image files and no licences beyond the scripts' own. Each
-line also gives the option sets to trace the image with.
+`magick` command that draws each of them, or for the images in `images/`,
+the file. Each line also gives the option sets to trace the image with.
+
+Prefer generated images: they need no image files and no licences beyond
+the scripts' own. An image from elsewhere goes into `images/` as a PNG on
+white, with its author, licence and source recorded in `REUSE.toml` (see
+the existing entries).
 
 The categories:
 
@@ -54,6 +58,8 @@ The categories:
 - **noise**: impulse noise, traced with and without despeckling (#376).
 - **alpha**: a shape on a transparent background.
 - **centerline**: line art traced with `-centerline` (#112).
+- **outside**: CC0 line art, diagrams and symbols from Wikimedia Commons,
+  among them a JPEG with its compression artefacts (`hiemalora`).
 - **timing**: a 2000×2000 image for run time and threads (#155). It gets
   output metrics only.
 
@@ -108,6 +114,7 @@ change of more than 20% or 50 ms.
 
 - Distances to the drawn shape itself (ground truth) rather than to its
   pixels.
-- Images from outside sources, such as the public-domain ones suggested in
-  #341. Each needs its origin and licence recorded in `REUSE.toml`.
+- The public-domain images suggested in #341. REUSE has no SPDX
+  identifier for public domain, so they need a `LicenseRef-` licence text
+  first.
 - Text, which depends on the fonts installed.

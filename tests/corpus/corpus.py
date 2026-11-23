@@ -50,7 +50,10 @@ def read_manifest(path=MANIFEST):
                 sys.exit("%s:%d: expected 4 fields separated by |" % (path, lineno))
             name, category, options, args = fields
             sets = [shlex.split(s) for s in options.split(";")]
-            images.append((name, category, sets, shlex.split(args)))
+            # Stored images (images/NAME.png) are relative to this directory.
+            args = [os.path.join(HERE, a) if a.startswith("images/") else a
+                    for a in shlex.split(args)]
+            images.append((name, category, sets, args))
     return images
 
 
