@@ -1,0 +1,38 @@
+#!/bin/sh
+
+# SPDX-FileCopyrightText: © 2026 Peter Lemenkov
+#
+# SPDX-License-Identifier: CC0-1.0
+
+# -centerline must trace a colour image like a grey one with the same
+# pixels, also where strokes touch the image border (issue #390).
+#
+# bars-grey.png has a 10-pixel black bar along each edge, none touching
+# another; bars-rgb.png has the same pixels as an RGB PNG.  Made with
+#   magick -size 100x80 xc:white +antialias -fill black \
+#     -draw "rectangle 0,0 9,49" -draw "rectangle 90,0 99,49" \
+#     -draw "rectangle 20,0 79,9" -draw "rectangle 20,70 79,79" \
+#     -strip -type Grayscale -define png:color-type=0 bars-grey.png
+#   magick bars-grey.png -strip -type TrueColor \
+#     -define png:color-type=2 bars-rgb.png
+
+. "`dirname "$0"`/../functions"
+
+DIR=$1
+
+autotrace -centerline -output-format svg -output-file $DIR/bars-grey.svg $DIR/bars-grey.png
+autotrace -centerline -output-format svg -output-file $DIR/bars-rgb.svg $DIR/bars-rgb.png
+
+grey=`grep -o ' d="[^"]*"' $DIR/bars-grey.svg`
+rgb=`grep -o ' d="[^"]*"' $DIR/bars-rgb.svg`
+rm -f $DIR/bars-grey.svg $DIR/bars-rgb.svg
+
+# One line down the middle of each bar.
+expected=' d="M5.5 5.5L5.5 44.5M24.5 5.5L75.5 5.5M95.5 5.5L95.5 44.5M24.5 75.5L75.5 75.5"'
+if [ "$grey" != "$expected" ]; then
+    fail "grey image: expected$expected, got$grey"
+fi
+if [ "$rgb" != "$grey" ]; then
+    fail "RGB image traced differently from grey: got$rgb"
+fi
+ok

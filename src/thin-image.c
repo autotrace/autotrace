@@ -189,7 +189,7 @@ static void thin3(at_bitmap *image, const Pixel colour, const Pixel bg_color)
           p = ((p << 1) & 0666) | ((q << 3) & 0110) |
               (unsigned int)PIXEL_EQUAL(y1_ptr[x + 1], colour);
           qb[x] = (unsigned char)p;
-          if ((i != 2 || x != 0) && ((p & m) == 0) && todelete[p]) {
+          if (((p & m) == 0) && todelete[p]) {
             count++; /* delete the pixel */
             PIXEL_SET(y_ptr[x], bg_color);
           }
@@ -197,25 +197,26 @@ static void thin3(at_bitmap *image, const Pixel colour, const Pixel bg_color)
 
         /* Process right edge pixel.                        */
         p = (p << 1) & 0666;
-        if (i != 3 && (p & m) == 0 && todelete[p]) {
+        if ((p & m) == 0 && todelete[p]) {
           count++;
           PIXEL_SET(y_ptr[xsize - 1], bg_color);
         }
       }
 
-      if (i != 1) {
-        /* Process bottom scan line.                            */
-        q = qb[0];
-        p = ((q << 2) & 0330);
+      /* Process bottom scan line.  As in thin1(), pixels on the image
+         border may be deleted in every pass: otherwise a stroke along the
+         border is thinned from one side only, and its line ends up on the
+         border or vanishes (issue #390).  */
+      q = qb[0];
+      p = ((q << 2) & 0330);
 
-        y_ptr = ptr + xsize * (ysize - 1);
-        for (x = 0; x < xsize; x++) {
-          q = qb[x];
-          p = ((p << 1) & 0666) | ((q << 3) & 0110);
-          if ((i != 2 || x != 0) && (p & m) == 0 && todelete[p]) {
-            count++;
-            PIXEL_SET(y_ptr[x], bg_color);
-          }
+      y_ptr = ptr + xsize * (ysize - 1);
+      for (x = 0; x < xsize; x++) {
+        q = qb[x];
+        p = ((p << 1) & 0666) | ((q << 3) & 0110);
+        if ((p & m) == 0 && todelete[p]) {
+          count++;
+          PIXEL_SET(y_ptr[x], bg_color);
         }
       }
     }
