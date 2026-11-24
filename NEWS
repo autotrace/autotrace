@@ -1,3 +1,45 @@
+What's new in AutoTrace 0.31.13?
+This release is API and ABI compatible with 0.31.12 (libautotrace.so.3).
+
+Security:
+- a fatal error while curves were fitted freed the background colour
+  twice (GHSA-7qjh-rrv3-frfw).  Only library clients whose message
+  handler returns after a fatal error could get there; the autotrace
+  program exits first.
+
+Tracing:
+- a border shared by two colour regions is fitted once and used by
+  both, so no seams or white cracks show along it (#338).
+- much faster: messages for -log debug are no longer formatted when
+  they won't be shown (#370), and the autotrace program finds corners
+  and fits curves on several threads, one per processor or as many as
+  AUTOTRACE_THREADS says (#155).  The output doesn't depend on the number
+  of threads.  Library clients still get one thread.
+- with -background-color, the holes of anti-aliased shapes are kept, so
+  an anti-aliased ring no longer comes out as a disc (#379).  The FIG
+  writer fills holes with the background colour instead of white
+  (#383), and the Sketch writer cuts them out (#381).
+
+Centerline tracing:
+- right-angle corners are kept, so a square traces as four straight
+  sides (#50).
+- the points lie on the pixel centres; they were half a pixel off, in
+  opposite directions on x and y (#366).
+- in colour images, strokes along the image border are traced as in
+  grey ones; they were lost or pulled onto the border (#390).
+
+Library:
+- at_splines_new_full() returns NULL, as documented, when it is
+  cancelled or fails before fitting, instead of an uninitialised
+  result (#372).
+
+Other changes:
+- the manual page and -help say what the despeckling options actually
+  do (#376).
+- tests/corpus/ compares the traces of two builds, for pull requests
+  that change traced output.  It measures them against the source image
+  and, for the synthetic images, against the shapes drawn (#341, #387).
+
 What's new in AutoTrace 0.31.12?
 This release is API and ABI compatible with 0.31.11 (libautotrace.so.3).
 
