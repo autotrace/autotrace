@@ -274,6 +274,10 @@ static gfloat parse_real(const gchar *s)
     %s\n\n\
 -preserve-width: preserve line width prior to thinning.\n\n\
 -remove-adjacent-corners: remove corners that are adjacent.\n\n\
+-snap-antialiasing: give anti-aliased edge pixels the nearer of the flat\n\
+    colours on either side before tracing, so that each edge becomes one\n\
+    outline rather than many thin ones.  Images without a few flat colours,\n\
+    such as most photographs, are traced unchanged.\n\n\
 -tangent-surround <unsigned>: number of points on either side of a\n\
     point to consider when computing the tangent at that point; default is 3.\n\n\
 -report-progress: report tracing status in real time.\n\n\
@@ -315,6 +319,7 @@ static char *read_command_line(int argc, char *argv[], at_fitting_opts_type *fit
                                   {"preserve-width", 0, 0, 0},
                                   {"remove-adjacent-corners", 0, 0, 0},
                                   {"report-progress", 0, (int *)&report_progress, 1},
+                                  {"snap-antialiasing", 0, 0, 0},
                                   {"tangent-surround", 1, 0, 0},
                                   {"version", 0, (int *)&printed_version, 1},
                                   {"width-weight-factor", 1, 0, 0},
@@ -437,6 +442,9 @@ static char *read_command_line(int argc, char *argv[], at_fitting_opts_type *fit
 
     else if (ARGUMENT_IS("preserve-width"))
       fitting_opts->preserve_width = TRUE;
+
+    else if (ARGUMENT_IS("snap-antialiasing"))
+      fitting_opts->snap_antialiasing = TRUE;
 
     else if (ARGUMENT_IS("remove-adjacent-corners"))
       fitting_opts->remove_adjacent_corners = TRUE;

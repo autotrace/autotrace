@@ -1,0 +1,62 @@
+#!/bin/sh
+
+# SPDX-FileCopyrightText: © 2026 AutoTrace contributors
+#
+# SPDX-License-Identifier: CC0-1.0
+
+# -snap-antialiasing must trace an anti-aliased shape as one outline in its
+# two flat colours, and leave a gradient alone (issue #348).
+#
+# Made with
+#   magick -size 64x64 xc:white -fill black -draw "circle 32,32 32,12" \
+#     -depth 8 -strip -type Grayscale -define png:color-type=0 circle-grey.png
+#   magick -size 64x64 "xc:#fff4c0" -fill "#a00000" -draw "circle 32,32 32,12" \
+#     -depth 8 -strip -type TrueColor -define png:color-type=2 circle-rgb.png
+#   magick -size 128x32 gradient:red-blue \
+#     -depth 8 -strip -type TrueColor -define png:color-type=2 gradient.png
+#   magick -size 1x26 "gradient:rgb(100,100,100)-rgb(125,125,125)" -rotate -90 \
+#     -scale 1600% -depth 8 -strip -type Grayscale -define png:color-type=0 ramp.png
+# ramp.png has 26 grey shades, each 16 pixels wide, so every pixel is flat.
+
+. "`dirname "$0"`/../functions"
+
+DIR=$1
+
+trace() {
+    autotrace "$@" -output-format svg -output-file $DIR/out.svg
+}
+paths() {
+    grep -c '<path' $DIR/out.svg
+}
+fills() {
+    grep -o 'fill:#[0-9a-f]*' $DIR/out.svg | sort -u | tr '\n' ' '
+}
+
+# Without the option, the blended edge pixels trace as many thin regions.
+trace $DIR/circle-grey.png
+if [ `paths` -le 2 ]; then
+    fail "circle-grey.png without -snap-antialiasing: expected many paths, got `paths`"
+fi
+
+for image in circle-grey:"fill:#000000 fill:#ffffff " circle-rgb:"fill:#a00000 fill:#fff4c0 "; do
+    name=${image%%:*}
+    expected=${image#*:}
+    trace -snap-antialiasing $DIR/$name.png
+    if [ `paths` -ne 2 ] || [ "`fills`" != "$expected" ]; then
+        fail "$name.png: expected 2 paths with $expected, got `paths` with `fills`"
+    fi
+done
+
+# A gradient must trace as without the option: a smooth one has no flat
+# colours to snap to, and the shades of a stepped one are all equally
+# frequent, so none of them is a stray variant of another.
+for name in gradient ramp; do
+    trace $DIR/$name.png
+    mv $DIR/out.svg $DIR/plain.svg
+    trace -snap-antialiasing $DIR/$name.png
+    if ! cmp -s $DIR/plain.svg $DIR/out.svg; then
+        fail "$name.png traced differently with -snap-antialiasing"
+    fi
+done
+rm -f $DIR/out.svg $DIR/plain.svg
+ok

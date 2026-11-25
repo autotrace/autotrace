@@ -189,6 +189,11 @@ struct _at_fitting_opts_type {
 #define at_doc__width_weight_factor                                                                \
   N_("width-weight-factor <real>: weight factor for fitting the linewidth.")
   gfloat width_weight_factor;
+
+#define at_doc__snap_antialiasing                                                                  \
+  N_("snap-antialiasing: give anti-aliased edge pixels the nearer of the "                         \
+     "flat colours on either side before tracing; default doesn't.")
+  gboolean snap_antialiasing;
 };
 
 struct _at_input_opts_type {

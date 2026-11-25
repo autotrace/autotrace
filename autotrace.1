@@ -54,6 +54,7 @@ autotrace \- converts bitmap image data into vector graphics
 .RB [ \-report-progress ]
 .RB [ \-debug-arch ]
 .RB [ \-debug-bitmap ]
+.RB [ \-snap-antialiasing ]
 .RB [ \-tangent-surround
 .IR " int" ]
 .RB [ \-version ]
@@ -268,6 +269,17 @@ Print the type of cpu.
 .TP
 .B \-debug-bitmap
 Dump loaded bitmap to <input_name>.bitmap.
+.TP
+.B \-snap-antialiasing
+Before tracing, give every anti-aliased edge pixel the nearer of the two
+flat colours it lies between, so that each edge becomes one outline rather
+than many thin regions.
+The flat colours are those of pixels whose neighbours all match them.
+Images with fewer than two such colours or more than 24, such as most
+photographs and gradients, are traced unchanged.
+Small text traces best with
+.B \-filter-iterations 0
+as well.
 .TP
 .BI \-tangent-surround " int"
 Consider the specified number of points to either side of a point 

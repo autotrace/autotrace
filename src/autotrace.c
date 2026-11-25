@@ -30,6 +30,7 @@
 #include "quantize.h"
 #include "thin-image.h"
 #include "despeckle.h"
+#include "antialias.h"
 
 #include <locale.h>
 #include <string.h>
@@ -215,13 +216,37 @@ at_splines_type *at_splines_new(at_bitmap *bitmap, at_fitting_opts_type *opts, a
   return at_splines_new_full(bitmap, opts, msg_func, msg_data, NULL, NULL, NULL, NULL);
 }
 
+/* The share of the progress that -snap-antialiasing reports.  The later
+   steps report the rest through rest_progress(), so that the client's
+   progress still runs once from 0 to 1.  */
+#define SNAP_PROGRESS 0.1f
+
+typedef struct {
+  at_progress_func notify_progress;
+  gpointer progress_data;
+} client_progress;
+
+static void snap_progress(gfloat percentage, gpointer data)
+{
+  client_progress *client = data;
+  client->notify_progress(SNAP_PROGRESS * percentage, client->progress_data);
+}
+
+static void rest_progress(gfloat percentage, gpointer data)
+{
+  client_progress *client = data;
+  client->notify_progress(SNAP_PROGRESS + (1 - SNAP_PROGRESS) * percentage, client->progress_data);
+}
+
 /* at_splines_new_full modify its argument: BITMAP
-   when despeckle, quantize and/or thin_image are invoked. */
+   when snap_antialiased, despeckle, quantize and/or thin_image are
+   invoked. */
 at_splines_type *at_splines_new_full(at_bitmap *bitmap, at_fitting_opts_type *opts,
                                      at_msg_func msg_func, gpointer msg_data,
                                      at_progress_func notify_progress, gpointer progress_data,
                                      at_testcancel_func test_cancel, gpointer testcancel_data)
 {
+  client_progress client = {notify_progress, progress_data};
   image_header_type image_header;
   /* Allocated just before fitting, so that every earlier exit returns NULL
      (issue #372).  */
@@ -260,6 +285,17 @@ at_splines_type *at_splines_new_full(at_bitmap *bitmap, at_fitting_opts_type *op
   if (FATALP) {                                                                                    \
     FREE_SPLINE();                                                                                 \
     goto cleanup_pixels;                                                                           \
+  }
+
+  /* Before despeckling, so that what remains of an edge is one colour.  */
+  if (opts->snap_antialiasing) {
+    if (!snap_antialiased(bitmap, notify_progress ? snap_progress : NULL, &client, test_cancel,
+                          testcancel_data, NULL))
+      return NULL;
+    if (notify_progress) {
+      notify_progress = rest_progress;
+      progress_data = &client;
+    }
   }
 
   if (opts->despeckle_level > 0) {
