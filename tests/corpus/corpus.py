@@ -209,6 +209,14 @@ class Circle:
         """Distance to the outline, negative inside."""
         return math.hypot(x - self.cx, y - self.cy) - self.r
 
+    def nearest(self, x, y, offset):
+        """Distance to the outline moved OFFSET outwards, and the point on it
+        nearest to (x, y)."""
+        d = math.hypot(x - self.cx, y - self.cy)
+        ux, uy = ((x - self.cx) / d, (y - self.cy) / d) if d > 0 else (1.0, 0.0)
+        r = self.r + offset
+        return abs(d - r), (self.cx + r * ux, self.cy + r * uy)
+
     def samples(self, offset):
         r = self.r + offset
         n = max(8, int(2 * math.pi * r / STEP))
@@ -229,6 +237,36 @@ class Polyline:
     def signed(self, x, y):
         d = min(segment_distance(x, y, a, b) for a, b in zip(self.points, self.points[1:]))
         return -d if self.closed and self.inside(x, y) else d
+
+    def nearest(self, x, y, offset):
+        """Distance to the outline moved OFFSET outwards, and the point on it
+        nearest to (x, y)."""
+        # Start from the first point, for an outline of repeated points only.
+        x0, y0 = self.points[0]
+        best = (math.hypot(x - x0, y - y0), x0, y0, 0.0, 0.0)
+        for (x0, y0), (x1, y1) in zip(self.points, self.points[1:]):
+            dx, dy = x1 - x0, y1 - y0
+            norm = dx * dx + dy * dy
+            if norm == 0:
+                continue  # a repeated point: its neighbours cover it
+            t = max(0.0, min(1.0, ((x - x0) * dx + (y - y0) * dy) / norm))
+            qx, qy = x0 + t * dx, y0 + t * dy
+            d = math.hypot(x - qx, y - qy)
+            # On a tie, prefer a segment, which has a direction.
+            if d <= best[0]:
+                best = (d, qx, qy, dx, dy)
+        d, qx, qy, dx, dy = best
+        inside = self.closed and self.inside(x, y)
+        length = math.hypot(dx, dy)
+        if d > 1e-9:
+            # Outwards is away from (x, y) outside the shape, towards it inside.
+            sign = -1 if inside else 1
+            nx, ny = sign * (x - qx) / d, sign * (y - qy) / d
+        elif length > 0:
+            nx, ny = -self.side * dy / length, self.side * dx / length
+        else:
+            nx, ny = 1.0, 0.0  # on a lone point, any direction will do
+        return abs((-d if inside else d) - offset), (qx + offset * nx, qy + offset * ny)
 
     def inside(self, x, y):
         result = False
@@ -427,19 +465,33 @@ def shape_distances(kind, shapes, svg, width, height):
         # do the edges of shapes that reach it: leave both out.
         return min(x, y, width - x, height - y) > 1e-6
 
+    def covered(k, x, y):
+        # Is this point of shape K's edge under a later filled shape?
+        return kind == "fill" and any(s.signed(x, y) < margin - 1e-6 for s in shapes[k + 1:])
+
     trace = [p for p in trace_points(svg) if kind != "fill" or interior(*p)]
-    truth = []
-    for k, shape in enumerate(shapes):
-        for x, y in shape.samples(margin):
-            if not interior(x, y):
-                continue
-            # Leave out edges that a later filled shape covers.
-            if kind == "fill" and any(s.signed(x, y) < margin - 1e-6 for s in shapes[k + 1:]):
-                continue
-            truth.append((x, y))
+    truth = [(x, y) for k, shape in enumerate(shapes) for x, y in shape.samples(margin)
+             if interior(x, y) and not covered(k, x, y)]
     if not trace or not truth:
         return None, None
-    to_shape = [min(abs(s.signed(x, y) - margin) for s in shapes) for x, y in trace]
+    truth_grid = PointGrid(truth)
+
+    def to_visible_edge(x, y):
+        # The exact distance to the nearest edge that isn't covered.  Where
+        # the nearest point of an outline is covered, its visible part may
+        # still be close: fall back to the samples of the visible edges.
+        best, fallback = math.inf, False
+        for k, shape in enumerate(shapes):
+            d, point = shape.nearest(x, y, margin)
+            if d >= best:
+                continue
+            if covered(k, *point):
+                fallback = True
+            else:
+                best = d
+        return min(best, truth_grid.nearest(x, y)) if fallback else best
+
+    to_shape = [to_visible_edge(x, y) for x, y in trace]
     grid = PointGrid(trace)
     to_trace = [grid.nearest(x, y) for x, y in truth]
     mean = (sum(to_shape) / len(to_shape) + sum(to_trace) / len(to_trace)) / 2
