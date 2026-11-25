@@ -112,6 +112,8 @@ libautotrace_la_SOURCES =\
 		src/curve.h \
 		src/vector.h \
 		src/pxl-outline.h \
+		src/antialias.c \
+		src/antialias.h \
 		src/despeckle.c \
 		src/despeckle.h \
 		src/exception.c \

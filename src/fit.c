@@ -481,6 +481,7 @@ fitting_opts_type new_fitting_opts(void)
   fitting_opts.centerline = FALSE;
   fitting_opts.preserve_width = FALSE;
   fitting_opts.width_weight_factor = 6.0;
+  fitting_opts.snap_antialiasing = FALSE;
 
   return (fitting_opts);
 }

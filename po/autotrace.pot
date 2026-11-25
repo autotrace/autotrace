@@ -7,7 +7,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: autotrace 0.31.13\n"
 "Report-Msgid-Bugs-To: https://github.com/autotrace/autotrace/issues\n"
-"POT-Creation-Date: 2026-11-24 14:18+0100\n"
+"POT-Creation-Date: 2026-11-26 02:43+0100\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
@@ -118,6 +118,12 @@ msgstr ""
 
 #: src/autotrace.h
 msgid "width-weight-factor <real>: weight factor for fitting the linewidth."
+msgstr ""
+
+#: src/autotrace.h
+msgid ""
+"snap-antialiasing: give anti-aliased edge pixels the nearer of the flat "
+"colours on either side before tracing; default doesn't."
 msgstr ""
 
 #: src/color.c
