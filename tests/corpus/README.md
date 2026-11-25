@@ -64,6 +64,12 @@ The categories:
   either CC0 or in the public domain. Among them are JPEGs with their
   compression artefacts (`hiemalora`, `syndicalism`), ANSI logic gate
   symbols, and a scanned book illustration (`sunbonnet`).
+- **text**: Liberation Sans and Serif at 12, 32 and 40 pixels, with and
+  without anti-aliasing, and in colour. How text renders depends on the
+  fonts and on FreeType, so two machines would draw different images:
+  these are stored in `images/` too, and [`text.sh`](text.sh) records how
+  they were made. The fonts are under the SIL Open Font License, which
+  doesn't cover documents made with them, so the images are CC0.
 - **timing**: a 2000×2000 image for run time and threads (#155). It gets
   output metrics only.
 
@@ -145,5 +151,5 @@ the table only reports a change of more than 20% or 50 ms.
 ## Not yet
 
 - Ground truth for the images from outside, such as the SVG sources of
-  the ANSI gate symbols, and for the strokes in `thin` traced as areas.
-- Text, which depends on the fonts installed.
+  the ANSI gate symbols, for the strokes in `thin` traced as areas, and
+  for the text, whose glyph outlines are in the fonts.

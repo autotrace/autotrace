@@ -269,3 +269,13 @@ precedence = "override"
 SPDX-FileCopyrightText = "Eulalie Osgood Grover; Rand, McNally & Company"
 SPDX-License-Identifier = "LicenseRef-PublicDomain"
 SPDX-FileComment = "https://commons.wikimedia.org/wiki/File:The_sunbonnet_babies_in_Holland;_a_second_reader_(1915)_(14749842631).jpg (published in the United States in 1915; no known copyright restrictions)"
+
+# Rendered text (#387): the Liberation fonts are under the SIL OFL 1.1,
+# which does not cover documents made with them.  tests/corpus/text.sh
+# records how the images were made.
+[[annotations]]
+path = "tests/corpus/images/text-*.png"
+precedence = "override"
+SPDX-FileCopyrightText = "2026 AutoTrace contributors"
+SPDX-License-Identifier = "CC0-1.0"
+SPDX-FileComment = "Text rendered in Liberation Sans and Serif 2.1.5 by tests/corpus/text.sh"
