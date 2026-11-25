@@ -17,6 +17,7 @@ librsvg.  See README.md for what the metrics mean.
 
 import argparse
 import json
+import math
 import os
 import re
 import shlex
@@ -183,14 +184,277 @@ def svg_stats(svg):
     return stats
 
 
+# Ground truth: the shapes that the -draw arguments describe.
+#
+# Coordinates are autotrace's: pixel (x, y) covers the square from (x, y) to
+# (x + 1, y + 1), and y points down.  ImageMagick puts pixel centres on whole
+# numbers, so its point (x, y) is (x + 0.5, y + 0.5) here.  It also fills a
+# shape with a margin of half a pixel: "rectangle 32,32 95,95" covers 64x64
+# pixels, and a circle of radius 44 an area of about pi * 44.5^2.  So the
+# edges of a filled shape lie MARGIN outside its outline, rounded at corners
+# (a sharp tip doesn't grow a mitre).  The pixels can't tell a rounded corner
+# from a square one, so an exact trace of a right angle is up to 0.21 pixels
+# away from it.  A stroke's centre line is its path itself.
+
+MARGIN = 0.5
+# Spacing of the points sampled on the shapes and on the trace, in pixels.
+STEP = 0.1
+
+
+class Circle:
+    def __init__(self, cx, cy, r):
+        self.cx, self.cy, self.r = cx, cy, r
+
+    def signed(self, x, y):
+        """Distance to the outline, negative inside."""
+        return math.hypot(x - self.cx, y - self.cy) - self.r
+
+    def samples(self, offset):
+        r = self.r + offset
+        n = max(8, int(2 * math.pi * r / STEP))
+        return [(self.cx + r * math.cos(2 * math.pi * k / n),
+                 self.cy + r * math.sin(2 * math.pi * k / n)) for k in range(n)]
+
+
+class Polyline:
+    def __init__(self, points, closed):
+        if closed and points[0] != points[-1]:
+            points = points + [points[0]]
+        self.points, self.closed = points, closed
+        # (-side * dy, side * dx) is the outward normal of a segment (dx, dy):
+        # outlines with a positive shoelace sum turn clockwise, y pointing down.
+        area = sum(x0 * y1 - x1 * y0 for (x0, y0), (x1, y1) in zip(points, points[1:]))
+        self.side = -1 if area > 0 else 1
+
+    def signed(self, x, y):
+        d = min(segment_distance(x, y, a, b) for a, b in zip(self.points, self.points[1:]))
+        return -d if self.closed and self.inside(x, y) else d
+
+    def inside(self, x, y):
+        result = False
+        for (x0, y0), (x1, y1) in zip(self.points, self.points[1:]):
+            if (y0 > y) != (y1 > y) and x < x0 + (y - y0) * (x1 - x0) / (y1 - y0):
+                result = not result
+        return result
+
+    def samples(self, offset):
+        """Points along each segment, moved OFFSET outwards."""
+        out = []
+        for (x0, y0), (x1, y1) in zip(self.points, self.points[1:]):
+            length = math.hypot(x1 - x0, y1 - y0)
+            if length == 0:
+                continue
+            nx, ny = -self.side * (y1 - y0) / length, self.side * (x1 - x0) / length
+            n = max(1, int(length / STEP))
+            for k in range(n + (0 if self.closed else 1)):
+                t = k / n
+                out.append((x0 + t * (x1 - x0) + offset * nx, y0 + t * (y1 - y0) + offset * ny))
+        return out
+
+
+def segment_distance(x, y, a, b):
+    (x0, y0), (x1, y1) = a, b
+    dx, dy = x1 - x0, y1 - y0
+    norm = dx * dx + dy * dy
+    t = 0 if norm == 0 else max(0.0, min(1.0, ((x - x0) * dx + (y - y0) * dy) / norm))
+    return math.hypot(x - x0 - t * dx, y - y0 - t * dy)
+
+
+# Chords of a flattened Bézier curve stay this close to it, in pixels.
+FLATNESS = 0.01
+
+
+def midpoint(a, b):
+    return ((a[0] + b[0]) / 2, (a[1] + b[1]) / 2)
+
+
+def bezier(p0, p1, p2, p3, depth=0):
+    """Points on a cubic Bézier curve, without its start point, such that
+    the chords between them are within FLATNESS of the curve."""
+    # The curve stays within 3/4 of the control points' distance from
+    # the chord.
+    if depth >= 16 or max(segment_distance(p[0], p[1], p0, p3) for p in (p1, p2)) <= FLATNESS:
+        return [p3]
+    # Split at t = 1/2 (de Casteljau).
+    a, b, c = midpoint(p0, p1), midpoint(p1, p2), midpoint(p2, p3)
+    d, e = midpoint(a, b), midpoint(b, c)
+    m = midpoint(d, e)
+    return bezier(p0, a, d, m, depth + 1) + bezier(m, e, c, p3, depth + 1)
+
+
+def draw_shape(primitive):
+    """The shape of an ImageMagick -draw primitive, or None if unsupported."""
+    words = primitive.replace(",", " ").split()
+    kind = words[0]
+    if kind == "path":
+        tokens = TOKEN.findall(primitive[len("path"):])
+        if not set(t for t in tokens if t.isalpha()) <= {"M", "L", "C", "Z", "z"}:
+            return None
+        nums = [float(t) for t in tokens if not t.isalpha()]
+        cmds = [t for t in tokens if t.isalpha()]
+        points, closed, i = [], False, 0
+        for cmd in cmds:
+            if cmd == "M":
+                if points:
+                    return None  # one subpath only
+                points.append((nums[i], nums[i + 1]))
+                i += 2
+            elif cmd == "L":
+                points.append((nums[i], nums[i + 1]))
+                i += 2
+            elif cmd == "C":
+                p = [(nums[i + 2 * k], nums[i + 2 * k + 1]) for k in range(3)]
+                points += bezier(points[-1], p[0], p[1], p[2])
+                i += 6
+            else:
+                closed = True
+        shape_points = points
+    else:
+        try:
+            v = [float(w) for w in words[1:]]
+        except ValueError:
+            return None
+        if kind == "circle" and len(v) == 4:
+            return Circle(v[0] + 0.5, v[1] + 0.5, math.hypot(v[2] - v[0], v[3] - v[1]))
+        if kind == "ellipse" and len(v) == 6 and (v[4], v[5]) == (0, 360):
+            n = 180  # within 0.01 pixels of the ellipse
+            shape_points = [(v[0] + v[2] * math.cos(2 * math.pi * k / n),
+                             v[1] + v[3] * math.sin(2 * math.pi * k / n)) for k in range(n)]
+            closed = True
+        elif kind == "rectangle" and len(v) == 4:
+            shape_points = [(v[0], v[1]), (v[2], v[1]), (v[2], v[3]), (v[0], v[3])]
+            closed = True
+        elif kind == "polygon" and len(v) >= 6 and len(v) % 2 == 0:
+            shape_points = list(zip(v[0::2], v[1::2]))
+            closed = True
+        elif kind == "line" and len(v) == 4:
+            shape_points = [(v[0], v[1]), (v[2], v[3])]
+            closed = False
+        else:
+            return None
+    return Polyline([(x + 0.5, y + 0.5) for x, y in shape_points], closed)
+
+
+def drawn_shapes(args):
+    """The shapes drawn by magick ARGS, as ("fill" or "stroke", [shapes]).
+
+    Returns None for an image with no -draw primitive, with one that
+    draw_shape() doesn't know, or with both filled and stroked ones.  Noise
+    added after drawing doesn't matter: the shapes are still the truth."""
+    fill, stroke = "black", "none"
+    kinds, shapes = set(), []
+    for option, value in zip(args, args[1:]):
+        if option == "-fill":
+            fill = value
+        elif option == "-stroke":
+            stroke = value
+        elif option == "-draw":
+            shape = draw_shape(value)
+            if shape is None:
+                return None
+            if fill != "none":
+                kinds.add("fill")
+            if stroke != "none":
+                kinds.add("stroke")
+            shapes.append(shape)
+    if len(kinds) != 1:
+        return None
+    return kinds.pop(), shapes
+
+
+def trace_points(svg):
+    """Points along the paths of an autotrace SVG, at most STEP apart."""
+    points = []
+    for d in re.findall(r'\bd="([^"]*)"', svg):
+        tokens = TOKEN.findall(d)
+        i, pos, start = 0, None, None
+        while i < len(tokens):
+            cmd = tokens[i]
+            i += 1
+            if cmd == "M":
+                pos = start = (float(tokens[i]), float(tokens[i + 1]))
+                i += 2
+                points.append(pos)
+                continue
+            if cmd == "L":
+                ends = [(float(tokens[i]), float(tokens[i + 1]))]
+                i += 2
+            elif cmd == "C":
+                c = [(float(tokens[i + 2 * k]), float(tokens[i + 2 * k + 1])) for k in range(3)]
+                ends = bezier(pos, c[0], c[1], c[2])
+                i += 6
+            else:
+                ends = [start]
+            for end in ends:
+                n = max(1, int(math.hypot(end[0] - pos[0], end[1] - pos[1]) / STEP))
+                points += [(pos[0] + k / n * (end[0] - pos[0]), pos[1] + k / n * (end[1] - pos[1]))
+                           for k in range(1, n + 1)]
+                pos = end
+    return points
+
+
+class PointGrid:
+    """Nearest-point queries over a set of points."""
+
+    CELL = 4.0
+
+    def __init__(self, points):
+        self.cells = {}
+        for p in points:
+            self.cells.setdefault((int(p[0] // self.CELL), int(p[1] // self.CELL)), []).append(p)
+
+    def nearest(self, x, y):
+        cx, cy = int(x // self.CELL), int(y // self.CELL)
+        best, ring = math.inf, 0
+        # Search rings of cells until no closer point can be found.
+        while ring * self.CELL <= best + self.CELL and ring < 4096:
+            for gx in range(cx - ring, cx + ring + 1):
+                for gy in range(cy - ring, cy + ring + 1):
+                    if max(abs(gx - cx), abs(gy - cy)) != ring:
+                        continue
+                    for px, py in self.cells.get((gx, gy), ()):
+                        best = min(best, math.hypot(px - x, py - y))
+            ring += 1
+        return best
+
+
+def shape_distances(kind, shapes, svg, width, height):
+    """Mean and largest distance between the trace and the drawn shapes."""
+    margin = MARGIN if kind == "fill" else 0.0
+
+    def interior(x, y):
+        # The trace of the background runs along the image border, and so
+        # do the edges of shapes that reach it: leave both out.
+        return min(x, y, width - x, height - y) > 1e-6
+
+    trace = [p for p in trace_points(svg) if kind != "fill" or interior(*p)]
+    truth = []
+    for k, shape in enumerate(shapes):
+        for x, y in shape.samples(margin):
+            if not interior(x, y):
+                continue
+            # Leave out edges that a later filled shape covers.
+            if kind == "fill" and any(s.signed(x, y) < margin - 1e-6 for s in shapes[k + 1:]):
+                continue
+            truth.append((x, y))
+    if not trace or not truth:
+        return None, None
+    to_shape = [min(abs(s.signed(x, y) - margin) for s in shapes) for x, y in trace]
+    grid = PointGrid(trace)
+    to_trace = [grid.nearest(x, y) for x, y in truth]
+    mean = (sum(to_shape) / len(to_shape) + sum(to_trace) / len(to_trace)) / 2
+    return round(mean, 3), round(max(max(to_shape), max(to_trace)), 3)
+
+
 def background_option(options):
     if "-background-color" in options:
         return "#" + options[options.index("-background-color") + 1]
     return None
 
 
-def round_trip(png, svg_file, options):
-    """Compare the rendered SVG with the input image."""
+def round_trip(png, svg_file, options, shapes=None):
+    """Compare the rendered SVG with the input image, and with SHAPES, the
+    drawn shapes from drawn_shapes(), if given."""
     centerline = "-centerline" in options
     bg = background_option(options) or ("#FFFFFF" if centerline else None)
     # Flatten both onto the same colour, or transparent input would differ.
@@ -208,6 +472,10 @@ def round_trip(png, svg_file, options):
         return {"error": "rendered %dx%d, input %dx%d" % (rw, rh, w, h)}
 
     result = {}
+    # Filled shapes are compared with an area trace, strokes with a
+    # centre-line one.
+    if shapes and shapes[0] == ("stroke" if centerline else "fill"):
+        result["shape_mean"], result["shape_max"] = shape_distances(shapes[0], shapes[1], svg, w, h)
     if centerline:
         # Strokes are one pixel wide: how far do they stray from the ink, and
         # how far is the ink from the nearest stroke?
@@ -247,8 +515,9 @@ def measure(autotrace, directory, output, repeat=1):
     results = []
     workdir = tempfile.mkdtemp(prefix="corpus-")
     try:
-        for name, category, sets, _ in read_manifest():
+        for name, category, sets, args in read_manifest():
             png = os.path.join(directory, name + ".png")
+            shapes = drawn_shapes(args)
             for options in sets:
                 case = case_name(name, options)
                 svg_file = os.path.join(workdir, "out.svg")
@@ -271,7 +540,7 @@ def measure(autotrace, directory, output, repeat=1):
                     entry["size"] = len(svg.encode())
                     entry.update(svg_stats(svg))
                     if category != "timing":
-                        entry.update(round_trip(png, svg_file, options))
+                        entry.update(round_trip(png, svg_file, options, shapes))
                 results.append(entry)
                 print("%-40s %s" % (case, summary(entry)), file=sys.stderr)
     finally:
@@ -281,7 +550,8 @@ def measure(autotrace, directory, output, repeat=1):
 
 
 def summary(entry):
-    keys = ["time", "paths", "nodes", "wrong", "edge_mean", "stray_max", "ink_max"]
+    keys = ["time", "paths", "nodes", "wrong", "edge_mean", "shape_mean", "shape_max",
+            "stray_max", "ink_max"]
     return " ".join("%s=%s" % (k, entry[k]) for k in keys if k in entry)
 
 
@@ -299,6 +569,8 @@ COLUMNS = [
     ("missing", "missing px"),
     ("edge_mean", "edge mean"),
     ("edge_max", "edge max"),
+    ("shape_mean", "shape mean"),
+    ("shape_max", "shape max"),
     ("stray_max", "stray max"),
     ("ink_max", "ink max"),
 ]

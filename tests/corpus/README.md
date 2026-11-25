@@ -25,7 +25,7 @@ tests/corpus/corpus.py run ../master/autotrace ./autotrace /tmp/corpus
 
 It draws the images into `/tmp/corpus/images`, writes `old.json` and
 `new.json` there, and prints a Markdown table of the cases that changed,
-ready to paste into a pull request. A run takes about a minute.
+ready to paste into a pull request. A run takes about a minute and a half.
 
 - `--repeat 3` reports the best of three run times. Use it when time
   matters, on an otherwise idle machine.
@@ -106,16 +106,44 @@ For `-centerline`, the trace is a one-pixel line rather than an area:
 | stray max | how far the traced line strays from the ink, in pixels |
 | ink max | how far the farthest ink pixel is from the traced line, in pixels |
 
+Ground-truth metrics compare the trace with the shape that was drawn,
+not with its pixels. That separates the fitting error from the
+rasterisation error, which matters for changes aimed at the shape itself,
+such as recognising circles and lines (#349) or refining curves against
+the image (#354). They are given for images drawn by `-draw` primitives
+alone (`rectangle`, `polygon`, `circle`, `ellipse`, `line`, and a `path`
+of `M`, `L`, `C` and `Z`): filled shapes traced as areas, and stroked
+ones traced with `-centerline`, where the shape is the stroke's path. The
+noise images count too, since the noise is added after drawing: there,
+the metrics show how much of the noise the trace keeps.
+
+| column | meaning |
+|---|---|
+| shape mean | mean distance between the traced curves and the drawn shape, in pixels, averaged over both directions |
+| shape max | the largest such distance, either way |
+
+These distances are exact: points 0.1 pixels apart on the traced curves
+are measured against the shape, and points on the shape against the
+trace, with Bézier curves on both sides flattened to within 0.01 pixels.
+ImageMagick fills a shape with a margin of half a pixel, so the
+edges of a filled shape are taken to lie half a pixel outside it, rounded
+at the corners. Pixels can't tell a rounded corner from a square one, so
+an exact trace of a right angle still scores up to 0.21 at the corner.
+Edges along the image border, and those covered by a later shape, are left
+out. `square-aa` is drawn on half pixels, where ImageMagick's
+anti-aliasing doesn't follow that model: its edges are about a quarter of
+a pixel off.
+
 Lower is better for all of them except `C`, which depends on the shape. A
 change usually trades one for another: more nodes for fewer wrong pixels,
 say. The table shows both, and the pull request should say which matters.
 
-Distances are approximate (3–4 chamfer weights, within about 8% of the
-Euclidean distance). Run times vary between runs; the table only reports a
-change of more than 20% or 50 ms.
+The edge, stray and ink distances are approximate (3–4 chamfer weights,
+within about 8% of the Euclidean distance). Run times vary between runs;
+the table only reports a change of more than 20% or 50 ms.
 
 ## Not yet
 
-- Distances to the drawn shape itself (ground truth) rather than to its
-  pixels.
+- Ground truth for the images from outside, such as the SVG sources of
+  the ANSI gate symbols, and for the strokes in `thin` traced as areas.
 - Text, which depends on the fonts installed.
