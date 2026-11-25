@@ -8,13 +8,15 @@
 #
 # corpus.py generate runs "magick ARGUMENTS DIR/NAME.png" for each line.
 # Most images are drawn by a command here and need no licence of their own;
-# the "outside" ones are files in images/, named as images/NAME.png.
+# the "outside" and "text" ones are files in images/, named as
+# images/NAME.png.
 # Option sets are separated by ";"; each set is traced separately, and an
 # empty set means autotrace's defaults.  Pairs named NAME and NAME-aa are
 # the same drawing without and with anti-aliasing.
 #
 # Categories: geometry, topology, thin, colour, noise, alpha, centerline,
-# outside (stored images from other sources), timing.  Images in "timing"
+# outside (stored images from other sources), text (stored rendered text),
+# timing.  Images in "timing"
 # get output metrics only, no round trip.
 
 # Geometric primitives
@@ -98,6 +100,16 @@ twist-per-inch | outside   | ; -color-count 4 | images/twist-per-inch.png
 litter         | outside   | ; -background-color FFFFFF | images/litter.png
 syndicalism    | outside   | ; -centerline; -color-count 2 | images/syndicalism.png
 sunbonnet      | outside   | -color-count 8 | images/sunbonnet.png
+
+# Text in Liberation Sans and Serif (#387).  How text renders depends on
+# the fonts installed, so these are stored in images/ too, and text.sh
+# records how they were made.  Anti-aliased small text is the hardest case
+# for #348.
+text-sans-aa   | text      | ; -centerline; -color-count 2 | images/text-sans-aa.png
+text-sans      | text      | ; -centerline | images/text-sans.png
+text-serif-aa  | text      | ; -color-count 2 | images/text-serif-aa.png
+text-small-aa  | text      | ; -color-count 2 | images/text-small-aa.png
+text-colour-aa | text      | ; -color-count 2 | images/text-colour-aa.png
 
 # Large images for run time and threads (#155)
 big-12        | timing     |  | -seed 1 -size 2000x2000 plasma:fractal -blur 0x8 -colors 12 -type truecolor
