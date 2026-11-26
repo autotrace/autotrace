@@ -1,0 +1,27 @@
+#!/bin/sh
+
+# SPDX-FileCopyrightText: 2026 AutoTrace contributors
+#
+# SPDX-License-Identifier: CC0-1.0
+
+# Inkscape's Trace Bitmap dialog uses libautotrace directly.  The helper
+# makes the same calls, with the same structs and macros, and checks the
+# results as Inkscape would use them, so that a change that would break
+# Inkscape fails here (#342).  It is built by "make check" next to the
+# autotrace program.
+
+. "`dirname "$0"`/../functions"
+
+helper=`dirname "\`get_autotrace\`"`/tests/helpers/inkscape-calls
+test -x "$helper" || test -x "$helper.exe" || skip "helper program not built"
+
+DIR=$1
+"$helper" > $DIR/out.log 2>&1
+RESULT=$?
+
+if [ $RESULT -eq 0 ]; then
+    rm -f $DIR/out.log
+    ok
+else
+    fail "exit $RESULT: `grep wrong $DIR/out.log | tr '\n' ' '`"
+fi

@@ -183,20 +183,24 @@ ACLOCAL_AMFLAGS = -I m4
 # autotrace program can't reach: its message handler exits on any fatal
 # error, and it sets its own log level.  The tests find them next to
 # $(bin_PROGRAMS).
-check_PROGRAMS = tests/helpers/read-missing tests/helpers/log-level
+check_PROGRAMS = tests/helpers/read-missing tests/helpers/log-level \
+		 tests/helpers/inkscape-calls
 tests_helpers_read_missing_SOURCES = tests/helpers/read-missing.c
 tests_helpers_read_missing_CPPFLAGS = $(AM_CPPFLAGS) -I$(srcdir)/src
 tests_helpers_read_missing_LDADD = libautotrace.la $(GLIB2_LIBS)
 tests_helpers_log_level_SOURCES = tests/helpers/log-level.c
 tests_helpers_log_level_CPPFLAGS = $(AM_CPPFLAGS) -I$(srcdir)/src
 tests_helpers_log_level_LDADD = libautotrace.la $(GLIB2_LIBS)
+tests_helpers_inkscape_calls_SOURCES = tests/helpers/inkscape-calls.c
+tests_helpers_inkscape_calls_CPPFLAGS = $(AM_CPPFLAGS) -I$(srcdir)/src
+tests_helpers_inkscape_calls_LDADD = libautotrace.la $(GLIB2_LIBS)
 
 # EXTRA_DIST ships tests/ as a whole, which would include the helpers'
 # in-tree build products and break an out-of-tree build of the tarball.
 dist-hook:
 	cd $(distdir)/tests/helpers && \
 	  rm -rf .deps .libs .dirstamp *.o read-missing read-missing.exe \
-	    log-level log-level.exe
+	    log-level log-level.exe inkscape-calls inkscape-calls.exe
 
 check-local:
 	AUTOTRACE="$(abs_builddir)/$(bin_PROGRAMS)" $(srcdir)/tests/runtests.sh
