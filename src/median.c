@@ -46,7 +46,7 @@ static void zero_histogram_rgb(Histogram histogram)
 }
 
 static void generate_histogram_rgb(Histogram histogram, at_bitmap *image,
-                                   const at_color *ignoreColor)
+                                   const at_color *ignoreColor, cancel_hook *cancel)
 {
   unsigned char *src = image->bitmap;
   int num_elems;
@@ -58,6 +58,8 @@ static void generate_histogram_rgb(Histogram histogram, at_bitmap *image,
   switch (AT_BITMAP_PLANES(image)) {
   case 3:
     while (num_elems--) {
+      if (num_elems % STEPS_PER_CANCEL_CHECK == 0 && cancel_requested(cancel))
+        return;
       /* If we have an ignorecolor, skip it. */
       if (ignoreColor) {
         if ((src[0] == ignoreColor->r) && (src[1] == ignoreColor->g) &&
@@ -74,6 +76,8 @@ static void generate_histogram_rgb(Histogram histogram, at_bitmap *image,
 
   case 1:
     while (--num_elems >= 0) {
+      if (num_elems % STEPS_PER_CANCEL_CHECK == 0 && cancel_requested(cancel))
+        return;
       if (ignoreColor && src[num_elems] == ignoreColor->r)
         continue;
       col = &histogram[(src[num_elems] >> R_SHIFT) * MR + (src[num_elems] >> G_SHIFT) * MG +
@@ -692,14 +696,17 @@ static void fill_inverse_cmap_rgb(QuantizeObj *quantobj, Histogram histogram, in
 
 /*  This is pass 1  */
 static void median_cut_pass1_rgb(QuantizeObj *quantobj, at_bitmap *image,
-                                 const at_color *ignoreColor)
+                                 const at_color *ignoreColor, cancel_hook *cancel)
 {
-  generate_histogram_rgb(quantobj->histogram, image, ignoreColor);
-  select_colors_rgb(quantobj, quantobj->histogram);
+  generate_histogram_rgb(quantobj->histogram, image, ignoreColor, cancel);
+  /* A cancelled histogram is incomplete, maybe empty: don't use it.  */
+  if (!cancel_requested(cancel))
+    select_colors_rgb(quantobj, quantobj->histogram);
 }
 
 /* Map some rows of pixels to the output colormapped representation. */
-static void median_cut_pass2_rgb(QuantizeObj *quantobj, at_bitmap *image, const at_color *bgColor)
+static void median_cut_pass2_rgb(QuantizeObj *quantobj, at_bitmap *image, const at_color *bgColor,
+                                 cancel_hook *cancel)
 /* This version performs no dithering */
 {
   Histogram histogram = quantobj->histogram;
@@ -728,7 +735,10 @@ static void median_cut_pass2_rgb(QuantizeObj *quantobj, at_bitmap *image, const 
 
   src = dest = image->bitmap;
   if (spp == 3) {
+    unsigned check_rows = rows_per_cancel_check(width);
     for (row = 0; row < height; row++) {
+      if (row % check_rows == 0 && cancel_requested(cancel))
+        return;
       for (col = 0; col < width; col++) {
         /* get pixel value and index into the cache */
         origR = (*src++);
@@ -764,6 +774,8 @@ static void median_cut_pass2_rgb(QuantizeObj *quantobj, at_bitmap *image, const 
   } else if (spp == 1) {
     long idx = (long)width * height;
     while (--idx >= 0) {
+      if (idx % STEPS_PER_CANCEL_CHECK == 0 && cancel_requested(cancel))
+        return;
       origR = src[idx];
       R = origR >> R_SHIFT;
       G = origR >> G_SHIFT;
@@ -795,7 +807,7 @@ static QuantizeObj *initialize_median_cut(int num_colors)
 }
 
 void quantize(at_bitmap *image, long ncolors, const at_color *bgColor, QuantizeObj **iQuant,
-              at_exception_type *exp)
+              cancel_hook *cancel, at_exception_type *exp)
 {
   QuantizeObj *quantobj;
   unsigned int spp = AT_BITMAP_PLANES(image);
@@ -810,16 +822,22 @@ void quantize(at_bitmap *image, long ncolors, const at_color *bgColor, QuantizeO
   if (iQuant) {
     if (*iQuant == NULL) {
       quantobj = initialize_median_cut(ncolors);
-      median_cut_pass1_rgb(quantobj, image, bgColor);
+      median_cut_pass1_rgb(quantobj, image, bgColor, cancel);
+      /* Don't hand out a colour map that was never computed.  */
+      if (cancel_requested(cancel)) {
+        quantize_object_free(quantobj);
+        return;
+      }
       *iQuant = quantobj;
     } else
       quantobj = *iQuant;
   } else {
     quantobj = initialize_median_cut(ncolors);
-    median_cut_pass1_rgb(quantobj, image, NULL);
+    median_cut_pass1_rgb(quantobj, image, NULL, cancel);
   }
 
-  median_cut_pass2_rgb(quantobj, image, bgColor);
+  if (!cancel_requested(cancel))
+    median_cut_pass2_rgb(quantobj, image, bgColor, cancel);
 
   if (iQuant == NULL)
     quantize_object_free(quantobj);

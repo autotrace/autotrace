@@ -13,6 +13,7 @@
 #include "autotrace.h"
 #include "exception.h"
 #include "input.h"
+#include "progress.h"
 #include <glib.h>
 
 typedef struct {
@@ -21,9 +22,11 @@ typedef struct {
   float **d;
 } at_distance_map;
 
-/* Allocate and compute a new distance map. */
+/* Allocate and compute a new distance map.  CANCEL is asked about once per
+   million pixels; when it says to cancel, the map is returned unfinished,
+   to be freed with free_distance_map().  */
 extern at_distance_map new_distance_map(at_bitmap *, unsigned char target_value, gboolean padded,
-                                        at_exception_type *exp);
+                                        cancel_hook *cancel, at_exception_type *exp);
 
 /* Free the dynamically-allocated storage associated with a distance map. */
 extern void free_distance_map(at_distance_map *);

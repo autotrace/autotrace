@@ -26,7 +26,7 @@
    every non-target point to the nearest target point. */
 
 at_distance_map new_distance_map(at_bitmap *bitmap, unsigned char target_value, gboolean padded,
-                                 at_exception_type *exp)
+                                 cancel_hook *cancel, at_exception_type *exp)
 {
   signed x, y;
   float d, min;
@@ -35,6 +35,12 @@ at_distance_map new_distance_map(at_bitmap *bitmap, unsigned char target_value, 
   unsigned w = AT_BITMAP_WIDTH(bitmap);
   unsigned h = AT_BITMAP_HEIGHT(bitmap);
   unsigned spp = AT_BITMAP_PLANES(bitmap);
+  unsigned check_rows = rows_per_cancel_check(w);
+
+  /* Before the two maps, which hold a float per pixel each.  An
+     empty map is still safe to free.  */
+  if (cancel_requested(cancel))
+    return (at_distance_map){0, 0, NULL, NULL};
 
   dist.height = h;
   dist.width = w;
@@ -47,6 +53,8 @@ at_distance_map new_distance_map(at_bitmap *bitmap, unsigned char target_value, 
 
   if (spp == 3) {
     for (y = 0; y < (signed)h; y++) {
+      if (y % check_rows == 0 && cancel_requested(cancel))
+        return dist;
       for (x = 0; x < (signed)w; x++, b += spp) {
         int gray;
         float fgray;
@@ -58,6 +66,8 @@ at_distance_map new_distance_map(at_bitmap *bitmap, unsigned char target_value, 
     }
   } else {
     for (y = 0; y < (signed)h; y++) {
+      if (y % check_rows == 0 && cancel_requested(cancel))
+        return dist;
       for (x = 0; x < (signed)w; x++, b += spp) {
         int gray;
         float fgray;
@@ -95,6 +105,8 @@ at_distance_map new_distance_map(at_bitmap *bitmap, unsigned char target_value, 
      (derived from its gray level).  Replace the distance already
      stored at the central point if the new distance is smaller. */
   for (y = 1; y < (signed)h; y++) {
+    if (y % check_rows == 0 && cancel_requested(cancel))
+      return dist;
     for (x = 1; x < (signed)w; x++) {
       if (dist.d[y][x] == 0.0F)
         continue;
@@ -127,6 +139,8 @@ at_distance_map new_distance_map(at_bitmap *bitmap, unsigned char target_value, 
 
   /* Same as above, but now scanning right to left, bottom to top. */
   for (y = h - 2; y >= 0; y--) {
+    if (y % check_rows == 0 && cancel_requested(cancel))
+      return dist;
     for (x = w - 2; x >= 0; x--) {
       min = dist.d[y][x];
 

@@ -21,7 +21,13 @@
 #include "color.h"
 #include "input.h"
 #include "exception.h"
+#include "progress.h"
 
-void thin_image(at_bitmap *image, const at_color *bg_color, at_exception_type *exp);
+/* Thin every colour of IMAGE except BG_COLOR (white if NULL) to lines one
+   pixel wide.  CANCEL is asked before each colour and about once per
+   million pixels scanned; when it says to cancel, thin_image returns at
+   once and leaves IMAGE partly thinned.  */
+void thin_image(at_bitmap *image, const at_color *bg_color, cancel_hook *cancel,
+                at_exception_type *exp);
 
 #endif /* not THIN_IMAGE_H */

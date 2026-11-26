@@ -11,6 +11,7 @@
 #include "color.h"
 #include "exception.h"
 #include "input.h"
+#include "progress.h"
 #include <stdio.h>
 
 #ifndef QUANTIZE_H
@@ -38,8 +39,11 @@ typedef struct {
   Histogram histogram; /* holds the histogram */
 } QuantizeObj;
 
+/* Reduce the bitmap to NCOLORS colours.  CANCEL is asked about once per
+   million pixels; when it says to cancel, quantize returns at once, leaves
+   the bitmap partly mapped, and stores no QuantizeObj.  */
 void quantize(at_bitmap *, long ncolors, const at_color *bgColor, QuantizeObj **,
-              at_exception_type *exp);
+              cancel_hook *cancel, at_exception_type *exp);
 
 void quantize_object_free(QuantizeObj *obj);
 #endif /* NOT QUANTIZE_H */

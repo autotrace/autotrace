@@ -14,6 +14,7 @@
 #include "autotrace.h"
 #include "exception.h"
 #include "input.h"
+#include "progress.h"
 #include <glib.h>
 
 /* Despeckle - Despeckle a 8 or 24 bit image
@@ -39,9 +40,13 @@
  *
  * Modified Parameters:
  *   The bitmap is despeckled.
+ *
+ * Cancelling:
+ *   CANCEL is asked once a row.  When it says to cancel, despeckle returns
+ *   at once and leaves the bitmap partly despeckled.
  */
 
 extern void despeckle(at_bitmap *bitmap, int level, gfloat tightness, gfloat noise_removal,
-                      at_exception_type *exp);
+                      cancel_hook *cancel, at_exception_type *exp);
 
 #endif /* not DESPECKLE_H */
