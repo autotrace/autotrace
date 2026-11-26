@@ -43,7 +43,14 @@ Please include:
 
 ## Supported versions
 
-Fixes go into the latest release. There are no backport branches.
+Every fix goes into the next release from master, which is 0.40.0 at the
+time of writing.
+
+The 0.31 line ended with 0.31.13. A serious vulnerability (high or critical
+severity) that also affects 0.31.13 gets a 0.31 release too. Its fix is
+cherry-picked onto a `0.31.x` branch, created from the `0.31.13` tag when it
+is first needed. That branch gets security fixes only. Fixes of lower
+severity are only in the next release from master.
 
 ## Scope
 
