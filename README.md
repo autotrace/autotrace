@@ -100,24 +100,60 @@ For complete options, see `autotrace --help` or `man autotrace`.
 
 ### Library
 
-AutoTrace can be used as a library (`libautotrace`). Here's a minimal example:
+AutoTrace can be used as a library (`libautotrace`). Here's a minimal example
+that traces `image.png` and writes SVG to standard output:
 
 ```c
+#include <stdio.h>
 #include <autotrace/autotrace.h>
 
-int main()
+/* Errors and warnings come through this callback.  An error, such as a
+   file that can't be read, is AT_MSG_FATAL.  */
+static void report(const gchar *msg, at_msg_type type, gpointer data)
 {
-  at_fitting_opts_type * opts = at_fitting_opts_new();
-  at_input_read_func rfunc = at_input_get_handler("image.png");
-  at_bitmap_type * bitmap = at_bitmap_read(rfunc, "image.png", NULL, NULL, NULL);
-  at_splines_type * splines = at_splines_new(bitmap, opts, NULL, NULL);
-  at_output_write_func wfunc = at_output_get_handler_by_suffix("eps");
+  fprintf(stderr, "autotrace: %s\n", msg);
+  if (type == AT_MSG_FATAL)
+    *(gboolean *)data = TRUE;
+}
 
-  at_splines_write(wfunc, stdout, "", NULL, splines, NULL, NULL);
+int main(void)
+{
+  gboolean failed = FALSE;
+  at_bitmap_reader *reader;
+  at_bitmap *bitmap;
+  at_fitting_opts_type *opts;
+  at_splines_type *splines;
+  at_spline_writer *writer;
+
+  /* Registers the input and output formats: call it first. */
+  autotrace_init();
+
+  reader = at_input_get_handler("image.png");
+  if (reader == NULL)
+    return 1;
+  /* at_bitmap_read() returns a bitmap even when reading fails, so check
+     what the callback was told.  */
+  bitmap = at_bitmap_read(reader, "image.png", NULL, report, &failed);
+  if (failed) {
+    at_bitmap_free(bitmap);
+    return 1;
+  }
+
+  opts = at_fitting_opts_new();
+  /* NULL after an error.  */
+  splines = at_splines_new(bitmap, opts, report, &failed);
+  if (splines == NULL) {
+    at_fitting_opts_free(opts);
+    at_bitmap_free(bitmap);
+    return 1;
+  }
+
+  writer = at_output_get_handler_by_suffix("svg");
+  at_splines_write(writer, stdout, "", NULL, splines, NULL, NULL);
+
   at_splines_free(splines);
-  at_bitmap_free(bitmap);
   at_fitting_opts_free(opts);
-
+  at_bitmap_free(bitmap);
   return 0;
 }
 ```
