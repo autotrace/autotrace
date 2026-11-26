@@ -255,10 +255,14 @@ at_splines_type *at_splines_new_full(at_bitmap *bitmap, at_fitting_opts_type *op
   QuantizeObj *myQuant = NULL; /* curently not used */
   at_exception_type exp = at_exception_new(msg_func, msg_data);
   at_distance_map dist_map, *dist = NULL;
-  /* For the passes before the outlines are found (issue #398).  */
+  /* Every pass asks the client through CANCEL, which remembers a TRUE:
+     after a pass, the check below must not ask the client again, since it
+     may say TRUE only once (issue #407).  The passes that take a callback
+     get remembered_cancel() in place of the client's.  */
   cancel_hook cancel = {test_cancel, testcancel_data, FALSE, 0};
+  at_testcancel_func ask_cancel = test_cancel ? remembered_cancel : NULL;
 
-#define CANCELP (test_cancel && test_cancel(testcancel_data))
+#define CANCELP (cancel_requested(&cancel))
 #define FATALP (at_exception_got_fatal(&exp))
 #define FREE_SPLINE()                                                                              \
   do {                                                                                             \
@@ -291,8 +295,8 @@ at_splines_type *at_splines_new_full(at_bitmap *bitmap, at_fitting_opts_type *op
 
   /* Before despeckling, so that what remains of an edge is one colour.  */
   if (opts->snap_antialiasing) {
-    if (!snap_antialiased(bitmap, notify_progress ? snap_progress : NULL, &client, test_cancel,
-                          testcancel_data, NULL))
+    if (!snap_antialiased(bitmap, notify_progress ? snap_progress : NULL, &client, ask_cancel,
+                          &cancel, NULL))
       return NULL;
     if (notify_progress) {
       notify_progress = rest_progress;
@@ -345,16 +349,16 @@ at_splines_type *at_splines_new_full(at_bitmap *bitmap, at_fitting_opts_type *op
       background_color = *opts->background_color;
 
     pixels = find_centerline_pixels(bitmap, background_color, notify_progress, progress_data,
-                                    test_cancel, testcancel_data, &exp);
+                                    ask_cancel, &cancel, &exp);
   } else
     pixels = find_outline_pixels(bitmap, opts->background_color, notify_progress, progress_data,
-                                 test_cancel, testcancel_data, &exp);
+                                 ask_cancel, &cancel, &exp);
   FATAL_THEN_CLEANUP_DIST();
   CANCEL_THEN_CLEANUP_DIST();
 
   splines = g_new(at_splines_type, 1);
   *splines = fitted_splines(pixels, opts, dist, image_header.width, image_header.height, &exp,
-                            notify_progress, progress_data, test_cancel, testcancel_data);
+                            notify_progress, progress_data, ask_cancel, &cancel);
   FATAL_THEN_CLEANUP_PIXELS();
   CANCEL_THEN_CLEANUP_PIXELS();
 

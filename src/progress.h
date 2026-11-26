@@ -38,6 +38,15 @@ static inline gboolean cancel_requested(cancel_hook *cancel)
   return cancel && cancel->cancelled;
 }
 
+/* An at_testcancel_func for passes that take the client's callback as it
+   is: DATA is a cancel_hook, and once the client has said to cancel, the
+   answer stays TRUE, even if the client's own callback says so only once
+   (issue #407).  */
+static inline gboolean remembered_cancel(gpointer data)
+{
+  return cancel_requested(data);
+}
+
 /* Whether the client has already said to cancel, without asking again.  */
 static inline gboolean was_cancelled(const cancel_hook *cancel)
 {
