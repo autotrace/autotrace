@@ -17,6 +17,7 @@
 #include "color.h"
 #include "input.h"
 #include "logreport.h"
+#include "progress.h"
 #include "pxl-outline.h"
 #include "types.h"
 #include <stdio.h>
@@ -127,8 +128,7 @@ pixel_outline_list_type find_outline_pixels(at_bitmap *bitmap, at_color *bg_colo
       at_color color;
 
       if (notify_progress)
-        notify_progress((gfloat)(row * AT_BITMAP_WIDTH(bitmap) + col) /
-                            ((gfloat)max_progress * (gfloat)3.0),
+        notify_progress(step_progress(0, row * AT_BITMAP_WIDTH(bitmap) + col, max_progress),
                         progress_data);
 
       /* A valid edge can be TOP for an outside outline.
@@ -295,8 +295,7 @@ pixel_outline_list_type find_centerline_pixels(at_bitmap *bitmap, at_color bg_co
       gboolean clockwise = FALSE;
 
       if (notify_progress)
-        notify_progress((gfloat)(row * AT_BITMAP_WIDTH(bitmap) + col) /
-                            ((gfloat)max_progress * (gfloat)3.0),
+        notify_progress(step_progress(0, row * AT_BITMAP_WIDTH(bitmap) + col, max_progress),
                         progress_data);
 
       if (at_bitmap_equal_color(bitmap, row, col, &bg_color)) {

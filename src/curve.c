@@ -10,6 +10,7 @@
 
 #include "logreport.h"
 #include "curve.h"
+#include "progress.h"
 #include <glib.h>
 
 static at_real_coord int_to_real_coord(at_coord);
@@ -214,9 +215,7 @@ void free_curve_list_array(curve_list_array_type *curve_list_array,
 
   for (this_list = 0; this_list < CURVE_LIST_ARRAY_LENGTH(*curve_list_array); this_list++) {
     if (notify_progress)
-      notify_progress(((gfloat)this_list) /
-                              (CURVE_LIST_ARRAY_LENGTH(*curve_list_array) * (gfloat)3.0) +
-                          (gfloat)0.666,
+      notify_progress(step_progress(2, this_list, CURVE_LIST_ARRAY_LENGTH(*curve_list_array)),
                       client_data);
     free_curve_list(&CURVE_LIST_ARRAY_ELT(*curve_list_array, this_list));
   }

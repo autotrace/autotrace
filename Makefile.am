@@ -111,6 +111,7 @@ libautotrace_la_SOURCES =\
 		src/fit.h \
 		src/curve.h \
 		src/vector.h \
+		src/progress.h \
 		src/pxl-outline.h \
 		src/antialias.c \
 		src/antialias.h \
