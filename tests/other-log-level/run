@@ -6,7 +6,7 @@
 
 # A library client with its own log handler gets every debugging message by
 # default, none after at_set_log_level(G_LOG_LEVEL_WARNING), and all of them
-# again after at_set_log_level(G_LOG_LEVEL_DEBUG) (#388).  The helper is
+# again after G_LOG_LEVEL_DEBUG, G_LOG_LEVEL_MASK or 0 (#388, #416).  The helper is
 # built by "make check" next to the autotrace program.
 
 . "`dirname "$0"`/../functions"

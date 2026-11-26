@@ -39,14 +39,25 @@ gboolean log_filters_messages(void)
   return g_atomic_int_get(&filtering);
 }
 
+/* GLib's six log levels.  G_LOG_LEVEL_MASK has every bit above the two
+   flags set, bit 31 included, so it can't be used to pick them out.  */
+#define LEVELS                                                                                     \
+  (G_LOG_LEVEL_ERROR | G_LOG_LEVEL_CRITICAL | G_LOG_LEVEL_WARNING | G_LOG_LEVEL_MESSAGE |          \
+   G_LOG_LEVEL_INFO | G_LOG_LEVEL_DEBUG)
+
 void at_set_log_level(GLogLevelFlags level)
 {
-  guint levels = level & G_LOG_LEVEL_MASK;
+  guint levels = level & LEVELS;
 
+  /* No level at all restores the default: every message is generated, and
+     the program's handler, if any, passes them all on too.  */
+  if (levels == 0) {
+    g_atomic_int_set(&current_log_level, G_LOG_LEVEL_DEBUG);
+    g_atomic_int_set(&filtering, FALSE);
+    return;
+  }
   /* GLib's level flags grow as severity falls: the highest flag is the
-     least severe one.  No flag at all leaves only errors.  */
-  if (levels == 0)
-    levels = G_LOG_LEVEL_ERROR;
+     least severe one (issue #416).  */
   g_atomic_int_set(&current_log_level, (gint)(1u << g_bit_nth_msf(levels, -1)));
   g_atomic_int_set(&filtering, TRUE);
 }
@@ -55,8 +66,11 @@ static void custom_log_handler(const gchar *log_domain, GLogLevelFlags log_level
                                const gchar *message, gpointer user_data)
 {
   /* GLib log levels are bit flags where lower values = higher severity,
-   * so >= comparison creates the right threshold */
-  if (g_atomic_int_get(&current_log_level) < (gint)log_level)
+   * so >= comparison creates the right threshold.  Leave out the two
+   * flags: G_LOG_FLAG_FATAL would put a fatal warning above the threshold
+   * and drop it before GLib aborts (issue #417).  Compare unsigned, so that
+   * a level of the client's own, above G_LOG_LEVEL_DEBUG, stays above.  */
+  if ((guint)g_atomic_int_get(&current_log_level) < (guint)(log_level & G_LOG_LEVEL_MASK))
     return;
 
   if (log_level & (G_LOG_LEVEL_INFO | G_LOG_LEVEL_DEBUG)) {

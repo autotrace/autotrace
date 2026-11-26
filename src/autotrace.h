@@ -416,12 +416,18 @@ const char *at_home_site(void);
 
      at_set_log_level(G_LOG_LEVEL_WARNING);
 
-   Messages less severe than LEVEL, one of G_LOG_LEVEL_ERROR,
-   G_LOG_LEVEL_CRITICAL, G_LOG_LEVEL_WARNING, G_LOG_LEVEL_MESSAGE,
-   G_LOG_LEVEL_INFO and G_LOG_LEVEL_DEBUG, are then not generated at all,
-   so a log handler of the client's never sees them.  With several level
-   flags, the least severe of them counts.  Without a call, every message
-   is generated and passed to g_log(), as before this function existed.
+   The messages libautotrace writes that are less severe than LEVEL, one
+   of G_LOG_LEVEL_ERROR, G_LOG_LEVEL_CRITICAL, G_LOG_LEVEL_WARNING,
+   G_LOG_LEVEL_MESSAGE, G_LOG_LEVEL_INFO and G_LOG_LEVEL_DEBUG, are then
+   not generated at all, so a log handler of the client's never sees
+   them.  With several level flags, the least severe of them counts, so
+   G_LOG_LEVEL_MASK keeps every message.  This function doesn't affect
+   GLib's own messages, such as the criticals of a failed
+   g_return_if_fail(), which go to the client's handlers as usual.
+
+   Without a call, every message is generated and passed to g_log(), as
+   before this function existed.  A LEVEL with none of the six flags, for
+   example (GLogLevelFlags)0, restores that default.
 
    It also lets fitting use one thread per processor: while every debugging
    message is generated, it uses one, since g_log() serialises the
