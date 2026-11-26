@@ -39,10 +39,13 @@ static void span_stack_push(GArray *stack, int x1, int x2, int y)
 }
 
 /* Fetch the next (x, y) to visit.  Returns FALSE once every pending segment
- * has been fully processed.
+ * has been fully processed, or once CANCEL says to cancel: a region can be
+ * the whole image, so a flood fill asks every million or so steps.
  */
-static gboolean span_stack_next(GArray *stack, int *x, int *y)
+static gboolean span_stack_next(GArray *stack, cancel_hook *cancel, int *x, int *y)
 {
+  if (cancel_after_steps(cancel, 1))
+    return FALSE;
   while (stack->len > 0) {
     span_frame *frame = &g_array_index(stack, span_frame, stack->len - 1);
 
@@ -135,7 +138,8 @@ static int find_size(/* in */ int planes,
                      /* in */ int width,
                      /* in */ int height,
                      /* in */ unsigned char *bitmap,
-                     /* in/out */ unsigned char *mask)
+                     /* in/out */ unsigned char *mask,
+                     /* in/out */ cancel_hook *cancel)
 {
   int count = 0;
   int x1, x2;
@@ -163,7 +167,7 @@ static int find_size(/* in */ int planes,
       mask[y * width + x] = 1;
 
     span_stack_push(stack, x1, x2, y);
-  } while (span_stack_next(stack, &x, &y));
+  } while (span_stack_next(stack, cancel, &x, &y));
 
   return count;
 }
@@ -192,7 +196,8 @@ static void find_most_similar_neighbor(/* in */ int planes,
                                        /* in */ int width,
                                        /* in */ int height,
                                        /* in */ unsigned char *bitmap,
-                                       /* in/out */ unsigned char *mask)
+                                       /* in/out */ unsigned char *mask,
+                                       /* in/out */ cancel_hook *cancel)
 {
   int x1, x2;
   int temp_error;
@@ -248,7 +253,7 @@ static void find_most_similar_neighbor(/* in */ int planes,
       mask[y * width + x] = 2;
 
     span_stack_push(stack, x1, x2, y);
-  } while (span_stack_next(stack, &x, &y));
+  } while (span_stack_next(stack, cancel, &x, &y));
 }
 
 /* Fill - change the color of a blob
@@ -266,7 +271,8 @@ static void fill(/* in */ int planes,
                  /* in */ int width,
                  /* in */ int height,
                  /* in/out */ unsigned char *bitmap,
-                 /* in/out */ unsigned char *mask)
+                 /* in/out */ unsigned char *mask,
+                 /* in/out */ cancel_hook *cancel)
 {
   int x1, x2;
   g_autoptr(GArray) stack = g_array_new(FALSE, FALSE, sizeof(span_frame));
@@ -290,7 +296,7 @@ static void fill(/* in */ int planes,
     }
 
     span_stack_push(stack, x1, x2, y);
-  } while (span_stack_next(stack, &x, &y));
+  } while (span_stack_next(stack, cancel, &x, &y));
 }
 
 /* Ignore - blob is big enough, mask it off
@@ -302,7 +308,8 @@ static void ignore(/* in */ int x,
                    /* in */ int y,
                    /* in */ int width,
                    /* in */ int height,
-                   /* in/out */ unsigned char *mask)
+                   /* in/out */ unsigned char *mask,
+                   /* in/out */ cancel_hook *cancel)
 {
   int x1, x2;
   g_autoptr(GArray) stack = g_array_new(FALSE, FALSE, sizeof(span_frame));
@@ -324,7 +331,7 @@ static void ignore(/* in */ int x,
       mask[y * width + x] = 3;
 
     span_stack_push(stack, x1, x2, y);
-  } while (span_stack_next(stack, &x, &y));
+  } while (span_stack_next(stack, cancel, &x, &y));
 }
 
 /* Recolor - conditionally change a feature's color to the closest color of all
@@ -351,7 +358,8 @@ static gboolean recolor(/* in */ int planes,
                         /* in */ int width,
                         /* in */ int height,
                         /* in/out */ unsigned char *bitmap,
-                        /* in/out */ unsigned char *mask)
+                        /* in/out */ unsigned char *mask,
+                        /* in/out */ cancel_hook *cancel)
 {
   unsigned char *index, *to_index;
   int error_amt;
@@ -370,7 +378,10 @@ static gboolean recolor(/* in */ int planes,
     max_error = (int)(3.0 * adaptive_tightness * adaptive_tightness);
 
   find_most_similar_neighbor(planes, index, &to_index, &error_amt, x, y, width, height, bitmap,
-                             mask);
+                             mask, cancel);
+  /* A cancelled search may not have seen the nearest neighbour.  */
+  if (was_cancelled(cancel))
+    return FALSE;
 
   /* This condition only fails if the bitmap is all the same color */
   if (to_index != NULL) {
@@ -381,9 +392,9 @@ static gboolean recolor(/* in */ int planes,
      */
 
     if (calc_error(planes, index, to_index) > max_error)
-      fill(planes, index, x, y, width, height, bitmap, mask);
+      fill(planes, index, x, y, width, height, bitmap, mask, cancel);
     else {
-      fill(planes, to_index, x, y, width, height, bitmap, mask);
+      fill(planes, to_index, x, y, width, height, bitmap, mask, cancel);
 
       return TRUE;
     }
@@ -408,7 +419,8 @@ static void despeckle_iteration(/* in */ int planes,
                                 /* in */ double noise_max,
                                 /* in */ int width,
                                 /* in */ int height,
-                                /* in/out */ unsigned char *bitmap)
+                                /* in/out */ unsigned char *bitmap,
+                                /* in/out */ cancel_hook *cancel)
 {
   int x, y;
   int current_size;
@@ -421,6 +433,8 @@ static void despeckle_iteration(/* in */ int planes,
   gsize npixels = (gsize)width * height;
   g_autofree unsigned char *mask = g_new0(unsigned char, npixels);
   for (y = 0; y < height; y++) {
+    if (cancel_requested(cancel))
+      return;
     for (x = 0; x < width; x++) {
       /* A pixel recolor() changed is looked at again, since it may now
          belong to a bigger region.  */
@@ -428,15 +442,18 @@ static void despeckle_iteration(/* in */ int planes,
         int size;
 
         size = find_size(planes, PIXEL(bitmap, planes, width, x, y), x, y, width, height, bitmap,
-                         mask);
+                         mask, cancel);
+        /* A cancelled walk counted only part of the region.  */
+        if (was_cancelled(cancel))
+          return;
 
         assert(size > 0);
 
         if (size >= current_size) {
-          ignore(x, y, width, height, mask);
+          ignore(x, y, width, height, mask, cancel);
           break;
         }
-        if (!recolor(planes, tightness, x, y, width, height, bitmap, mask))
+        if (!recolor(planes, tightness, x, y, width, height, bitmap, mask, cancel))
           break;
       }
     }
@@ -471,6 +488,7 @@ void despeckle(/* in/out */ at_bitmap *bitmap,
                /* in */ int level,
                /* in */ gfloat tightness,
                /* in */ gfloat noise_removal,
+               /* in/out */ cancel_hook *cancel,
                /* exception handling */ at_exception_type *excep)
 {
   int i, planes, max_level;
@@ -494,6 +512,6 @@ void despeckle(/* in/out */ at_bitmap *bitmap,
     return;
   }
 
-  for (i = 0; i < level; i++)
-    despeckle_iteration(planes, i, adaptive_tightness, noise_max, width, height, bits);
+  for (i = 0; i < level && !cancel_requested(cancel); i++)
+    despeckle_iteration(planes, i, adaptive_tightness, noise_max, width, height, bits, cancel);
 }

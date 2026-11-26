@@ -425,8 +425,8 @@ pixel_outline_list_type find_centerline_pixels(at_bitmap *bitmap, at_color bg_co
     }
   }
   if (test_cancel && test_cancel(testcancel_data)) {
-    if (O_LIST_LENGTH(outline_list) != 0)
-      free_pixel_outline_list(&outline_list);
+    /* Even an empty list has its array to free (issue #406).  */
+    free_pixel_outline_list(&outline_list);
     goto cleanup;
   }
 cleanup:

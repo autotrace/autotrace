@@ -255,6 +255,8 @@ at_splines_type *at_splines_new_full(at_bitmap *bitmap, at_fitting_opts_type *op
   QuantizeObj *myQuant = NULL; /* curently not used */
   at_exception_type exp = at_exception_new(msg_func, msg_data);
   at_distance_map dist_map, *dist = NULL;
+  /* For the passes before the outlines are found (issue #398).  */
+  cancel_hook cancel = {test_cancel, testcancel_data, FALSE, 0};
 
 #define CANCELP (test_cancel && test_cancel(testcancel_data))
 #define FATALP (at_exception_got_fatal(&exp))
@@ -299,32 +301,40 @@ at_splines_type *at_splines_new_full(at_bitmap *bitmap, at_fitting_opts_type *op
   }
 
   if (opts->despeckle_level > 0) {
-    despeckle(bitmap, opts->despeckle_level, opts->despeckle_tightness, opts->noise_removal, &exp);
+    despeckle(bitmap, opts->despeckle_level, opts->despeckle_tightness, opts->noise_removal,
+              &cancel, &exp);
     FATAL_THEN_RETURN();
+    if (cancel.cancelled)
+      return NULL;
   }
 
   image_header.width = at_bitmap_get_width(bitmap);
   image_header.height = at_bitmap_get_height(bitmap);
 
   if (opts->color_count > 0) {
-    quantize(bitmap, opts->color_count, opts->background_color, &myQuant, &exp);
+    quantize(bitmap, opts->color_count, opts->background_color, &myQuant, &cancel, &exp);
     if (myQuant)
       quantize_object_free(myQuant); /* curently not used */
     FATAL_THEN_RETURN();
+    if (cancel.cancelled)
+      return NULL;
   }
 
   if (opts->centerline) {
     if (opts->preserve_width) {
       /* Preserve line width prior to thinning. */
-      dist_map = new_distance_map(bitmap, 255, /*padded= */ TRUE, &exp);
+      dist_map = new_distance_map(bitmap, 255, /*padded= */ TRUE, &cancel, &exp);
       dist = &dist_map;
-      FATAL_THEN_RETURN();
+      FATAL_THEN_CLEANUP_DIST();
     }
     /* Hereafter, dist is allocated. dist must be freed if
        the execution is canceled or exception is raised;
        use FATAL_THEN_CLEANUP_DIST. */
-    thin_image(bitmap, opts->background_color, &exp);
+    if (!cancel.cancelled)
+      thin_image(bitmap, opts->background_color, &cancel, &exp);
     FATAL_THEN_CLEANUP_DIST()
+    if (cancel.cancelled)
+      goto cleanup_dist;
   }
 
   /* Hereafter, pixels is allocated. pixels must be freed if

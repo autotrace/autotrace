@@ -17,8 +17,9 @@
 
 typedef unsigned char Pixel[3]; /* RGB pixel data type */
 
-static void thin3(at_bitmap *image, const Pixel colour, const Pixel bg_color);
-static void thin1(at_bitmap *image, unsigned char colour, unsigned char bg_color);
+static void thin3(at_bitmap *image, const Pixel colour, const Pixel bg_color, cancel_hook *cancel);
+static void thin1(at_bitmap *image, unsigned char colour, unsigned char bg_color,
+                  cancel_hook *cancel);
 
 /* -------------------------------- ThinImage - Thin binary image. --------------------------- *
  *
@@ -63,7 +64,7 @@ static unsigned char todelete[512] = {
     0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1, 0, 0, 0, 0, 0, 0, 0, 1, 1, 1, 1, 0, 0, 1, 1,
     0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1, 0, 1, 1, 1, 0, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1};
 
-void thin_image(at_bitmap *image, const at_color *bg, at_exception_type *exp)
+void thin_image(at_bitmap *image, const at_color *bg, cancel_hook *cancel, at_exception_type *exp)
 {
   /* This is nasty as we need to call thin once for each
    * colour in the image the way I do this is to keep a second
@@ -77,6 +78,10 @@ void thin_image(at_bitmap *image, const at_color *bg, at_exception_type *exp)
                height = AT_BITMAP_HEIGHT(image);
   gsize size = (gsize)height * width * spp;
   at_color background = bg ? *bg : (at_color){0xff, 0xff, 0xff};
+
+  /* Before the copy, which is as big as the image.  */
+  if (cancel_requested(cancel))
+    return;
 
   bm.height = image->height;
   bm.width = image->width;
@@ -98,15 +103,21 @@ void thin_image(at_bitmap *image, const at_color *bg, at_exception_type *exp)
     for (n = num_pixels - 1; n >= 0L; --n) {
       Pixel p;
 
+      if (n % STEPS_PER_CANCEL_CHECK == 0 && cancel_requested(cancel))
+        return;
       PIXEL_SET(p, ptr[n]);
       if (!PIXEL_EQUAL(p, bg_color)) {
+        if (cancel_requested(cancel))
+          return;
         /* we have a new colour in the image */
         DEBUG("Thinning colour (%x, %x, %x)\n", p[0], p[1], p[2]);
         for (m = n - 1; m >= 0L; --m) {
+          if (m % STEPS_PER_CANCEL_CHECK == 0 && cancel_requested(cancel))
+            return;
           if (PIXEL_EQUAL(ptr[m], p))
             PIXEL_SET(ptr[m], bg_color);
         }
-        thin3(image, p, bg_color);
+        thin3(image, p, bg_color, cancel);
       }
     }
     break;
@@ -123,12 +134,19 @@ void thin_image(at_bitmap *image, const at_color *bg, at_exception_type *exp)
 
     for (n = num_pixels - 1; n >= 0L; --n) {
       unsigned char c = ptr[n];
+      if (n % STEPS_PER_CANCEL_CHECK == 0 && cancel_requested(cancel))
+        return;
       if (c != bg_color) {
+        if (cancel_requested(cancel))
+          return;
         DEBUG("Thinning colour %x\n", c);
-        for (m = n - 1; m >= 0L; --m)
+        for (m = n - 1; m >= 0L; --m) {
+          if (m % STEPS_PER_CANCEL_CHECK == 0 && cancel_requested(cancel))
+            return;
           if (ptr[m] == c)
             ptr[m] = bg_color;
-        thin1(image, c, bg_color);
+        }
+        thin1(image, c, bg_color, cancel);
       }
     }
     break;
@@ -142,7 +160,7 @@ void thin_image(at_bitmap *image, const at_color *bg, at_exception_type *exp)
   }
 }
 
-static void thin3(at_bitmap *image, const Pixel colour, const Pixel bg_color)
+static void thin3(at_bitmap *image, const Pixel colour, const Pixel bg_color, cancel_hook *cancel)
 {
   Pixel *ptr, *y_ptr, *y1_ptr;
   unsigned int xsize, ysize; /* Image resolution             */
@@ -154,13 +172,15 @@ static void thin3(at_bitmap *image, const Pixel colour, const Pixel bg_color)
   /* cells                        */
   g_autofree unsigned char *qb = NULL; /* Neighborhood maps of previous */
   /* scanline                     */
-  unsigned int m; /* Deletion direction mask      */
+  unsigned int m;          /* Deletion direction mask      */
+  unsigned int check_rows; /* Rows between cancel checks   */
 
   DEBUG(" Thinning image.....\n ");
   xsize = AT_BITMAP_WIDTH(image);
   ysize = AT_BITMAP_HEIGHT(image);
   qb = g_new(unsigned char, xsize);
   qb[xsize - 1] = 0; /* Used for lower-right pixel   */
+  check_rows = rows_per_cancel_check(xsize);
   ptr = (Pixel *)AT_BITMAP_BITS(image);
 
   while (count) { /* Scan image while deletions   */
@@ -181,6 +201,8 @@ static void thin3(at_bitmap *image, const Pixel colour, const Pixel bg_color)
       y_ptr = ptr;
       y1_ptr = ptr + xsize;
       for (y = 0; y < ysize - 1; y++, y_ptr += xsize, y1_ptr += xsize) {
+        if (y % check_rows == 0 && cancel_requested(cancel))
+          return;
         q = qb[0];
         p = ((q << 2) & 0330) | (unsigned int)PIXEL_EQUAL(y1_ptr[0], colour);
 
@@ -224,7 +246,8 @@ static void thin3(at_bitmap *image, const Pixel colour, const Pixel bg_color)
   }
 }
 
-static void thin1(at_bitmap *image, unsigned char colour, unsigned char bg_color)
+static void thin1(at_bitmap *image, unsigned char colour, unsigned char bg_color,
+                  cancel_hook *cancel)
 {
   unsigned char *ptr, *y_ptr, *y1_ptr;
   unsigned int xsize, ysize; /* Image resolution             */
@@ -236,13 +259,15 @@ static void thin1(at_bitmap *image, unsigned char colour, unsigned char bg_color
   /* cells                        */
   g_autofree unsigned char *qb = NULL; /* Neighborhood maps of previous */
   /* scanline                     */
-  unsigned int m; /* Deletion direction mask      */
+  unsigned int m;          /* Deletion direction mask      */
+  unsigned int check_rows; /* Rows between cancel checks   */
 
   DEBUG(" Thinning image.....\n ");
   xsize = AT_BITMAP_WIDTH(image);
   ysize = AT_BITMAP_HEIGHT(image);
   qb = g_new(unsigned char, xsize);
   qb[xsize - 1] = 0; /* Used for lower-right pixel   */
+  check_rows = rows_per_cancel_check(xsize);
   ptr = AT_BITMAP_BITS(image);
 
   while (count) { /* Scan image while deletions   */
@@ -262,6 +287,8 @@ static void thin1(at_bitmap *image, unsigned char colour, unsigned char bg_color
       y_ptr = ptr;
       y1_ptr = ptr + xsize;
       for (y = 0; y < ysize - 1; y++, y_ptr += xsize, y1_ptr += xsize) {
+        if (y % check_rows == 0 && cancel_requested(cancel))
+          return;
         q = qb[0];
         p = ((q << 2) & 0330) | (y1_ptr[0] == colour);
 
