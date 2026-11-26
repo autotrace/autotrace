@@ -45,21 +45,24 @@ static void zero_histogram_rgb(Histogram histogram)
         histogram[r * MR + g * MG + b] = 0;
 }
 
-static void generate_histogram_rgb(Histogram histogram, at_bitmap *image,
-                                   const at_color *ignoreColor, cancel_hook *cancel)
+/* Count the pixels of IMAGE, other than those of IGNORECOLOR, into
+   HISTOGRAM, and return how many were counted.  */
+static gsize generate_histogram_rgb(Histogram histogram, at_bitmap *image,
+                                    const at_color *ignoreColor, cancel_hook *cancel)
 {
   unsigned char *src = image->bitmap;
-  int num_elems;
+  /* Up to 65535 x 65535 pixels, more than an int holds (issue #404).  */
+  gsize num_elems, counted = 0;
   ColorFreq *col;
 
-  num_elems = AT_BITMAP_WIDTH(image) * AT_BITMAP_HEIGHT(image);
+  num_elems = (gsize)AT_BITMAP_WIDTH(image) * AT_BITMAP_HEIGHT(image);
   zero_histogram_rgb(histogram);
 
   switch (AT_BITMAP_PLANES(image)) {
   case 3:
     while (num_elems--) {
       if (num_elems % STEPS_PER_CANCEL_CHECK == 0 && cancel_requested(cancel))
-        return;
+        return counted;
       /* If we have an ignorecolor, skip it. */
       if (ignoreColor) {
         if ((src[0] == ignoreColor->r) && (src[1] == ignoreColor->g) &&
@@ -70,24 +73,27 @@ static void generate_histogram_rgb(Histogram histogram, at_bitmap *image,
       }
       col = &histogram[(src[0] >> R_SHIFT) * MR + (src[1] >> G_SHIFT) * MG + (src[2] >> B_SHIFT)];
       (*col)++;
+      counted++;
       src += 3;
     }
     break;
 
   case 1:
-    while (--num_elems >= 0) {
+    while (num_elems-- > 0) {
       if (num_elems % STEPS_PER_CANCEL_CHECK == 0 && cancel_requested(cancel))
-        return;
+        return counted;
       if (ignoreColor && src[num_elems] == ignoreColor->r)
         continue;
       col = &histogram[(src[num_elems] >> R_SHIFT) * MR + (src[num_elems] >> G_SHIFT) * MG +
                        (src[num_elems] >> B_SHIFT)];
       (*col)++;
+      counted++;
     }
     break;
   default:
       /* To avoid compiler warning */;
   }
+  return counted;
 }
 
 static boxptr find_biggest_volume(boxptr boxlist, int numboxes)
@@ -302,11 +308,14 @@ static void compute_color_rgb(QuantizeObj *quantobj, Histogram histogram, boxptr
   int Rmin, Rmax;
   int Gmin, Gmax;
   int Bmin, Bmax;
-  unsigned long count;
-  unsigned long total = 0;
-  unsigned long Rtotal = 0;
-  unsigned long Gtotal = 0;
-  unsigned long Btotal = 0;
+  /* 64 bits: an unsigned long is 32 bits on Windows, and 255 times a box's
+     pixel count overflows that from about 16.8 million pixels (issue
+     #409).  */
+  guint64 count;
+  guint64 total = 0;
+  guint64 Rtotal = 0;
+  guint64 Gtotal = 0;
+  guint64 Btotal = 0;
 
   Rmin = boxp->Rmin;
   Rmax = boxp->Rmax;
@@ -698,10 +707,18 @@ static void fill_inverse_cmap_rgb(QuantizeObj *quantobj, Histogram histogram, in
 static void median_cut_pass1_rgb(QuantizeObj *quantobj, at_bitmap *image,
                                  const at_color *ignoreColor, cancel_hook *cancel)
 {
-  generate_histogram_rgb(quantobj->histogram, image, ignoreColor, cancel);
+  gsize counted = generate_histogram_rgb(quantobj->histogram, image, ignoreColor, cancel);
+
   /* A cancelled histogram is incomplete, maybe empty: don't use it.  */
-  if (!cancel_requested(cancel))
-    select_colors_rgb(quantobj, quantobj->histogram);
+  if (cancel_requested(cancel))
+    return;
+  /* With no pixel counted, there is no colour to choose, and
+     compute_color_rgb() would divide by a box of 0 pixels (issue #404).  */
+  if (counted == 0) {
+    quantobj->actual_number_of_colors = 0;
+    return;
+  }
+  select_colors_rgb(quantobj, quantobj->histogram);
 }
 
 /* Map some rows of pixels to the output colormapped representation. */
@@ -772,8 +789,9 @@ static void median_cut_pass2_rgb(QuantizeObj *quantobj, at_bitmap *image, const 
       }
     }
   } else if (spp == 1) {
-    long idx = (long)width * height;
-    while (--idx >= 0) {
+    /* A long is 32 bits on 64-bit Windows: too small for the pixel count.  */
+    gsize idx = (gsize)width * height;
+    while (idx-- > 0) {
       if (idx % STEPS_PER_CANCEL_CHECK == 0 && cancel_requested(cancel))
         return;
       origR = src[idx];
@@ -802,6 +820,7 @@ static QuantizeObj *initialize_median_cut(int num_colors)
   /* Initialize the data structures */
   quantobj->histogram = g_new(ColorFreq, HIST_R_ELEMS * HIST_G_ELEMS * HIST_B_ELEMS);
   quantobj->desired_number_of_colors = num_colors;
+  quantobj->actual_number_of_colors = 0;
 
   return quantobj;
 }
@@ -836,7 +855,9 @@ void quantize(at_bitmap *image, long ncolors, const at_color *bgColor, QuantizeO
     median_cut_pass1_rgb(quantobj, image, NULL, cancel);
   }
 
-  if (!cancel_requested(cancel))
+  /* No colour was chosen when every pixel has the background colour: the
+     bitmap is already what quantising it would give.  */
+  if (!cancel_requested(cancel) && quantobj->actual_number_of_colors > 0)
     median_cut_pass2_rgb(quantobj, image, bgColor, cancel);
 
   if (iQuant == NULL)

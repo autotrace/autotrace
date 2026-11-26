@@ -1,0 +1,32 @@
+#!/bin/sh
+
+# SPDX-FileCopyrightText: © 2026 Peter Lemenkov
+#
+# SPDX-License-Identifier: CC0-1.0
+
+# -color-count with a -background-color crashed with SIGFPE (integer
+# division by zero) on an image whose pixels are all the background colour:
+# quantisation leaves the background out of its histogram, which was then
+# empty.  It must trace such an image, RGB or grey, without crashing.
+
+. "`dirname "$0"`/../functions"
+
+DIR=$1
+
+{ printf 'P3\n4 4\n255\n'; i=0; while [ $i -lt 16 ]; do printf '255 255 255\n'; i=$((i + 1)); done; } > $DIR/white.ppm
+{ printf 'P2\n4 4\n255\n'; i=0; while [ $i -lt 16 ]; do printf '255\n'; i=$((i + 1)); done; } > $DIR/white.pgm
+
+failed=""
+for img in white.ppm white.pgm; do
+    autotrace -background-color FFFFFF -color-count 2 -output-format eps $DIR/$img > $DIR/out.eps 2>$DIR/err.txt
+    RESULT=$?
+    if [ $RESULT -ne 0 ] || [ ! -s $DIR/out.eps ]; then
+        failed="$failed $img(exit=$RESULT)"
+    fi
+done
+rm -f $DIR/white.ppm $DIR/white.pgm $DIR/out.eps $DIR/err.txt
+
+if [ -n "$failed" ]; then
+    fail "-color-count on an all-background image:$failed"
+fi
+ok
