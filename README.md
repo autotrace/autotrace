@@ -111,14 +111,12 @@ that traces `image.png` and writes SVG to standard output:
    file that can't be read, is AT_MSG_FATAL.  */
 static void report(const gchar *msg, at_msg_type type, gpointer data)
 {
-  fprintf(stderr, "autotrace: %s\n", msg);
-  if (type == AT_MSG_FATAL)
-    *(gboolean *)data = TRUE;
+  (void)data; /* the client data given with the callback: unused here */
+  fprintf(stderr, "autotrace: %s%s\n", type == AT_MSG_FATAL ? "error: " : "", msg);
 }
 
 int main(void)
 {
-  gboolean failed = FALSE;
   at_bitmap_reader *reader;
   at_bitmap *bitmap;
   at_fitting_opts_type *opts;
@@ -134,17 +132,13 @@ int main(void)
   reader = at_input_get_handler("image.png");
   if (reader == NULL)
     return 1;
-  /* at_bitmap_read() returns a bitmap even when reading fails, so check
-     what the callback was told.  */
-  bitmap = at_bitmap_read(reader, "image.png", NULL, report, &failed);
-  if (failed) {
-    at_bitmap_free(bitmap);
+  /* Both return NULL after an error, which report() has printed.  */
+  bitmap = at_bitmap_read(reader, "image.png", NULL, report, NULL);
+  if (bitmap == NULL)
     return 1;
-  }
 
   opts = at_fitting_opts_new();
-  /* NULL after an error.  */
-  splines = at_splines_new(bitmap, opts, report, &failed);
+  splines = at_splines_new(bitmap, opts, report, NULL);
   if (splines == NULL) {
     at_fitting_opts_free(opts);
     at_bitmap_free(bitmap);

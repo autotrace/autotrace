@@ -104,18 +104,46 @@ void at_output_opts_free(at_output_opts_type *opts)
   g_free(opts);
 }
 
+/* The client's message callback, and whether the reader reported a fatal
+   error through it.  */
+typedef struct {
+  at_msg_func msg_func;
+  gpointer msg_data;
+  gboolean fatal;
+} read_messages;
+
+static void note_read_message(const gchar *msg, at_msg_type msg_type, gpointer data)
+{
+  read_messages *messages = data;
+
+  if (msg_type == AT_MSG_FATAL)
+    messages->fatal = TRUE;
+  if (messages->msg_func)
+    messages->msg_func(msg, msg_type, messages->msg_data);
+}
+
 at_bitmap *at_bitmap_read(at_bitmap_reader *reader, gchar *filename, at_input_opts_type *opts,
                           at_msg_func msg_func, gpointer msg_data)
 {
   gboolean new_opts = FALSE;
+  read_messages messages = {msg_func, msg_data, FALSE};
   at_bitmap *bitmap = g_new(at_bitmap, 1);
   if (opts == NULL) {
     opts = at_input_opts_new();
     new_opts = TRUE;
   }
-  *bitmap = (*reader->func)(filename, opts, msg_func, msg_data, reader->data);
+  /* Readers report errors only through the callback, and return an empty
+     bitmap (issue #414): watch the callback, and give the client NULL.
+     Decide on the fatal message alone: an empty bitmap without one is a
+     real result, such as a blank GF glyph (a font's space), whose metrics
+     the UGS writer still needs.  */
+  *bitmap = (*reader->func)(filename, opts, note_read_message, &messages, reader->data);
   if (new_opts)
     at_input_opts_free(opts);
+  if (messages.fatal) {
+    at_bitmap_free(bitmap);
+    return NULL;
+  }
   return bitmap;
 }
 
@@ -163,6 +191,8 @@ at_bitmap at_bitmap_init(unsigned char *area, unsigned short width, unsigned sho
 
 void at_bitmap_free(at_bitmap *bitmap)
 {
+  if (bitmap == NULL)
+    return;
   g_free(bitmap->bitmap);
   g_free(bitmap);
 }

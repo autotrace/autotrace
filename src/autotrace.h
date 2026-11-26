@@ -293,7 +293,19 @@ void at_output_opts_free(at_output_opts_type *opts);
       Use at_bitmap_new.
 
    In both case, you have to call at_bitmap_free when at_bitmap *
-   data are no longer needed. */
+   data are no longer needed.  at_bitmap_free(NULL) does nothing.
+
+   at_bitmap_read returns NULL when the reader reports an AT_MSG_FATAL
+   error, which MSG_FUNC receives: the file can't be read, or isn't valid.
+   That includes a file whose pixels were read but whose end is damaged.
+   Older versions returned an empty or partial bitmap instead.  A bitmap
+   of 0x0 pixels without an error is a valid result, for example a blank
+   glyph of a GF font.
+
+   The reader doesn't get MSG_FUNC and MSG_DATA themselves, but a callback
+   of at_bitmap_read's that passes every message on to MSG_FUNC; a reader
+   of the client's own (at_input_add_handler) mustn't keep them after it
+   returns. */
 at_bitmap *at_bitmap_read(at_bitmap_reader *reader, gchar *filename, at_input_opts_type *opts,
                           at_msg_func msg_func, gpointer msg_data);
 at_bitmap *at_bitmap_new(unsigned short width, unsigned short height, unsigned int planes);

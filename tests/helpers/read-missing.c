@@ -6,7 +6,8 @@
 /* Ask libautotrace to read files that don't exist, with a message handler
    that returns instead of exiting (as a plugin's would).  Every reader must
    report the error and return; before #322 the BMP and TGA readers went on
-   to use the NULL FILE pointer and crashed.
+   to use the NULL FILE pointer and crashed.  at_bitmap_read() must then
+   return NULL; before #414 it returned an empty bitmap.
 
    Usage: read-missing FILE...   Each FILE's suffix selects the reader.  */
 
@@ -41,8 +42,11 @@ int main(int argc, char **argv)
       failures++;
     } else
       printf("%s: error reported\n", argv[i]);
-    if (bitmap)
-      at_bitmap_free(bitmap);
+    if (bitmap) {
+      printf("%s: a bitmap was returned despite the error\n", argv[i]);
+      failures++;
+    }
+    at_bitmap_free(bitmap);
   }
   return failures ? 1 : 0;
 }

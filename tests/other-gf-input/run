@@ -75,6 +75,19 @@ expect_box_error long-paint "paints outside its bounding box" 43 84
 # skip1 200 moves 201 rows down, past the bottom of the box.
 expect_box_error long-skip "skips past its bounding box" 44 71 200
 
+# A blank glyph, such as a space, has no pixels but is no error: it traces
+# to an empty contour with the glyph's metrics.  blank.600gf (from
+# blank.mf) starts with one, so it is also what's traced without -charcode.
+# It must not be mistaken for a failed read (#414).
+for args in "-charcode 32" ""; do
+    autotrace -input-format gf $args $DIR/blank.600gf -output-format ugs -output-file $DIR/blank.ugs 2>$DIR/blank.err
+    RESULT=$?
+    if [ $RESULT -ne 0 ] || ! diff -q -w --strip-trailing-cr $DIR/char32.output.ugs $DIR/blank.ugs >/dev/null; then
+        failed="$failed blank-glyph[$args](exit=$RESULT)"
+    fi
+    rm -f $DIR/blank.ugs $DIR/blank.err
+done
+
 if [ -n "$failed" ]; then
     fail "unexpected output for:$failed"
 fi
