@@ -98,6 +98,8 @@ tests/helpers/*.o
 tests/helpers/.dirstamp
 tests/helpers/read-missing
 tests/helpers/read-missing.exe
+tests/helpers/log-level
+tests/helpers/log-level.exe
 stamp-*
 
 # Recorded output of the golden-file test, regardless of extension

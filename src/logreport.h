@@ -16,18 +16,21 @@
 
 #define LOG_DOMAIN "autotrace"
 
-/* Whether a message of LEVEL may be shown: FALSE only when the handler of
-   the autotrace program (see init_logging()) would drop it.  DEBUG and LOG
-   ask before they format anything: tracing writes a debugging message for
-   nearly every point and spline, and formatting them all only for the
-   handler to drop them took most of the running time.  */
+/* Whether a message of LEVEL is generated: FALSE only when it is less
+   severe than the level set with at_set_log_level(), which the autotrace
+   program's -log sets too.  DEBUG and LOG ask before they format anything:
+   tracing writes a debugging message for nearly every point and spline,
+   and formatting them all only for a handler to drop them took most of
+   the running time.  */
 gboolean log_level_enabled(GLogLevelFlags level);
 
-/* Whether the autotrace program prints debugging messages (-log debug).  */
+/* Whether debugging messages are generated after at_set_log_level() was
+   called (for example -log debug).  */
 gboolean log_shows_debug(void);
 
-/* Whether the autotrace program filters the messages (init_logging()), so
-   that DEBUG and LOG skip the ones it would drop.  */
+/* Whether at_set_log_level() was called, so that DEBUG and LOG skip the
+   messages less severe than its level.  Until then every message is
+   generated.  */
 gboolean log_filters_messages(void);
 
 #define LOG_IF_ENABLED(level, ...)                                                                 \

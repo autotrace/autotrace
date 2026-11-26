@@ -1,0 +1,26 @@
+#!/bin/sh
+
+# SPDX-FileCopyrightText: 2026 AutoTrace contributors
+#
+# SPDX-License-Identifier: CC0-1.0
+
+# A library client with its own log handler gets every debugging message by
+# default, none after at_set_log_level(G_LOG_LEVEL_WARNING), and all of them
+# again after at_set_log_level(G_LOG_LEVEL_DEBUG) (#388).  The helper is
+# built by "make check" next to the autotrace program.
+
+. "`dirname "$0"`/../functions"
+
+helper=`dirname "\`get_autotrace\`"`/tests/helpers/log-level
+test -x "$helper" || test -x "$helper.exe" || skip "helper program not built"
+
+DIR=$1
+"$helper" > $DIR/out.log 2>&1
+RESULT=$?
+
+if [ $RESULT -eq 0 ]; then
+    rm -f $DIR/out.log
+    ok
+else
+    fail "exit $RESULT: `tr '\n' ' ' < $DIR/out.log`"
+fi

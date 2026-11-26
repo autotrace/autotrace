@@ -298,15 +298,15 @@ typedef struct {
   GCond done;
 } outline_tasks_type;
 
-/* How many threads to use: in the autotrace program, the number in the
-   environment variable AUTOTRACE_THREADS, or else one per processor.
+/* How many threads to use: the number in the environment variable
+   AUTOTRACE_THREADS, or else one per processor.
 
-   One in a library client: it gets every debugging message formatted
-   (see log_level_enabled()), and g_log() takes one lock for all threads,
-   so that threads mostly wait for each other there; with 22 of them,
-   tracing took three times as long as with one.  One as well when the
-   program prints debugging messages, so that the messages of each
-   outline stay together.  */
+   One while every debugging message is generated, as for a library client
+   that hasn't called at_set_log_level() (see log_level_enabled()):
+   g_log() takes one lock for all threads, so that threads mostly wait for
+   each other there; with 22 of them, tracing took three times as long as
+   with one.  One as well when debugging messages are wanted (-log debug),
+   so that the messages of each outline stay together.  */
 static unsigned n_threads(unsigned n_outlines)
 {
   const gchar *env = g_getenv("AUTOTRACE_THREADS");
