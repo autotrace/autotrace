@@ -127,6 +127,9 @@ int main(void)
 
   /* Registers the input and output formats: call it first. */
   autotrace_init();
+  /* Don't generate the debugging messages tracing writes for nearly every
+     point: formatting them takes most of the running time.  */
+  at_set_log_level(G_LOG_LEVEL_WARNING);
 
   reader = at_input_get_handler("image.png");
   if (reader == NULL)

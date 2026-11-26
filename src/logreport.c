@@ -9,32 +9,46 @@
 /* logreport.c: showing information to the user. */
 
 #include "logreport.h"
+#include "autotrace.h"
 #include <glib.h>
 
-static int current_log_level = G_LOG_LEVEL_WARNING;
+/* The least severe level generated, once FILTERING is set.  Fitting threads
+   read both, so they are accessed atomically.  */
+static gint current_log_level = G_LOG_LEVEL_WARNING;
 
-/* Set by init_logging(): the command line program filters messages
-   through custom_log_handler.  */
-static gboolean own_handler = FALSE;
+/* Set by at_set_log_level(), and by init_logging() for the command line
+   program.  Until then a library client may have a handler of its own for
+   our domain (g_log_set_handler()), which GLib gives no way to find out
+   about, so every message goes to g_log(), as before (issue #371).  */
+static gint filtering = FALSE;
 
 gboolean log_level_enabled(GLogLevelFlags level)
 {
-  if (own_handler)
-    return current_log_level >= (int)level;
-  /* A library client may have a handler of its own for our domain
-     (g_log_set_handler()), which GLib gives no way to find out about, so
-     every message goes to g_log(), as before.  */
-  return TRUE;
+  if (!g_atomic_int_get(&filtering))
+    return TRUE;
+  return g_atomic_int_get(&current_log_level) >= (gint)level;
 }
 
 gboolean log_shows_debug(void)
 {
-  return own_handler && current_log_level >= G_LOG_LEVEL_DEBUG;
+  return g_atomic_int_get(&filtering) && g_atomic_int_get(&current_log_level) >= G_LOG_LEVEL_DEBUG;
 }
 
 gboolean log_filters_messages(void)
 {
-  return own_handler;
+  return g_atomic_int_get(&filtering);
+}
+
+void at_set_log_level(GLogLevelFlags level)
+{
+  guint levels = level & G_LOG_LEVEL_MASK;
+
+  /* GLib's level flags grow as severity falls: the highest flag is the
+     least severe one.  No flag at all leaves only errors.  */
+  if (levels == 0)
+    levels = G_LOG_LEVEL_ERROR;
+  g_atomic_int_set(&current_log_level, (gint)(1u << g_bit_nth_msf(levels, -1)));
+  g_atomic_int_set(&filtering, TRUE);
 }
 
 static void custom_log_handler(const gchar *log_domain, GLogLevelFlags log_level,
@@ -42,7 +56,7 @@ static void custom_log_handler(const gchar *log_domain, GLogLevelFlags log_level
 {
   /* GLib log levels are bit flags where lower values = higher severity,
    * so >= comparison creates the right threshold */
-  if (current_log_level < log_level)
+  if (g_atomic_int_get(&current_log_level) < (gint)log_level)
     return;
 
   if (log_level & (G_LOG_LEVEL_INFO | G_LOG_LEVEL_DEBUG)) {
@@ -62,21 +76,22 @@ void set_log_level(const gchar *level)
     return;
 
   if (g_ascii_strcasecmp(level, "error") == 0) {
-    current_log_level = G_LOG_LEVEL_ERROR;
+    at_set_log_level(G_LOG_LEVEL_ERROR);
   } else if (g_ascii_strcasecmp(level, "warning") == 0) {
-    current_log_level = G_LOG_LEVEL_WARNING;
+    at_set_log_level(G_LOG_LEVEL_WARNING);
   } else if (g_ascii_strcasecmp(level, "info") == 0) {
-    current_log_level = G_LOG_LEVEL_INFO;
+    at_set_log_level(G_LOG_LEVEL_INFO);
   } else if (g_ascii_strcasecmp(level, "debug") == 0) {
-    current_log_level = G_LOG_LEVEL_DEBUG;
+    at_set_log_level(G_LOG_LEVEL_DEBUG);
   } else {
     g_warning("Unknown log level '%s', using 'warning'", level);
-    current_log_level = G_LOG_LEVEL_WARNING;
+    at_set_log_level(G_LOG_LEVEL_WARNING);
   }
 }
 
 void init_logging(void)
 {
   g_log_set_default_handler(custom_log_handler, NULL);
-  own_handler = TRUE;
+  /* The program prints warnings and errors unless -log asks for more.  */
+  at_set_log_level(G_LOG_LEVEL_WARNING);
 }

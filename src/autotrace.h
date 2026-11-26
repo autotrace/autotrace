@@ -407,6 +407,28 @@ const char *at_version(gboolean long_format);
    return value: Don't free. It is allocated statically */
 const char *at_home_site(void);
 
+/* at_set_log_level
+
+   libautotrace logs through GLib in the "autotrace" log domain.  Tracing
+   writes a debugging message for nearly every point and spline, and
+   formatting them takes much of the running time, so a client that
+   doesn't want them should say so:
+
+     at_set_log_level(G_LOG_LEVEL_WARNING);
+
+   Messages less severe than LEVEL, one of G_LOG_LEVEL_ERROR,
+   G_LOG_LEVEL_CRITICAL, G_LOG_LEVEL_WARNING, G_LOG_LEVEL_MESSAGE,
+   G_LOG_LEVEL_INFO and G_LOG_LEVEL_DEBUG, are then not generated at all,
+   so a log handler of the client's never sees them.  With several level
+   flags, the least severe of them counts.  Without a call, every message
+   is generated and passed to g_log(), as before this function existed.
+
+   It also lets fitting use one thread per processor: while every debugging
+   message is generated, it uses one, since g_log() serialises the
+   threads.  The setting is global; call it before tracing, not while
+   at_splines_new_full() runs.  */
+void at_set_log_level(GLogLevelFlags level);
+
 #ifdef __cplusplus
 }
 #endif /* __cplusplus */
