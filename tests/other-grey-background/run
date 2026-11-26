@@ -1,0 +1,46 @@
+#!/bin/sh
+
+# SPDX-FileCopyrightText: © 2026 Peter Lemenkov
+#
+# SPDX-License-Identifier: CC0-1.0
+
+# A grey image and an RGB copy of it must trace the same with a background
+# colour that isn't grey.  The passes used to reduce such a colour to grey
+# each their own way: quantisation took its red channel, thinning its
+# luminance, and the outline finders matched no pixel (#421).
+#
+# Each pair is a one-plane PNG and the same pixels as RGB:
+# - bands: black, 4E4E4E (near red's luminance, 77) and F0F0F0 bands
+#   between white rows,
+#     magick -size 24x8 xc:white -fill black -draw "rectangle 0,1 7,6" \
+#       -fill "#4e4e4e" -draw "rectangle 8,1 15,6" \
+#       -fill "#f0f0f0" -draw "rectangle 16,1 23,6" \
+#       -depth 8 -type grayscale -define png:color-type=0 bands-grey.png
+# - plasma: smooth greys,
+#     magick -seed 1 -size 24x24 plasma:fractal -blur 0x2 -colorspace gray \
+#       -depth 8 -type grayscale -define png:color-type=0 plasma-grey.png
+# and the RGB copies with
+#     magick NAME-grey.png -type truecolor -define png:color-type=2 NAME-rgb.png
+
+. "`dirname "$0"`/../functions"
+
+DIR=$1
+
+failed=""
+for name in bands plasma; do
+    for opts in "-color-count 2" "-color-count 4" "" "-centerline" "-centerline -preserve-width"; do
+        autotrace -background-color FF0000 $opts -output-format svg $DIR/$name-grey.png > $DIR/grey.svg 2>/dev/null
+        grey=$?
+        autotrace -background-color FF0000 $opts -output-format svg $DIR/$name-rgb.png > $DIR/rgb.svg 2>/dev/null
+        rgb=$?
+        if [ $grey -ne 0 ] || [ $rgb -ne 0 ] || [ ! -s $DIR/grey.svg ] || ! cmp -s $DIR/grey.svg $DIR/rgb.svg; then
+            failed="$failed $name[$opts](exit $grey/$rgb)"
+        fi
+    done
+done
+rm -f $DIR/grey.svg $DIR/rgb.svg
+
+if [ -n "$failed" ]; then
+    fail "grey and RGB traces differ for:$failed"
+fi
+ok
