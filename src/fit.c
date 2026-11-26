@@ -16,6 +16,7 @@
 #include "spline.h"
 #include "vector.h"
 #include "curve.h"
+#include "progress.h"
 #include "pxl-outline.h"
 #include "epsilon-equal.h"
 #include <glib.h>
@@ -521,8 +522,7 @@ static gboolean progress_then_cancelled(unsigned this_list, unsigned n_lists,
                                         at_testcancel_func test_cancel, gpointer testcancel_data)
 {
   if (notify_progress)
-    notify_progress((((gfloat)this_list) / ((gfloat)n_lists * (gfloat)3.0) + (gfloat)0.333),
-                    progress_data);
+    notify_progress(step_progress(1, this_list, n_lists), progress_data);
   return test_cancel && test_cancel(testcancel_data);
 }
 
