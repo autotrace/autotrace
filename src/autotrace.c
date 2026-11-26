@@ -268,10 +268,9 @@ static void rest_progress(gfloat percentage, gpointer data)
   client->notify_progress(SNAP_PROGRESS + (1 - SNAP_PROGRESS) * percentage, client->progress_data);
 }
 
-/* at_splines_new_full modify its argument: BITMAP
-   when snap_antialiased, despeckle, quantize and/or thin_image are
-   invoked. */
-at_splines_type *at_splines_new_full(at_bitmap *bitmap, at_fitting_opts_type *opts,
+/* trace_bitmap modifies its argument BITMAP when snap_antialiased,
+   despeckle, quantize and/or thin_image are invoked. */
+static at_splines_type *trace_bitmap(at_bitmap *bitmap, at_fitting_opts_type *opts,
                                      at_msg_func msg_func, gpointer msg_data,
                                      at_progress_func notify_progress, gpointer progress_data,
                                      at_testcancel_func test_cancel, gpointer testcancel_data)
@@ -410,6 +409,58 @@ cleanup_dist:
 #undef FATAL_THEN_RETURN
 #undef FATAL_THEN_CLEANUP_DIST
 #undef FATAL_THEN_CLEANUP_PIXELS
+}
+
+/* An RGB copy of the one-plane BITMAP.  */
+static at_bitmap *rgb_copy(const at_bitmap *bitmap, cancel_hook *cancel)
+{
+  unsigned short width = at_bitmap_get_width(bitmap), height = at_bitmap_get_height(bitmap);
+  gsize n = (gsize)width * height, i;
+  at_bitmap *rgb;
+
+  /* The copy of a big bitmap takes seconds: let the client cancel it.  */
+  if (cancel_requested(cancel))
+    return NULL;
+  rgb = at_bitmap_new(width, height, 3);
+  for (i = 0; i < n; i++) {
+    if (i % STEPS_PER_CANCEL_CHECK == STEPS_PER_CANCEL_CHECK - 1 && cancel_requested(cancel)) {
+      at_bitmap_free(rgb);
+      return NULL;
+    }
+    memset(rgb->bitmap + 3 * i, bitmap->bitmap[i], 3);
+  }
+  return rgb;
+}
+
+/* at_splines_new_full modifies its argument BITMAP when snap_antialiased,
+   despeckle, quantize and/or thin_image are invoked, except as below. */
+at_splines_type *at_splines_new_full(at_bitmap *bitmap, at_fitting_opts_type *opts,
+                                     at_msg_func msg_func, gpointer msg_data,
+                                     at_progress_func notify_progress, gpointer progress_data,
+                                     at_testcancel_func test_cancel, gpointer testcancel_data)
+{
+  const at_color *bg = opts->background_color;
+  cancel_hook cancel = {test_cancel, testcancel_data, FALSE, 0};
+  at_bitmap *rgb;
+  at_splines_type *splines;
+
+  /* No pixel of a grey bitmap equals a background colour that isn't grey,
+     but each pass reduced such a colour to a grey of its own: the red
+     channel, the luminance, or nothing at all (issue #421).  Trace an RGB
+     copy instead, so that the result is the same as for an RGB image of
+     the same pixels.  The client's bitmap is then left as it was.  */
+  if (!(bg && at_bitmap_get_planes(bitmap) == 1 && (bg->r != bg->g || bg->g != bg->b)) ||
+      bitmap->bitmap == NULL)
+    return trace_bitmap(bitmap, opts, msg_func, msg_data, notify_progress, progress_data,
+                        test_cancel, testcancel_data);
+  /* A cancel during the copy is final, as in trace_bitmap() (issue #407).  */
+  rgb = rgb_copy(bitmap, &cancel);
+  if (rgb == NULL)
+    return NULL;
+  splines = trace_bitmap(rgb, opts, msg_func, msg_data, notify_progress, progress_data, test_cancel,
+                         testcancel_data);
+  at_bitmap_free(rgb);
+  return splines;
 }
 
 void at_splines_write(at_spline_writer *writer, FILE *writeto, gchar *file_name,
