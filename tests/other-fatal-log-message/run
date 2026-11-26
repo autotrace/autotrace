@@ -1,0 +1,25 @@
+#!/bin/sh
+
+# SPDX-FileCopyrightText: 2026 AutoTrace contributors
+#
+# SPDX-License-Identifier: CC0-1.0
+
+# With G_DEBUG=fatal-warnings, a warning makes GLib abort.  The program's log
+# handler used to compare the level with its G_LOG_FLAG_FATAL bit, which put
+# the warning above the threshold and dropped it, so the program aborted
+# without saying why (#417).  The warning must be printed.
+
+. "`dirname "$0"`/../functions"
+
+DIR=$1
+
+G_DEBUG=fatal-warnings autotrace -log bogus $DIR/../github-#4/testrect.pbm \
+    -output-format svg -output-file $DIR/out.svg 2>$DIR/err.txt
+RESULT=$?
+
+if grep -q "Unknown log level 'bogus'" $DIR/err.txt; then
+    rm -f $DIR/out.svg $DIR/err.txt
+    ok
+else
+    fail "exit $RESULT without the warning: `tr '\n' ' ' < $DIR/err.txt`"
+fi

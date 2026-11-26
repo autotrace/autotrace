@@ -43,7 +43,7 @@ gboolean log_filters_messages(void);
 
 #define DEBUG(...) LOG_IF_ENABLED(G_LOG_LEVEL_DEBUG, __VA_ARGS__)
 #define LOG(...) LOG_IF_ENABLED(G_LOG_LEVEL_MESSAGE, __VA_ARGS__)
-#define WARNING(...) g_warning(__VA_ARGS__)
+#define WARNING(...) LOG_IF_ENABLED(G_LOG_LEVEL_WARNING, __VA_ARGS__)
 
 /* For the command line program only: print the message and stop with exit
    status 1.  Library code must not use this; it reports errors through
