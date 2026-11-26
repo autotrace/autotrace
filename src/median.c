@@ -721,6 +721,11 @@ static void median_cut_pass1_rgb(QuantizeObj *quantobj, at_bitmap *image,
   select_colors_rgb(quantobj, quantobj->histogram);
 }
 
+static int squared_distance(int r1, int g1, int b1, int r2, int g2, int b2)
+{
+  return (r1 - r2) * (r1 - r2) + (g1 - g2) * (g1 - g2) + (b1 - b2) * (b1 - b2);
+}
+
 /* Map some rows of pixels to the output colormapped representation. */
 static void median_cut_pass2_rgb(QuantizeObj *quantobj, at_bitmap *image, const at_color *bgColor,
                                  cancel_hook *cancel)
@@ -735,20 +740,14 @@ static void median_cut_pass2_rgb(QuantizeObj *quantobj, at_bitmap *image, const 
   int width = AT_BITMAP_WIDTH(image);
   int height = AT_BITMAP_HEIGHT(image);
   unsigned char *src, *dest;
-  at_color bg_color = {0xff, 0xff, 0xff};
 
+  /* The background colour was left out of the colour map (pass 1), so it
+     acts as one more entry of it: a pixel becomes background when it is at
+     least as close to the background colour as to its nearest entry.
+     Before, every pixel of the entry nearest to the background became
+     background, which deleted that colour, a real one of the image, and
+     all it covered (issue #420).  */
   zero_histogram_rgb(histogram);
-
-  if (bgColor) {
-    /* Find the nearest colormap entry for the background color. */
-    R = bgColor->r >> R_SHIFT;
-    G = bgColor->g >> G_SHIFT;
-    B = bgColor->b >> B_SHIFT;
-    cachep = &histogram[R * MR + G * MG + B];
-    if (*cachep == 0)
-      fill_inverse_cmap_rgb(quantobj, histogram, R, G, B);
-    bg_color = quantobj->cmap[*cachep - 1];
-  }
 
   src = dest = image->bitmap;
   if (spp == 3) {
@@ -777,10 +776,8 @@ static void median_cut_pass2_rgb(QuantizeObj *quantobj, at_bitmap *image, const 
         dest[1] = quantobj->cmap[*cachep - 1].g;
         dest[2] = quantobj->cmap[*cachep - 1].b;
 
-        /* If the colormap entry for this pixel is the same as the
-           background's colormap entry, set the pixel to the
-           background color. */
-        if (bgColor && (dest[0] == bg_color.r && dest[1] == bg_color.g && dest[2] == bg_color.b)) {
+        if (bgColor && squared_distance(origR, origG, origB, bgColor->r, bgColor->g, bgColor->b) <=
+                           squared_distance(origR, origG, origB, dest[0], dest[1], dest[2])) {
           dest[0] = bgColor->r;
           dest[1] = bgColor->g;
           dest[2] = bgColor->b;
@@ -804,10 +801,8 @@ static void median_cut_pass2_rgb(QuantizeObj *quantobj, at_bitmap *image, const 
 
       dest[idx] = quantobj->cmap[*cachep - 1].r;
 
-      /* If the colormap entry for this pixel is the same as the
-         background's colormap entry, set the pixel to the
-         background color. */
-      if (bgColor && dest[idx] == bg_color.r)
+      /* A grey background is its red channel, as in pass 1.  */
+      if (bgColor && abs(origR - bgColor->r) <= abs(origR - dest[idx]))
         dest[idx] = bgColor->r;
     }
   }
