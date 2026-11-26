@@ -82,6 +82,61 @@ checklist). It is written for any C library. Here it means:
   the pull request. The golden-file tests only say that output changed,
   not whether it got better.
 
+## Who merges a pull request
+
+The maintainer merges pull requests. The one exception is a pull request
+that can't change what is built or installed: an agent may merge it itself,
+with a rebase merge like every other pull request. Before merging, all of
+these must hold on its final head:
+- all checks pass;
+- neither CodeQL nor Codex has an unresolved finding;
+- every file it touches is in the list below.
+
+The files an agent may merge:
+
+1. **Documentation:** any `*.md` file, `doc/`, `TODO`, and the text of the
+   man page `autotrace.1`.
+2. **Comments in `src/`,** including the doc comments in the installed
+   headers, as long as the code itself is unchanged and no
+   `SPDX-License-Identifier` or copyright line changes. Check two things:
+   - Every changed file has the same code. `gcc -fpreprocessed -dD -E -P`
+     removes the comments without expanding macros, and its output for the
+     old and new versions must be the same apart from blank lines
+     (`diff -B`). Comparing object files doesn't work for this: a comment
+     that adds a line shifts `__LINE__` in every assertion below it.
+   - No added line contains a backslash or `??`: `git diff OLD NEW -- src |
+     grep '^+' | grep -v '^+++' | grep -F -e '\' -e '??'` must print
+     nothing. `-fpreprocessed` doesn't join lines, but the compiler does: a
+     `//` comment ending in `\` swallows the next line of code. With
+     `-std=c17`, which `configure.ac` sets, so does one ending in the
+     trigraph `??/`.
+3. **Test and tooling code that is never installed:**
+   - `tests/corpus/` (its scripts and README, and images that need no
+     new `REUSE.toml` entry; a third-party image does, which makes it a
+     licensing change);
+   - new `tests/github-*` and `tests/other-*` directories that add
+     coverage without regenerating any existing golden file.
+
+   `tests/runtests.sh` runs every such directory, and `EXTRA_DIST` already
+   ships all of `tests/`, so they need no `Makefile.am` change. A test that
+   needs a compiled helper in `tests/helpers/` does need one, so it isn't
+   covered.
+4. **`.gitignore`.**
+
+Everything else is for the maintainer to merge, even if it is one line:
+- any change to code in `src/`, including a message string;
+- `configure.ac` and the `Makefile.am` files;
+- `.github/` (the workflows, including the spell checker's settings, and
+  Dependabot), because CI permissions and secrets are security settings;
+- `distribute/` (the Windows installers);
+- `po/` (the POT file and the translations);
+- licensing: `REUSE.toml`, `LICENSES/`, and any `SPDX-License-Identifier`
+  or copyright line, wherever it is;
+- regenerated golden files;
+- release pull requests and security fixes.
+
+A pull request that mixes the two kinds is the maintainer's as well.
+
 ## Versioning and releases
 
 ### Who does what
@@ -111,14 +166,37 @@ package version. Everything else derives from it: `AUTOTRACE_VERSION` in
 
 ### Choosing the next version number
 
-- Releases are `0.31.N`. An **API- and ABI-compatible** release bumps `N`, for
-  example 0.31.10 to 0.31.11.
-- Changing or removing an interface (see below) needs a new minor version and a
+- **The next release is 0.40.0.** master now takes interface changes,
+  starting with the option for #348. 0.40.0 changes the soname to
+  `libautotrace.so.4` (see [Libtool version-info](#libtool-version-info)).
+  After it, an **API- and ABI-compatible** release bumps the last number,
+  for example 0.40.0 to 0.40.1.
+- The 0.31 line ended with 0.31.13 (`libautotrace.so.3`). It only gets
+  another release for a serious (high or critical) vulnerability; see
+  [Security fixes for 0.31](#security-fixes-for-031).
+- Each further interface change (see below) needs a new minor version and a
   new libtool `CURRENT`. That decision belongs to the maintainer. Propose
   it, never pick it yourself.
-- `0.40.0` shows up in old Travis pre-releases (`travis-20200219.*`) and,
-  by mistake, inside the `0.31.10` tag's `configure.ac`. It isn't a real
-  release line, so don't continue from it.
+- `0.40.0` also shows up in old Travis pre-releases (`travis-20200219.*`)
+  and, by mistake, inside the `0.31.10` tag's `configure.ac`. Those builds
+  are older than 0.31.x and have nothing to do with the real 0.40.0. There
+  is no `0.40.0` tag yet, so the name is free.
+
+### Security fixes for 0.31
+
+There is no `0.31.x` branch until one is needed. If a vulnerability of high
+or critical severity also affects 0.31.13 (see
+[SECURITY.md](SECURITY.md#supported-versions)):
+
+1. The maintainer creates the `0.31.x` branch from the `0.31.13` tag.
+2. The fix lands on master as usual, through the advisory's private fork
+   (see [SECURITY.md](SECURITY.md)).
+3. It is cherry-picked onto `0.31.x` with `git cherry-pick -x`, adapted if
+   it doesn't apply. Nothing else goes on that branch: no features, and no
+   bug fixes that aren't security fixes.
+4. The release (0.31.14 and so on) follows the usual release pull request
+   against `0.31.x`, with only `REVISION` bumped, so it stays
+   `libautotrace.so.3`.
 
 ### What counts as an interface
 
@@ -145,9 +223,10 @@ signature, and reformatting headers.
 
 `LT_CURRENT`, `LT_REVISION` and `LT_AGE` in `configure.ac` feed
 `-version-info CURRENT:REVISION:AGE`. The soname is
-`libautotrace.so.(CURRENT - AGE)` and is currently `libautotrace.so.3` (3:0:0
-as of 0.31.10). Update the triple **once per release, in the release commit**,
-following the [libtool rules](https://www.gnu.org/software/libtool/manual/html_node/Updating-version-info.html):
+`libautotrace.so.(CURRENT - AGE)`. It is `libautotrace.so.3` from 0.31.10
+(3:0:0) to 0.31.13 (3:3:0). 0.40.0 changes interfaces incompatibly, so it
+will be 4:0:0, `libautotrace.so.4`. Update the triple **once per release,
+in the release commit**, following the [libtool rules](https://www.gnu.org/software/libtool/manual/html_node/Updating-version-info.html):
 
 1. If the library code changed at all since the last release, increment
    `REVISION`.
