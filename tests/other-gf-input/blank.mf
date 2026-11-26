@@ -1,0 +1,14 @@
+% SPDX-FileCopyrightText: © 2026 Peter Lemenkov
+%
+% SPDX-License-Identifier: CC0-1.0
+%
+% Source of blank.600gf: a font whose first glyph, a space, has no pixels,
+% for the AutoTrace GF reader test (#414).  Regenerate with
+%     mf -interaction=batchmode '\mode=ljfour; input blank'
+mode_setup;
+beginchar(32, 5pt#, 0, 0);
+endchar;
+beginchar("A", 8pt#, 8pt#, 0);
+  fill (0,0)--(w,0)--(w,h)--(0,h)--cycle;
+endchar;
+end
