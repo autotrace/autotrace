@@ -528,6 +528,9 @@ static unsigned char *ReadImage(FILE *fd, int width, int height, unsigned char c
   unsigned int px32;
   /* Whether the file ended before the bitmap did (#433).  */
   gboolean truncated = FALSE;
+  /* Bytes of pixels in a row of 16, 24 or 32 bpp, without the padding to a
+     multiple of 4.  */
+  int pixbytes = width * (bpp / 8);
 
   if (!(compression == BI_RGB || (bpp == 8 && compression == BI_RLE8) ||
         (bpp == 4 && compression == BI_RLE4) || (bpp == 16 && compression == BI_BITFIELDS) ||
@@ -562,7 +565,8 @@ static unsigned char *ReadImage(FILE *fd, int width, int height, unsigned char c
 
   case 32: {
     while (TRUE) {
-      if (!ReadOK(fd, row_buf, rowbytes)) {
+      /* A row of 4-byte pixels needs no padding.  */
+      if (!ReadOK(fd, row_buf, pixbytes)) {
         truncated = TRUE;
         break;
       }
@@ -590,10 +594,15 @@ static unsigned char *ReadImage(FILE *fd, int width, int height, unsigned char c
 
   case 24: {
     while (TRUE) {
-      if (!ReadOK(fd, row_buf, rowbytes)) {
+      if (!ReadOK(fd, row_buf, pixbytes)) {
         truncated = TRUE;
         break;
       }
+      /* Then the padding to a multiple of 4.  If the file ends inside the
+         last row's padding, nothing of the picture is missing (#462); if
+         it ends inside an earlier one, the next row's read fails.  */
+      if (rowbytes > pixbytes)
+        (void)ReadOK(fd, row_buf + pixbytes, rowbytes - pixbytes);
       temp = image + (ypos * rowstride);
       for (xpos = 0; xpos < width; ++xpos) {
         *(temp++) = row_buf[xpos * 3 + 2];
@@ -610,10 +619,15 @@ static unsigned char *ReadImage(FILE *fd, int width, int height, unsigned char c
 
   case 16: {
     while (TRUE) {
-      if (!ReadOK(fd, row_buf, rowbytes)) {
+      if (!ReadOK(fd, row_buf, pixbytes)) {
         truncated = TRUE;
         break;
       }
+      /* Then the padding to a multiple of 4.  If the file ends inside the
+         last row's padding, nothing of the picture is missing (#462); if
+         it ends inside an earlier one, the next row's read fails.  */
+      if (rowbytes > pixbytes)
+        (void)ReadOK(fd, row_buf + pixbytes, rowbytes - pixbytes);
       temp = image + (ypos * rowstride);
       for (xpos = 0; xpos < width; ++xpos) {
         rgb = ToS(&row_buf[xpos * 2]);

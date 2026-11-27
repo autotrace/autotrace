@@ -8,8 +8,9 @@
 # goes, but the native reader must say so with a warning.  It used to stop
 # silently, or only log a GLib message no client sees (#433).  The complete
 # files must give no warning.  Uses the RLE8, RLE4 and 24 bpp images of
-# other-bmp-formats, cut to two thirds of their size.  A build with *Magick
-# readers reads BMP through that library, so the test is skipped there.
+# other-bmp-formats, cut to two thirds of their size, and the 24 bpp one cut
+# by its last padding byte.  A build with *Magick readers reads BMP through
+# that library, so the test is skipped there.
 
 . "`dirname "$0"`/../functions"
 
@@ -37,7 +38,22 @@ for name in rle8 rle4 ref24; do
         fi
     done
 done
-rm -f $DIR/*-cut.bmp $DIR/out.svg $DIR/err.log
+
+# ref24.bmp is 37 pixels wide: each row has 111 bytes of pixels and 1 of
+# padding, and the file ends with the last row's padding.  Without that
+# byte nothing of the picture is missing: no warning, and the same trace
+# as the complete file.  The last row used to be lost (#462).
+autotrace -input-format bmp -output-format svg -output-file $DIR/full.svg $SRC/ref24.bmp
+size=`wc -c < $SRC/ref24.bmp`
+head -c `expr $size - 1` $SRC/ref24.bmp > $DIR/nopad-cut.bmp
+autotrace -input-format bmp -output-format svg -output-file $DIR/out.svg $DIR/nopad-cut.bmp \
+    2> $DIR/err.log
+result=$?
+if [ $result -ne 0 ] || grep -q "ends before the bitmap" $DIR/err.log ||
+    ! cmp -s $DIR/full.svg $DIR/out.svg; then
+    failed="$failed nopad-cut.bmp(exit $result, `tr '\n' ' ' < $DIR/err.log`)"
+fi
+rm -f $DIR/*-cut.bmp $DIR/out.svg $DIR/full.svg $DIR/err.log
 
 if [ -n "$failed" ]; then
     fail "truncated BMP not reported as expected:$failed"
