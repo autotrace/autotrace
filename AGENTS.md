@@ -5,6 +5,21 @@ They complement [README.md](README.md) and [TRANSLATING.md](TRANSLATING.md). If
 anything here conflicts with a maintainer's explicit instruction, the
 maintainer wins.
 
+## Skills
+
+Longer procedures are kept as skills in [`.agents/skills/`](.agents/skills/),
+one directory per skill, each with a `SKILL.md` in the
+[Agent Skills](https://agentskills.io/) format. Codex, GitHub Copilot and
+other agents that support the format find them there. Claude Code finds them
+through the symlink `.claude/skills`. An agent without skill support can read
+the files as plain checklists.
+
+- [code-quality](.agents/skills/code-quality/SKILL.md): checks before pushing
+  a change to the C sources (see
+  [below](#before-pushing-a-change-to-the-sources)).
+
+Put a new skill in `.agents/skills/` and add it to this list.
+
 ## Every finding becomes an issue
 
 Any bug you find gets a public GitHub issue, whatever you were doing at the time:
@@ -52,7 +67,7 @@ report one, and how it is fixed and disclosed. For agents, it comes down to this
 
 ## Before pushing a change to the sources
 
-Go through [.claude/skills/code-quality/SKILL.md](.claude/skills/code-quality/SKILL.md)
+Go through [.agents/skills/code-quality/SKILL.md](.agents/skills/code-quality/SKILL.md)
 (Claude Code loads it as the `code-quality` skill; other agents read it as a
 checklist). It is written for any C library. Here it means:
 
