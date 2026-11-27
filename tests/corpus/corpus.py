@@ -10,6 +10,9 @@
   corpus.py compare OLD.json NEW.json    print the differences
   corpus.py run OLD_AUTOTRACE NEW_AUTOTRACE [WORKDIR]
                                          all of the above, for two builds
+  corpus.py score [--svg OUT] AUTOTRACE IMAGE [OPTION...]
+                                         trace one image of any kind, print
+                                         its metrics as a line of JSON
 
 Needs Python 3 and ImageMagick 7 ("magick") with an SVG renderer, ideally
 librsvg.  See README.md for what the metrics mean.
@@ -499,15 +502,34 @@ def shape_distances(kind, shapes, svg, width, height):
 
 
 def background_option(options):
-    if "-background-color" in options:
-        return "#" + options[options.index("-background-color") + 1]
-    return None
+    """The -background-color of OPTIONS, in any spelling getopt accepts:
+    one or two dashes, any abbreviation (only this option starts with b),
+    and the value after = or as the next word.  The last one counts."""
+    bg = None
+    for i, word in enumerate(options):
+        if not word.startswith("-") or word in ("-", "--"):
+            continue
+        name, eq, value = word.lstrip("-").partition("=")
+        if name and "background-color".startswith(name.lower()):
+            if not eq:
+                value = options[i + 1] if i + 1 < len(options) else ""
+            bg = "#" + value
+    return bg
 
 
-def round_trip(png, svg_file, options, shapes=None):
+def is_centerline_svg(svg):
+    """Whether SVG is a centerline trace: every path a stroke, unfilled.
+    Works whichever option or preset asked for it."""
+    styles = re.findall(r'<path style="([^"]*)"', svg)
+    return bool(styles) and all("fill:none" in s.replace(" ", "") for s in styles)
+
+
+def round_trip(png, svg_file, options, shapes=None, centerline=None):
     """Compare the rendered SVG with the input image, and with SHAPES, the
-    drawn shapes from drawn_shapes(), if given."""
-    centerline = "-centerline" in options
+    drawn shapes from drawn_shapes(), if given.  CENTERLINE says whether
+    it is a centerline trace; None takes it from OPTIONS."""
+    if centerline is None:
+        centerline = "-centerline" in options
     bg = background_option(options) or ("#FFFFFF" if centerline else None)
     # Flatten both onto the same colour, or transparent input would differ.
     w, h, src = load_pixels(png, bg or "white")
@@ -561,6 +583,42 @@ def hex_colour(spec):
     return tuple(int(spec[i:i + 2], 16) for i in (0, 2, 4))
 
 
+def trace(autotrace, image, options, svg_file, entry, shapes=None, repeat=1, compare=True,
+          detect_centerline=False):
+    """Trace IMAGE with OPTIONS into SVG_FILE, and add the status, the
+    time, the SVG's statistics and, if COMPARE, the round trip to ENTRY.
+    With DETECT_CENTERLINE, the SVG says whether it is a centerline trace;
+    otherwise OPTIONS do."""
+    best = None
+    for _ in range(repeat):
+        if os.path.exists(svg_file):
+            os.unlink(svg_file)
+        start = time.perf_counter()
+        proc = subprocess.run([autotrace] + options +
+                              ["-output-format", "svg", "-output-file", svg_file, image],
+                              stdout=subprocess.DEVNULL, stderr=subprocess.PIPE)
+        elapsed = time.perf_counter() - start
+        best = elapsed if best is None else min(best, elapsed)
+    entry["status"] = proc.returncode
+    entry["time"] = round(best, 4)
+    if proc.stderr:
+        entry["stderr"] = proc.stderr.decode(errors="replace")[:500]
+    if proc.returncode == 0 and not os.path.exists(svg_file):
+        # For example -help or -list-presets among the options.
+        entry["error"] = "autotrace wrote no SVG"
+    elif proc.returncode == 0:
+        with open(svg_file, encoding="utf-8") as f:
+            svg = f.read()
+        entry["size"] = len(svg.encode())
+        entry.update(svg_stats(svg))
+        if compare:
+            centerline = is_centerline_svg(svg) if detect_centerline else None
+            if centerline:
+                entry["centerline"] = True
+            entry.update(round_trip(image, svg_file, options, shapes, centerline))
+    return entry
+
+
 def measure(autotrace, directory, output, repeat=1):
     if not os.path.isdir(directory):
         generate(directory)
@@ -574,31 +632,42 @@ def measure(autotrace, directory, output, repeat=1):
                 case = case_name(name, options)
                 svg_file = os.path.join(workdir, "out.svg")
                 entry = {"case": case, "category": category}
-                best = None
-                for _ in range(repeat):
-                    start = time.perf_counter()
-                    proc = subprocess.run([autotrace] + options +
-                                          ["-output-format", "svg", "-output-file", svg_file, png],
-                                          stdout=subprocess.DEVNULL, stderr=subprocess.PIPE)
-                    elapsed = time.perf_counter() - start
-                    best = elapsed if best is None else min(best, elapsed)
-                entry["status"] = proc.returncode
-                entry["time"] = round(best, 4)
-                if proc.stderr:
-                    entry["stderr"] = proc.stderr.decode(errors="replace")[:500]
-                if proc.returncode == 0:
-                    with open(svg_file, encoding="utf-8") as f:
-                        svg = f.read()
-                    entry["size"] = len(svg.encode())
-                    entry.update(svg_stats(svg))
-                    if category != "timing":
-                        entry.update(round_trip(png, svg_file, options, shapes))
+                trace(autotrace, png, options, svg_file, entry, shapes, repeat,
+                      compare=category != "timing")
                 results.append(entry)
                 print("%-40s %s" % (case, summary(entry)), file=sys.stderr)
     finally:
         shutil.rmtree(workdir)
     with open(output, "w", encoding="utf-8") as f:
         json.dump({"autotrace": autotrace, "results": results}, f, indent=1)
+
+
+def program(name):
+    """NAME as a path that works from any directory: a bare name, such as
+    an installed "autotrace", is looked up in PATH."""
+    if os.sep in name or (os.altsep and os.altsep in name):
+        return os.path.abspath(name)
+    found = shutil.which(name)
+    if found is None:
+        sys.exit("%s: not found in PATH" % name)
+    return found
+
+
+def score(autotrace, image, options, keep=None):
+    """Trace one IMAGE of any kind with OPTIONS and print its metrics as
+    one line of JSON.  Exit with autotrace's status if it failed."""
+    workdir = tempfile.mkdtemp(prefix="corpus-")
+    try:
+        svg_file = keep or os.path.join(workdir, "out.svg")
+        entry = trace(autotrace, image, options, svg_file, {"options": options},
+                      detect_centerline=True)
+    finally:
+        shutil.rmtree(workdir)
+    print(json.dumps(entry))
+    if entry["status"] != 0:
+        sys.exit(entry["status"])
+    if "error" in entry:
+        sys.exit(1)
 
 
 def summary(entry):
@@ -691,12 +760,20 @@ def main():
     p.add_argument("workdir", nargs="?", default="corpus-work")
     p.add_argument("--repeat", type=int, default=1)
     p.add_argument("--all", action="store_true")
+    p = sub.add_parser("score")
+    p.add_argument("--svg", help="keep the trace in this file")
+    p.add_argument("autotrace")
+    p.add_argument("image")
+    p.add_argument("options", nargs=argparse.REMAINDER,
+                   help="options for autotrace, after the image")
     args = parser.parse_args()
 
     if args.command == "generate":
         generate(args.dir)
+    elif args.command == "score":
+        score(program(args.autotrace), args.image, args.options, args.svg)
     elif args.command == "measure":
-        measure(os.path.abspath(args.autotrace), args.dir, args.output, args.repeat)
+        measure(program(args.autotrace), args.dir, args.output, args.repeat)
     elif args.command == "compare":
         compare(args.old, args.new, args.all)
     else:
@@ -705,8 +782,8 @@ def main():
         new_json = os.path.join(args.workdir, "new.json")
         # Both builds trace the same files, drawn once.
         generate(images)
-        measure(os.path.abspath(args.old), images, old_json, args.repeat)
-        measure(os.path.abspath(args.new), images, new_json, args.repeat)
+        measure(program(args.old), images, old_json, args.repeat)
+        measure(program(args.new), images, new_json, args.repeat)
         compare(old_json, new_json, args.all)
 
 

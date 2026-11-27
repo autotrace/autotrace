@@ -17,6 +17,9 @@ the files as plain checklists.
 - [code-quality](.agents/skills/code-quality/SKILL.md): checks before pushing
   a change to the C sources (see
   [below](#before-pushing-a-change-to-the-sources)).
+- [choosing-options](.agents/skills/choosing-options/SKILL.md): picking
+  `autotrace` options for a particular image, by scoring each candidate
+  with `tests/corpus/corpus.py score`.
 
 Put a new skill in `.agents/skills/` and add it to this list.
 
