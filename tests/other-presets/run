@@ -1,0 +1,76 @@
+#!/bin/sh
+
+# SPDX-FileCopyrightText: © 2026 Peter Lemenkov
+#
+# SPDX-License-Identifier: CC0-1.0
+
+# -preset NAME (#343) must trace exactly like the options it stands for,
+# applied before every other option wherever it is, so that an explicit
+# option on either side of it wins.  The last -preset counts.
+# -list-presets must list every preset, and an unknown name must fail.
+#
+# The input is an anti-aliased disc on a two-pixel line, so that every
+# preset changes the trace:
+#     magick -size 48x48 xc:white -fill black -draw "circle 24,24 24,10" \
+#       -fill none -stroke "#202020" -strokewidth 2 -draw "line 2,45 45,2" \
+#       -type grayscale -define png:color-type=0 disc.png
+
+. "`dirname "$0"`/../functions"
+
+DIR=$1
+IN=$DIR/disc.png
+
+failed=""
+
+# NAME OPTIONS...: the preset NAME must equal OPTIONS.
+same() {
+    autotrace "$@" -output-format svg $IN > $DIR/a.svg 2>&1
+    a=$?
+    autotrace $expanded -output-format svg $IN > $DIR/b.svg 2>&1
+    b=$?
+    if [ $a -ne 0 ] || [ $b -ne 0 ] || [ ! -s $DIR/a.svg ] || ! cmp -s $DIR/a.svg $DIR/b.svg; then
+        failed="$failed [$*](exit $a/$b)"
+    fi
+}
+
+autotrace -output-format svg $IN > $DIR/default.svg 2>/dev/null
+for p in "lineart|-centerline -snap-antialiasing -despeckle-level 2 -despeckle-tightness 0 -noise-removal 1" \
+         "logo|-snap-antialiasing -error-threshold 1 -keep-knees" \
+         "photo|-color-count 32 -despeckle-level 2" \
+         "scan|-snap-antialiasing -error-threshold 1 -keep-knees -despeckle-level 4 -despeckle-tightness 0 -noise-removal 1"; do
+    name=${p%%|*}
+    expanded=${p#*|}
+    same -preset $name
+    autotrace -preset $name -output-format svg $IN 2>/dev/null | cmp -s - $DIR/default.svg &&
+        failed="$failed [$name](same as the defaults)"
+    autotrace -list-presets 2>&1 | grep -q "^  $name " ||
+        failed="$failed [$name](not in -list-presets)"
+done
+
+# Explicit options win on either side, and the last -preset counts.
+expanded="-snap-antialiasing -error-threshold 3 -keep-knees"
+same -error-threshold 3 -preset logo
+same -preset logo -error-threshold 3
+expanded="-color-count 32 -despeckle-level 2"
+same -preset logo -preset photo
+expanded="-snap-antialiasing -error-threshold 1 -keep-knees"
+same -preset LOGO
+
+if autotrace -preset nonesuch -output-format svg $IN > /dev/null 2>&1; then
+    failed="$failed [nonesuch](succeeded)"
+fi
+
+# Looking for -preset first mustn't move the arguments: an option at the
+# end without its argument must still fail, rather than take a file name
+# from before it and overwrite that file.
+cp $IN $DIR/copy.png
+if autotrace -output-format svg $DIR/copy.png $IN -output-file > /dev/null 2>&1 ||
+        ! cmp -s $IN $DIR/copy.png; then
+    failed="$failed [-output-file at the end](accepted)"
+fi
+rm -f $DIR/a.svg $DIR/b.svg $DIR/default.svg $DIR/copy.png
+
+if [ -n "$failed" ]; then
+    fail "unexpected -preset results for:$failed"
+fi
+ok

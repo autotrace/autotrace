@@ -63,6 +63,98 @@ void at_fitting_opts_free(at_fitting_opts_type *opts)
   g_free(opts);
 }
 
+/* Presets (issue #343).  Each sets only the options it names; the rest
+   keep their defaults.  The values were chosen with the trace-quality
+   corpus (tests/corpus); see the pull request that added them.  */
+
+static void preset_lineart(at_fitting_opts_type *opts)
+{
+  opts->centerline = TRUE;
+  opts->snap_antialiasing = TRUE;
+  opts->despeckle_level = 2;
+  opts->despeckle_tightness = 0.0;
+  opts->noise_removal = 1.0;
+}
+
+static void preset_logo(at_fitting_opts_type *opts)
+{
+  opts->snap_antialiasing = TRUE;
+  opts->error_threshold = 1.0;
+  opts->keep_knees = TRUE;
+}
+
+static void preset_photo(at_fitting_opts_type *opts)
+{
+  opts->color_count = 32;
+  opts->despeckle_level = 2;
+}
+
+static void preset_scan(at_fitting_opts_type *opts)
+{
+  preset_logo(opts);
+  opts->despeckle_level = 4;
+  opts->despeckle_tightness = 0.0;
+  opts->noise_removal = 1.0;
+}
+
+static const struct {
+  const gchar *name;
+  const gchar *description;
+  void (*apply)(at_fitting_opts_type *opts);
+} presets[] = {
+    {"lineart",
+     N_("drawn lines: snap anti-aliased edges, remove one-pixel specks and trace the "
+        "centerlines"),
+     preset_lineart},
+    {"logo",
+     N_("flat colours with anti-aliased edges, such as logos, icons and text: snap the edges and "
+        "fit them closely"),
+     preset_logo},
+    {"photo",
+     N_("photographs and gradients: reduce to 32 colours and merge one-pixel specks into "
+        "similar neighbours"),
+     preset_photo},
+    {"scan", N_("scanned drawings and text: like logo, and remove specks of up to 7 pixels"),
+     preset_scan},
+};
+
+/* The names of PRESETS, in the same order.  */
+static const gchar *const preset_names[] = {"lineart", "logo", "photo", "scan", NULL};
+G_STATIC_ASSERT(G_N_ELEMENTS(preset_names) == G_N_ELEMENTS(presets) + 1);
+
+static int find_preset(const gchar *name)
+{
+  gsize i;
+  if (name == NULL)
+    return -1;
+  for (i = 0; i < G_N_ELEMENTS(presets); i++)
+    if (g_ascii_strcasecmp(presets[i].name, name) == 0)
+      return (int)i;
+  return -1;
+}
+
+at_fitting_opts_type *at_fitting_opts_new_preset(const gchar *name)
+{
+  int i = find_preset(name);
+  at_fitting_opts_type *opts;
+  if (i < 0)
+    return NULL;
+  opts = at_fitting_opts_new();
+  presets[i].apply(opts);
+  return opts;
+}
+
+const gchar *const *at_fitting_opts_preset_names(void)
+{
+  return preset_names;
+}
+
+const gchar *at_fitting_opts_preset_description(const gchar *name)
+{
+  int i = find_preset(name);
+  return i < 0 ? NULL : _(presets[i].description);
+}
+
 at_input_opts_type *at_input_opts_new(void)
 {
   at_input_opts_type *opts = g_new0(at_input_opts_type, 1);

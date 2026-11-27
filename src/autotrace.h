@@ -260,6 +260,24 @@ at_fitting_opts_type *at_fitting_opts_new(void);
 at_fitting_opts_type *at_fitting_opts_copy(at_fitting_opts_type *original);
 void at_fitting_opts_free(at_fitting_opts_type *opts);
 
+/* Presets: typical sets of fitting options, by name.
+
+   at_fitting_opts_new_preset returns new options with the values of the
+   preset NAME (compared without regard to ASCII case), or NULL if there is
+   no such preset.  The options a preset doesn't set keep the defaults of
+   at_fitting_opts_new, and any option can be changed afterwards.  Free the
+   result with at_fitting_opts_free.
+
+   at_fitting_opts_preset_names returns the names of all presets, ending
+   with NULL.  The array belongs to the library: don't modify or free it.
+
+   at_fitting_opts_preset_description returns a translated one-line
+   description of the preset NAME, or NULL if there is no such preset.
+   Don't free it. */
+at_fitting_opts_type *at_fitting_opts_new_preset(const gchar *name);
+const gchar *const *at_fitting_opts_preset_names(void);
+const gchar *at_fitting_opts_preset_description(const gchar *name);
+
 /* Gettextize */
 #define at_fitting_opts_doc(opt) at_fitting_opts_doc_func(at_doc__##opt)
 /* Don't use next function directly from clients */

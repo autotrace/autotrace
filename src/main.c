@@ -267,6 +267,7 @@ static gfloat parse_real(const gchar *s)
     then output a straight line; default is 1.\n\n\
 -list-output-formats: print a list of supported output formats to stderr.\n\n\
 -list-input-formats: print a list of supported input formats to stderr.\n\n\
+-list-presets: print a list of the presets to stderr.\n\n\
 -log <level>: print diagnostics of this level and above to stderr;\n\
     one of error, warning, info, debug; default is warning.\n\n\
 -noise-removal <real>: 0.0..1.0; default is 0.99.  The base limit on the\n\
@@ -277,6 +278,9 @@ static gfloat parse_real(const gchar *s)
 -output-format <format>: use format <format> for the output file. Available formats:\n\
     %s\n\n\
 -preserve-width: preserve line width prior to thinning.\n\n\
+-preset <name>: start from the options of the preset <name>, one of\n\
+    lineart, logo, photo and scan (see -list-presets).  It applies before\n\
+    every other option, wherever it is, so they change it.\n\n\
 -remove-adjacent-corners: remove corners that are adjacent.\n\n\
 -snap-antialiasing: give anti-aliased edge pixels the nearer of the flat\n\
     colours on either side before tracing, so that each edge becomes one\n\
@@ -317,11 +321,13 @@ static char *read_command_line(int argc, char *argv[], at_fitting_opts_type *fit
                                   {"line-threshold", 1, 0, 0},
                                   {"list-input-formats", 0, 0, 0},
                                   {"list-output-formats", 0, 0, 0},
+                                  {"list-presets", 0, 0, 0},
                                   {"log", 1, 0, 0},
                                   {"noise-removal", 1, 0, 0},
                                   {"output-file", 1, 0, 0},
                                   {"output-format", 1, 0, 0},
                                   {"preserve-width", 0, 0, 0},
+                                  {"preset", 1, 0, 0},
                                   {"remove-adjacent-corners", 0, 0, 0},
                                   {"report-progress", 0, (int *)&report_progress, 1},
                                   {"snap-antialiasing", 0, 0, 0},
@@ -335,6 +341,32 @@ static char *read_command_line(int argc, char *argv[], at_fitting_opts_type *fit
      option table in a variable `long_options'.  */
 
 #define ARGUMENT_IS(a) (0 == g_ascii_strcasecmp(long_options[option_index].name, a))
+
+  /* -preset applies before every other option, wherever it is, so that
+     they change it (issue #343): a first pass looks only for it.  Errors
+     are reported by the second pass.  The leading "-" makes the first
+     pass return the other arguments in order (as 1) instead of moving
+     them, which would make the second pass read them differently: a file
+     name would become the argument of an option at the end that lacks
+     one.  Setting optind to 0 restarts getopt in glibc, the BSDs and
+     MinGW.  */
+  opterr = 0;
+  while ((g = getopt_long_only(argc, argv, "-", long_options, &option_index)) != EOF) {
+    at_fitting_opts_type *preset;
+
+    if (g != 0 || !ARGUMENT_IS("preset"))
+      continue;
+    preset = at_fitting_opts_new_preset(optarg);
+    if (preset == NULL)
+      FATAL(_("Preset %s doesn't exist; -list-presets lists them"), optarg);
+    /* The last -preset wins, so start from the defaults each time.  */
+    g_free(fitting_opts->background_color);
+    *fitting_opts = *preset;
+    preset->background_color = NULL;
+    at_fitting_opts_free(preset);
+  }
+  opterr = 1;
+  optind = 0;
 
   while (TRUE) {
 
@@ -434,6 +466,14 @@ static char *read_command_line(int argc, char *argv[], at_fitting_opts_type *fit
       exit(0);
     }
 
+    else if (ARGUMENT_IS("list-presets")) {
+      const gchar *const *name;
+      fprintf(stderr, _("Presets:\n"));
+      for (name = at_fitting_opts_preset_names(); *name != NULL; name++)
+        fprintf(stderr, "  %-8s %s\n", *name, at_fitting_opts_preset_description(*name));
+      exit(0);
+    }
+
     else if (ARGUMENT_IS("noise-removal"))
       fitting_opts->noise_removal = parse_real(optarg);
 
@@ -450,6 +490,9 @@ static char *read_command_line(int argc, char *argv[], at_fitting_opts_type *fit
 
     else if (ARGUMENT_IS("preserve-width"))
       fitting_opts->preserve_width = TRUE;
+
+    else if (ARGUMENT_IS("preset"))
+      ; /* Applied by the first pass above.  */
 
     else if (ARGUMENT_IS("snap-antialiasing"))
       fitting_opts->snap_antialiasing = TRUE;

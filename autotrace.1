@@ -42,6 +42,7 @@ autotrace \- converts bitmap image data into vector graphics
 .IR " real" ]
 .RB [ \-list-input-formats ]
 .RB [ \-list-output-formats ]
+.RB [ \-list-presets ]
 .RB [ \-log
 .IR " level" ]
 .RB [ \-noise-removal
@@ -51,6 +52,8 @@ autotrace \- converts bitmap image data into vector graphics
 .RB [ \-output-format
 .IR " format" ]
 .RB [ \-preserve-width ]
+.RB [ \-preset
+.IR " name" ]
 .RB [ \-remove-adjacent-corners ]
 .RB [ \-report-progress ]
 .RB [ \-debug-arch ]
@@ -201,6 +204,9 @@ Send a list of the supported input formats to stderr.
 .B \-list-output-formats
 Send a list of the supported output formats to stderr.
 .TP
+.B \-list-presets
+Send a list of the presets, with a description of each, to stderr.
+.TP
 .BI \-log " level"
 Print diagnostics of the given level and above to stderr.
 .I level
@@ -265,6 +271,34 @@ command can be used to determine which are supported locally).
 .TP
 .B \-preserve-width
 Whether to preserve line width prior to thinning.
+.TP
+.BI \-preset " name"
+Start from the options of the preset
+.IR name .
+It applies before every other option, wherever it appears on the command
+line, so the other options change it; if it is given more than once, the
+last one counts.
+The presets are:
+.RS
+.TP
+.B lineart
+Drawn lines:
+.BR "\-centerline \-snap-antialiasing \-despeckle-level 2 \-despeckle-tightness 0 \-noise-removal 1" .
+.TP
+.B logo
+Flat colours with anti-aliased edges, such as logos, icons and text:
+.BR "\-snap-antialiasing \-error-threshold 1 \-keep-knees" .
+.TP
+.B photo
+Photographs and gradients:
+.BR "\-color-count 32 \-despeckle-level 2" .
+.TP
+.B scan
+Scanned drawings and text: the options of
+.B logo
+and
+.BR "\-despeckle-level 4 \-despeckle-tightness 0 \-noise-removal 1" .
+.RE
 .TP
 .B \-remove-adjacent-corners
 Remove adjacent corners.
