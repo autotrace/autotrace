@@ -766,10 +766,120 @@ def is_centerline_svg(svg):
     return bool(styles) and all("fill:none" in s.replace(" ", "") for s in styles)
 
 
-def round_trip(png, svg_file, options, shapes=None, centerline=None):
+# Colour (#443, after the metrics of VectorCraft's tracer)
+
+# A path whose colour is farther than this (Oklab, x100) from every drawn
+# colour has an odd colour.
+ODD_DELTA = 10.0
+
+
+def oklab(rgb):
+    """An 8-bit sRGB colour in Oklab (Björn Ottosson, 2020), with the
+    lightness L_r of Ottosson's Okhsl (2021).  Oklab's own L rises
+    steeply from black, like a cube root: #060606 would be 12 from black,
+    and every dark grey of a JPEG an odd colour."""
+    lin = [v / 255 / 12.92 if v / 255 <= 0.04045 else ((v / 255 + 0.055) / 1.055) ** 2.4
+           for v in rgb]
+    l = (0.4122214708 * lin[0] + 0.5363325363 * lin[1] + 0.0514459929 * lin[2]) ** (1 / 3)
+    m = (0.2119034982 * lin[0] + 0.6806995451 * lin[1] + 0.1073969566 * lin[2]) ** (1 / 3)
+    s = (0.0883024619 * lin[0] + 0.2817188376 * lin[1] + 0.6299787005 * lin[2]) ** (1 / 3)
+    lightness = 0.2104542553 * l + 0.7936177850 * m - 0.0040720468 * s
+    k1, k2 = 0.206, 0.03
+    k3 = (1 + k1) / (1 + k2)
+    toe = (k3 * lightness - k1 + math.sqrt((k3 * lightness - k1) ** 2 +
+                                           4 * k2 * k3 * lightness)) / 2
+    return (toe,
+            1.9779984951 * l - 2.4285922050 * m + 0.4505937099 * s,
+            0.0259040371 * l + 0.7827717662 * m - 0.8086757660 * s)
+
+
+def delta_e(a, b):
+    """The Euclidean distance of two Oklab colours, times 100: black to
+    white is 100."""
+    return 100 * math.dist(a, b)
+
+
+def colour_fidelity(width, height, src, out):
+    """The mean colour difference between the pixels SRC and OUT, and the
+    same weighted by how strong an edge SRC has at each pixel (the
+    gradient of its lightness)."""
+    cache = {}
+
+    def lab(c):
+        if c not in cache:
+            cache[c] = oklab(c)
+        return cache[c]
+
+    light = [lab(c)[0] for c in src]
+    total = edge_total = edge_weight = 0.0
+    for y in range(height):
+        row, up, down = y * width, max(y - 1, 0) * width, min(y + 1, height - 1) * width
+        for x in range(width):
+            i = row + x
+            d = delta_e(lab(src[i]), lab(out[i]))
+            g = math.hypot(light[row + min(x + 1, width - 1)] - light[row + max(x - 1, 0)],
+                           light[down + x] - light[up + x])
+            total += d
+            edge_total += d * g
+            edge_weight += g
+    return (round(total / (width * height), 3),
+            round(edge_total / edge_weight, 3) if edge_weight > 0 else 0.0)
+
+
+def colour_values(names):
+    """ImageMagick colour NAMES as 8-bit RGB."""
+    raw = magick(["xc:" + n for n in names] + ["+append", "-depth", "8", "rgb:-"])
+    return [tuple(raw[i:i + 3]) for i in range(0, 3 * len(names), 3)]
+
+
+def drawn_palette(args):
+    """The colours that magick ARGS draw with: the canvas, every fill and
+    every stroke, as RGB.  None for an image that isn't drawn, or that is
+    composited with another image, such as the scanned ones, whose
+    colours change."""
+    if "-compose" in args:
+        return None
+    names, fill, stroke, drew = [], "black", "none", False
+    for arg in args:
+        if arg.startswith("xc:") and arg != "xc:none":
+            names.append(arg[3:])
+    for option, value in zip(args, args[1:]):
+        if option == "-fill":
+            fill = value
+        elif option == "-stroke":
+            stroke = value
+        elif option == "-draw":
+            drew = True
+            names += [c for c in (fill, stroke) if c != "none"]
+    if not drew or not names:
+        return None
+    return colour_values(sorted(set(names)))
+
+
+def odd_colours(svg, pixels, palette):
+    """The paths of SVG whose fill is farther than ODD_DELTA from every
+    colour of PALETTE, and the PIXELS of the rendered trace in such a
+    colour.  Paths are stacked, so a path's own area would count what
+    later paths cover."""
+    labs = [oklab(c) for c in palette]
+    odd = {}
+
+    def is_odd(rgb):
+        if rgb not in odd:
+            colour = oklab(rgb)
+            odd[rgb] = all(delta_e(colour, t) > ODD_DELTA for t in labs)
+        return odd[rgb]
+
+    fills = re.findall(r'<path style="[^"]*\bfill:#([0-9a-fA-F]{6})', svg)
+    return (sum(1 for f in fills if is_odd(hex_colour(f))),
+            sum(1 for p in pixels if is_odd(p)))
+
+
+def round_trip(png, svg_file, options, shapes=None, centerline=None, palette=None):
     """Compare the rendered SVG with the input image, and with SHAPES, the
     drawn shapes from drawn_shapes(), if given.  CENTERLINE says whether
-    it is a centerline trace; None takes it from OPTIONS."""
+    it is a centerline trace; None takes it from OPTIONS.  PALETTE is the
+    drawn colours from drawn_palette(), if known."""
     if centerline is None:
         centerline = "-centerline" in options
     bg = background_option(options) or ("#FFFFFF" if centerline else None)
@@ -814,6 +924,12 @@ def round_trip(png, svg_file, options, shapes=None, centerline=None):
         result["missing"] = sum(1 for a, b in zip(src, out) if not same(a, bgc) and same(b, bgc))
     result["edge_mean"], result["edge_max"] = symmetric(w, h, boundary(w, h, src),
                                                         boundary(w, h, out))
+    # Drawn again with anti-aliasing, as a viewer would draw it.
+    _, _, smooth = load_pixels("svg:" + svg_file, bg or "white")
+    result["delta"], result["edge_delta"] = colour_fidelity(w, h, src, smooth)
+    if palette is not None:
+        canvas = hex_colour(bg) if bg else (255, 255, 255)
+        result["odd_paths"], result["odd_px"] = odd_colours(svg, out, palette + [canvas])
     return result
 
 
@@ -827,7 +943,7 @@ def hex_colour(spec):
 
 
 def trace(autotrace, image, options, svg_file, entry, shapes=None, repeat=1, compare=True,
-          detect_centerline=False):
+          detect_centerline=False, palette=None):
     """Trace IMAGE with OPTIONS into SVG_FILE, and add the status, the
     time, the SVG's statistics and, if COMPARE, the round trip to ENTRY.
     With DETECT_CENTERLINE, the SVG says whether it is a centerline trace;
@@ -861,7 +977,7 @@ def trace(autotrace, image, options, svg_file, entry, shapes=None, repeat=1, com
             centerline = is_centerline_svg(svg) if detect_centerline else None
             if centerline:
                 entry["centerline"] = True
-            entry.update(round_trip(image, svg_file, options, shapes, centerline))
+            entry.update(round_trip(image, svg_file, options, shapes, centerline, palette))
     return entry
 
 
@@ -874,12 +990,13 @@ def measure(autotrace, directory, output, repeat=1):
         for name, category, sets, args in read_manifest():
             png = os.path.join(directory, name + ".png")
             shapes = drawn_shapes(args)
+            palette = drawn_palette(args)
             for options in sets:
                 case = case_name(name, options)
                 svg_file = os.path.join(workdir, "out.svg")
                 entry = {"case": case, "category": category}
                 trace(autotrace, png, options, svg_file, entry, shapes, repeat,
-                      compare=category != "timing")
+                      compare=category != "timing", palette=palette)
                 results.append(entry)
                 print("%-40s %s" % (case, summary(entry)), file=sys.stderr)
     finally:
@@ -940,6 +1057,10 @@ COLUMNS = [
     ("missing", "missing px"),
     ("edge_mean", "edge mean"),
     ("edge_max", "edge max"),
+    ("delta", "ΔE"),
+    ("edge_delta", "edge ΔE"),
+    ("odd_paths", "odd paths"),
+    ("odd_px", "odd px"),
     ("shape_mean", "shape mean"),
     ("shape_max", "shape max"),
     ("corners", "corners %"),
