@@ -25,7 +25,7 @@ tests/corpus/corpus.py run ../master/autotrace ./autotrace /tmp/corpus
 
 It draws the images into `/tmp/corpus/images`, writes `old.json` and
 `new.json` there, and prints a Markdown table of the cases that changed,
-ready to paste into a pull request. A run takes about a minute and a half.
+ready to paste into a pull request. A run takes about two minutes.
 
 - `--repeat 3` reports the best of three run times. Use it when time
   matters, on an otherwise idle machine.
@@ -48,6 +48,9 @@ autotrace's status when the trace fails. `--svg` keeps the trace.
 [`images.txt`](images.txt) lists the images, one per line, with the
 `magick` command that draws each of them, or for the images in `images/`,
 the file. Each line also gives the option sets to trace the image with.
+One argument isn't ImageMagick's: `-corpus-jpeg QUALITY` saves the image
+as a JPEG of that quality and reads it back, so that the PNG has JPEG's
+artefacts.
 
 Prefer generated images: they need no image files and no licences beyond
 the scripts' own. An image from elsewhere goes into `images/` as a PNG on
@@ -68,7 +71,21 @@ The categories:
   reduced by `-color-count`, and regions 1–10 levels apart.
 - **noise**: impulse noise, traced with and without despeckling (#376).
 - **alpha**: a shape on a transparent background.
-- **centerline**: line art traced with `-centerline` (#112).
+- **centerline**: line art traced with `-centerline` (#112): outlines,
+  curves, lines at 24 angles and quarter-pixel offsets, junctions of
+  degree 3 to 5, dashes, and lines of different widths.
+- **degraded**: a star and a three-colour logo, blurred, saved as a JPEG
+  at quality 30, and "scanned" onto uneven cream paper with grain.
+- **askew**: rectangles turned by 1, 3 and 7 degrees, whose nearly level
+  edges should still come out as straight lines.
+- **gradient**: linear gradients of two and three colours.
+- **size**: the same star, and the same specks and dots, at several
+  sizes, because despeckling and some thresholds count pixels.
+
+The degraded, askew, gradient and size images, and the centerline ones
+from `cl-angles` on, follow the test
+scenes of [VectorCraft](https://github.com/storytold/vectorcraft)'s tracer
+(#442).
 - **outside**: line art, diagrams and symbols from Wikimedia Commons,
   either CC0 or in the public domain. Among them are JPEGs with their
   compression artefacts (`hiemalora`, `syndicalism`), ANSI logic gate
