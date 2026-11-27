@@ -209,6 +209,43 @@ For `-centerline`, the trace is a one-pixel line rather than an area:
 | stray max | how far the traced line strays from the ink, in pixels |
 | ink max | how far the farthest ink pixel is from the traced line, in pixels |
 
+For line art drawn by `-draw` and traced with `-centerline`, the corpus
+also compares the topology of the traced strokes with that of the drawn
+ones. Each set of strokes makes a graph:
+- **Nodes:** the ends of open strokes, and the points where two strokes
+  cross. Points within 0.05 pixels of each other are one node.
+- **Degree:** the number of arms that leave a node. A stroke ending there
+  gives one arm, and a stroke passing through gives two.
+- **Junctions and ends:** a node of degree 3 or more is a junction, and
+  one of degree 1 is a free end.
+
+A traced junction matches a drawn one within the stroke's width plus 3
+pixels. A traced end matches a drawn one within half the width plus 4
+pixels. Each traced node matches once.
+
+| column | meaning |
+|---|---|
+| junct. ok | drawn junctions with a traced junction of the same degree |
+| junct. wrong | drawn junctions with a traced junction of another degree |
+| junct. missed | drawn junctions with no traced junction near |
+| junct. extra | traced junctions that match no drawn one |
+| junct. px | mean distance from a matched junction to the drawn one |
+| ends missed | drawn free ends with no traced end near |
+| spurs | traced free ends that match no drawn one: stray pieces, and strokes that stop short of the stroke they should meet |
+| end px | mean distance from a matched end to the drawn one |
+
+The 0.05-pixel rule is strict on purpose. A stroke that stops a pixel
+short of another, as the stem of the T in `cl-junctions` does, looks
+joined at one pixel's width, but in a vector editor it isn't: that counts
+as a missed junction and a spur. These follow VectorCraft's centre-line
+metrics (`crates/trace/tests/quality/centre_lines.rs`).
+- **All strokes count:** every traced stroke counts, whatever its colour,
+  so the grey fragments that anti-aliasing leaves add spurs. A drawn end
+  can also match a fragment's end, not the main stroke's.
+- **No width yet:** VectorCraft's width and coverage columns are left
+  out. Only `-centerline -preserve-width` writes stroke widths, and the
+  corpus doesn't trace with it yet.
+
 Ground-truth metrics compare the trace with the shape that was drawn,
 not with its pixels. That separates the fitting error from the
 rasterisation error, which matters for changes aimed at the shape itself,
