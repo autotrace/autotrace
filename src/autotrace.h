@@ -194,6 +194,11 @@ struct _at_fitting_opts_type {
   N_("snap-antialiasing: give anti-aliased edge pixels the nearer of the "                         \
      "flat colours on either side before tracing; default doesn't.")
   gboolean snap_antialiasing;
+
+#define at_doc__keep_knees                                                                         \
+  N_("keep-knees: don't remove the one-pixel steps (knees) of each outline "                       \
+     "before fitting; default removes them.")
+  gboolean keep_knees;
 };
 
 struct _at_input_opts_type {

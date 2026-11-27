@@ -255,6 +255,10 @@ static gfloat parse_real(const gchar *s)
     before fitting; default is 4.\n\n\
 -input-format: Available formats: %s.\n\n\
 -help: print this message.\n\n\
+-keep-knees: keep the pixels where an outline steps one pixel aside and\n\
+    back, which are removed before fitting by default.  That often traces\n\
+    curves and anti-aliased edges more closely, with more and shorter\n\
+    curves, but can round off sharp corners.\n\n\
 -line-reversion-threshold <real>: if a spline is closer to a straight\n\
     line than this, weighted by the square of the curve length, keep it a\n\
     straight line even if it is a list with curves; default is .01.\n\n\
@@ -308,6 +312,7 @@ static char *read_command_line(int argc, char *argv[], at_fitting_opts_type *fit
                                   {"filter-iterations", 1, 0, 0},
                                   {"help", 0, 0, 0},
                                   {"input-format", 1, 0, 0},
+                                  {"keep-knees", 0, 0, 0},
                                   {"line-reversion-threshold", 1, 0, 0},
                                   {"line-threshold", 1, 0, 0},
                                   {"list-input-formats", 0, 0, 0},
@@ -404,6 +409,9 @@ static char *read_command_line(int argc, char *argv[], at_fitting_opts_type *fit
       if (!input_reader)
         FATAL(_("Input format %s is not supported"), optarg);
     }
+
+    else if (ARGUMENT_IS("keep-knees"))
+      fitting_opts->keep_knees = TRUE;
 
     else if (ARGUMENT_IS("log"))
       set_log_level(optarg);
