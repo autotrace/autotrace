@@ -32,6 +32,7 @@
 #include "despeckle.h"
 #include "antialias.h"
 
+#include <errno.h>
 #include <locale.h>
 #include <string.h>
 
@@ -555,10 +556,12 @@ at_splines_type *at_splines_new_full(at_bitmap *bitmap, at_fitting_opts_type *op
   return splines;
 }
 
-void at_splines_write(at_spline_writer *writer, FILE *writeto, gchar *file_name,
-                      at_output_opts_type *opts, at_splines_type *splines, at_msg_func msg_func,
-                      gpointer msg_data)
+/* at_splines_write, returning the writer's status: 0 for success.  */
+static int write_splines(at_spline_writer *writer, FILE *writeto, gchar *file_name,
+                         at_output_opts_type *opts, at_splines_type *splines, at_msg_func msg_func,
+                         gpointer msg_data)
 {
+  int status;
   gboolean new_opts = FALSE;
   int llx, lly, urx, ury;
   llx = 0;
@@ -580,13 +583,149 @@ void at_splines_write(at_spline_writer *writer, FILE *writeto, gchar *file_name,
      locale changed.  */
   g_autofree gchar *saved_locale = g_strdup(setlocale(LC_NUMERIC, NULL));
   setlocale(LC_NUMERIC, "C");
-  (*writer->func)(writeto, file_name, llx, lly, urx, ury, opts, *splines, msg_func, msg_data,
-                  writer->data);
+  status = (*writer->func)(writeto, file_name, llx, lly, urx, ury, opts, *splines, msg_func,
+                           msg_data, writer->data);
   if (saved_locale)
     setlocale(LC_NUMERIC, saved_locale);
 
   if (new_opts)
     at_output_opts_free(opts);
+  return status;
+}
+
+void at_splines_write(at_spline_writer *writer, FILE *writeto, gchar *file_name,
+                      at_output_opts_type *opts, at_splines_type *splines, at_msg_func msg_func,
+                      gpointer msg_data)
+{
+  write_splines(writer, writeto, file_name, opts, splines, msg_func, msg_data);
+}
+
+/* The functions with a GError (issue #345) call the ones without, with
+   these callbacks in place of the client's.  The old functions are left
+   as they were, so that their clients see no change.  */
+
+typedef struct {
+  at_msg_func msg_func;
+  gpointer msg_data;
+  GError *error; /* From the first fatal message.  */
+  at_testcancel_func test_cancel;
+  gpointer testcancel_data;
+  gboolean cancelled; /* Whether test_cancel ever returned TRUE.  */
+} error_catcher;
+
+/* Pass warnings on to the client, and keep the first fatal message as the
+   error.  The client doesn't get the fatal messages: it gets the error.  */
+static void catch_messages(const gchar *msg, at_msg_type msg_type, gpointer data)
+{
+  error_catcher *catcher = data;
+
+  if (msg_type == AT_MSG_FATAL) {
+    if (catcher->error == NULL)
+      catcher->error = g_error_new_literal(AT_ERROR, AT_ERROR_FAILED, msg ? msg : "");
+  } else if (catcher->msg_func)
+    catcher->msg_func(msg, msg_type, catcher->msg_data);
+}
+
+/* Ask the client, and remember whether it ever said TRUE.  */
+static gboolean catch_cancel(gpointer data)
+{
+  error_catcher *catcher = data;
+
+  if (catcher->test_cancel(catcher->testcancel_data)) {
+    catcher->cancelled = TRUE;
+    return TRUE;
+  }
+  return FALSE;
+}
+
+at_bitmap *at_bitmap_read_with_error(at_bitmap_reader *reader, gchar *filename,
+                                     at_input_opts_type *opts, at_msg_func msg_func,
+                                     gpointer msg_data, GError **error)
+{
+  error_catcher catcher = {msg_func, msg_data, NULL, NULL, NULL, FALSE};
+  at_bitmap *bitmap;
+
+  g_return_val_if_fail(error == NULL || *error == NULL, NULL);
+  bitmap = at_bitmap_read(reader, filename, opts, catch_messages, &catcher);
+  /* at_bitmap_read returns NULL exactly when there was a fatal message.  */
+  if (catcher.error)
+    g_propagate_error(error, catcher.error);
+  return bitmap;
+}
+
+at_splines_type *at_splines_trace(at_bitmap *bitmap, at_fitting_opts_type *opts,
+                                  at_msg_func msg_func, gpointer msg_data,
+                                  at_progress_func notify_progress, gpointer progress_data,
+                                  at_testcancel_func test_cancel, gpointer testcancel_data,
+                                  GError **error)
+{
+  error_catcher catcher = {msg_func, msg_data, NULL, test_cancel, testcancel_data, FALSE};
+  at_splines_type *splines;
+
+  g_return_val_if_fail(error == NULL || *error == NULL, NULL);
+  splines = at_splines_new_full(bitmap, opts, catch_messages, &catcher, notify_progress,
+                                progress_data, test_cancel ? catch_cancel : NULL, &catcher);
+  if (splines != NULL) {
+    /* A fatal message always makes it return NULL, but be safe.  */
+    g_clear_error(&catcher.error);
+    return splines;
+  }
+  /* A fatal error wins over a cancel at the same time.  */
+  if (catcher.error)
+    g_propagate_error(error, catcher.error);
+  else if (catcher.cancelled)
+    g_set_error_literal(error, AT_ERROR, AT_ERROR_CANCELLED, _("Tracing was cancelled"));
+  else
+    g_set_error_literal(error, AT_ERROR, AT_ERROR_FAILED, _("Tracing failed"));
+  return NULL;
+}
+
+/* Set ERROR for a failed write of FILE_NAME, which may be NULL or empty,
+   for the REASON, which may be NULL.  Whole sentences, so that they can be
+   translated.  */
+static void set_write_error(GError **error, const gchar *file_name, const gchar *reason)
+{
+  gboolean named = file_name != NULL && *file_name != '\0';
+
+  if (named && reason)
+    g_set_error(error, AT_ERROR, AT_ERROR_FAILED, _("Writing %s failed: %s"), file_name, reason);
+  else if (named)
+    g_set_error(error, AT_ERROR, AT_ERROR_FAILED, _("Writing %s failed"), file_name);
+  else if (reason)
+    g_set_error(error, AT_ERROR, AT_ERROR_FAILED, _("Writing the output failed: %s"), reason);
+  else
+    g_set_error_literal(error, AT_ERROR, AT_ERROR_FAILED, _("Writing the output failed"));
+}
+
+gboolean at_splines_write_with_error(at_spline_writer *writer, FILE *writeto, gchar *file_name,
+                                     at_output_opts_type *opts, at_splines_type *splines,
+                                     at_msg_func msg_func, gpointer msg_data, GError **error)
+{
+  error_catcher catcher = {msg_func, msg_data, NULL, NULL, NULL, FALSE};
+  gboolean had_error;
+  int status;
+
+  g_return_val_if_fail(error == NULL || *error == NULL, FALSE);
+  /* Only a failure of this write counts, not one the stream already had.  */
+  had_error = ferror(writeto) != 0;
+  status = write_splines(writer, writeto, file_name, opts, splines, catch_messages, &catcher);
+  if (catcher.error) {
+    g_propagate_error(error, catcher.error);
+    return FALSE;
+  }
+  if (status != 0) {
+    set_write_error(error, file_name, NULL);
+    return FALSE;
+  }
+  if (!had_error) {
+    gboolean failed = fflush(writeto) != 0;
+    int saved_errno = errno;
+    if (failed || ferror(writeto)) {
+      set_write_error(error, file_name, failed ? g_strerror(saved_errno) : NULL);
+      return FALSE;
+    }
+  }
+  return TRUE;
 }
 
 void at_splines_free(at_splines_type *splines)

@@ -1,0 +1,30 @@
+#!/bin/sh
+
+# SPDX-FileCopyrightText: 2026 AutoTrace contributors
+#
+# SPDX-License-Identifier: CC0-1.0
+
+# at_bitmap_read_with_error, at_splines_trace and
+# at_splines_write_with_error must report failures through a GError in
+# the AT_ERROR domain, with the right code, and pass only warnings to the
+# message callback (#345).  The helper is built by "make check" next to
+# the autotrace program.  input.png is an aliased disc:
+#     magick -size 24x24 xc:white +antialias -fill black \
+#       -draw "circle 12,12 12,4" -type grayscale \
+#       -define png:color-type=0 input.png
+
+. "`dirname "$0"`/../functions"
+
+helper=`dirname "\`get_autotrace\`"`/tests/helpers/gerror
+test -x "$helper" || test -x "$helper.exe" || skip "helper program not built"
+
+DIR=$1
+"$helper" $DIR/input.png $DIR/out.svg > $DIR/out.log 2>&1
+RESULT=$?
+
+if [ $RESULT -eq 0 ]; then
+    rm -f $DIR/out.log $DIR/out.svg
+    ok
+else
+    fail "exit $RESULT: `grep FAILED $DIR/out.log | tr '\n' ' '`"
+fi
