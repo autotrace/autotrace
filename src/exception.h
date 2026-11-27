@@ -34,11 +34,7 @@ gboolean at_exception_got_fatal(at_exception_type *exception);
 void at_exception_fatal(at_exception_type *exception, const gchar *message);
 void at_exception_warning(at_exception_type *exception, const gchar *message);
 
-#define AT_ERROR at_error_quark()
-GQuark at_error_quark(void);
-typedef enum {
-  AT_ERROR_WRONG_COLOR_STRING,
-} AtError;
+/* AT_ERROR, at_error_quark and AtError are declared in autotrace.h.  */
 
 #ifdef __cplusplus
 }

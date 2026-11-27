@@ -7,7 +7,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: autotrace 0.31.13\n"
 "Report-Msgid-Bugs-To: https://github.com/autotrace/autotrace/issues\n"
-"POT-Creation-Date: 2026-11-27 02:17+0100\n"
+"POT-Creation-Date: 2026-11-27 03:09+0100\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
@@ -38,6 +38,33 @@ msgstr ""
 #: src/autotrace.c
 msgid ""
 "scanned drawings and text: like logo, and remove specks of up to 7 pixels"
+msgstr ""
+
+#: src/autotrace.c
+msgid "Tracing was cancelled"
+msgstr ""
+
+#: src/autotrace.c
+msgid "Tracing failed"
+msgstr ""
+
+#: src/autotrace.c
+#, c-format
+msgid "Writing %s failed: %s"
+msgstr ""
+
+#: src/autotrace.c
+#, c-format
+msgid "Writing %s failed"
+msgstr ""
+
+#: src/autotrace.c
+#, c-format
+msgid "Writing the output failed: %s"
+msgstr ""
+
+#: src/autotrace.c
+msgid "Writing the output failed"
 msgstr ""
 
 #: src/autotrace.h

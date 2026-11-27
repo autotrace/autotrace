@@ -219,6 +219,21 @@ struct _at_bitmap {
 
 typedef void (*at_msg_func)(const gchar *msg, at_msg_type msg_type, gpointer client_data);
 
+/* The GError domain of libautotrace, and its codes.  The functions that
+   take a GError ** report failures through it (issue #345); the others,
+   such as at_bitmap_read, through their at_msg_func as AT_MSG_FATAL.  New
+   codes are added at the end.  */
+#define AT_ERROR at_error_quark()
+GQuark at_error_quark(void);
+typedef enum {
+  /* at_color_parse: the string isn't a colour.  */
+  AT_ERROR_WRONG_COLOR_STRING,
+  /* Any other failure; the message says what went wrong.  */
+  AT_ERROR_FAILED,
+  /* The client's test_cancel returned TRUE.  */
+  AT_ERROR_CANCELLED,
+} AtError;
+
 /*
  * Autotrace initializer
  */
@@ -396,6 +411,36 @@ at_splines_type *at_splines_new_full(at_bitmap *bitmap, at_fitting_opts_type *op
 void at_splines_write(at_spline_writer *writer, FILE *writeto, gchar *file_name,
                       at_output_opts_type *opts, at_splines_type *splines, at_msg_func msg_func,
                       gpointer msg_data);
+
+/* The same as at_bitmap_read, at_splines_new_full and at_splines_write,
+   but they report a failure through ERROR, in the AT_ERROR domain, as
+   GLib functions do (issue #345).  ERROR may be NULL; if it isn't, *ERROR
+   must be NULL.  MSG_FUNC gets only the warnings (AT_MSG_WARNING), and
+   may be NULL too.
+
+   at_bitmap_read_with_error returns NULL and sets ERROR when the file
+   can't be read or isn't valid.
+
+   at_splines_trace returns NULL and sets ERROR to AT_ERROR_CANCELLED when
+   TEST_CANCEL stopped it, or to another code when tracing failed.
+
+   at_splines_write_with_error returns FALSE and sets ERROR when the writer
+   fails, or when writing to WRITETO fails (for example, the disk is full).
+   To find the latter, it flushes WRITETO, and checks its error indicator.
+   If that was already set before the call, a failure of this write can't
+   be told from the earlier one, and only the writer's own failures are
+   reported: call clearerr (WRITETO) first.  It doesn't close WRITETO.  */
+at_bitmap *at_bitmap_read_with_error(at_bitmap_reader *reader, gchar *filename,
+                                     at_input_opts_type *opts, at_msg_func msg_func,
+                                     gpointer msg_data, GError **error);
+at_splines_type *at_splines_trace(at_bitmap *bitmap, at_fitting_opts_type *opts,
+                                  at_msg_func msg_func, gpointer msg_data,
+                                  at_progress_func notify_progress, gpointer progress_data,
+                                  at_testcancel_func test_cancel, gpointer testcancel_data,
+                                  GError **error);
+gboolean at_splines_write_with_error(at_spline_writer *writer, FILE *writeto, gchar *file_name,
+                                     at_output_opts_type *opts, at_splines_type *splines,
+                                     at_msg_func msg_func, gpointer msg_data, GError **error);
 
 void at_splines_free(at_splines_type *splines);
 

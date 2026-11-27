@@ -102,6 +102,8 @@ tests/helpers/log-level
 tests/helpers/log-level.exe
 tests/helpers/inkscape-calls
 tests/helpers/inkscape-calls.exe
+tests/helpers/gerror
+tests/helpers/gerror.exe
 stamp-*
 
 # Recorded output of the golden-file test, regardless of extension
