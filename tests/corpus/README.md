@@ -118,6 +118,14 @@ Output metrics, from the SVG alone:
 | nodes | `L` and `C` commands |
 | diag. L | `L` commands that are neither horizontal nor vertical |
 | C | `C` commands (Bézier curves) |
+| lines % | share of the outline's length that is straight: lines, and curves whose control points lie within 0.02 pixels of the chord |
+| upright % | share of the outline's length that is straight and exactly level or upright |
+| specks | closed subpaths of under 6 square pixels, including those with no area at all (#448) |
+| outside px | how far the farthest point of the trace lies outside the image |
+
+Lines and curves along the image border, which every background has, are
+left out of the lines and upright shares. Edges shared by two regions
+are traced once in each, so they count twice.
 
 Round-trip metrics render the SVG at the input's size, with anti-aliasing
 off (`shape-rendering="crispEdges"`), and compare it with the input. Both
@@ -169,7 +177,36 @@ out. `square-aa` is drawn on half pixels, where ImageMagick's
 anti-aliasing doesn't follow that model: its edges are about a quarter of
 a pixel off.
 
-Lower is better for all of them except `C`, which depends on the shape. A
+Two more columns look at the corners. A drawn shape's corners are the
+vertices where its outline turns by 20° or more, inside the image and not
+covered by a later shape. A traced anchor turns by the angle between the
+segments that meet there.
+
+| column | meaning |
+|---|---|
+| corners % | share of the drawn corners that have a traced anchor turning by 20° or more within 1.5 pixels |
+| kinks | traced anchors that turn by 10° or more, farther than 2 pixels from any drawn corner: bumps in straight edges and curves |
+
+Anchors on the image border don't count, and neither do drawn corners
+within half a pixel of it, whose trace lies on the border. Where one
+filled shape cuts another, or strokes meet or cross, the trace turns at a
+point that no primitive has as a vertex: an anchor near such a junction
+isn't a kink, but the junction isn't a corner either. A kink on an edge
+shared by two regions counts twice.
+
+These two columns, and the lines, upright, specks and outside ones,
+follow the metrics of
+[VectorCraft](https://github.com/storytold/vectorcraft)'s tracer
+(`crates/trace/tests/quality/measure.rs`, #443), with the same thresholds,
+and two differences:
+- The distances to a corner are measured from the drawn vertex, while a
+  filled shape's traced corner lies about 0.7 pixels outside it. So the
+  1.5 pixels leave less room here.
+- Specks are counted per closed subpath, so a small hole counts too.
+  VectorCraft counts whole paths.
+
+Lower is better for all of them except `C`, `lines %` and `upright %`,
+which depend on the shape, and `corners %`, where higher is better. A
 change usually trades one for another: more nodes for fewer wrong pixels,
 say. The table shows both, and the pull request should say which matters.
 

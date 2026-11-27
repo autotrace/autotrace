@@ -39,6 +39,9 @@ matter:
 | `edge_mean`, `edge_max` | distance in pixels between the image's colour edges and the trace's | lower |
 | `nodes` | segments in all paths: what a person editing the SVG deals with | lower |
 | `paths`, `subpaths` | `<path>` elements, and the separate shapes or strokes inside them; many more than the image visibly has means fragments | close to the visible count |
+| `specks` | shapes of under 6 square pixels: noise, or slivers of anti-aliasing | lower, unless the image has dots that small |
+| `lines`, `upright` | % of the outline that is straight, and level or upright | depends on the art. Pixel staircases score near 100, so read them with `specks`: a high share with few specks means straight edges kept straight |
+| `outside` | pixels the trace reaches beyond the image | 0 |
 | `size` | SVG bytes | lower |
 | `time` | seconds | lower |
 

@@ -194,6 +194,141 @@ def svg_stats(svg):
     return stats
 
 
+# The outline itself: its turns, straight parts and specks (#443, after
+# the metrics of VectorCraft's tracer)
+
+# An anchor that turns by this much is a corner; by KINK, a kink unless a
+# true corner is near.
+CORNER_TURN = 20.0
+KINK_TURN = 10.0
+# How near (px) a traced corner must be to a true one to keep it, and how
+# far a kink must be from any true corner.
+CORNER_NEAR = 1.5
+KINK_FAR = 2.0
+# Closed subpaths smaller than this (px of area) are specks.
+SPECK_AREA = 6.0
+
+
+def subpaths(svg):
+    """The subpaths of an autotrace SVG, as (segments, closed); one that
+    ends where it starts is closed, with or without a "z".  Each
+    segment is a cubic (p0, p1, p2, p3); a line is one with its control
+    points at its ends.  Segments of no length are left out."""
+    result = []
+    for d in re.findall(r'\bd="([^"]*)"', svg):
+        tokens = TOKEN.findall(d)
+        i, pos, start, segs = 0, None, None, None
+        while i < len(tokens):
+            cmd = tokens[i]
+            i += 1
+            if cmd == "M":
+                if segs:
+                    result.append((segs, segs[0][0] == segs[-1][3]))
+                pos = start = (float(tokens[i]), float(tokens[i + 1]))
+                i += 2
+                segs = []
+                continue
+            if segs is None:
+                # A drawing command right after "z" starts a new subpath
+                # where the last one started.
+                start, segs = pos, []
+            if cmd == "L":
+                end = (float(tokens[i]), float(tokens[i + 1]))
+                i += 2
+                seg = (pos, pos, end, end)
+            elif cmd == "C":
+                c = [(float(tokens[i + 2 * k]), float(tokens[i + 2 * k + 1])) for k in range(3)]
+                i += 6
+                seg = (pos, c[0], c[1], c[2])
+            else:
+                seg = (pos, pos, start, start)
+            if len(set(seg)) > 1:
+                segs.append(seg)
+            pos = seg[3]
+            if cmd in "Zz":
+                if segs:
+                    result.append((segs, True))
+                segs = None
+        if segs:
+            result.append((segs, segs[0][0] == segs[-1][3]))
+    return result
+
+
+def turn_angle(a, b):
+    """The angle in degrees between directions A and B."""
+    return abs(math.degrees(math.atan2(a[0] * b[1] - a[1] * b[0], a[0] * b[0] + a[1] * b[1])))
+
+
+def first_direction(points):
+    """The direction from the first of POINTS to the next one apart from it."""
+    x0, y0 = points[0]
+    for x, y in points[1:]:
+        if math.hypot(x - x0, y - y0) > 1e-9:
+            return (x - x0, y - y0)
+    return None
+
+
+def anchor_turns(paths):
+    """(anchor, degrees it turns by) for each anchor of PATHS, from
+    subpaths(), that has a segment on both sides."""
+    turns = []
+    for segs, closed in paths:
+        for k in range(0 if closed else 1, len(segs)):
+            before, after = segs[k - 1], segs[k]
+            a = first_direction(before[::-1])
+            b = first_direction(after)
+            if a is not None and b is not None:
+                turns.append((after[0], turn_angle((-a[0], -a[1]), b)))
+    return turns
+
+
+def flatten(seg):
+    """Points along a cubic segment, its start included."""
+    p0, p1, p2, p3 = seg
+    if p1 == p0 and p2 == p3:
+        return [p0, p3]
+    return [p0] + bezier(p0, p1, p2, p3)
+
+
+def is_straight(seg):
+    p0, p1, p2, p3 = seg
+    return segment_distance(*p1, p0, p3) < 0.02 and segment_distance(*p2, p0, p3) < 0.02
+
+
+def outline_stats(svg, width, height):
+    """The share of the outline that is straight, and level or upright;
+    the specks; how far the trace reaches outside the image.  Edges along
+    the image border, which every background has, don't count."""
+    length = straight = upright = 0.0
+    specks, outside = 0, 0.0
+    for segs, closed in subpaths(svg):
+        points = []
+        for seg in segs:
+            flat = flatten(seg)
+            points += flat[:-1]
+            for x, y in flat:
+                outside = max(outside, -x, -y, x - width, y - height)
+            seg_length = sum(math.hypot(b[0] - a[0], b[1] - a[1]) for a, b in zip(flat, flat[1:]))
+            (x0, y0), (x1, y1) = seg[0], seg[3]
+            if is_straight(seg) and ((x0 == x1 and x0 in (0, width)) or
+                                     (y0 == y1 and y0 in (0, height))):
+                continue
+            length += seg_length
+            if is_straight(seg):
+                straight += seg_length
+                if x0 == x1 or y0 == y1:
+                    upright += seg_length
+        if closed:
+            ring = zip(points, points[1:] + points[:1])
+            area = sum(xa * yb - xb * ya for (xa, ya), (xb, yb) in ring)
+            specks += abs(area) / 2 < SPECK_AREA
+    result = {"specks": specks, "outside": round(outside, 3)}
+    if length > 0:
+        result["lines"] = round(100 * straight / length, 1)
+        result["upright"] = round(100 * upright / length, 1)
+    return result
+
+
 # Ground truth: the shapes that the -draw arguments describe.
 #
 # Coordinates are autotrace's: pixel (x, y) covers the square from (x, y) to
@@ -513,6 +648,101 @@ def shape_distances(kind, shapes, svg, width, height):
     return round(mean, 3), round(max(max(to_shape), max(to_trace)), 3)
 
 
+def true_corners(kind, shapes, width, height):
+    """The sharp corners of the drawn SHAPES that show: vertices where an
+    outline turns by CORNER_TURN or more, inside the image and not under
+    a later filled shape."""
+    margin = MARGIN if kind == "fill" else 0.0
+    corners = []
+    for k, shape in enumerate(shapes):
+        if not isinstance(shape, Polyline):
+            continue
+        points = [p for i, p in enumerate(shape.points) if i == 0 or p != shape.points[i - 1]]
+        if shape.closed and len(points) > 1 and points[0] == points[-1]:
+            points.pop()
+        n = len(points)
+        for i in range(n) if shape.closed else range(1, n - 1):
+            (xa, ya), (x, y), (xc, yc) = points[i - 1], points[i], points[(i + 1) % n]
+            if turn_angle((x - xa, y - ya), (xc - x, yc - y)) < CORNER_TURN:
+                continue
+            # A filled shape's corner within the margin of the border is
+            # traced on the border, where anchors don't count.
+            if min(x, y, width - x, height - y) <= margin + 1e-6:
+                continue
+            if kind == "fill" and any(s.signed(x, y) < margin - 1e-6 for s in shapes[k + 1:]):
+                continue
+            corners.append((x, y))
+    return corners
+
+
+def corner_outline(shape):
+    """SHAPE's outline as a list of points; a circle as a polygon with
+    sides of about a pixel, close enough to find where it meets others."""
+    if isinstance(shape, Circle):
+        n = max(16, int(2 * math.pi * shape.r))
+        points = [(shape.cx + shape.r * math.cos(2 * math.pi * k / n),
+                   shape.cy + shape.r * math.sin(2 * math.pi * k / n)) for k in range(n)]
+        return points + points[:1]
+    return shape.points
+
+
+def crossing(a, b, c, d):
+    """Where segments AB and CD meet, ends included, or None."""
+    rx, ry = b[0] - a[0], b[1] - a[1]
+    sx, sy = d[0] - c[0], d[1] - c[1]
+    den = rx * sy - ry * sx
+    if abs(den) < 1e-12:
+        return None  # parallel: no single point, and no turn
+    qx, qy = c[0] - a[0], c[1] - a[1]
+    t = (qx * sy - qy * sx) / den
+    u = (qx * ry - qy * rx) / den
+    if -1e-9 <= t <= 1 + 1e-9 and -1e-9 <= u <= 1 + 1e-9:
+        return (a[0] + t * rx, a[1] + t * ry)
+    return None
+
+
+def junctions(kind, shapes):
+    """The points where the outlines of two drawn SHAPES meet or cross
+    and show: where one filled shape cuts another, or where strokes meet.
+    A trace turns there, but no primitive has a vertex there."""
+    outlines = [corner_outline(s) for s in shapes]
+    boxes = [(min(x for x, _ in o), min(y for _, y in o), max(x for x, _ in o),
+              max(y for _, y in o)) for o in outlines]
+    found = []
+    for k in range(len(shapes)):
+        for j in range(k + 1, len(shapes)):
+            a, b = boxes[k], boxes[j]
+            if a[0] > b[2] + 1 or b[0] > a[2] + 1 or a[1] > b[3] + 1 or b[1] > a[3] + 1:
+                continue
+            for p, q in zip(outlines[k], outlines[k][1:]):
+                for r, s in zip(outlines[j], outlines[j][1:]):
+                    point = crossing(p, q, r, s)
+                    if point is None:
+                        continue
+                    if kind == "fill" and any(t.signed(*point) < -1e-6 for t in shapes[j + 1:]):
+                        continue
+                    found.append(point)
+    return found
+
+
+def corner_stats(kind, shapes, svg, width, height):
+    """The share of the true corners that have a traced corner near them,
+    and the kinks: anchors that turn by KINK_TURN or more far from any
+    true corner or junction.  Anchors on the image border don't count."""
+    corners = true_corners(kind, shapes, width, height)
+    expected = corners + junctions(kind, shapes)
+    turns = [(p, t) for p, t in anchor_turns(subpaths(svg))
+             if min(p[0], p[1], width - p[0], height - p[1]) > 1e-6]
+    result = {"kinks": sum(1 for (x, y), t in turns if t >= KINK_TURN and
+                           all(math.hypot(x - cx, y - cy) > KINK_FAR for cx, cy in expected))}
+    if corners:
+        kept = sum(1 for cx, cy in corners
+                   if any(t >= CORNER_TURN and math.hypot(x - cx, y - cy) <= CORNER_NEAR
+                          for (x, y), t in turns))
+        result["corners"] = round(100 * kept / len(corners), 1)
+    return result
+
+
 def background_option(options):
     """The -background-color of OPTIONS, in any spelling getopt accepts:
     one or two dashes, any abbreviation (only this option starts with b),
@@ -562,6 +792,7 @@ def round_trip(png, svg_file, options, shapes=None, centerline=None):
     # centre-line one.
     if shapes and shapes[0] == ("stroke" if centerline else "fill"):
         result["shape_mean"], result["shape_max"] = shape_distances(shapes[0], shapes[1], svg, w, h)
+        result.update(corner_stats(shapes[0], shapes[1], svg, w, h))
     if centerline:
         # Strokes are one pixel wide: how far do they stray from the ink, and
         # how far is the ink from the nearest stroke?
@@ -622,6 +853,9 @@ def trace(autotrace, image, options, svg_file, entry, shapes=None, repeat=1, com
         with open(svg_file, encoding="utf-8") as f:
             svg = f.read()
         entry["size"] = len(svg.encode())
+        dims = re.search(r'<svg [^>]*\bwidth="([0-9.]+)"[^>]*\bheight="([0-9.]+)"', svg)
+        if dims:
+            entry.update(outline_stats(svg, float(dims.group(1)), float(dims.group(2))))
         entry.update(svg_stats(svg))
         if compare:
             centerline = is_centerline_svg(svg) if detect_centerline else None
@@ -683,8 +917,8 @@ def score(autotrace, image, options, keep=None):
 
 
 def summary(entry):
-    keys = ["time", "paths", "nodes", "wrong", "edge_mean", "shape_mean", "shape_max",
-            "stray_max", "ink_max"]
+    keys = ["time", "paths", "nodes", "wrong", "edge_mean", "shape_mean", "shape_max", "corners",
+            "kinks", "stray_max", "ink_max"]
     return " ".join("%s=%s" % (k, entry[k]) for k in keys if k in entry)
 
 
@@ -696,6 +930,10 @@ COLUMNS = [
     ("nodes", "nodes"),
     ("L_diagonal", "diag. L"),
     ("C", "C"),
+    ("lines", "lines %"),
+    ("upright", "upright %"),
+    ("specks", "specks"),
+    ("outside", "outside px"),
     ("wrong", "wrong px"),
     ("wrong_exact", "exact px"),
     ("extra", "extra px"),
@@ -704,9 +942,15 @@ COLUMNS = [
     ("edge_max", "edge max"),
     ("shape_mean", "shape mean"),
     ("shape_max", "shape max"),
+    ("corners", "corners %"),
+    ("kinks", "kinks"),
     ("stray_max", "stray max"),
     ("ink_max", "ink max"),
 ]
+
+
+# Columns that are shares of something, not counts.
+PERCENT = {"lines", "upright", "corners"}
 
 
 def cell(old, new, key):
@@ -747,8 +991,10 @@ def compare(old_file, new_file, show_all=False):
         if show_all or any("→" in c for c in cells):
             print("| %s | %s |" % (r["case"], " | ".join(cells)))
             changed += "→" in "".join(cells)
+    # A sum of percentages means nothing.
     print("| **total** | %s |" % " | ".join(
-        cell(round(totals[k][0], 3), round(totals[k][1], 3), k) for k, _ in cols))
+        "" if k in PERCENT else cell(round(totals[k][0], 3), round(totals[k][1], 3), k)
+        for k, _ in cols))
     print("\n%d of %d cases changed." % (changed, len(new_results)))
 
 
