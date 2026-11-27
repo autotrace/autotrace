@@ -142,6 +142,38 @@ that the shades of anti-aliased input don't count as errors.
 | edge mean | mean distance between the input's and the trace's colour edges, in pixels (Chamfer distance) |
 | edge max | the largest such distance (Hausdorff distance) |
 
+Colour metrics compare colours in Oklab, where a difference of 100 is
+black against white. To match how a viewer sees the trace, ΔE and edge
+ΔE use a render with anti-aliasing. Odd pixels are counted on the
+`crispEdges` render.
+
+| column | meaning |
+|---|---|
+| ΔE | mean colour difference between the input and the trace |
+| edge ΔE | the same, weighted by how strong an edge the input has at each pixel (the gradient of its lightness) |
+| odd paths | paths whose colour is more than 10 from every colour drawn, the canvas included |
+| odd px | pixels of the render in such a colour: slivers of a colour the drawing doesn't have |
+
+The odd colours need the drawn colours: the canvas and every fill and
+stroke colour. So they are given only for images drawn by `-draw`, and
+not for those composited with another image, such as the scanned ones,
+whose paper changes every colour.
+- **Noise, blur and JPEG:** these images keep their drawn colours as the
+  palette, so most odd paths there are traced artefacts: noise, blurred
+  ramps, compression blocks.
+- **Edge ΔE** is 0 for an image without edges, such as a gradient,
+  however far its colours are off. Read ΔE there.
+
+These follow the
+metrics of VectorCraft's tracer, with two differences:
+- **Lightness:** this uses the lightness L_r of Ottosson's Okhsl instead
+  of Oklab's own L. Oklab's L rises from black like a cube root, so
+  `#060606` would be 12 from black, and every dark grey of a JPEG would
+  count as an odd colour. With L_r it is 4.
+- **Odd area:** this counts the odd pixels that show, not the area of
+  the odd paths. autotrace stacks its paths, so a path's own area
+  includes what later paths cover.
+
 For `-centerline`, the trace is a one-pixel line rather than an area:
 
 | column | meaning |

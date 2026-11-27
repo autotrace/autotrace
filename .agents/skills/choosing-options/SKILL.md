@@ -37,6 +37,7 @@ matter:
 | `status` | autotrace's exit status; anything but 0 is a failure, with `stderr` | 0 |
 | `wrong` | pixels whose colour differs by more than 32 in a channel between the image and the rendered trace | lower |
 | `edge_mean`, `edge_max` | distance in pixels between the image's colour edges and the trace's | lower |
+| `delta`, `edge_delta` | mean colour difference (Oklab, black to white is 100) between the image and the trace drawn with anti-aliasing, and the same weighted towards edges. Unlike `wrong`, it sees small colour shifts | lower |
 | `nodes` | segments in all paths: what a person editing the SVG deals with | lower |
 | `paths`, `subpaths` | `<path>` elements, and the separate shapes or strokes inside them; many more than the image visibly has means fragments | close to the visible count |
 | `specks` | shapes of under 6 square pixels: noise, or slivers of anti-aliasing | lower, unless the image has dots that small |
