@@ -242,9 +242,26 @@ metrics (`crates/trace/tests/quality/centre_lines.rs`).
 - **All strokes count:** every traced stroke counts, whatever its colour,
   so the grey fragments that anti-aliasing leaves add spurs. A drawn end
   can also match a fragment's end, not the main stroke's.
-- **No width yet:** VectorCraft's width and coverage columns are left
-  out. Only `-centerline -preserve-width` writes stroke widths, and the
-  corpus doesn't trace with it yet.
+
+Some line art is also traced with `-centerline -preserve-width`, the
+only mode that writes stroke widths. For those traces:
+
+| column | meaning |
+|---|---|
+| width err | mean difference between a traced stroke's width and the `-strokewidth` of the drawn stroke nearest it, over the points of the strokes within 2 pixels of a drawn one |
+| IoU % | pixels both inked in the input and covered by the rendered strokes, as a share of those either inked or covered |
+| area % | how much more area the rendered strokes cover than the ink, as a share of the ink: negative if less |
+
+- **Input pixels, not the exact stroke:** IoU and area compare with the
+  input's pixels, where VectorCraft compares with the exact stroke. So
+  they work for the tapering wedges too, which have no drawn width.
+- **Half coverage:** a pixel counts as ink when it is more than half way
+  from the background, so the faint edge of anti-aliased ink doesn't.
+- **ImageMagick's rows:** at whole-pixel coordinates, as in `cl-widths`,
+  ImageMagick draws an even `-strokewidth` without anti-aliasing one row
+  wider (2 as 3 rows), so the width error of those lines includes that
+  row.
+- **#453:** lines of an odd width come out a pixel too wide.
 
 Ground-truth metrics compare the trace with the shape that was drawn,
 not with its pixels. That separates the fitting error from the
@@ -283,6 +300,13 @@ segments that meet there.
 |---|---|
 | corners % | share of the drawn corners that have a traced anchor turning by 20° or more within 1.5 pixels |
 | kinks | traced anchors that turn by 10° or more, farther than 2 pixels from any drawn corner: bumps in straight edges and curves |
+| anchors × | anchors of the trace per anchor of the drawing, so that node counts compare across images |
+
+A drawing's anchors are what an ideal trace needs: four for a circle or
+an ellipse (four Bézier quarters), the vertices of a rectangle, polygon
+or line, and for a path one per `M`, `L` or `C`, the closing point once.
+A traced subpath has one anchor per segment, or one more if it is open.
+The background's frame, a subpath as large as the image, doesn't count.
 
 Anchors on the image border don't count, and neither do drawn corners
 within half a pixel of it, whose trace lies on the border. Where one
