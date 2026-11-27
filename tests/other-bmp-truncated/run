@@ -1,0 +1,45 @@
+#!/bin/sh
+
+# SPDX-FileCopyrightText: 2026 AutoTrace contributors
+#
+# SPDX-License-Identifier: CC0-1.0
+
+# A BMP file that ends before its bitmap does is still traced, as far as it
+# goes, but the native reader must say so with a warning.  It used to stop
+# silently, or only log a GLib message no client sees (#433).  The complete
+# files must give no warning.  Uses the RLE8, RLE4 and 24 bpp images of
+# other-bmp-formats, cut to two thirds of their size.  A build with *Magick
+# readers reads BMP through that library, so the test is skipped there.
+
+. "`dirname "$0"`/../functions"
+
+DIR=$1
+SRC=$DIR/../other-bmp-formats
+
+autotrace -list-input-formats 2>&1 | grep -q 'bmp.*(native)' ||
+    skip "BMP is read by a *Magick library, not the native reader"
+
+failed=""
+for name in rle8 rle4 ref24; do
+    size=`wc -c < $SRC/$name.bmp`
+    head -c `expr $size \* 2 / 3` $SRC/$name.bmp > $DIR/$name-cut.bmp
+    for file in $SRC/$name.bmp $DIR/$name-cut.bmp; do
+        autotrace -input-format bmp -output-format svg -output-file $DIR/out.svg $file \
+            2> $DIR/err.log
+        result=$?
+        case $file in
+        *-cut.bmp) want=yes ;;
+        *) want=no ;;
+        esac
+        if grep -q "ends before the bitmap" $DIR/err.log; then got=yes; else got=no; fi
+        if [ $result -ne 0 ] || [ ! -s $DIR/out.svg ] || [ $got != $want ]; then
+            failed="$failed `basename $file`(exit $result, warning $got)"
+        fi
+    done
+done
+rm -f $DIR/*-cut.bmp $DIR/out.svg $DIR/err.log
+
+if [ -n "$failed" ]; then
+    fail "truncated BMP not reported as expected:$failed"
+fi
+ok
