@@ -526,6 +526,8 @@ static unsigned char *ReadImage(FILE *fd, int width, int height, unsigned char c
   int i, i_max, j;
   int total_bytes_read;
   unsigned int px32;
+  /* Whether the file ended before the bitmap did (#433).  */
+  gboolean truncated = FALSE;
 
   if (!(compression == BI_RGB || (bpp == 8 && compression == BI_RLE8) ||
         (bpp == 4 && compression == BI_RLE4) || (bpp == 16 && compression == BI_BITFIELDS) ||
@@ -559,7 +561,11 @@ static unsigned char *ReadImage(FILE *fd, int width, int height, unsigned char c
   switch (bpp) {
 
   case 32: {
-    while (ReadOK(fd, row_buf, rowbytes)) {
+    while (TRUE) {
+      if (!ReadOK(fd, row_buf, rowbytes)) {
+        truncated = TRUE;
+        break;
+      }
       temp = image + (ypos * rowstride);
       for (xpos = 0; xpos < width; ++xpos) {
         px32 = ToL(&row_buf[xpos * 4]);
@@ -583,7 +589,11 @@ static unsigned char *ReadImage(FILE *fd, int width, int height, unsigned char c
   } break;
 
   case 24: {
-    while (ReadOK(fd, row_buf, rowbytes)) {
+    while (TRUE) {
+      if (!ReadOK(fd, row_buf, rowbytes)) {
+        truncated = TRUE;
+        break;
+      }
       temp = image + (ypos * rowstride);
       for (xpos = 0; xpos < width; ++xpos) {
         *(temp++) = row_buf[xpos * 3 + 2];
@@ -599,7 +609,11 @@ static unsigned char *ReadImage(FILE *fd, int width, int height, unsigned char c
   } break;
 
   case 16: {
-    while (ReadOK(fd, row_buf, rowbytes)) {
+    while (TRUE) {
+      if (!ReadOK(fd, row_buf, rowbytes)) {
+        truncated = TRUE;
+        break;
+      }
       temp = image + (ypos * rowstride);
       for (xpos = 0; xpos < width; ++xpos) {
         rgb = ToS(&row_buf[xpos * 2]);
@@ -624,7 +638,11 @@ static unsigned char *ReadImage(FILE *fd, int width, int height, unsigned char c
   case 2:
   case 1: {
     if (compression == 0) {
-      while (ReadOK(fd, &v, 1)) {
+      while (TRUE) {
+        if (!ReadOK(fd, &v, 1)) {
+          truncated = TRUE;
+          break;
+        }
         for (i = 1; (i <= (8 / bpp)) && (xpos < width); i++, xpos++) {
           temp = image + (ypos * rowstride) + (xpos * channels);
           *temp = (v & (((1 << bpp) - 1) << (8 - (i * bpp)))) >> (8 - (i * bpp));
@@ -643,7 +661,10 @@ static unsigned char *ReadImage(FILE *fd, int width, int height, unsigned char c
       /* compressed image (either RLE8 or RLE4) */
       while (ypos >= 0 && xpos <= width) {
         if (!ReadOK(fd, row_buf, 2)) {
-          LOG("The bitmap ends unexpectedly.");
+          /* After the last row, only the end-of-line and end-of-bitmap
+             records are missing, and nothing of the picture.  */
+          if (!(ypos == 0 && xpos >= width))
+            truncated = TRUE;
           break;
         }
 
@@ -673,7 +694,7 @@ static unsigned char *ReadImage(FILE *fd, int width, int height, unsigned char c
           for (j = 0; j < n; j += (8 / bpp)) {
             /* read the next byte in the record */
             if (!ReadOK(fd, &v, 1)) {
-              LOG("The bitmap ends unexpectedly.");
+              truncated = TRUE;
               break;
             }
 
@@ -693,6 +714,8 @@ static unsigned char *ReadImage(FILE *fd, int width, int height, unsigned char c
               xpos++;
             }
           }
+          if (truncated)
+            break;
 
           /* absolute mode runs are padded to 16-bit alignment */
           if (total_bytes_read % 2)
@@ -713,7 +736,7 @@ static unsigned char *ReadImage(FILE *fd, int width, int height, unsigned char c
         /* Deltarecord */
         {
           if (!ReadOK(fd, row_buf, 2)) {
-            LOG("The bitmap ends unexpectedly.");
+            truncated = TRUE;
             break;
           }
           xpos += (unsigned char)row_buf[0];
@@ -727,6 +750,11 @@ static unsigned char *ReadImage(FILE *fd, int width, int height, unsigned char c
     /* This is very bad, we should not be here */
     break;
   }
+
+  /* What was decoded is kept, and the rest is left as it was zero-filled
+     above, but the client should know that the picture is incomplete.  */
+  if (truncated)
+    at_exception_warning(exp, "BMP: the file ends before the bitmap does");
 
   if (bpp <= 8) {
     unsigned char *temp2, *temp3;
