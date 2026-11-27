@@ -17,7 +17,7 @@ SPDX-FileCopyrightText = "2026 AutoTrace contributors"
 SPDX-License-Identifier = "CC0-1.0"
 
 [[annotations]]
-path = ".claude/skills/**"
+path = ".agents/skills/**"
 SPDX-FileCopyrightText = "2026 AutoTrace contributors"
 SPDX-License-Identifier = "CC0-1.0"
 
