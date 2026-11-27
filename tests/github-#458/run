@@ -1,0 +1,38 @@
+#!/bin/sh
+
+# SPDX-FileCopyrightText: 2026 AutoTrace contributors
+#
+# SPDX-License-Identifier: CC0-1.0
+
+# -centerline must trace a line one pixel wide on any edge of the image.
+# Lines on the first row and the first column used to give no path at all
+# (issue #458).
+#
+# border-lines.png has a one-pixel line along each edge, none touching
+# another.  Made with
+#   magick -size 40x30 xc:white +antialias -fill black \
+#     -draw "rectangle 8,0 31,0" -draw "rectangle 0,8 0,21" \
+#     -draw "rectangle 8,29 31,29" -draw "rectangle 39,8 39,21" \
+#     -type grayscale -define png:color-type=0 -strip border-lines.png
+
+. "`dirname "$0"`/../functions"
+
+DIR=$1
+
+autotrace -centerline -output-format svg -output-file $DIR/border-lines.svg \
+    $DIR/border-lines.png || fail "cannot trace border-lines.png"
+d=`grep -o ' d="[^"]*"' $DIR/border-lines.svg`
+rm -f $DIR/border-lines.svg
+
+failed=""
+for line in "M8.5 0.5L31.5 0.5" "M0.5 8.5L0.5 21.5" "M8.5 29.5L31.5 29.5" "M39.5 8.5L39.5 21.5"; do
+    case "$d" in
+    *"$line"*) ;;
+    *) failed="$failed [$line]" ;;
+    esac
+done
+
+if [ -n "$failed" ]; then
+    fail "missing lines:$failed in$d"
+fi
+ok
