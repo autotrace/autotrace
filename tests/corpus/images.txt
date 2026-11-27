@@ -15,9 +15,9 @@
 # the same drawing without and with anti-aliasing.
 #
 # Categories: geometry, topology, thin, colour, noise, alpha, centerline,
-# outside (stored images from other sources), text (stored rendered text),
-# timing.  Images in "timing"
-# get output metrics only, no round trip.
+# degraded, askew, gradient, size, outside (stored images from other
+# sources), text (stored rendered text), timing.  Images in "timing" get
+# output metrics only, no round trip.
 
 # Geometric primitives
 square        | geometry   | ; -background-color FFFFFF | -size 128x128 xc:white +antialias -fill black -draw "rectangle 32,32 95,95"
@@ -69,6 +69,54 @@ cl-lines      | centerline | -centerline | -size 128x128 xc:white +antialias -fi
 cl-star-aa    | centerline | -centerline | -size 128x128 xc:white -fill none -stroke black -strokewidth 4 -draw "polygon 64.00,14.00 75.76,47.82 111.55,48.55 83.02,70.18 93.39,104.45 64.00,84.00 34.61,104.45 44.98,70.18 16.45,48.55 52.24,47.82"
 cl-curve-aa   | centerline | -centerline | -size 128x128 xc:white -fill none -stroke black -strokewidth 4 -draw "path 'M 12,100 C 30,0 98,128 116,28'"
 cl-cross      | centerline | -centerline | -size 128x128 xc:white +antialias -fill none -stroke black -strokewidth 5 -draw "line 64,8 64,120" -draw "line 8,64 120,64" -draw "line 20,20 108,108"
+
+# The scenes and copies below come from the test scenes of VectorCraft's
+# tracer (#442), redrawn here.  Degraded copies of a clean drawing: blurred,
+# JPEG at quality 30, and "scanned" onto uneven cream paper with grain.
+# -corpus-jpeg is not a magick option: corpus.py generate saves the image
+# as a JPEG of that quality and reads it back.  The drawn shapes are still
+# the truth.
+star-blur     | degraded   | ; -preset logo | -size 128x128 xc:white -fill black -draw "polygon 64.00,8.00 76.93,46.20 117.26,46.70 84.92,70.80 96.92,109.30 64.00,86.00 31.08,109.30 43.08,70.80 10.74,46.70 51.07,46.20" -blur 0x1
+star-jpeg     | degraded   | ; -preset logo; -color-count 2 | -size 128x128 xc:white -fill black -draw "polygon 64.00,8.00 76.93,46.20 117.26,46.70 84.92,70.80 96.92,109.30 64.00,86.00 31.08,109.30 43.08,70.80 10.74,46.70 51.07,46.20" -corpus-jpeg 30
+star-scan     | degraded   | ; -preset scan | -size 128x128 xc:white -fill black -draw "polygon 64.00,8.00 76.93,46.20 117.26,46.70 84.92,70.80 96.92,109.30 64.00,86.00 31.08,109.30 43.08,70.80 10.74,46.70 51.07,46.20" ( -size 128x128 gradient:#fbf6e8-#e2dac4 ) -compose multiply -composite -seed 1 -attenuate 0.3 +noise Gaussian -type truecolor
+logo-aa       | degraded   | ; -preset logo | -size 128x128 xc:white -fill #c00000 -draw "circle 44,44 44,14" -fill #0050c0 -draw "rectangle 56,56 115,115" -fill #00a040 -draw "polygon 12,116 52,116 32,72"
+logo-blur     | degraded   | ; -preset logo | -size 128x128 xc:white -fill #c00000 -draw "circle 44,44 44,14" -fill #0050c0 -draw "rectangle 56,56 115,115" -fill #00a040 -draw "polygon 12,116 52,116 32,72" -blur 0x1
+logo-jpeg     | degraded   | ; -preset logo; -color-count 4 | -size 128x128 xc:white -fill #c00000 -draw "circle 44,44 44,14" -fill #0050c0 -draw "rectangle 56,56 115,115" -fill #00a040 -draw "polygon 12,116 52,116 32,72" -corpus-jpeg 30
+logo-scan     | degraded   | ; -preset scan | -size 128x128 xc:white -fill #c00000 -draw "circle 44,44 44,14" -fill #0050c0 -draw "rectangle 56,56 115,115" -fill #00a040 -draw "polygon 12,116 52,116 32,72" ( -size 128x128 gradient:#fbf6e8-#e2dac4 ) -compose multiply -composite -seed 1 -attenuate 0.3 +noise Gaussian -type truecolor
+
+# Rectangles turned by 1, 3 and 7 degrees, whose edges are nearly level
+rect-1        | askew      | ; -background-color FFFFFF | -size 128x128 xc:white +antialias -fill black -draw "polygon 24.42,39.31 104.41,40.70 103.58,88.69 23.59,87.30"
+rect-1-aa     | askew      | ; -background-color FFFFFF | -size 128x128 xc:white -fill black -draw "polygon 24.42,39.31 104.41,40.70 103.58,88.69 23.59,87.30"
+rect-3        | askew      | ; -background-color FFFFFF | -size 128x128 xc:white +antialias -fill black -draw "polygon 25.31,37.94 105.20,42.13 102.69,90.06 22.80,85.87"
+rect-3-aa     | askew      | ; -background-color FFFFFF | -size 128x128 xc:white -fill black -draw "polygon 25.31,37.94 105.20,42.13 102.69,90.06 22.80,85.87"
+rect-7-aa     | askew      | ; -background-color FFFFFF | -size 128x128 xc:white -fill black -draw "polygon 27.22,35.30 106.63,45.05 100.78,92.70 21.37,82.95"
+
+# Linear gradients with known stops: two colours top to bottom and at 30
+# degrees, and three colours
+grad-2        | gradient   | -color-count 8; -preset photo | -size 128x128 gradient:#c00000-#0000c0
+grad-2-30     | gradient   | -color-count 8; -preset photo | -size 128x128 -define gradient:angle=30 gradient:#c00000-#0000c0
+grad-3        | gradient   | -color-count 8; -preset photo | ( -size 128x64 gradient:#c00000-#ffffff ) ( -size 128x64 gradient:#ffffff-#0000c0 ) -append
+
+# More line art for -centerline: lines at 24 angles 7.5 degrees apart, each
+# shifted by a different quarter pixel; junctions of degree 3, 4 and 5 and
+# a shallow crossing; dashes; lines 1-8 pixels wide, one whose width
+# changes along it, and filled wedges that taper from 8 pixels to 1
+cl-angles     | centerline | -centerline | -size 288x192 xc:white +antialias -fill none -stroke black -strokewidth 3 -draw "line 6.00,24.00 42.00,24.00" -draw "line 54.40,21.90 90.10,26.60" -draw "line 103.11,19.84 137.89,29.16" -draw "line 152.12,17.86 185.38,31.64" -draw "line 200.41,15.00 231.59,33.00" -draw "line 249.97,13.29 278.53,35.21" -draw "line 11.77,59.77 37.23,85.23" -draw "line 61.79,58.47 83.71,87.03" -draw "line 111.00,56.41 129.00,87.59" -draw "line 161.36,55.62 175.14,88.88" -draw "line 211.84,55.11 221.16,89.89" -draw "line 262.40,54.90 267.10,90.60" -draw "line 24.00,102.00 24.00,138.00" -draw "line 74.60,102.40 69.90,138.10" -draw "line 125.16,103.11 115.84,137.89" -draw "line 175.64,104.12 161.86,137.38" -draw "line 225.00,104.41 207.00,135.59" -draw "line 275.21,105.97 253.29,134.53" -draw "line 37.23,155.77 11.77,181.23" -draw "line 87.03,157.79 58.47,179.71" -draw "line 135.59,159.00 104.41,177.00" -draw "line 184.88,161.36 151.62,175.14" -draw "line 233.89,163.84 199.11,173.16" -draw "line 282.60,166.40 246.90,171.10"
+cl-angles-aa  | centerline | -centerline | -size 288x192 xc:white -fill none -stroke black -strokewidth 3 -draw "line 6.00,24.00 42.00,24.00" -draw "line 54.40,21.90 90.10,26.60" -draw "line 103.11,19.84 137.89,29.16" -draw "line 152.12,17.86 185.38,31.64" -draw "line 200.41,15.00 231.59,33.00" -draw "line 249.97,13.29 278.53,35.21" -draw "line 11.77,59.77 37.23,85.23" -draw "line 61.79,58.47 83.71,87.03" -draw "line 111.00,56.41 129.00,87.59" -draw "line 161.36,55.62 175.14,88.88" -draw "line 211.84,55.11 221.16,89.89" -draw "line 262.40,54.90 267.10,90.60" -draw "line 24.00,102.00 24.00,138.00" -draw "line 74.60,102.40 69.90,138.10" -draw "line 125.16,103.11 115.84,137.89" -draw "line 175.64,104.12 161.86,137.38" -draw "line 225.00,104.41 207.00,135.59" -draw "line 275.21,105.97 253.29,134.53" -draw "line 37.23,155.77 11.77,181.23" -draw "line 87.03,157.79 58.47,179.71" -draw "line 135.59,159.00 104.41,177.00" -draw "line 184.88,161.36 151.62,175.14" -draw "line 233.89,163.84 199.11,173.16" -draw "line 282.60,166.40 246.90,171.10"
+cl-junctions  | centerline | -centerline | -size 320x64 xc:white +antialias -fill none -stroke black -strokewidth 3 -draw "line 32.00,32.00 56.00,32.00" -draw "line 32.00,32.00 32.00,56.00" -draw "line 32.00,32.00 8.00,32.00" -draw "line 96.00,32.00 96.00,56.00" -draw "line 96.00,32.00 75.22,20.00" -draw "line 96.00,32.00 116.78,20.00" -draw "line 160.00,32.00 176.97,48.97" -draw "line 160.00,32.00 143.03,48.97" -draw "line 160.00,32.00 143.03,15.03" -draw "line 160.00,32.00 176.97,15.03" -draw "line 224.00,32.00 224.00,8.00" -draw "line 224.00,32.00 246.83,24.58" -draw "line 224.00,32.00 238.11,51.42" -draw "line 224.00,32.00 209.89,51.42" -draw "line 224.00,32.00 201.17,24.58" -draw "line 264,22 312,42" -draw "line 264,42 312,22"
+cl-dashes     | centerline | -centerline | -size 136x128 xc:white +antialias -fill none -stroke black -strokewidth 3 -draw "line 8.00,12.00 16.00,12.00" -draw "line 21.00,12.00 29.00,12.00" -draw "line 34.00,12.00 42.00,12.00" -draw "line 47.00,12.00 55.00,12.00" -draw "line 60.00,12.00 68.00,12.00" -draw "line 73.00,12.00 81.00,12.00" -draw "line 86.00,12.00 94.00,12.00" -draw "line 99.00,12.00 107.00,12.00" -draw "line 112.00,12.00 120.00,12.00" -draw "line 8.00,40.00 14.93,44.00" -draw "line 19.26,46.50 26.19,50.50" -draw "line 30.52,53.00 37.44,57.00" -draw "line 41.77,59.50 48.70,63.50" -draw "line 53.03,66.00 59.96,70.00" -draw "line 64.29,72.50 71.22,76.50" -draw "line 75.55,79.00 82.48,83.00" -draw "line 124.00,8.00 124.00,16.00" -draw "line 124.00,21.00 124.00,29.00" -draw "line 124.00,34.00 124.00,42.00" -draw "line 124.00,47.00 124.00,55.00" -draw "line 124.00,60.00 124.00,68.00" -draw "line 124.00,73.00 124.00,81.00" -draw "line 124.00,86.00 124.00,94.00" -draw "line 124.00,99.00 124.00,107.00" -draw "line 124.00,112.00 124.00,120.00"
+cl-widths     | centerline | -centerline | -size 128x128 xc:white +antialias -fill none -stroke black -strokewidth 1 -draw "line 10,12 118,12" -strokewidth 2 -draw "line 10,30 118,30" -strokewidth 3 -draw "line 10,48 118,48" -strokewidth 5 -draw "line 10,66 118,66" -strokewidth 8 -draw "line 10,84 118,84" -strokewidth 2 -draw "line 10,110 46,110" -strokewidth 4 -draw "line 46,110 82,110" -strokewidth 6 -draw "line 82,110 118,110"
+cl-taper-aa   | centerline | -centerline | -size 128x128 xc:white -fill black -draw "polygon 10,29.5 118,26 118,34 10,30.5" -draw "polygon 12.01,56.54 110.25,117.57 109.75,118.43 7.99,63.46"
+
+# The same scenes at several sizes, because despeckling and some
+# thresholds count pixels: the star at half, twice and four times its
+# size, and specks and dots 1-19 pixels across at one, two and four times.
+star-64-aa    | size       |  | -size 64x64 xc:white -fill black -draw "polygon 32.00,4.00 38.47,23.10 58.63,23.35 42.46,35.40 48.46,54.65 32.00,43.00 15.54,54.65 21.54,35.40 5.37,23.35 25.54,23.10"
+star-256-aa   | size       |  | -size 256x256 xc:white -fill black -draw "polygon 128.00,16.00 153.86,92.40 234.52,93.40 169.84,141.60 193.84,218.60 128.00,172.00 62.16,218.60 86.16,141.60 21.48,93.40 102.14,92.40"
+star-512-aa   | size       |  | -size 512x512 xc:white -fill black -draw "polygon 256.00,32.00 307.72,184.80 469.04,186.80 339.68,283.20 387.68,437.20 256.00,344.00 124.32,437.20 172.32,283.20 42.96,186.80 204.28,184.80"
+dots-1        | size       | ; -preset scan; -despeckle-level 6 -despeckle-tightness 0 -noise-removal 1 | -size 98x32 xc:white +antialias -fill black -draw "rectangle 4,16 4,16" -draw "rectangle 10,15 11,16" -draw "circle 20,16 21,16" -draw "circle 28,16 30,16" -draw "circle 38,16 41,16" -draw "circle 50,16 54,16" -draw "circle 64,16 70,16" -draw "circle 82,16 91,16"
+dots-2        | size       | ; -preset scan; -despeckle-level 6 -despeckle-tightness 0 -noise-removal 1 | -size 196x64 xc:white +antialias -fill black -draw "rectangle 8,32 9,33" -draw "rectangle 20,30 23,33" -draw "circle 40,32 42,32" -draw "circle 56,32 60,32" -draw "circle 76,32 82,32" -draw "circle 100,32 108,32" -draw "circle 128,32 140,32" -draw "circle 164,32 182,32"
+dots-4        | size       | ; -preset scan; -despeckle-level 6 -despeckle-tightness 0 -noise-removal 1 | -size 392x128 xc:white +antialias -fill black -draw "rectangle 16,64 19,67" -draw "rectangle 40,60 47,67" -draw "circle 80,64 84,64" -draw "circle 112,64 120,64" -draw "circle 152,64 164,64" -draw "circle 200,64 216,64" -draw "circle 256,64 280,64" -draw "circle 328,64 364,64"
 
 # Images from Wikimedia Commons, all CC0, stored in images/ and converted to
 # PNG on white; REUSE.toml names each author and source.  Suggested in #341.

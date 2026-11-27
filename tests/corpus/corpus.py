@@ -73,7 +73,14 @@ def generate(directory):
     os.makedirs(directory, exist_ok=True)
     for name, _, _, args in read_manifest():
         out = os.path.join(directory, name + ".png")
-        magick(args + [out])
+        if "-corpus-jpeg" in args:
+            # Not a magick option: save the image as a JPEG of this
+            # quality and read it back, compression artefacts and all.
+            i = args.index("-corpus-jpeg")
+            jpeg = magick(args[:i] + args[i + 2:] + ["-quality", args[i + 1], "jpeg:-"])
+            magick(["jpeg:-", "PNG24:" + out], input=jpeg)
+        else:
+            magick(args + [out])
 
 
 # Images as (width, height, list of (r, g, b))
