@@ -712,6 +712,17 @@ static void fit_outline(unsigned this_outline, at_exception_type *exception, gpo
           if (x + 1 < dist->width && (w = dist->d[y + 1][x + 1]) > width)
             width = w;
         }
+        /* WIDTH is the distance from (near) the centreline to the centre
+           of the nearest background pixel, half a pixel beyond the edge.
+           Doubled, it is a pixel too wide on a line of odd width, whose
+           middle pixel lies on the centreline, and right on one of even
+           width, whose two middle rows straddle it (#453).  Telling them
+           apart pixel by pixel makes the width jump along a jagged line,
+           so take off half that error everywhere: a black line along a
+           pixel row or column is then at most half a pixel off either
+           way.  A pixel only partly inked counts for only part of a step
+           of the distance, so weigh the correction the same way.  */
+        width -= 0.25F * dist->weight[y][x];
         coord->z = width * (fitting_opts->width_weight_factor);
       }
     }
