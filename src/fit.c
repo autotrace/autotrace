@@ -882,13 +882,33 @@ static index_list_type outline_corners(pixel_outline_type pixel_o, fitting_opts_
 {
   index_list_type corner_list;
 
-  /* If the outline does not have enough points, we can't do
-     anything.  The endpoints of the outlines are automatically
-     corners.  We need at least `corner_surround' more pixels on
-     either side of a point before it is conceivable that we might
-     want another corner.  */
+  /* find_corners() needs at least `corner_surround' more pixels on
+     either side of a point before it is conceivable that we might want
+     another corner.  The endpoints of an open outline are automatically
+     corners.  */
   if (O_LENGTH(pixel_o) > fitting_opts->corner_surround * 2 + 2)
     corner_list = find_corners(pixel_o, fitting_opts, exception);
+
+  else if (!pixel_o.open) {
+    /* A closed outline this short is already the polygon it should
+       become: the pixel edges of a small region, or the pixel centres of
+       a small closed centerline.  Searched for corners with a smaller
+       surround, or fitted as one curve, it lost them: a region of one or
+       two pixels collapsed to a line with no area, and neighbours that
+       share its border left a hole (#448).  Keep the points where the
+       outline turns as corners, so that its sides are fitted as lines.  */
+    unsigned p;
+    corner_list = new_index_list();
+    for (p = 0; p < O_LENGTH(pixel_o); p++) {
+      at_coord a = O_COORDINATE(pixel_o, O_PREV(pixel_o, p));
+      at_coord b = O_COORDINATE(pixel_o, p);
+      at_coord c = O_COORDINATE(pixel_o, O_NEXT(pixel_o, p));
+      int cross = (b.x - a.x) * (c.y - b.y) - (b.y - a.y) * (c.x - b.x);
+      int dot = (b.x - a.x) * (c.x - b.x) + (b.y - a.y) * (c.y - b.y);
+      if (cross != 0 || dot < 0)
+        append_index(&corner_list, p);
+    }
+  }
 
   else {
     int surround;
