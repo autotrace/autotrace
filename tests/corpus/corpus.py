@@ -875,6 +875,36 @@ def odd_colours(svg, pixels, palette):
             sum(1 for p in pixels if is_odd(p)))
 
 
+# The gap is measured on a render this many times the image's size.
+GAP_SCALE = 4
+
+
+def uncovered(svg):
+    """The area of the image, in pixels, that no path of SVG covers.
+
+    Rendered onto transparency without anti-aliasing at GAP_SCALE times
+    the size, each sub-pixel is either covered or not.  With
+    anti-aliasing, two paths that meet exactly would each cover part of
+    the pixels along their border, and leave a seam that isn't in the
+    trace (the conflation of renderers)."""
+    if 'shape-rendering="crispEdges"' not in svg:
+        svg = svg.replace("<svg ", '<svg shape-rendering="crispEdges" ', 1)
+    with tempfile.NamedTemporaryFile("w", suffix=".svg", delete=False) as f:
+        f.write(svg)
+    try:
+        raw = magick(["-density", str(96 * GAP_SCALE), "-background", "none", "svg:" + f.name,
+                      "-format", "%w %h\n", "-write", "info:-",
+                      "-alpha", "extract", "-depth", "8", "gray:-"])
+    finally:
+        os.unlink(f.name)
+    header, alpha = raw.split(b"\n", 1)
+    size = re.search(r'<svg [^>]*\bwidth="([0-9.]+)"[^>]*\bheight="([0-9.]+)"', svg)
+    if size and tuple(map(int, header.split())) != tuple(
+            round(float(v) * GAP_SCALE) for v in size.groups()):
+        return None  # a renderer that ignored -density
+    return round(alpha.count(0) / GAP_SCALE ** 2, 2)
+
+
 def round_trip(png, svg_file, options, shapes=None, centerline=None, palette=None):
     """Compare the rendered SVG with the input image, and with SHAPES, the
     drawn shapes from drawn_shapes(), if given.  CENTERLINE says whether
@@ -927,8 +957,11 @@ def round_trip(png, svg_file, options, shapes=None, centerline=None, palette=Non
     # Drawn again with anti-aliasing, as a viewer would draw it.
     _, _, smooth = load_pixels("svg:" + svg_file, bg or "white")
     result["delta"], result["edge_delta"] = colour_fidelity(w, h, src, smooth)
+    if not bg:
+        # With -background-color, the background is left out on purpose.
+        result["gap"] = uncovered(svg)
+    canvas = hex_colour(bg) if bg else (255, 255, 255)
     if palette is not None:
-        canvas = hex_colour(bg) if bg else (255, 255, 255)
         result["odd_paths"], result["odd_px"] = odd_colours(svg, out, palette + [canvas])
     return result
 
@@ -1061,6 +1094,7 @@ COLUMNS = [
     ("edge_delta", "edge ΔE"),
     ("odd_paths", "odd paths"),
     ("odd_px", "odd px"),
+    ("gap", "gap px"),
     ("shape_mean", "shape mean"),
     ("shape_max", "shape max"),
     ("corners", "corners %"),
