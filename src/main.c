@@ -80,6 +80,7 @@ static void input_list_formats(FILE *file);
 static void output_list_formats(FILE *file);
 
 static void exception_handler(const gchar *msg, at_msg_type type, gpointer data);
+static void exit_on_error(GError *error) G_GNUC_NORETURN;
 
 #define DEFAULT_FORMAT "eps"
 
@@ -93,6 +94,7 @@ int main(int argc, char *argv[])
   at_bitmap *bitmap;
   FILE *output_file;
   FILE *dump_file;
+  GError *error = NULL;
 
   at_progress_func progress_reporter = NULL;
   int progress_stat = 0;
@@ -150,7 +152,10 @@ int main(int argc, char *argv[])
 
   /* Open the main input file.  */
   if (input_reader != NULL) {
-    bitmap = at_bitmap_read(input_reader, input_name, input_opts, exception_handler, NULL);
+    bitmap = at_bitmap_read_with_error(input_reader, input_name, input_opts, exception_handler,
+                                       NULL, &error);
+    if (bitmap == NULL)
+      exit_on_error(error);
 
     at_input_opts_free(input_opts);
   } else
@@ -161,8 +166,10 @@ int main(int argc, char *argv[])
     fprintf(stderr, "%-15s", input_name);
   };
 
-  splines = at_splines_new_full(bitmap, fitting_opts, exception_handler, NULL, progress_reporter,
-                                &progress_stat, NULL, NULL);
+  splines = at_splines_trace(bitmap, fitting_opts, exception_handler, NULL, progress_reporter,
+                             &progress_stat, NULL, NULL, &error);
+  if (splines == NULL)
+    exit_on_error(error);
 
   /* Dump loaded bitmap if needed */
   if (dumping_bitmap) {
@@ -182,12 +189,15 @@ int main(int argc, char *argv[])
     fclose(dump_file);
   }
 
-  at_splines_write(output_writer, output_file, output_name, output_opts, splines, exception_handler,
-                   NULL);
+  /* A failed write, such as one to a full disk, used to go unnoticed.  */
+  if (!at_splines_write_with_error(output_writer, output_file, output_name, output_opts, splines,
+                                   exception_handler, NULL, &error))
+    exit_on_error(error);
   at_output_opts_free(output_opts);
 
-  if (output_file != stdout)
-    fclose(output_file);
+  if (output_file != stdout && fclose(output_file) != 0)
+    exit_on_error(g_error_new(AT_ERROR, AT_ERROR_FAILED, _("Writing %s failed: %s"), output_name,
+                              g_strerror(errno)));
 
   at_splines_free(splines);
   at_bitmap_free(bitmap);
@@ -594,6 +604,19 @@ static void dump(at_bitmap *bitmap, FILE *fp)
   fwrite(AT_BITMAP_BITS(bitmap), 1, size, fp);
 }
 
+/* Print the message of a failed read, trace or write, and stop with exit
+   status 1, as a fatal message used to (issue #345).  */
+static void exit_on_error(GError *error)
+{
+  /* After -report-progress's dots, start a line of its own.  */
+  if (report_progress)
+    fputs("\n", stderr);
+  fprintf(stderr, "%s\n", error ? error->message : _("Unknown error"));
+  exit(1);
+}
+
+/* The library's warnings.  A fatal message no longer comes here: the
+   functions above return it as a GError.  */
 static void exception_handler(const gchar *msg, at_msg_type type, gpointer data)
 {
   if (type == AT_MSG_FATAL) {
