@@ -483,6 +483,7 @@ fitting_opts_type new_fitting_opts(void)
   fitting_opts.preserve_width = FALSE;
   fitting_opts.width_weight_factor = 6.0;
   fitting_opts.snap_antialiasing = FALSE;
+  fitting_opts.keep_knees = FALSE;
 
   return (fitting_opts);
 }
@@ -657,13 +658,17 @@ static void fit_outline(unsigned this_outline, at_exception_type *exception, gpo
 
   /* Remove the extraneous ``knee'' points before filtering.  Since the
      corners have already been found, we don't need to worry about
-     removing a point that should be a corner.  */
+     removing a point that should be a corner.  -keep-knees skips this
+     (issue #346).  */
 
-  DEBUG("\nRemoving knees:\n");
-  for (this_curve = 0; this_curve < curve_list_length; this_curve++) {
-    DEBUG("#%u:", this_curve);
-    if (!BORROWED(this_curve))
-      remove_knee_points(CURVE_LIST_ELT(curve_list, this_curve), CURVE_LIST_CLOCKWISE(curve_list));
+  if (!fitting_opts->keep_knees) {
+    DEBUG("\nRemoving knees:\n");
+    for (this_curve = 0; this_curve < curve_list_length; this_curve++) {
+      DEBUG("#%u:", this_curve);
+      if (!BORROWED(this_curve))
+        remove_knee_points(CURVE_LIST_ELT(curve_list, this_curve),
+                           CURVE_LIST_CLOCKWISE(curve_list));
+    }
   }
 
   if (dist != NULL) {

@@ -35,6 +35,7 @@ autotrace \- converts bitmap image data into vector graphics
 .RB [ \-help ]
 .RB [ \-input-format
 .IR " format" ]
+.RB [ \-keep-knees ]
 .RB [ \-line-reversion-threshold
 .IR " real" ]
 .RB [ \-line-threshold
@@ -175,6 +176,13 @@ The supported input formats are determined when the application is built
 and depend upon the availability of other software (the
 .B \-list-input-formats
 command can be used to determine which are supported locally).
+.TP
+.B \-keep-knees
+Keep the "knees" of each outline: the pixels where it steps one pixel
+aside and turns back, as on a staircase.
+By default they are removed before the outline is smoothed and fitted.
+Keeping them often traces curves and anti-aliased edges more closely,
+with more and shorter curves, but can round off sharp corners.
 .TP
 .BI \-line-reversion-threshold " real"
 When a spline is closer to a straight line than the specified real number

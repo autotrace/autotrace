@@ -7,7 +7,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: autotrace 0.31.13\n"
 "Report-Msgid-Bugs-To: https://github.com/autotrace/autotrace/issues\n"
-"POT-Creation-Date: 2026-11-26 02:43+0100\n"
+"POT-Creation-Date: 2026-11-27 01:24+0100\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
@@ -124,6 +124,12 @@ msgstr ""
 msgid ""
 "snap-antialiasing: give anti-aliased edge pixels the nearer of the flat "
 "colours on either side before tracing; default doesn't."
+msgstr ""
+
+#: src/autotrace.h
+msgid ""
+"keep-knees: don't remove the one-pixel steps (knees) of each outline before "
+"fitting; default removes them."
 msgstr ""
 
 #: src/color.c

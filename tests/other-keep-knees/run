@@ -1,0 +1,55 @@
+#!/bin/sh
+
+# SPDX-FileCopyrightText: © 2026 Peter Lemenkov
+#
+# SPDX-License-Identifier: CC0-1.0
+
+# -keep-knees (#346) skips the removal of knees: the pixels where an
+# outline steps one pixel aside and turns back.  An aliased circle is made
+# of such steps, so keeping them must change its trace, and so must the
+# centerline of a square frame around a round hole.  An upright rectangle
+# has none, so its trace must stay the same.  The option must add no
+# message on stderr.
+#
+#     magick -size 24x24 xc:white +antialias -fill black \
+#       -draw "circle 12,12 12,3" -type grayscale \
+#       -define png:color-type=0 circle.png
+#     magick -size 24x24 xc:white +antialias -fill black \
+#       -draw "rectangle 4,6 19,17" -type grayscale \
+#       -define png:color-type=0 square.png
+#     magick -size 32x32 xc:white +antialias -fill black \
+#       -draw "rectangle 4,4 27,27" -fill white -draw "circle 16,16 16,6" \
+#       -type grayscale -define png:color-type=0 frame.png
+
+. "`dirname "$0"`/../functions"
+
+DIR=$1
+
+# NAME OPTIONS EXPECTED: EXPECTED is "changes" or "same".
+check() {
+    autotrace $2 -output-format svg $DIR/$1.png > $DIR/default.svg 2> $DIR/default.err
+    default=$?
+    autotrace -keep-knees $2 -output-format svg $DIR/$1.png > $DIR/keep.svg 2> $DIR/keep.err
+    keep=$?
+    if [ $default -ne 0 ] || [ $keep -ne 0 ] || [ ! -s $DIR/keep.svg ]; then
+        failed="$failed $1[$2](exit $default/$keep)"
+    elif ! cmp -s $DIR/default.err $DIR/keep.err; then
+        failed="$failed $1[$2](stderr differs)"
+    elif [ $3 = changes ] && cmp -s $DIR/default.svg $DIR/keep.svg; then
+        failed="$failed $1[$2](unchanged)"
+    elif [ $3 = same ] && ! cmp -s $DIR/default.svg $DIR/keep.svg; then
+        failed="$failed $1[$2](changed)"
+    fi
+}
+
+failed=""
+check circle "" changes
+check frame "-centerline" changes
+check square "" same
+check square "-centerline" same
+rm -f $DIR/default.svg $DIR/keep.svg $DIR/default.err $DIR/keep.err
+
+if [ -n "$failed" ]; then
+    fail "unexpected -keep-knees traces for:$failed"
+fi
+ok
