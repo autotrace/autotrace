@@ -7,7 +7,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: autotrace 0.31.13\n"
 "Report-Msgid-Bugs-To: https://github.com/autotrace/autotrace/issues\n"
-"POT-Creation-Date: 2026-11-27 03:09+0100\n"
+"POT-Creation-Date: 2026-11-27 04:04+0100\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
@@ -48,7 +48,7 @@ msgstr ""
 msgid "Tracing failed"
 msgstr ""
 
-#: src/autotrace.c
+#: src/autotrace.c src/main.c
 #, c-format
 msgid "Writing %s failed: %s"
 msgstr ""
@@ -256,6 +256,10 @@ msgstr ""
 #: src/main.c
 #, c-format
 msgid "AutoTrace version %s.\n"
+msgstr ""
+
+#: src/main.c
+msgid "Unknown error"
 msgstr ""
 
 #: src/main.c
