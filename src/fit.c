@@ -80,9 +80,9 @@ static gfloat distance(at_real_coord, at_real_coord);
 
    For that, both outlines must split the border at the same points.  A point
    where the outline on the other side changes (a junction) is always a
-   corner, and between junctions both outlines use the owner's corners.  A
-   curve then runs between two corners on one border only, and its fit
-   depends on nothing but its own points.  */
+   corner, and between junctions a point is a corner if either outline
+   found one there (#458).  A curve then runs between two corners on one
+   border only, and its fit depends on nothing but its own points.  */
 
 typedef struct {
   unsigned start;       /* the point on this outline where the curve starts */
@@ -936,8 +936,8 @@ static index_list_type outline_corners(pixel_outline_type pixel_o, fitting_opts_
 }
 
 /* Replace the corners of outline O by the ones its shared borders need:
-   every junction, its own corners on the borders it fits, and the owner's
-   corners on the borders it reuses.  IS_CORNER[Q][I] tells whether point I
+   every junction, and on each border the corners of both outlines that
+   share it, so that both split it alike.  IS_CORNER[Q][I] tells whether point I
    is one of outline Q's own corners.  Leaves CORNERS[O] alone if O has no
    junction.  */
 
@@ -954,10 +954,16 @@ static void share_corners(pixel_outline_list_type pixel_list, shared_border_type
 
     if (is_junction(pixel_list, borders, o, v))
       corner = b->shared = TRUE;
-    else if (q < 0 || (unsigned)q > o)
+    else {
+      /* A corner of either side is a corner of the border, so that both
+         fit it alike.  A corner only one side can see, such as the end
+         of a line one pixel wide, which the long outline beside it is
+         too coarse to find, would otherwise be smoothed away (#458).
+         On outline Q, point V is where edge V ends.  */
       corner = is_corner[o][v];
-    else /* On outline Q, point V is where edge V ends.  */
-      corner = is_corner[q][(b->partner_edge[v] + 1) % O_LENGTH(O_LIST_OUTLINE(pixel_list, q))];
+      if (!corner && q >= 0)
+        corner = is_corner[q][(b->partner_edge[v] + 1) % O_LENGTH(O_LIST_OUTLINE(pixel_list, q))];
+    }
     if (corner)
       append_index(&shared, v);
   }
