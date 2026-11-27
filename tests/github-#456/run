@@ -1,0 +1,30 @@
+#!/bin/sh
+
+# SPDX-FileCopyrightText: 2026 AutoTrace contributors
+#
+# SPDX-License-Identifier: CC0-1.0
+
+# A region in a corner of the image must keep that corner.  A small white
+# region in the top-right corner used to be traced as a triangle that cut
+# across the corner, leaving a hole no path covered (issue #456).
+#
+# corner.png is 12x8, black, with white pixels at (10,0) and (11,0)-(11,3).
+# Made with
+#   magick -size 12x8 xc:black +antialias -fill white -draw "point 10,0" \
+#     -draw "rectangle 11,0 11,3" -type grayscale -define png:color-type=0 \
+#     -strip corner.png
+
+. "`dirname "$0"`/../functions"
+
+DIR=$1
+
+autotrace -output-format svg -output-file $DIR/corner.svg $DIR/corner.png ||
+    fail "cannot trace corner.png"
+d=`grep 'fill:#ffffff' $DIR/corner.svg | grep -o ' d="[^"]*"'`
+rm -f $DIR/corner.svg
+
+case "$d" in
+*"M12 0L"* | *"L12 0L"* | *"L12 0z"*) ;;
+*) fail "the white region misses the corner (12,0):$d" ;;
+esac
+ok

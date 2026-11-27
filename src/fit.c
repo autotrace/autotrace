@@ -453,7 +453,8 @@ static void for_each_outline(unsigned n_outlines, outline_task_func func, gpoint
 }
 
 static curve_list_array_type split_at_corners(pixel_outline_list_type, fitting_opts_type *,
-                                              shared_border_type *, at_exception_type *exception);
+                                              shared_border_type *, unsigned, unsigned,
+                                              at_exception_type *exception);
 static void fit_outline(unsigned, at_exception_type *, gpointer);
 static spline_list_type assemble_outline(curve_list_type, shared_border_type *, unsigned,
                                          spline_list_array_type *, spline_list_type **,
@@ -544,7 +545,7 @@ spline_list_array_type fitted_splines(pixel_outline_list_type pixel_outline_list
   shared_border_type *borders =
       fitting_opts->centerline ? NULL : find_shared_borders(pixel_outline_list);
   curve_list_array_type curve_array =
-      split_at_corners(pixel_outline_list, fitting_opts, borders, exception);
+      split_at_corners(pixel_outline_list, fitting_opts, borders, width, height, exception);
 
   char_splines.centerline = fitting_opts->centerline;
   char_splines.preserve_width = fitting_opts->preserve_width;
@@ -1010,7 +1011,33 @@ typedef struct {
   index_list_type *corners;
   gboolean **is_corner; /* NULL if no border is shared */
   curve_list_type *curve_lists;
+  unsigned width, height; /* of the image */
 } split_job_type;
+
+/* Add to CORNER_LIST, in order, each point of the region outline PIXEL_O
+   that lies on a corner of the WIDTH by HEIGHT image.  A region outline
+   runs along pixel edges, and the image's border is straight, so it always
+   turns there.  find_corners() can miss that turn, on a short outline
+   whose other turns are a pixel or two apart, or with a larger
+   corner_surround.  The curve fitted across the corner then left a hole
+   there that no region covers, or ran outside the image (#456).  */
+
+static void keep_image_corners(pixel_outline_type pixel_o, unsigned width, unsigned height,
+                               index_list_type *corner_list)
+{
+  unsigned p, i = 0;
+
+  for (p = 0; p < O_LENGTH(pixel_o); p++) {
+    at_coord c = O_COORDINATE(pixel_o, p);
+
+    if ((c.x != 0 && c.x != width) || (c.y != 0 && c.y != height))
+      continue;
+    while (i < INDEX_LIST_LENGTH(*corner_list) && GET_INDEX(*corner_list, i) < p)
+      i++;
+    if (i == INDEX_LIST_LENGTH(*corner_list) || GET_INDEX(*corner_list, i) != p)
+      g_array_insert_val(corner_list->data, i, p);
+  }
+}
 
 /* Find the corners of outline O alone.  */
 static void find_own_corners(unsigned o, at_exception_type *exception, gpointer data)
@@ -1023,6 +1050,9 @@ static void find_own_corners(unsigned o, at_exception_type *exception, gpointer 
 
   DEBUG("#%u:", o);
   job->corners[o] = outline_corners(pixel_o, &fitting_opts, exception);
+  /* A centerline runs through pixel centres instead.  */
+  if (!fitting_opts.centerline)
+    keep_image_corners(pixel_o, job->width, job->height, &job->corners[o]);
   DEBUG(" [%u].\n", INDEX_LIST_LENGTH(job->corners[o]));
   if (job->is_corner != NULL) {
     job->is_corner[o] = g_new0(gboolean, O_LENGTH(pixel_o));
@@ -1121,8 +1151,8 @@ static void split_outline(unsigned o, at_exception_type *exception, gpointer dat
 
 static curve_list_array_type split_at_corners(pixel_outline_list_type pixel_list,
                                               fitting_opts_type *fitting_opts,
-                                              shared_border_type *borders,
-                                              at_exception_type *exception)
+                                              shared_border_type *borders, unsigned width,
+                                              unsigned height, at_exception_type *exception)
 {
   unsigned o, n_outlines = O_LIST_LENGTH(pixel_list);
   curve_list_array_type curve_array = new_curve_list_array();
@@ -1134,6 +1164,8 @@ static curve_list_array_type split_at_corners(pixel_outline_list_type pixel_list
   job.corners = g_new(index_list_type, n_outlines);
   job.is_corner = borders != NULL ? g_new(gboolean *, n_outlines) : NULL;
   job.curve_lists = g_new(curve_list_type, n_outlines);
+  job.width = width;
+  job.height = height;
 
   DEBUG("\nFinding corners:\n");
   for_each_outline(n_outlines, find_own_corners, &job, exception);
