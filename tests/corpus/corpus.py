@@ -524,16 +524,19 @@ def draw_shape(primitive):
 
 
 def drawn_shapes(args):
-    """The shapes drawn by magick ARGS, as ("fill" or "stroke", [shapes]).
+    """The shapes drawn by magick ARGS, as ("fill" or "stroke", [shapes],
+    [stroke widths]).
 
     Returns None for an image with no -draw primitive, with one that
     draw_shape() doesn't know, or with both filled and stroked ones.  Noise
     added after drawing doesn't matter: the shapes are still the truth."""
-    fill, stroke = "black", "none"
-    kinds, shapes = set(), []
+    fill, stroke, width = "black", "none", 1.0
+    kinds, shapes, widths = set(), [], []
     for option, value in zip(args, args[1:]):
         if option == "-fill":
             fill = value
+        elif option == "-strokewidth":
+            width = float(value)
         elif option == "-stroke":
             stroke = value
         elif option == "-draw":
@@ -545,9 +548,10 @@ def drawn_shapes(args):
             if stroke != "none":
                 kinds.add("stroke")
             shapes.append(shape)
+            widths.append(width)
     if len(kinds) != 1:
         return None
-    return kinds.pop(), shapes
+    return kinds.pop(), shapes, widths
 
 
 def trace_points(svg):
@@ -743,6 +747,108 @@ def corner_stats(kind, shapes, svg, width, height):
     return result
 
 
+# Centerline topology (#443, after the centre-line metrics of VectorCraft's
+# tracer): the junctions and free ends of the strokes.
+
+# Points of strokes closer than this (px) are one node of the graph.
+NODE_MERGE = 0.05
+
+
+def bounds(points):
+    xs, ys = [x for x, _ in points], [y for _, y in points]
+    return min(xs), min(ys), max(xs), max(ys)
+
+
+def stroke_graph(lines):
+    """The junctions, as (point, degree), and the free ends of LINES, a
+    list of (points, closed).  The nodes are the ends of open lines and
+    the points where two lines cross; a node's degree is the number of
+    arms that leave it: one for a line ending there, two for a line
+    passing through.  A junction has three or more, a free end one."""
+    rings = [points + points[:1] if closed else points for points, closed in lines]
+    boxes = [bounds(r) for r in rings]
+    candidates = [p for (points, closed) in lines if not closed for p in (points[0], points[-1])]
+    for k in range(len(rings)):
+        for j in range(k + 1, len(rings)):
+            a, b = boxes[k], boxes[j]
+            if a[0] > b[2] or b[0] > a[2] or a[1] > b[3] or b[1] > a[3]:
+                continue
+            for p, q in zip(rings[k], rings[k][1:]):
+                for r, s in zip(rings[j], rings[j][1:]):
+                    point = crossing(p, q, r, s)
+                    if point is not None:
+                        candidates.append(point)
+    nodes = []
+    for p in candidates:
+        if all(math.dist(p, q) > NODE_MERGE for q in nodes):
+            nodes.append(p)
+    junctions, ends = [], []
+    for node in nodes:
+        degree = 0
+        for (points, closed), ring in zip(lines, rings):
+            if not closed:
+                arms = (math.dist(node, points[0]) <= NODE_MERGE) + \
+                       (math.dist(node, points[-1]) <= NODE_MERGE)
+                if arms:
+                    degree += arms
+                    continue
+            if any(segment_distance(*node, p, q) <= NODE_MERGE for p, q in zip(ring, ring[1:])):
+                degree += 2
+        if degree >= 3:
+            junctions.append((node, degree))
+        elif degree == 1:
+            ends.append(node)
+    return junctions, ends
+
+
+def match(truth, found, tolerance):
+    """Pair each point of TRUTH with the nearest unused point of FOUND
+    within TOLERANCE(point).  Returns [(truth index, found index)]."""
+    used, pairs = set(), []
+    for i, p in enumerate(truth):
+        near = [(math.dist(p, q), k) for k, q in enumerate(found)
+                if k not in used and math.dist(p, q) <= tolerance(p)]
+        if near:
+            k = min(near)[1]
+            used.add(k)
+            pairs.append((i, k))
+    return pairs
+
+
+def topology_stats(shapes, widths, svg):
+    """The junctions and free ends of a centerline trace against those of
+    the drawn strokes: junctions found with the right degree or a wrong
+    one, missed, and extra; how far found junctions and ends are from the
+    true ones; true ends missed; and spurs, traced ends with no true end."""
+    true_lines = [(corner_outline(s)[:-1] if isinstance(s, Circle) else s.points,
+                   isinstance(s, Circle) or s.closed) for s in shapes]
+    true_j, true_e = stroke_graph(true_lines)
+    traced = []
+    for segs, closed in subpaths(svg):
+        points = [p for seg in segs for p in flatten(seg)[:-1]]
+        traced.append((points if closed else points + [segs[-1][3]], closed))
+    out_j, out_e = stroke_graph(traced)
+
+    def width_at(p):
+        return min((s.nearest(p[0], p[1], 0.0)[0], w) for s, w in zip(shapes, widths))[1]
+
+    pairs = match([p for p, _ in true_j], [p for p, _ in out_j], lambda p: width_at(p) + 3)
+    ok = sum(1 for i, k in pairs if true_j[i][1] == out_j[k][1])
+    result = {"junctions_ok": ok, "junctions_wrong": len(pairs) - ok,
+              "junctions_missed": len(true_j) - len(pairs),
+              "junctions_extra": len(out_j) - len(pairs)}
+    if pairs:
+        result["junction_px"] = round(sum(math.dist(true_j[i][0], out_j[k][0])
+                                          for i, k in pairs) / len(pairs), 2)
+    ends = match(true_e, out_e, lambda p: 0.5 * width_at(p) + 4)
+    result["ends_missed"] = len(true_e) - len(ends)
+    result["spurs"] = len(out_e) - len(ends)
+    if ends:
+        distances = [math.dist(true_e[i], out_e[k]) for i, k in ends]
+        result["end_px"] = round(sum(distances) / len(distances), 2)
+    return result
+
+
 def background_option(options):
     """The -background-color of OPTIONS, in any spelling getopt accepts:
     one or two dashes, any abbreviation (only this option starts with b),
@@ -933,6 +1039,8 @@ def round_trip(png, svg_file, options, shapes=None, centerline=None, palette=Non
     if shapes and shapes[0] == ("stroke" if centerline else "fill"):
         result["shape_mean"], result["shape_max"] = shape_distances(shapes[0], shapes[1], svg, w, h)
         result.update(corner_stats(shapes[0], shapes[1], svg, w, h))
+        if centerline:
+            result.update(topology_stats(shapes[1], shapes[2], svg))
     if centerline:
         # Strokes are one pixel wide: how far do they stray from the ink, and
         # how far is the ink from the nearest stroke?
@@ -1101,6 +1209,14 @@ COLUMNS = [
     ("kinks", "kinks"),
     ("stray_max", "stray max"),
     ("ink_max", "ink max"),
+    ("junctions_ok", "junct. ok"),
+    ("junctions_wrong", "junct. wrong"),
+    ("junctions_missed", "junct. missed"),
+    ("junctions_extra", "junct. extra"),
+    ("junction_px", "junct. px"),
+    ("ends_missed", "ends missed"),
+    ("spurs", "spurs"),
+    ("end_px", "end px"),
 ]
 
 
