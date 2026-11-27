@@ -174,6 +174,34 @@ metrics of VectorCraft's tracer, with two differences:
   the odd paths. autotrace stacks its paths, so a path's own area
   includes what later paths cover.
 
+| column | meaning |
+|---|---|
+| gap px | area that no path covers, in pixels: holes through which the page shows |
+
+The gap is measured on a `crispEdges` render onto transparency, at four
+times the image's size. So it counts sub-pixels a quarter pixel wide,
+each 1/16 of a pixel's area. A sliver thinner than a quarter pixel is
+missed or counted whole, depending on where it falls, and a small
+diagonal hole comes out about a quarter too large.
+- **Why not anti-aliased:** with anti-aliasing, two paths that meet
+  exactly would each cover part of the pixels along their border and
+  leave a faint seam. librsvg draws that seam (the conflation of
+  renderers), but it isn't in the trace, which shares each border between
+  its neighbours (#338). On the plasma images it would add hundreds of
+  pixels.
+- **Renderer:** the numbers depend on the renderer. ImageMagick's own
+  MSVG, used where librsvg isn't, gives somewhat different gaps, as it
+  does for `wrong px`.
+- **Where it occurs:** on master, the holes come from regions of a few
+  pixels in a corner of the image that lose their corners, sometimes
+  down to no area (#448). Their neighbours share the cut border, so the
+  corner is left uncovered.
+- **`-background-color`:** with it, the background is left out on
+  purpose, so the gap isn't given.
+- **Overlap:** VectorCraft also measures the area covered twice. autotrace
+  stacks its paths by design, so that would only measure the stacking,
+  and it isn't given.
+
 For `-centerline`, the trace is a one-pixel line rather than an area:
 
 | column | meaning |
