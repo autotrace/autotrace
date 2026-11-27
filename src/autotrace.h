@@ -232,6 +232,16 @@ typedef enum {
   AT_ERROR_FAILED,
   /* The client's test_cancel returned TRUE.  */
   AT_ERROR_CANCELLED,
+  /* The file can't be opened: it doesn't exist, or isn't readable.  A
+     read that fails after the file was opened, such as one that ends
+     early, is AT_ERROR_FORMAT.  */
+  AT_ERROR_OPEN,
+  /* The file isn't valid for its format: a damaged or truncated file, or
+     one of another format.  */
+  AT_ERROR_FORMAT,
+  /* The file is valid, but uses a variant or a size the reader doesn't
+     handle.  */
+  AT_ERROR_UNSUPPORTED,
 } AtError;
 
 /*

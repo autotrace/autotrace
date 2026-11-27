@@ -18,6 +18,7 @@
 
 #include "autotrace.h"
 #include "exception.h"
+#include "logreport.h"
 
 #include "fit.h"
 #include "spline.h"
@@ -614,14 +615,15 @@ typedef struct {
 } error_catcher;
 
 /* Pass warnings on to the client, and keep the first fatal message as the
-   error.  The client doesn't get the fatal messages: it gets the error.  */
+   error, with the code its reporter gave it.  The client doesn't get the
+   fatal messages: it gets the error.  */
 static void catch_messages(const gchar *msg, at_msg_type msg_type, gpointer data)
 {
   error_catcher *catcher = data;
 
   if (msg_type == AT_MSG_FATAL) {
     if (catcher->error == NULL)
-      catcher->error = g_error_new_literal(AT_ERROR, AT_ERROR_FAILED, msg ? msg : "");
+      catcher->error = g_error_new_literal(AT_ERROR, at_exception_current_code(), msg ? msg : "");
   } else if (catcher->msg_func)
     catcher->msg_func(msg, msg_type, catcher->msg_data);
 }

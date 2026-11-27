@@ -10,6 +10,7 @@
  * SPDX-License-Identifier: LGPL-2.1-or-later
  */
 
+#include <errno.h>
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
@@ -138,8 +139,7 @@ at_bitmap input_bmp_reader(gchar *filename, at_input_opts_type *opts, at_msg_fun
   fd = fopen(filename, "rb");
 
   if (!fd) {
-    LOG("Can't open \"%s\"\n", filename);
-    at_exception_fatal(&exp, "bmp: cannot open input file");
+    at_exception_fatal_code(&exp, AT_ERROR_OPEN, "Can't open %s: %s", filename, g_strerror(errno));
     return image; /* nothing to close yet */
   }
 
@@ -148,29 +148,25 @@ at_bitmap input_bmp_reader(gchar *filename, at_input_opts_type *opts, at_msg_fun
   if (!ReadOK(fd, magick, 2) ||
       !(!strncmp(magick, "BA", 2) || !strncmp(magick, "BM", 2) || !strncmp(magick, "IC", 2) ||
         !strncmp(magick, "PT", 2) || !strncmp(magick, "CI", 2) || !strncmp(magick, "CP", 2))) {
-    LOG("%s is not a valid BMP file", filename);
-    at_exception_fatal(&exp, "bmp: invalid input file");
+    at_exception_fatal_code(&exp, AT_ERROR_FORMAT, "BMP: %s is not a valid BMP file", filename);
     goto cleanup;
   }
 
   while (!strncmp(magick, "BA", 2)) {
     if (!ReadOK(fd, buffer, 12)) {
-      LOG("%s is not a valid BMP file", filename);
-      at_exception_fatal(&exp, "bmp: invalid input file");
+      at_exception_fatal_code(&exp, AT_ERROR_FORMAT, "BMP: %s is not a valid BMP file", filename);
       goto cleanup;
     }
 
     if (!ReadOK(fd, magick, 2)) {
-      LOG("%s is not a valid BMP file", filename);
-      at_exception_fatal(&exp, "bmp: invalid input file");
+      at_exception_fatal_code(&exp, AT_ERROR_FORMAT, "BMP: %s is not a valid BMP file", filename);
       goto cleanup;
     }
   }
 
   if (!ReadOK(fd, buffer, 12)) ////
   {
-    LOG("%s is not a valid BMP file", filename);
-    at_exception_fatal(&exp, "bmp: invalid input file");
+    at_exception_fatal_code(&exp, AT_ERROR_FORMAT, "BMP: %s is not a valid BMP file", filename);
     goto cleanup;
   }
 
@@ -182,8 +178,7 @@ at_bitmap input_bmp_reader(gchar *filename, at_input_opts_type *opts, at_msg_fun
   Bitmap_File_Head.bfOffs = ToL(&buffer[0x08]);
 
   if (!ReadOK(fd, buffer, 4)) {
-    LOG("%s is not a valid BMP file", filename);
-    at_exception_fatal(&exp, "bmp: invalid input file");
+    at_exception_fatal_code(&exp, AT_ERROR_FORMAT, "BMP: %s is not a valid BMP file", filename);
     goto cleanup;
   }
 
@@ -193,8 +188,7 @@ at_bitmap input_bmp_reader(gchar *filename, at_input_opts_type *opts, at_msg_fun
 
   if (Bitmap_File_Head.biSize == 12) { /* OS/2 1.x ? */
     if (!ReadOK(fd, buffer, 8)) {
-      LOG("Error reading BMP file header\n");
-      at_exception_fatal(&exp, "Error reading BMP file header");
+      at_exception_fatal_code(&exp, AT_ERROR_FORMAT, "BMP: can't read the header of %s", filename);
       goto cleanup;
     }
 
@@ -217,8 +211,7 @@ at_bitmap input_bmp_reader(gchar *filename, at_input_opts_type *opts, at_msg_fun
 
   } else if (Bitmap_File_Head.biSize == 40) { /* Windows 3.x */
     if (!ReadOK(fd, buffer, 36)) {
-      LOG("Error reading BMP file header\n");
-      at_exception_fatal(&exp, "Error reading BMP file header");
+      at_exception_fatal_code(&exp, AT_ERROR_FORMAT, "BMP: can't read the header of %s", filename);
       goto cleanup;
     }
 
@@ -242,8 +235,8 @@ at_bitmap input_bmp_reader(gchar *filename, at_input_opts_type *opts, at_msg_fun
 
     if (Bitmap_Head.biCompr == BI_BITFIELDS) {
       if (!ReadOK(fd, buffer, 3 * sizeof(unsigned long))) {
-        LOG("Error reading BMP file header\n");
-        at_exception_fatal(&exp, "Error reading BMP file header");
+        at_exception_fatal_code(&exp, AT_ERROR_FORMAT, "BMP: can't read the header of %s",
+                                filename);
         goto cleanup;
       }
 
@@ -256,8 +249,8 @@ at_bitmap input_bmp_reader(gchar *filename, at_input_opts_type *opts, at_msg_fun
       setMasksDefault(Bitmap_Head.biBitCnt, masks);
     } else if ((Bitmap_Head.biCompr != BI_RLE4) && (Bitmap_Head.biCompr != BI_RLE8)) {
       /* BI_ALPHABITFIELDS, etc. */
-      LOG("Unsupported compression in BMP file\n");
-      at_exception_fatal(&exp, "Unsupported compression in BMP file");
+      at_exception_fatal_code(&exp, AT_ERROR_UNSUPPORTED, "BMP: %s uses an unsupported compression",
+                              filename);
       goto cleanup;
     }
   } else if (Bitmap_File_Head.biSize >= 56 && Bitmap_File_Head.biSize <= 64) {
@@ -265,8 +258,7 @@ at_bitmap input_bmp_reader(gchar *filename, at_input_opts_type *opts, at_msg_fun
 
     if (!ReadOK(fd, buffer, Bitmap_File_Head.biSize - 4)) {
 
-      LOG("Error reading BMP file header\n");
-      at_exception_fatal(&exp, "Error reading BMP file header");
+      at_exception_fatal_code(&exp, AT_ERROR_FORMAT, "BMP: can't read the header of %s", filename);
       goto cleanup;
     }
 
@@ -291,8 +283,7 @@ at_bitmap input_bmp_reader(gchar *filename, at_input_opts_type *opts, at_msg_fun
     /* BMP Version 4 or 5 */
 
     if (!ReadOK(fd, buffer, Bitmap_File_Head.biSize - 4)) {
-      LOG("Error reading BMP file header\n");
-      at_exception_fatal(&exp, "Error reading BMP file header");
+      at_exception_fatal_code(&exp, AT_ERROR_FORMAT, "BMP: can't read the header of %s", filename);
       goto cleanup;
     }
 
@@ -319,8 +310,7 @@ at_bitmap input_bmp_reader(gchar *filename, at_input_opts_type *opts, at_msg_fun
       setMasksDefault(Bitmap_Head.biBitCnt, masks);
     }
   } else {
-    LOG("Error reading BMP file header\n");
-    at_exception_fatal(&exp, "Error reading BMP file header");
+    at_exception_fatal_code(&exp, AT_ERROR_FORMAT, "BMP: can't read the header of %s", filename);
     goto cleanup;
   }
 
@@ -337,8 +327,7 @@ at_bitmap input_bmp_reader(gchar *filename, at_input_opts_type *opts, at_msg_fun
   case 32:
     break;
   default:
-    LOG("%s is not a valid BMP file", filename);
-    at_exception_fatal(&exp, "bmp: invalid input file");
+    at_exception_fatal_code(&exp, AT_ERROR_FORMAT, "BMP: %s is not a valid BMP file", filename);
     goto cleanup;
   }
 
@@ -356,16 +345,14 @@ at_bitmap input_bmp_reader(gchar *filename, at_input_opts_type *opts, at_msg_fun
   /* Sanity checks */
 
   if (Bitmap_Head.biHeight == 0 || Bitmap_Head.biWidth == 0) {
-    LOG("%s is not a valid BMP file", filename);
-    at_exception_fatal(&exp, "bmp: invalid input file");
+    at_exception_fatal_code(&exp, AT_ERROR_FORMAT, "BMP: %s is not a valid BMP file", filename);
     goto cleanup;
   }
 
   /* biHeight may be negative, but -2147483648 is dangerous because:
          -2147483648 == -(-2147483648) */
   if (Bitmap_Head.biWidth < 0 || Bitmap_Head.biHeight == -2147483648) {
-    LOG("%s is not a valid BMP file", filename);
-    at_exception_fatal(&exp, "bmp: invalid input file");
+    at_exception_fatal_code(&exp, AT_ERROR_FORMAT, "BMP: %s is not a valid BMP file", filename);
     goto cleanup;
   }
 
@@ -377,21 +364,19 @@ at_bitmap input_bmp_reader(gchar *filename, at_input_opts_type *opts, at_msg_fun
   }
 
   if (Bitmap_Head.biPlanes != 1) {
-    LOG("%s is not a valid BMP file", filename);
-    at_exception_fatal(&exp, "bmp: invalid input file");
+    at_exception_fatal_code(&exp, AT_ERROR_FORMAT, "BMP: %s is not a valid BMP file", filename);
     goto cleanup;
   }
 
   if (Bitmap_Head.biClrUsed > 256 && Bitmap_Head.biBitCnt <= 8) {
-    LOG("%s is not a valid BMP file", filename);
-    at_exception_fatal(&exp, "bmp: invalid input file");
+    at_exception_fatal_code(&exp, AT_ERROR_FORMAT, "BMP: %s is not a valid BMP file", filename);
     goto cleanup;
   }
 
   /* at_bitmap holds the size as unsigned short.  */
   if (Bitmap_Head.biWidth > G_MAXUSHORT || Bitmap_Head.biHeight > G_MAXUSHORT) {
-    LOG("%s is too large (the maximum is 65535x65535 pixels)", filename);
-    at_exception_fatal(&exp, "bmp: image is too large (the maximum is 65535x65535 pixels)");
+    at_exception_fatal_code(&exp, AT_ERROR_UNSUPPORTED,
+                            "BMP: %s is too large (the maximum is 65535x65535 pixels)", filename);
     goto cleanup;
   }
 
@@ -401,8 +386,7 @@ at_bitmap input_bmp_reader(gchar *filename, at_input_opts_type *opts, at_msg_fun
   if (((unsigned long)Bitmap_Head.biWidth) > (unsigned int)0x7fffffff / Bitmap_Head.biBitCnt ||
       ((unsigned long)Bitmap_Head.biWidth) >
           ((unsigned int)0x7fffffff / Bitmap_Head.biHeight) / 4) {
-    LOG("%s is not a valid BMP file", filename);
-    at_exception_fatal(&exp, "bmp: invalid input file");
+    at_exception_fatal_code(&exp, AT_ERROR_FORMAT, "BMP: %s is not a valid BMP file", filename);
     goto cleanup;
   }
 
@@ -412,8 +396,7 @@ at_bitmap input_bmp_reader(gchar *filename, at_input_opts_type *opts, at_msg_fun
 
   unsigned long overflowTest = Bitmap_Head.biWidth * Bitmap_Head.biBitCnt;
   if (overflowTest / Bitmap_Head.biWidth != Bitmap_Head.biBitCnt) {
-    LOG("Error reading BMP file header. Width is too large\n");
-    at_exception_fatal(&exp, "Error reading BMP file header. Width is too large");
+    at_exception_fatal_code(&exp, AT_ERROR_UNSUPPORTED, "BMP: %s is too wide", filename);
     goto cleanup;
   }
 
@@ -465,8 +448,7 @@ static gboolean ReadColorMap(FILE *fd, unsigned char buffer[256][3], int number,
   *Grey = (number > 2);
   for (i = 0; i < number; i++) {
     if (!ReadOK(fd, rgb, size)) {
-      LOG("Bad colormap\n");
-      at_exception_fatal(exp, "Bad colormap");
+      at_exception_fatal_code(exp, AT_ERROR_FORMAT, "BMP: bad colour map");
       return FALSE;
     }
 
@@ -548,8 +530,9 @@ static unsigned char *ReadImage(FILE *fd, int width, int height, unsigned char c
   if (!(compression == BI_RGB || (bpp == 8 && compression == BI_RLE8) ||
         (bpp == 4 && compression == BI_RLE4) || (bpp == 16 && compression == BI_BITFIELDS) ||
         (bpp == 32 && compression == BI_BITFIELDS))) {
-    LOG("Unrecognized or invalid BMP compression format.\n");
-    at_exception_fatal(exp, "Unrecognized or invalid BMP compression format.");
+    at_exception_fatal_code(exp, AT_ERROR_UNSUPPORTED,
+                            "BMP: unsupported combination of %u bits per pixel and compression %u",
+                            (unsigned)bpp, (unsigned)compression);
     return NULL;
   }
 

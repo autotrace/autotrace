@@ -12,6 +12,7 @@
 #include "autotrace.h"
 #include "input.h"
 #include "logreport.h"
+#include <errno.h>
 #include <glib.h>
 #include <stdio.h>
 #include <string.h>
@@ -87,23 +88,20 @@ at_bitmap input_tga_reader(gchar *filename, at_input_opts_type *opts, at_msg_fun
 
   fp = fopen(filename, "rb");
   if (!fp) {
-    LOG("TGA: can't open \"%s\"\n", filename);
-    at_exception_fatal(&exp, "Cannot open input tga file");
+    at_exception_fatal_code(&exp, AT_ERROR_OPEN, "Can't open %s: %s", filename, g_strerror(errno));
     return image;
   }
 
   /* Read the header. */
 
   if (fread(&hdr, sizeof(hdr), 1, fp) != 1) {
-    LOG("TGA: Cannot read header from \"%s\"\n", filename);
-    at_exception_fatal(&exp, "TGA: Cannot read header");
+    at_exception_fatal_code(&exp, AT_ERROR_FORMAT, "TGA: can't read the header of %s", filename);
     goto cleanup;
   }
 
   /* Skip the image ID field. */
   if (hdr.idLength && fseek(fp, hdr.idLength, SEEK_CUR)) {
-    LOG("TGA: Cannot skip ID field in \"%s\"\n", filename);
-    at_exception_fatal(&exp, "TGA: Cannot skip ID field");
+    at_exception_fatal_code(&exp, AT_ERROR_FORMAT, "TGA: can't skip the ID field of %s", filename);
     goto cleanup;
   }
 
@@ -238,23 +236,17 @@ static at_bitmap ReadImage(FILE *fp, struct tga_header *hdr, at_exception_type *
   else
     pbpp = bpp;
 
-  if (abpp + pbpp > bpp) {
-    LOG("TGA: %d bit image, %d bit alpha is greater than %d total bits per pixel\n", pbpp, abpp,
-        bpp);
-    at_exception_warning(exp, "TGA: alpha bit is too great");
+  if (abpp + pbpp != bpp) {
+    /* Assume that the alpha bits were set incorrectly.  */
+    int given = abpp;
+    gchar *message;
 
-    /* Assume that alpha bits were set incorrectly. */
     abpp = bpp - pbpp;
-    LOG("TGA: reducing to %d bit alpha\n", abpp);
-    at_exception_warning(exp, "TGA: alpha bit is reduced");
-  } else if (abpp + pbpp < bpp) {
-    LOG("TGA: %d bit image, %d bit alpha is less than %d total bits per pixel\n", pbpp, abpp, bpp);
-    at_exception_warning(exp, "TGA: alpha bit is too little");
-
-    /* Again, assume that alpha bits were set incorrectly. */
-    abpp = bpp - pbpp;
-    LOG("TGA: increasing to %d bit alpha\n", abpp);
-    at_exception_warning(exp, "TGA: alpha bit is increased");
+    message = g_strdup_printf("TGA: %d bit image with %d bit alpha in %d bits per pixel; "
+                              "using %d bit alpha",
+                              pbpp, given, bpp, abpp);
+    at_exception_warning(exp, message);
+    g_free(message);
   }
 
   rle = 0;
@@ -272,8 +264,8 @@ static at_bitmap ReadImage(FILE *fp, struct tga_header *hdr, at_exception_type *
       abpp = 0;
 
     if (bpp != 8) { /* We can only cope with 8-bit indices. */
-      LOG("TGA: index sizes other than 8 bits are unimplemented\n");
-      at_exception_fatal(exp, "TGA: index sizes other than 8 bits are unimplemented");
+      at_exception_fatal_code(exp, AT_ERROR_UNSUPPORTED,
+                              "TGA: index sizes other than 8 bits are unimplemented");
       return image;
     }
 
@@ -306,8 +298,8 @@ static at_bitmap ReadImage(FILE *fp, struct tga_header *hdr, at_exception_type *
     break;
 
   default: {
-    LOG("TGA: unrecognized image type %d\n", hdr->imageType);
-    at_exception_fatal(exp, "TGA: unrecognized image type");
+    at_exception_fatal_code(exp, AT_ERROR_FORMAT, "TGA: unrecognized image type %d",
+                            hdr->imageType);
     return image;
   }
   }
@@ -315,21 +307,23 @@ static at_bitmap ReadImage(FILE *fp, struct tga_header *hdr, at_exception_type *
   if ((abpp && abpp != 8) || ((itype == RGB || itype == INDEXED) && pbpp != 24) ||
       (itype == GRAY && pbpp != 8)) {
     /* FIXME: We haven't implemented bit-packed fields yet. */
-    LOG("TGA: channel sizes other than 8 bits are unimplemented\n");
-    at_exception_fatal(exp, "TGA: channel sizes other than 8 bits are unimplemented");
+    at_exception_fatal_code(exp, AT_ERROR_UNSUPPORTED,
+                            "TGA: channel sizes other than 8 bits are unimplemented");
     return image;
   }
 
   /* Check that we have a color map only when we need it. */
   if (itype == INDEXED) {
     if (hdr->colorMapType != 1) {
-      LOG("TGA: indexed image has invalid color map type %d\n", hdr->colorMapType);
-      at_exception_fatal(exp, "TGA: indexed image has invalid color map type");
+      at_exception_fatal_code(exp, AT_ERROR_FORMAT,
+                              "TGA: indexed image has invalid color map type %d",
+                              hdr->colorMapType);
       return image;
     }
   } else if (hdr->colorMapType != 0) {
-    LOG("TGA: non-indexed image has invalid color map type %d\n", hdr->colorMapType);
-    at_exception_fatal(exp, "TGA: non-indexed image has invalid color map type");
+    at_exception_fatal_code(exp, AT_ERROR_FORMAT,
+                            "TGA: non-indexed image has invalid color map type %d",
+                            hdr->colorMapType);
     return image;
   }
 
@@ -343,8 +337,7 @@ static at_bitmap ReadImage(FILE *fp, struct tga_header *hdr, at_exception_type *
     length = (hdr->colorMapLengthHi << 8) | hdr->colorMapLengthLo;
 
     if (length == 0) {
-      LOG("TGA: invalid color map length %d\n", length);
-      at_exception_fatal(exp, "TGA: invalid color map length");
+      at_exception_fatal_code(exp, AT_ERROR_FORMAT, "TGA: invalid color map length %d", length);
       return image;
     }
 
@@ -357,8 +350,7 @@ static at_bitmap ReadImage(FILE *fp, struct tga_header *hdr, at_exception_type *
 
     /* Read in the rest of the colormap. */
     if (fread(cmap + (index * pelbytes), pelbytes, length, fp) != length) {
-      LOG("TGA: error reading colormap (ftell == %ld)\n", ftell(fp));
-      at_exception_fatal(exp, "TGA: error reading colormap");
+      at_exception_fatal_code(exp, AT_ERROR_FORMAT, "TGA: premature end of file in the color map");
       return image;
     }
 
@@ -420,8 +412,7 @@ static at_bitmap ReadImage(FILE *fp, struct tga_header *hdr, at_exception_type *
   if (pels != npels) {
     if (!badread) {
       /* Probably premature end of file. */
-      LOG("TGA: error reading (ftell == %ld)\n", ftell(fp));
-      at_exception_warning(exp, "TGA: eroor reading file");
+      at_exception_warning(exp, "TGA: premature end of file");
       badread = 1;
     }
 
@@ -480,7 +471,6 @@ static at_bitmap ReadImage(FILE *fp, struct tga_header *hdr, at_exception_type *
   }
 
   if (fgetc(fp) != EOF) {
-    LOG("TGA: too much input data, ignoring extra...\n");
     at_exception_warning(exp, "TGA: too much input data, ignoring extra datum");
   }
 

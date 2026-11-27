@@ -18,6 +18,7 @@
 #include "input.h"
 #include "logreport.h"
 #include <ctype.h>
+#include <errno.h>
 #include <glib.h>
 #include <math.h>
 #include <stdio.h>
@@ -104,8 +105,8 @@ at_bitmap input_pnm_reader(gchar *filename, at_input_opts_type *opts, at_msg_fun
   fd = fopen(filename, "rb");
 
   if (fd == NULL) {
-    LOG("pnm filter: can't open file\n");
-    at_exception_fatal(&excep, "pnm filter: can't open file");
+    at_exception_fatal_code(&excep, AT_ERROR_OPEN, "Can't open %s: %s", filename,
+                            g_strerror(errno));
     return (bitmap);
   }
 
@@ -120,13 +121,11 @@ at_bitmap input_pnm_reader(gchar *filename, at_input_opts_type *opts, at_msg_fun
   /* Get magic number */
   pnmscanner_gettoken(scan, (unsigned char *)buf, BUFLEN);
   if (pnmscanner_eof(scan)) {
-    LOG("pnm filter: premature end of file\n");
-    at_exception_fatal(&excep, "pnm filter: premature end of file");
+    at_exception_fatal_code(&excep, AT_ERROR_FORMAT, "PNM: premature end of %s", filename);
     goto cleanup;
   }
   if (buf[0] != 'P' || buf[2]) {
-    LOG("pnm filter: %s is not a valid file\n", filename);
-    at_exception_fatal(&excep, "pnm filter: invalid file");
+    at_exception_fatal_code(&excep, AT_ERROR_FORMAT, "PNM: %s is not a PNM file", filename);
     goto cleanup;
   }
 
@@ -139,58 +138,59 @@ at_bitmap input_pnm_reader(gchar *filename, at_input_opts_type *opts, at_msg_fun
       pnminfo->loader = pnm_types[ctr].loader;
     }
   if (!pnminfo->loader) {
-    LOG("pnm filter: file not in a supported format\n");
-    at_exception_fatal(&excep, "pnm filter: file not in a supported format");
+    at_exception_fatal_code(&excep, AT_ERROR_UNSUPPORTED, "PNM: %s is of an unsupported type P%c",
+                            filename, buf[1]);
     goto cleanup;
   }
 
   pnmscanner_gettoken(scan, (unsigned char *)buf, BUFLEN);
   if (pnmscanner_eof(scan)) {
-    LOG("pnm filter: premature end of file\n");
-    at_exception_fatal(&excep, "pnm filter: premature end of file");
+    at_exception_fatal_code(&excep, AT_ERROR_FORMAT, "PNM: premature end of %s", filename);
     goto cleanup;
   }
   pnminfo->xres = isdigit(*buf) ? atoi(buf) : 0;
   if (pnminfo->xres <= 0) {
-    LOG("pnm filter: invalid xres while loading\n");
-    at_exception_fatal(&excep, "pnm filter: premature end of file");
+    at_exception_fatal_code(&excep, AT_ERROR_FORMAT, "PNM: invalid width in %s", filename);
     goto cleanup;
   }
 
   pnmscanner_gettoken(scan, (unsigned char *)buf, BUFLEN);
   if (pnmscanner_eof(scan)) {
-    LOG("pnm filter: premature end of file\n");
-    at_exception_fatal(&excep, "pnm filter: premature end of file");
+    at_exception_fatal_code(&excep, AT_ERROR_FORMAT, "PNM: premature end of %s", filename);
     goto cleanup;
   }
   pnminfo->yres = isdigit(*buf) ? atoi(buf) : 0;
   if (pnminfo->yres <= 0) {
-    LOG("pnm filter: invalid yres while loading\n");
-    at_exception_fatal(&excep, "pnm filter: invalid yres while loading");
+    at_exception_fatal_code(&excep, AT_ERROR_FORMAT, "PNM: invalid height in %s", filename);
     goto cleanup;
   }
 
   if (pnminfo->np != 0) { /* pbm's don't have a maxval field */
     pnmscanner_gettoken(scan, (unsigned char *)buf, BUFLEN);
     if (pnmscanner_eof(scan)) {
-      LOG("pnm filter: premature end of file\n");
-      at_exception_fatal(&excep, "pnm filter: invalid yres while loading");
+      at_exception_fatal_code(&excep, AT_ERROR_FORMAT, "PNM: premature end of %s", filename);
       goto cleanup;
     }
 
     pnminfo->maxval = isdigit(*buf) ? atoi(buf) : 0;
-    if ((pnminfo->maxval <= 0) || (pnminfo->maxval > 255 && !pnminfo->asciibody)) {
-      LOG("pnm filter: invalid maxval while loading\n");
-      at_exception_fatal(&excep, "pnm filter: invalid maxval while loading");
+    if (pnminfo->maxval <= 0) {
+      at_exception_fatal_code(&excep, AT_ERROR_FORMAT, "PNM: invalid maximum value in %s",
+                              filename);
+      goto cleanup;
+    }
+    if (pnminfo->maxval > 255 && !pnminfo->asciibody) {
+      at_exception_fatal_code(&excep, AT_ERROR_UNSUPPORTED,
+                              "PNM: %s has more than 8 bits per sample, which AutoTrace "
+                              "reads only from plain (ASCII) PNM files",
+                              filename);
       goto cleanup;
     }
   }
 
   /* at_bitmap holds the size as unsigned short.  */
   if (pnminfo->xres > G_MAXUSHORT || pnminfo->yres > G_MAXUSHORT) {
-    LOG("pnm filter: image is too large\n");
-    at_exception_fatal(&excep,
-                       "pnm filter: image is too large (the maximum is 65535x65535 pixels)");
+    at_exception_fatal_code(&excep, AT_ERROR_UNSUPPORTED,
+                            "PNM: %s is too large (the maximum is 65535x65535 pixels)", filename);
     goto cleanup;
   }
 
@@ -235,8 +235,7 @@ static void pnm_load_ascii(PNMScanner *scan, PNMInfo *info, unsigned char *data,
       for (b = 0; b < np; b++) {
         /* Truncated files will just have all 0's at the end of the images */
         if (pnmscanner_eof(scan)) {
-          LOG("pnm filter: premature end of file\n");
-          at_exception_fatal(excep, "pnm filter: premature end of file");
+          at_exception_fatal_code(excep, AT_ERROR_FORMAT, "PNM: premature end of file");
           return;
         }
         if (info->np)
@@ -277,8 +276,7 @@ static void pnm_load_raw(PNMScanner *scan, PNMInfo *info, unsigned char *data,
 
   for (i = 0; i < scanlines; i++) {
     if (info->xres * info->np != fread(d, 1, info->xres * info->np, fd)) {
-      LOG("pnm filter: premature end of file\n");
-      at_exception_fatal(excep, "pnm filter: premature end of file\n");
+      at_exception_fatal_code(excep, AT_ERROR_FORMAT, "PNM: premature end of file");
       return;
     }
 
@@ -312,8 +310,7 @@ static void pnm_load_rawpbm(PNMScanner *scan, PNMInfo *info, unsigned char *data
 
   for (i = 0; i < scanlines; i++) {
     if (rowlen != fread(buf, 1, rowlen, fd)) {
-      LOG("pnm filter: error reading file\n");
-      at_exception_fatal(excep, "pnm filter: error reading file");
+      at_exception_fatal_code(excep, AT_ERROR_FORMAT, "PNM: premature end of file");
       return;
     }
     bufpos = 0;
