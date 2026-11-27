@@ -7,7 +7,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: autotrace 0.31.13\n"
 "Report-Msgid-Bugs-To: https://github.com/autotrace/autotrace/issues\n"
-"POT-Creation-Date: 2026-11-27 01:24+0100\n"
+"POT-Creation-Date: 2026-11-27 02:17+0100\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
@@ -16,6 +16,29 @@ msgstr ""
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
 "License: GPL-2.0-or-later\n"
+
+#: src/autotrace.c
+msgid ""
+"drawn lines: snap anti-aliased edges, remove one-pixel specks and trace the "
+"centerlines"
+msgstr ""
+
+#: src/autotrace.c
+msgid ""
+"flat colours with anti-aliased edges, such as logos, icons and text: snap "
+"the edges and fit them closely"
+msgstr ""
+
+#: src/autotrace.c
+msgid ""
+"photographs and gradients: reduce to 32 colours and merge one-pixel specks "
+"into similar neighbours"
+msgstr ""
+
+#: src/autotrace.c
+msgid ""
+"scanned drawings and text: like logo, and remove specks of up to 7 pixels"
+msgstr ""
 
 #: src/autotrace.h
 msgid ""
@@ -162,6 +185,11 @@ msgstr ""
 
 #: src/main.c
 #, c-format
+msgid "Preset %s doesn't exist; -list-presets lists them"
+msgstr ""
+
+#: src/main.c
+#, c-format
 msgid "Usage: %s [options] <input_file_name>\n"
 msgstr ""
 
@@ -186,6 +214,11 @@ msgstr ""
 #: src/main.c
 #, c-format
 msgid "Supported output formats:\n"
+msgstr ""
+
+#: src/main.c
+#, c-format
+msgid "Presets:\n"
 msgstr ""
 
 #: src/main.c
