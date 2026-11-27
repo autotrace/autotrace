@@ -25,7 +25,8 @@ tests/corpus/corpus.py run ../master/autotrace ./autotrace /tmp/corpus
 
 It draws the images into `/tmp/corpus/images`, writes `old.json` and
 `new.json` there, and prints a Markdown table of the cases that changed,
-ready to paste into a pull request. A run takes about two minutes.
+ready to paste into a pull request. A run takes about two and a half
+minutes.
 
 - `--repeat 3` reports the best of three run times. Use it when time
   matters, on an otherwise idle machine.
@@ -72,7 +73,7 @@ The categories:
 - **noise**: impulse noise, traced with and without despeckling (#376).
 - **alpha**: a shape on a transparent background.
 - **centerline**: line art traced with `-centerline` (#112): outlines,
-  curves, lines at 24 angles and quarter-pixel offsets, junctions of
+  curves, lines at 24 angles shifted by quarter pixels, junctions of
   degree 3 to 5, dashes, and lines of different widths.
 - **degraded**: a star and a three-colour logo, blurred, saved as a JPEG
   at quality 30, and "scanned" onto uneven cream paper with grain.
@@ -81,11 +82,6 @@ The categories:
 - **gradient**: linear gradients of two and three colours.
 - **size**: the same star, and the same specks and dots, at several
   sizes, because despeckling and some thresholds count pixels.
-
-The degraded, askew, gradient and size images, and the centerline ones
-from `cl-angles` on, follow the test
-scenes of [VectorCraft](https://github.com/storytold/vectorcraft)'s tracer
-(#442).
 - **outside**: line art, diagrams and symbols from Wikimedia Commons,
   either CC0 or in the public domain. Among them are JPEGs with their
   compression artefacts (`hiemalora`, `syndicalism`), ANSI logic gate
@@ -98,6 +94,13 @@ scenes of [VectorCraft](https://github.com/storytold/vectorcraft)'s tracer
   doesn't cover documents made with them, so the images are CC0.
 - **timing**: a 2000×2000 image for run time and threads (#155). It gets
   output metrics only.
+
+The degraded, askew, gradient and size images, and the centerline ones
+from `cl-angles` on, follow the test scenes of
+[VectorCraft](https://github.com/storytold/vectorcraft)'s tracer (#442).
+The scanned and JPEG copies of the logo, and the scanned star, are traced
+only with a preset: with the default options they give thousands of paths
+of grain, and take most of a run's time.
 
 To add an image, add a line. Prefer a drawing that shows one problem
 clearly over a large mixed one, and name the issue it comes from in a

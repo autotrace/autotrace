@@ -297,6 +297,11 @@ class Polyline:
             for k in range(n + (0 if self.closed else 1)):
                 t = k / n
                 out.append((x0 + t * (x1 - x0) + offset * nx, y0 + t * (y1 - y0) + offset * ny))
+        if not out:
+            # A lone point, such as a one-pixel rectangle: moved OFFSET
+            # outwards, it is a circle, as nearest() treats it.
+            x0, y0 = self.points[0]
+            out = Circle(x0, y0, 0.0).samples(offset) if offset > 0 else [(x0, y0)]
         return out
 
 
