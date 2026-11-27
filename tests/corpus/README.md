@@ -34,6 +34,15 @@ ready to paste into a pull request. A run takes about a minute and a half.
   `corpus.py measure AUTOTRACE DIR OUT.json` and
   `corpus.py compare OLD.json NEW.json`.
 
+### Scoring one trace
+
+`corpus.py score [--svg OUT.svg] AUTOTRACE IMAGE [OPTION...]` traces a
+single image with the options after it, and prints the same metrics as one
+line of JSON. The image can be any file ImageMagick reads, not only a corpus
+image. The [choosing-options](../../.agents/skills/choosing-options/SKILL.md)
+skill uses it to compare option sets on a user's own image. It exits with
+autotrace's status when the trace fails. `--svg` keeps the trace.
+
 ## The images
 
 [`images.txt`](images.txt) lists the images, one per line, with the
