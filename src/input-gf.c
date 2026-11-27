@@ -98,26 +98,24 @@ typedef struct {
 /* This is the pixel at [ROW,COL]. */
 #define PIXEL(s, r, c) (s)->bitmap[(r) * (s)->width + (c)]
 
-static void gf_fatal(gf_font_t *font, const char *format, ...) G_GNUC_NORETURN G_GNUC_PRINTF(2, 3);
+static void gf_fatal(gf_font_t *font, AtError code, const char *format, ...) G_GNUC_NORETURN
+    G_GNUC_PRINTF(3, 4);
 
 /* Report a truncated or malformed font and abandon reading it.  This used
    to call exit(), which a library must not do; instead the error goes to
    the caller's message handler and control returns to input_gf_reader(),
    which cleans up.  */
-static void gf_fatal(gf_font_t *font, const char *format, ...)
+static void gf_fatal(gf_font_t *font, AtError code, const char *format, ...)
 {
   va_list args;
-  gchar *detail, *message;
+  gchar *detail;
 
   va_start(args, format);
   detail = g_strdup_vprintf(format, args);
   va_end(args);
 
-  message = g_strdup_printf("%s: %s", font->input_filename, detail);
+  at_exception_fatal_code(font->exp, code, "%s: %s", font->input_filename, detail);
   g_free(detail);
-  LOG("%s\n", message);
-  at_exception_fatal(font->exp, message);
-  g_free(message);
   longjmp(font->abort_jump, 1);
 }
 
@@ -135,7 +133,6 @@ static void gf_warning(gf_font_t *font, const char *format, ...)
 
   message = g_strdup_printf("%s: %s", font->input_filename, detail);
   g_free(detail);
-  LOG("%s\n", message);
   at_exception_warning(font->exp, message);
   g_free(message);
 }
@@ -145,7 +142,7 @@ static unsigned char get_byte(gf_font_t *font)
   unsigned char b;
 
   if (fread(&b, 1, 1, font->input_file) != 1)
-    gf_fatal(font, "read error");
+    gf_fatal(font, AT_ERROR_FORMAT, "read error");
   return b;
 }
 
@@ -186,7 +183,7 @@ static unsigned long get_four(gf_font_t *font)
 static void move_relative(gf_font_t *font, long count)
 {
   if (fseek(font->input_file, count, SEEK_CUR) < 0)
-    gf_fatal(font, "seek error");
+    gf_fatal(font, AT_ERROR_FORMAT, "seek error");
 }
 
 static unsigned char get_previous_byte(gf_font_t *font)
@@ -227,7 +224,7 @@ static void skip_specials(gf_font_t *font)
       unsigned long val = get_three(font);
       // Ensure value fits in positive signed long
       if (val > LONG_MAX)
-        gf_fatal(font, "skip length too large: %lu", val);
+        gf_fatal(font, AT_ERROR_FORMAT, "skip length too large: %lu", val);
       move_relative(font, val);
     }
       continue;
@@ -292,14 +289,15 @@ static void get_character_bitmap(gf_char_t *sym)
     while ((c = get_byte(sym->font)) == NO_OP)
       continue; /* do nothing */
     if (c != EOC)
-      gf_fatal(sym->font, "expected eoc (for a blank character), found %u", c);
+      gf_fatal(sym->font, AT_ERROR_FORMAT, "expected eoc (for a blank character), found %u", c);
     return;
   }
 
   /* sym->width and sym->height, and at_bitmap after them, are unsigned
      short.  */
   if (width > G_MAXUSHORT || height > G_MAXUSHORT)
-    gf_fatal(sym->font, "character %u is too large (%ldx%ld pixels)", sym->charcode, width, height);
+    gf_fatal(sym->font, AT_ERROR_UNSUPPORTED, "character %u is too large (%ldx%ld pixels)",
+             sym->charcode, width, height);
 
   sym->height = height;
   sym->width = width;
@@ -333,7 +331,7 @@ static void get_character_bitmap(gf_char_t *sym)
           length = get_three(sym->font);
           break;
         default:
-          gf_fatal(sym->font, "invalid painting command %u", c);
+          gf_fatal(sym->font, AT_ERROR_FORMAT, "invalid painting command %u", c);
         }
       }
 
@@ -341,7 +339,8 @@ static void get_character_bitmap(gf_char_t *sym)
        * that the bitmap was allocated for: columns bbox_min_col up to,
        * but not including, bbox_max_col (see `width' above).  */
       if (cur_x < sym->bbox_min_col || (long)length > sym->bbox_max_col - cur_x)
-        gf_fatal(sym->font, "character %u paints outside its bounding box", sym->charcode);
+        gf_fatal(sym->font, AT_ERROR_FORMAT, "character %u paints outside its bounding box",
+                 sym->charcode);
 
       /* We have to translate from Cartesian to
        * C coordinates.  That means the x's are the same,
@@ -380,10 +379,11 @@ static void get_character_bitmap(gf_char_t *sym)
         rows_to_skip = get_three(sym->font);
         break;
       default:
-        gf_fatal(sym->font, "invalid skip command %u", c);
+        gf_fatal(sym->font, AT_ERROR_FORMAT, "invalid skip command %u", c);
       }
       if ((long)rows_to_skip + 1 > cur_y - sym->bbox_min_row)
-        gf_fatal(sym->font, "character %u skips past its bounding box", sym->charcode);
+        gf_fatal(sym->font, AT_ERROR_FORMAT, "character %u skips past its bounding box",
+                 sym->charcode);
       cur_y -= rows_to_skip + 1;
       cur_x = sym->bbox_min_col;
       painting_black = 0;
@@ -392,7 +392,8 @@ static void get_character_bitmap(gf_char_t *sym)
       /* `new_row' commands move to the next line down
        * and then over. */
       if (cur_y <= sym->bbox_min_row)
-        gf_fatal(sym->font, "character %u has more rows than its bounding box", sym->charcode);
+        gf_fatal(sym->font, AT_ERROR_FORMAT, "character %u has more rows than its bounding box",
+                 sym->charcode);
       cur_y--;
       cur_x = sym->bbox_min_col + c - NEW_ROW_0;
       painting_black = 1;
@@ -404,7 +405,7 @@ static void get_character_bitmap(gf_char_t *sym)
       skip_specials(sym->font);
 
     } else {
-      gf_fatal(sym->font, "expected paint or skip or new_row, found %u", c);
+      gf_fatal(sym->font, AT_ERROR_FORMAT, "expected paint or skip or new_row, found %u", c);
     }
   }
 }
@@ -507,20 +508,20 @@ static void gf_open(gf_font_t *font, char *filename)
   font->input_filename = filename;
   font->input_file = fopen(filename, "rb");
   if (!font->input_file)
-    gf_fatal(font, "%s", g_strerror(errno));
+    gf_fatal(font, AT_ERROR_OPEN, "%s", g_strerror(errno));
 
   if (fseek(font->input_file, 0, SEEK_END) < 0)
-    gf_fatal(font, "%s", g_strerror(errno));
+    gf_fatal(font, AT_ERROR_OPEN, "%s", g_strerror(errno));
   /* Check that file is not empty, because we are trying
    * to seek before the beginning. */
   if (ftell(font->input_file) <= 0)
-    gf_fatal(font, "empty file");
+    gf_fatal(font, AT_ERROR_FORMAT, "empty file");
 
   do
     b = get_previous_byte(font);
   while (b == GF_SIGNATURE);
   if (b != GF_ID)
-    gf_fatal(font, "invalid signature (expected %u, found %u)", GF_ID, b);
+    gf_fatal(font, AT_ERROR_FORMAT, "invalid signature (expected %u, found %u)", GF_ID, b);
 
   post_ptr = get_previous_four(font);
   for (c = 0;; c++) {
@@ -534,7 +535,7 @@ static void gf_open(gf_font_t *font, char *filename)
   fseek(font->input_file, post_ptr, SEEK_SET);
   b = get_byte(font);
   if (b != POST)
-    gf_fatal(font, "invalid font structure (expected %u, found %u)", POST, b);
+    gf_fatal(font, AT_ERROR_FORMAT, "invalid font structure (expected %u, found %u)", POST, b);
   get_four(font); /* Ignore the special pointer. */
 
   font->design_size = get_four(font) / (double)(1L << 20);
@@ -569,7 +570,7 @@ static void gf_open(gf_font_t *font, char *filename)
       font->char_loc[c].h_escapement = get_byte(font);
 
     } else {
-      gf_fatal(font, "invalid char_loc command (found %u)", b);
+      gf_fatal(font, AT_ERROR_FORMAT, "invalid char_loc command (found %u)", b);
     }
 
     font->char_loc[c].tfm_width = get_four(font);
@@ -595,7 +596,7 @@ static int gf_get_char(gf_font_t *font, gf_char_t *sym, unsigned char charcode)
   sym->tfm_width = loc->tfm_width;
 
   if (fseek(font->input_file, loc->char_pointer, SEEK_SET) < 0)
-    gf_fatal(font, "seek error");
+    gf_fatal(font, AT_ERROR_FORMAT, "seek error");
 
   /* This reads the character starting from the current position
    * (but some specials might come first).
@@ -613,7 +614,7 @@ static int gf_get_char(gf_font_t *font, gf_char_t *sym, unsigned char charcode)
     if (lcode < 0 || lcode > 255) {
       /* Someone is trying to use a font with character codes
        * that are out of our range. */
-      gf_fatal(font, "invalid character code %ld (expected %d)", lcode, charcode);
+      gf_fatal(font, AT_ERROR_FORMAT, "invalid character code %ld (expected %d)", lcode, charcode);
     }
     sym->charcode = lcode;
 
@@ -644,7 +645,7 @@ static int gf_get_char(gf_font_t *font, gf_char_t *sym, unsigned char charcode)
     return 0;
 
   default:
-    gf_fatal(font, "error reading character (found %u)", c);
+    gf_fatal(font, AT_ERROR_FORMAT, "error reading character (found %u)", c);
   }
   if (sym->charcode != charcode)
     gf_warning(font, "character code mismatch, %d != %d", sym->charcode, charcode);
@@ -683,14 +684,16 @@ at_bitmap input_gf_reader(gchar *filename, at_input_opts_type *opts, at_msg_func
       if (font->char_loc[i].char_pointer != -1)
         break;
     if (i >= 256) {
-      at_exception_fatal(&exp, "No characters in input GF file");
+      fclose(font->input_file);
+      at_exception_fatal_code(&exp, AT_ERROR_FORMAT, "%s: no characters in the font", filename);
       return bitmap;
     }
     opts->charcode = i;
   }
   if (!gf_get_char(font, sym, (unsigned char)opts->charcode)) {
     fclose(font->input_file);
-    at_exception_fatal(&exp, "Error reading character from GF file");
+    at_exception_fatal_code(&exp, AT_ERROR_FAILED, "%s: no character %u in the font", filename,
+                            opts->charcode);
     return bitmap;
   }
 

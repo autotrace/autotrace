@@ -18,6 +18,7 @@
 #include "input.h"
 #include "input-magick.h"
 #include "private.h"
+#include "logreport.h"
 
 #include <string.h>
 #ifdef HAVE_IMAGEMAGICK7
@@ -25,6 +26,35 @@
 #else
 #include <magick/api.h>
 #endif
+
+/* The AtError code for an error that ImageMagick or GraphicsMagick
+   reported while reading (issue #345).  */
+static AtError error_code(const ExceptionInfo *exception)
+{
+  switch (exception->severity) {
+  case FileOpenError:
+  case BlobError:
+    return AT_ERROR_OPEN;
+  case CorruptImageError:
+    return AT_ERROR_FORMAT;
+  case MissingDelegateError:
+    return AT_ERROR_UNSUPPORTED;
+  default:
+    return AT_ERROR_FAILED;
+  }
+}
+
+/* Report the error in EXCEPTION, or FALLBACK if it has no reason.  */
+static void report_error(at_msg_func msg_func, gpointer msg_data, const ExceptionInfo *exception,
+                         const gchar *fallback)
+{
+  if (exception->reason && exception->description)
+    at_msg_fatal_code(msg_func, msg_data, error_code(exception), "%s (%s)", exception->reason,
+                      exception->description);
+  else
+    at_msg_fatal_code(msg_func, msg_data, error_code(exception), "%s",
+                      exception->reason ? exception->reason : fallback);
+}
 
 static at_bitmap input_magick_reader(gchar *filename, at_input_opts_type *opts,
                                      at_msg_func msg_func, gpointer msg_data, gpointer user_data)
@@ -47,16 +77,15 @@ static at_bitmap input_magick_reader(gchar *filename, at_input_opts_type *opts,
   image_info = CloneImageInfo((ImageInfo *)NULL);
   if (g_strlcpy(image_info->filename, filename, sizeof(image_info->filename)) >=
       sizeof(image_info->filename)) {
-    if (msg_func)
-      msg_func("input file name is too long", AT_MSG_FATAL, msg_data);
+    at_msg_fatal_code(msg_func, msg_data, AT_ERROR_OPEN, "input file name is too long: %s",
+                      filename);
     goto cleanup;
   }
   image_info->antialias = 0;
 
   image = ReadImage(image_info, exception_ptr);
   if (image == (Image *)NULL) {
-    if (msg_func)
-      msg_func(exception_ptr->reason, AT_MSG_FATAL, msg_data);
+    report_error(msg_func, msg_data, exception_ptr, "cannot read the image");
     goto cleanup;
   }
 #if defined(HAVE_IMAGEMAGICK7)
@@ -71,8 +100,8 @@ static at_bitmap input_magick_reader(gchar *filename, at_input_opts_type *opts,
 
   /* at_bitmap holds the size as unsigned short.  */
   if (image->columns > G_MAXUSHORT || image->rows > G_MAXUSHORT) {
-    if (msg_func)
-      msg_func("image is too large (the maximum is 65535x65535 pixels)", AT_MSG_FATAL, msg_data);
+    at_msg_fatal_code(msg_func, msg_data, AT_ERROR_UNSUPPORTED,
+                      "%s is too large (the maximum is 65535x65535 pixels)", filename);
     DestroyImage(image);
     goto cleanup;
   }
@@ -91,9 +120,7 @@ static at_bitmap input_magick_reader(gchar *filename, at_input_opts_type *opts,
 #endif
 
     if (p == NULL) {
-      if (msg_func)
-        msg_func(exception_ptr->reason ? exception_ptr->reason : "cannot read the image pixels",
-                 AT_MSG_FATAL, msg_data);
+      report_error(msg_func, msg_data, exception_ptr, "cannot read the image pixels");
       g_free(AT_BITMAP_BITS(&bitmap));
       bitmap = at_bitmap_init(NULL, 0, 0, 0);
       break;

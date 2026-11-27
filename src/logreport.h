@@ -45,6 +45,23 @@ gboolean log_filters_messages(void);
 #define LOG(...) LOG_IF_ENABLED(G_LOG_LEVEL_MESSAGE, __VA_ARGS__)
 #define WARNING(...) LOG_IF_ENABLED(G_LOG_LEVEL_WARNING, __VA_ARGS__)
 
+#include "exception.h"
+
+/* Report a fatal error through EXCEPTION, with a printf-style message and
+   the CODE that the functions with a GError give it (issue #345).  Report
+   each error once, with this alone: before, the readers also logged the
+   same text, so a client saw every error twice (issue #430).  */
+void at_exception_fatal_code(at_exception_type *exception, AtError code, const gchar *format, ...)
+    G_GNUC_PRINTF(3, 4);
+
+/* The same, for a reader that has only the client's callback.  */
+void at_msg_fatal_code(at_msg_func msg_func, gpointer msg_data, AtError code, const gchar *format,
+                       ...) G_GNUC_PRINTF(4, 5);
+
+/* The code of the fatal message being reported in this thread right now:
+   the one given above, or AT_ERROR_FAILED for any other fatal message.  */
+AtError at_exception_current_code(void);
+
 /* For the command line program only: print the message and stop with exit
    status 1.  Library code must not use this; it reports errors through
    at_exception instead, so that the caller decides what happens.  */

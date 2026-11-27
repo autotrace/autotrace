@@ -7,11 +7,20 @@
 # at_bitmap_read_with_error, at_splines_trace and
 # at_splines_write_with_error must report failures through a GError in
 # the AT_ERROR domain, with the right code, and pass only warnings to the
-# message callback (#345).  The helper is built by "make check" next to
-# the autotrace program.  input.png is an aliased disc:
+# message callback (#345).  Every reader must say whether a file couldn't
+# be opened, isn't valid, or is valid but unsupported, once, and name the
+# file (#430).  The helper is built by "make check" next to the autotrace
+# program.  input.png is an aliased disc:
 #     magick -size 24x24 xc:white +antialias -fill black \
 #       -draw "circle 12,12 12,4" -type grayscale \
 #       -define png:color-type=0 input.png
+# wide.png is too wide for any reader (at_bitmap holds the size as unsigned
+# short):
+#     magick -size 70000x1 xc:white -type bilevel -define png:bit-depth=1 \
+#       -define png:color-type=0 wide.png
+# The broken files are made below.  Only the codes that every reader
+# gives are checked: a build with ImageMagick reads BMP, TGA and PNM
+# through it.
 
 . "`dirname "$0"`/../functions"
 
@@ -19,12 +28,29 @@ helper=`dirname "\`get_autotrace\`"`/tests/helpers/gerror
 test -x "$helper" || test -x "$helper.exe" || skip "helper program not built"
 
 DIR=$1
-"$helper" $DIR/input.png $DIR/out.svg > $DIR/out.log 2>&1
+B=$DIR/broken
+rm -rf $B
+mkdir $B
+printf 'BMxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx' > $B/bad.bmp
+printf 'xxxxx' > $B/short.tga
+printf 'X1\n' > $B/bad.pnm
+: > $B/empty.gf
+head -c 60 $DIR/input.png > $B/truncated.png
+
+"$helper" $DIR/input.png $DIR/out.svg \
+    open $B/missing.png open $B/missing.bmp open $B/missing.tga \
+    open $B/missing.pnm open $B/missing.gf \
+    format $B/bad.bmp format $B/short.tga format $B/bad.pnm \
+    format $B/empty.gf format $B/truncated.png \
+    unsupported $DIR/wide.png \
+    > $DIR/out.log 2>&1
 RESULT=$?
 
-if [ $RESULT -eq 0 ]; then
-    rm -f $DIR/out.log $DIR/out.svg
+if [ $RESULT -eq 0 ] && ! grep -q 'autotrace-Message' $DIR/out.log; then
+    rm -rf $DIR/out.log $DIR/out.svg $B
     ok
+elif [ $RESULT -eq 0 ]; then
+    fail "a reader also logged its error: `grep autotrace-Message $DIR/out.log | head -1`"
 else
     fail "exit $RESULT: `grep FAILED $DIR/out.log | tr '\n' ' '`"
 fi

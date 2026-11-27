@@ -9,8 +9,10 @@
    fails, in the AT_ERROR domain with the right code, and pass only
    warnings to the client's message callback.
 
-   Usage: gerror IN.png OUT.svg   IN.png must be readable; OUT.svg is
-   written and then reopened for reading.  */
+   Usage: gerror IN.png OUT.svg [CODE FILE]...
+   IN.png must be readable; OUT.svg is written and then reopened for
+   reading.  Each FILE must fail to read with CODE: open, format or
+   unsupported.  */
 
 #include <stdio.h>
 #include <string.h>
@@ -64,8 +66,8 @@ int main(int argc, char **argv)
   FILE *out;
   int calls = 0;
 
-  if (argc != 3) {
-    fprintf(stderr, "usage: gerror IN.png OUT.svg\n");
+  if (argc < 3 || argc % 2 == 0) {
+    fprintf(stderr, "usage: gerror IN.png OUT.svg [CODE FILE]...\n");
     return 2;
   }
   autotrace_init();
@@ -83,7 +85,8 @@ int main(int argc, char **argv)
   fatal_messages = 0;
   bitmap = at_bitmap_read_with_error(reader, missing, NULL, count_fatal, NULL, &error);
   check(bitmap == NULL, "a missing file gives no bitmap");
-  check(is_error(error, AT_ERROR_FAILED), "a missing file sets AT_ERROR_FAILED");
+  check(is_error(error, AT_ERROR_OPEN), "a missing file sets AT_ERROR_OPEN");
+  check(error && strstr(error->message, missing) != NULL, "the message names the file");
   check(fatal_messages == 0, "the fatal message goes to the error, not the callback");
   if (error)
     printf("  (%s)\n", error->message);
@@ -100,8 +103,8 @@ int main(int argc, char **argv)
 
   /* Tracing, cancelled at the first question.  */
   opts = at_fitting_opts_new();
-  splines = at_splines_trace(bitmap, opts, count_fatal, NULL, NULL, NULL, cancel_at_once, NULL,
-                             &error);
+  splines =
+      at_splines_trace(bitmap, opts, count_fatal, NULL, NULL, NULL, cancel_at_once, NULL, &error);
   check(splines == NULL, "a cancelled trace gives no splines");
   check(is_error(error, AT_ERROR_CANCELLED), "a cancelled trace sets AT_ERROR_CANCELLED");
   g_clear_error(&error);
@@ -109,8 +112,8 @@ int main(int argc, char **argv)
   /* Tracing to the end.  Copy the bitmap: tracing may change it.  */
   {
     at_bitmap *copy = at_bitmap_copy(bitmap);
-    splines = at_splines_trace(copy, opts, count_fatal, NULL, NULL, NULL, never_cancel, &calls,
-                               &error);
+    splines =
+        at_splines_trace(copy, opts, count_fatal, NULL, NULL, NULL, never_cancel, &calls, &error);
     at_bitmap_free(copy);
   }
   check(splines != NULL && error == NULL, "a trace gives splines and no error");
@@ -127,10 +130,10 @@ int main(int argc, char **argv)
   check(out != NULL, "the output file opens");
   if (out == NULL)
     return 1;
-  check(at_splines_write_with_error(writer, out, argv[2], NULL, splines, count_fatal, NULL,
-                                    &error) &&
-            error == NULL,
-        "a write succeeds with no error");
+  check(
+      at_splines_write_with_error(writer, out, argv[2], NULL, splines, count_fatal, NULL, &error) &&
+          error == NULL,
+      "a write succeeds with no error");
   fclose(out);
 
   /* Writing to a stream opened for reading must fail.  */
@@ -144,6 +147,38 @@ int main(int argc, char **argv)
       printf("  (%s)\n", error->message);
     g_clear_error(&error);
     fclose(out);
+  }
+
+  /* Files that each reader must reject with a particular code.  */
+  for (int i = 3; i + 1 < argc; i += 2) {
+    const char *name = argv[i + 1];
+    AtError code = g_str_equal(argv[i], "open")          ? AT_ERROR_OPEN
+                   : g_str_equal(argv[i], "format")      ? AT_ERROR_FORMAT
+                   : g_str_equal(argv[i], "unsupported") ? AT_ERROR_UNSUPPORTED
+                                                         : AT_ERROR_FAILED;
+    at_bitmap_reader *file_reader = at_input_get_handler((gchar *)name);
+    at_bitmap *rejected;
+    gchar *what;
+
+    if (file_reader == NULL) {
+      printf("skipped: %s (no reader in this build)\n", name);
+      continue;
+    }
+    rejected =
+        at_bitmap_read_with_error(file_reader, (gchar *)name, NULL, count_fatal, NULL, &error);
+    what = g_strdup_printf("%s fails with %s", name, argv[i]);
+    check(rejected == NULL && is_error(error, code), what);
+    g_free(what);
+    /* A file that can't be opened must be named (#430).  */
+    if (code == AT_ERROR_OPEN) {
+      what = g_strdup_printf("the error for %s names the file", name);
+      check(error != NULL && strstr(error->message, name) != NULL, what);
+      g_free(what);
+    }
+    if (error)
+      printf("  (code %d: %s)\n", error->code, error->message);
+    g_clear_error(&error);
+    at_bitmap_free(rejected);
   }
 
   check(fatal_messages == 0, "no fatal message reached the callback");
