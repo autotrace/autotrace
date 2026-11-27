@@ -497,13 +497,22 @@ def draw_shape(primitive):
             else:
                 closed = True
         shape_points = points
+        # Its own anchors: one per command, the closing point not twice.
+        anchors = sum(1 for c in cmds if c in "MLC")
+        if closed and len(cmds) > 1 and points[0] == points[-1]:
+            anchors -= 1
     else:
         try:
             v = [float(w) for w in words[1:]]
         except ValueError:
             return None
+        # Anchors an ideal trace needs: four Bézier quarters for a circle
+        # or an ellipse, and the vertices of the others.
+        anchors = 4
         if kind == "circle" and len(v) == 4:
-            return Circle(v[0] + 0.5, v[1] + 0.5, math.hypot(v[2] - v[0], v[3] - v[1]))
+            circle = Circle(v[0] + 0.5, v[1] + 0.5, math.hypot(v[2] - v[0], v[3] - v[1]))
+            circle.anchors = anchors
+            return circle
         if kind == "ellipse" and len(v) == 6 and (v[4], v[5]) == (0, 360):
             n = 180  # within 0.01 pixels of the ellipse
             shape_points = [(v[0] + v[2] * math.cos(2 * math.pi * k / n),
@@ -515,12 +524,16 @@ def draw_shape(primitive):
         elif kind == "polygon" and len(v) >= 6 and len(v) % 2 == 0:
             shape_points = list(zip(v[0::2], v[1::2]))
             closed = True
+            anchors = len(shape_points)
         elif kind == "line" and len(v) == 4:
             shape_points = [(v[0], v[1]), (v[2], v[3])]
             closed = False
+            anchors = 2
         else:
             return None
-    return Polyline([(x + 0.5, y + 0.5) for x, y in shape_points], closed)
+    shape = Polyline([(x + 0.5, y + 0.5) for x, y in shape_points], closed)
+    shape.anchors = anchors
+    return shape
 
 
 def drawn_shapes(args):
@@ -849,6 +862,36 @@ def topology_stats(shapes, widths, svg):
     return result
 
 
+def anchor_ratio(shapes, svg, width, height):
+    """The anchors of the trace per anchor of the drawn SHAPES.  A closed
+    subpath has an anchor per segment, an open one one more.  The
+    background's frame, a subpath as large as the image, doesn't count."""
+    traced = 0
+    for segs, closed in subpaths(svg):
+        x0, y0, x1, y1 = bounds([p for seg in segs for p in (seg[0], seg[3])])
+        if x1 - x0 >= 0.98 * width and y1 - y0 >= 0.98 * height:
+            continue
+        traced += len(segs) + (0 if closed else 1)
+    true = sum(s.anchors for s in shapes)
+    return round(traced / true, 2) if true else None
+
+
+def width_error(shapes, widths, svg):
+    """The mean difference between the width of each traced stroke and
+    that of the drawn stroke nearest it, over points 0.1 px apart along
+    the strokes that lie within 2 px of a drawn one."""
+    errors = []
+    for style, d in re.findall(r'<path style="([^"]*)" d="([^"]*)"', svg):
+        width = re.search(r"stroke-width:\s*([0-9.]+)", style)
+        if width is None:
+            continue
+        for x, y in trace_points('d="%s"' % d):
+            dist, true = min((s.nearest(x, y, 0.0)[0], w) for s, w in zip(shapes, widths))
+            if dist < 2.0:
+                errors.append(abs(float(width.group(1)) - true))
+    return round(sum(errors) / len(errors), 2) if errors else None
+
+
 def background_option(options):
     """The -background-color of OPTIONS, in any spelling getopt accepts:
     one or two dashes, any abbreviation (only this option starts with b),
@@ -1039,11 +1082,14 @@ def round_trip(png, svg_file, options, shapes=None, centerline=None, palette=Non
     if shapes and shapes[0] == ("stroke" if centerline else "fill"):
         result["shape_mean"], result["shape_max"] = shape_distances(shapes[0], shapes[1], svg, w, h)
         result.update(corner_stats(shapes[0], shapes[1], svg, w, h))
+        result["anchor_ratio"] = anchor_ratio(shapes[1], svg, w, h)
         if centerline:
             result.update(topology_stats(shapes[1], shapes[2], svg))
+            if "stroke-width" in svg:
+                result["width_err"] = width_error(shapes[1], shapes[2], svg)
     if centerline:
-        # Strokes are one pixel wide: how far do they stray from the ink, and
-        # how far is the ink from the nearest stroke?
+        # How far do the strokes stray from the ink, and how far is the ink
+        # from the nearest stroke?
         bgc = hex_colour(bg)
         ink = [not same(p, bgc) for p in src]
         stroke = [not same(p, bgc) for p in out]
@@ -1051,6 +1097,22 @@ def round_trip(png, svg_file, options, shapes=None, centerline=None, palette=Non
             directed(distance_map(w, h, ink), stroke))
         result["ink_mean"], result["ink_max"] = rounded(
             directed(distance_map(w, h, stroke), ink))
+        if "stroke-width" in svg:
+            # With -preserve-width the strokes have the ink's width: do
+            # they cover the same pixels?  A pixel counts as ink when it is
+            # more than half way from the background, so that the faint
+            # edge of anti-aliased ink doesn't.
+            def half(p):
+                return max(abs(a - b) for a, b in zip(p, bgc)) > 127
+            solid = [half(p) for p in src]
+            covered = [half(p) for p in out]
+            both = sum(1 for a, b in zip(solid, covered) if a and b)
+            either = sum(1 for a, b in zip(solid, covered) if a or b)
+            inked = sum(solid)
+            if either:
+                result["iou"] = round(100 * both / either, 1)
+            if inked:
+                result["area"] = round(100 * (sum(covered) - inked) / inked, 1)
         return result
 
     result["wrong"] = sum(1 for a, b in zip(src, out) if not same(a, b))
@@ -1207,6 +1269,7 @@ COLUMNS = [
     ("shape_max", "shape max"),
     ("corners", "corners %"),
     ("kinks", "kinks"),
+    ("anchor_ratio", "anchors ×"),
     ("stray_max", "stray max"),
     ("ink_max", "ink max"),
     ("junctions_ok", "junct. ok"),
@@ -1217,11 +1280,14 @@ COLUMNS = [
     ("ends_missed", "ends missed"),
     ("spurs", "spurs"),
     ("end_px", "end px"),
+    ("width_err", "width err"),
+    ("iou", "IoU %"),
+    ("area", "area %"),
 ]
 
 
-# Columns that are shares of something, not counts.
-PERCENT = {"lines", "upright", "corners"}
+# Columns that are shares or ratios, not counts: their sum means nothing.
+PERCENT = {"lines", "upright", "corners", "iou", "area", "anchor_ratio"}
 
 
 def cell(old, new, key):
