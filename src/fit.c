@@ -35,6 +35,9 @@
 #define SQUARE(x) ((x) * (x))
 #define CUBE(x) ((x) * (x) * (x))
 
+/* The default of fitting_opts.corner_surround.  */
+#define DEFAULT_CORNER_SURROUND 4
+
 /* We need to manipulate lists of array indices.  */
 
 typedef struct index_list {
@@ -469,7 +472,7 @@ fitting_opts_type new_fitting_opts(void)
   fitting_opts.charcode = 0;
   fitting_opts.color_count = 0;
   fitting_opts.corner_always_threshold = (gfloat)60.0;
-  fitting_opts.corner_surround = 4;
+  fitting_opts.corner_surround = DEFAULT_CORNER_SURROUND;
   fitting_opts.corner_threshold = (gfloat)100.0;
   fitting_opts.error_threshold = (gfloat)2.0;
   fitting_opts.filter_iterations = 4;
@@ -893,12 +896,21 @@ static index_list_type outline_corners(pixel_outline_type pixel_o, fitting_opts_
                                        at_exception_type *exception)
 {
   index_list_type corner_list;
+  unsigned short_length = fitting_opts->corner_surround * 2 + 2;
+
+  /* A smaller surround sums fewer points into each vector, which on the
+     one-pixel steps of a small region then look like straight diagonals:
+     a five-pixel staircase lost its corners and became a triangle, or a
+     line with no area (#465).  Keep a closed outline as its polygon up to
+     the length the default surround gives, whatever the surround.  */
+  if (!pixel_o.open && short_length < DEFAULT_CORNER_SURROUND * 2 + 2)
+    short_length = DEFAULT_CORNER_SURROUND * 2 + 2;
 
   /* find_corners() needs at least `corner_surround' more pixels on
      either side of a point before it is conceivable that we might want
      another corner.  The endpoints of an open outline are automatically
      corners.  */
-  if (O_LENGTH(pixel_o) > fitting_opts->corner_surround * 2 + 2)
+  if (O_LENGTH(pixel_o) > short_length)
     corner_list = find_corners(pixel_o, fitting_opts, exception);
 
   else if (!pixel_o.open) {

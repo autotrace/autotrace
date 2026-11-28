@@ -1,0 +1,35 @@
+#!/bin/sh
+
+# SPDX-FileCopyrightText: 2026 AutoTrace contributors
+#
+# SPDX-License-Identifier: CC0-1.0
+
+# A small region must keep its corners with a corner surround below the
+# default.  A five-pixel staircase was traced as a triangle with
+# -corner-surround 2, and as a line with no area with 3 (issue #465).
+#
+# stair.png is 20x20, white, with black pixels at (8,8), (9,8), (10,8),
+# (8,9) and (9,9).  Made with
+#   magick -size 20x20 xc:white -fill black +antialias -draw "point 8,8" \
+#     -draw "point 9,8" -draw "point 8,9" -draw "point 10,8" \
+#     -draw "point 9,9" -type grayscale -define png:color-type=0 \
+#     -strip stair.png
+
+. "`dirname "$0"`/../functions"
+
+DIR=$1
+
+for cs in 1 2 3 4; do
+    autotrace -corner-surround $cs -output-format svg -output-file $DIR/stair.svg \
+        $DIR/stair.png || fail "cannot trace stair.png with -corner-surround $cs"
+    d=`grep 'fill:#000000' $DIR/stair.svg | grep -o ' d="[^"]*"'`
+    rm -f $DIR/stair.svg
+
+    for corner in "8 8" "8 10" "10 10" "10 9" "11 9" "11 8"; do
+        case "$d" in
+        *"M$corner"[Lz]* | *"L$corner"[Lz]*) ;;
+        *) fail "-corner-surround $cs misses the corner ($corner):$d" ;;
+        esac
+    done
+done
+ok
