@@ -194,19 +194,18 @@ Areas where help is needed:
 
 ### Making a release
 
-1. Update `NEWS`.
-2. Bump the version in `AC_INIT` in `configure.ac`.
-3. Update `LT_CURRENT`, `LT_REVISION` and `LT_AGE` in `configure.ac` following
-   the [libtool versioning rules](https://www.gnu.org/software/libtool/manual/html_node/Updating-version-info.html):
-   any code change bumps `REVISION`; an added, removed or changed interface
-   bumps `CURRENT` and resets `REVISION`; added interfaces also bump `AGE`,
-   removed ones reset `AGE` to 0.
-4. Tag the commit and push the tag. The Windows workflow builds the
-   installers for every tag and uploads them to the GitHub release. The
-   source release is GitHub's automatic archive of the tag.
+Only the maintainer tags and publishes releases. A release starts as a pull
+request with a single commit. That commit bumps the version and the libtool
+version-info in `configure.ac`, adds a `NEWS` entry, regenerates
+`po/autotrace.pot` and the EMF and CGM golden files. Before the pull request
+is opened, `make distcheck` must pass locally. Pushing the tag then builds the Windows installers and
+uploads them to the GitHub release. The source release is GitHub's automatic
+archive of the tag.
 
-[AGENTS.md](AGENTS.md) has the details, including how to check API/ABI
-compatibility against the previous release.
+The full checklist is in
+[AGENTS.md, "Versioning and releases"](AGENTS.md#versioning-and-releases).
+That section also covers how to choose the version number and how to check
+API/ABI compatibility against the previous release.
 
 ## License
 
