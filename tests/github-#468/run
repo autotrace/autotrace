@@ -1,0 +1,27 @@
+#!/bin/sh
+
+# SPDX-FileCopyrightText: 2026 AutoTrace contributors
+#
+# SPDX-License-Identifier: CC0-1.0
+
+# -centerline must not put a corner on the last point of an open line.  The
+# curve after it had a single point, which -keep-knees left unfitted with
+# "Tried to fit curve with less than two points" (issue #468).
+#
+# noise.png is 12x12 black and white noise.  Made with
+#   magick -size 12x12 xc:gray50 -seed 8 +noise Impulse -threshold 50% \
+#     -type bilevel -strip noise.png
+# The file is kept as it is: another ImageMagick may draw other noise.
+
+. "`dirname "$0"`/../functions"
+
+DIR=$1
+
+err=`autotrace -centerline -keep-knees -output-format svg -output-file $DIR/noise.svg \
+    $DIR/noise.png 2>&1` || fail "cannot trace noise.png: $err"
+rm -f $DIR/noise.svg
+
+case "$err" in
+*"less than two points"*) fail "a curve of one point: $err" ;;
+esac
+ok

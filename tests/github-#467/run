@@ -1,0 +1,31 @@
+#!/bin/sh
+
+# SPDX-FileCopyrightText: 2026 AutoTrace contributors
+#
+# SPDX-License-Identifier: CC0-1.0
+
+# A bar one pixel high must keep all four corners.  Its last corner used to
+# be dropped even without -remove-adjacent-corners, so the bar was traced
+# as a sliver (issue #467).
+#
+# bar.png is 16x5, white, with a black bar from (2,2) to (13,2).  Made with
+#   magick -size 16x5 xc:white +antialias -fill black \
+#     -draw "rectangle 2,2 13,2" -type grayscale -define png:color-type=0 \
+#     -strip bar.png
+
+. "`dirname "$0"`/../functions"
+
+DIR=$1
+
+autotrace -output-format svg -output-file $DIR/bar.svg $DIR/bar.png ||
+    fail "cannot trace bar.png"
+d=`grep 'fill:#000000' $DIR/bar.svg | grep -o ' d="[^"]*"'`
+rm -f $DIR/bar.svg
+
+for corner in "2 2" "2 3" "14 3" "14 2"; do
+    case "$d" in
+    *"M$corner"[Lz]* | *"L$corner"[Lz]*) ;;
+    *) fail "the bar misses the corner ($corner):$d" ;;
+    esac
+done
+ok

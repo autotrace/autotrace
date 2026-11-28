@@ -296,21 +296,17 @@
   <Point 85.8 14.0>
   <Point 86.1 13.5>
   <Point 86.3 13.0>
-  <Point 86.6 11.7>
-  <Point 86.2 10.9>
-  <Point 85.8 10.1>
-  <Point 85.4 9.2>
-  <Point 85.0 8.5>
-  <Point 83.7 7.4>
-  <Point 83.2 7.4>
-  <Point 82.6 7.4>
-  <Point 82.1 7.5>
-  <Point 81.5 7.7>
-  <Point 78.7 8.7>
-  <Point 77.1 10.0>
-  <Point 76.0 11.7>
-  <Point 75.3 13.5>
-  <Point 75.2 15.5>
+  <Point 86.8 12.0>
+  <Point 86.5 11.4>
+  <Point 86.1 10.7>
+  <Point 85.7 9.9>
+  <Point 85.3 9.1>
+  <Point 84.8 8.3>
+  <Point 81.3 7.3>
+  <Point 79.0 8.2>
+  <Point 77.1 9.9>
+  <Point 75.9 12.1>
+  <Point 75.3 14.6>
   <Smoothed No>
  >
  <Polygon <Fill 0><Pen 15>
@@ -473,36 +469,37 @@
   <Point 75.7 84.5>
   <Point 74.1 85.2>
   <Point 72.4 85.6>
-  <Point 69.6 86.6>
-  <Point 70.2 87.0>
-  <Point 70.9 87.3>
-  <Point 71.6 87.6>
-  <Point 72.3 87.9>
+  <Point 69.1 86.4>
+  <Point 70.1 86.9>
+  <Point 71.1 87.4>
+  <Point 72.2 87.9>
+  <Point 73.3 88.4>
   <Point 74.4 88.9>
-  <Point 75.2 89.3>
-  <Point 76.1 89.8>
-  <Point 77.0 90.3>
-  <Point 77.9 90.7>
-  <Point 80.7 91.0>
-  <Point 81.8 90.7>
-  <Point 82.8 90.2>
-  <Point 83.8 89.7>
-  <Point 84.8 89.1>
-  <Point 88.9 86.0>
-  <Point 91.0 84.0>
-  <Point 92.9 81.9>
-  <Point 94.7 79.6>
-  <Point 96.3 77.1>
-  <Point 101.2 64.4>
-  <Point 101.9 56.7>
-  <Point 101.0 49.1>
-  <Point 98.7 41.9>
-  <Point 95.0 35.2>
-  <Point 76.3 20.9>
-  <Point 68.4 19.2>
-  <Point 60.4 19.1>
-  <Point 52.5 20.6>
-  <Point 45.1 23.7>
+  <Point 77.0 90.0>
+  <Point 77.4 90.3>
+  <Point 77.9 90.5>
+  <Point 78.4 90.7>
+  <Point 78.9 90.9>
+  <Point 81.3 90.8>
+  <Point 82.7 90.3>
+  <Point 84.1 89.6>
+  <Point 85.5 88.7>
+  <Point 86.7 87.8>
+  <Point 91.5 83.4>
+  <Point 93.7 80.8>
+  <Point 95.7 78.0>
+  <Point 97.4 75.1>
+  <Point 98.9 72.1>
+  <Point 102.0 58.1>
+  <Point 101.4 50.8>
+  <Point 99.5 43.6>
+  <Point 96.2 37.0>
+  <Point 91.8 31.0>
+  <Point 72.7 20.0>
+  <Point 65.3 19.0>
+  <Point 57.9 19.4>
+  <Point 50.7 21.1>
+  <Point 44.0 24.2>
   <Point 30.7 37.5>
   <Point 28.9 41.1>
   <Point 27.4 44.8>
@@ -658,11 +655,8 @@
   <Point 99.5 31.1>
   <Point 99.6 32.0>
   <Point 99.9 32.9>
-  <Point 101.4 33.5>
-  <Point 101.5 32.7>
-  <Point 101.5 31.8>
-  <Point 101.4 30.9>
-  <Point 101.2 30.1>
+  <Point 101.0 28.5>
+  <Point 100.8 28.5>
   <Smoothed No>
  >
  <Polygon <Fill 0><Pen 15>
@@ -707,11 +701,12 @@
   <Point 102.0 38.6>
   <Point 101.5 37.8>
   <Point 101.1 36.9>
-  <Point 100.3 34.3>
-  <Point 99.8 33.7>
-  <Point 99.5 33.0>
-  <Point 99.3 32.3>
-  <Point 99.1 31.6>
+  <Point 100.3 34.4>
+  <Point 99.8 33.8>
+  <Point 99.4 33.1>
+  <Point 99.2 32.4>
+  <Point 99.0 31.6>
+  <Point 98.6 30.0>
   <Smoothed No>
  >
  <Polygon <Fill 0><Pen 15>
@@ -744,11 +739,12 @@
   <Point 108.0 39.7>
   <Point 107.8 40.2>
   <Point 107.6 40.7>
-  <Point 108.8 41.3>
-  <Point 109.6 40.3>
-  <Point 109.9 39.0>
-  <Point 109.6 37.5>
-  <Point 109.0 35.9>
+  <Point 108.9 41.3>
+  <Point 109.7 40.3>
+  <Point 109.8 39.0>
+  <Point 109.5 37.6>
+  <Point 108.9 36.0>
+  <Point 107.2 33.6>
   <Smoothed No>
  >
  <Polygon <Fill 0><Pen 15>
@@ -837,6 +833,7 @@
   <Point 62.1 54.2>
   <Point 56.1 45.4>
   <Point 55.1 40.8>
+  <Point 49.6 38.8>
   <Point 49.4 38.8>
   <Smoothed No>
  >
@@ -926,21 +923,22 @@
   <Point 79.6 67.2>
   <Point 80.5 65.8>
   <Point 79.6 62.1>
-  <Point 76.8 68.1>
-  <Point 72.2 72.0>
-  <Point 66.5 73.8>
-  <Point 60.5 73.6>
-  <Point 54.7 71.4>
-  <Point 46.9 60.1>
-  <Point 46.7 58.5>
-  <Point 46.6 57.0>
-  <Point 46.7 55.4>
-  <Point 47.0 53.9>
-  <Point 48.4 49.9>
-  <Point 49.0 49.0>
-  <Point 49.5 48.1>
-  <Point 49.9 47.2>
-  <Point 50.1 46.3>
+  <Point 76.9 67.9>
+  <Point 72.4 71.8>
+  <Point 66.9 73.7>
+  <Point 60.9 73.7>
+  <Point 55.3 71.8>
+  <Point 47.1 61.0>
+  <Point 46.8 59.4>
+  <Point 46.6 57.9>
+  <Point 46.7 56.3>
+  <Point 46.8 54.7>
+  <Point 48.1 50.5>
+  <Point 48.7 49.5>
+  <Point 49.3 48.5>
+  <Point 49.7 47.6>
+  <Point 50.0 46.6>
+  <Point 49.2 44.6>
   <Smoothed No>
  >
  <Polygon <Fill 0><Pen 15>
@@ -1088,11 +1086,17 @@
   <Point 109.6 54.9>
   <Point 105.3 58.1>
   <Point 102.4 57.6>
+  <Point 102.6 58.3>
   <Point 102.9 58.9>
+  <Point 103.4 59.3>
   <Point 104.1 59.5>
-  <Point 105.7 59.4>
-  <Point 107.3 58.8>
-  <Point 108.7 57.7>
+  <Point 104.8 59.6>
+  <Point 107.0 59.0>
+  <Point 107.7 58.5>
+  <Point 108.4 57.9>
+  <Point 108.9 57.2>
+  <Point 109.4 56.5>
+  <Point 109.6 54.9>
   <Smoothed No>
  >
  <Polygon <Fill 0><Pen 15>
@@ -1205,21 +1209,17 @@
   <Point 43.8 93.0>
   <Point 49.7 95.1>
   <Point 55.7 96.7>
-  <Point 66.0 97.0>
-  <Point 63.9 95.7>
-  <Point 61.6 94.6>
-  <Point 59.3 93.5>
-  <Point 57.0 92.5>
-  <Point 48.9 88.9>
-  <Point 45.2 87.3>
-  <Point 41.5 85.7>
-  <Point 37.8 84.2>
-  <Point 34.1 82.7>
-  <Point 25.1 79.3>
-  <Point 23.6 78.6>
-  <Point 22.0 78.0>
-  <Point 20.5 77.4>
-  <Point 18.9 76.8>
+  <Point 67.9 98.1>
+  <Point 62.5 95.7>
+  <Point 57.1 93.2>
+  <Point 51.8 90.7>
+  <Point 46.5 88.2>
+  <Point 41.1 85.8>
+  <Point 28.2 80.4>
+  <Point 26.2 79.6>
+  <Point 24.1 78.7>
+  <Point 22.0 77.8>
+  <Point 20.0 77.1>
   <Smoothed No>
  >
  <Polygon <Fill 0><Pen 15>
@@ -1379,9 +1379,10 @@
   <Point 105.6 90.6>
   <Point 106.8 90.8>
   <Point 107.0 90.3>
-  <Point 107.1 89.8>
+  <Point 107.1 89.9>
   <Point 107.0 89.4>
-  <Point 106.9 88.9>
+  <Point 106.9 89.0>
+  <Point 106.0 88.0>
   <Smoothed No>
  >
  <Polygon <Fill 0><Pen 15>

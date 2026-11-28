@@ -1318,6 +1318,13 @@ static index_list_type find_corners(pixel_outline_type pixel_outline,
        line, which usually interrupts the continuity dreadfully.  */
     remove_adjacent_corners(&corner_list, O_LENGTH(pixel_outline) - (pixel_outline.open ? 2 : 1),
                             fitting_opts->remove_adjacent_corners, exception);
+
+  /* The search for the best corner can run on to the last point of an open
+     outline.  The outline's end already ends its last curve, so a corner
+     there would only start a curve of one point (#468).  */
+  if (pixel_outline.open && INDEX_LIST_LENGTH(corner_list) > 1 &&
+      GET_LAST_INDEX(corner_list) == O_LENGTH(pixel_outline) - 1)
+    g_array_remove_index(corner_list.data, INDEX_LIST_LENGTH(corner_list) - 1);
 cleanup:
   return corner_list;
 }
@@ -1352,8 +1359,8 @@ static void find_vectors(unsigned test_index, pixel_outline_type outline, vector
     *out = Vadd(*out, IPsubtract(O_COORDINATE(outline, i), candidate));
 }
 
-/* Remove adjacent points from the index list LIST.  We do this by first
-   sorting the list and then running through it.  Since these lists are
+/* Sort the index list LIST and, if REMOVE_ADJ_CORNERS, remove adjacent
+   points from it by running through it.  Since these lists are
    quite short, a straight selection sort (e.g., p.139 of the Art of
    Computer Programming, vol.3) is good enough.  LAST_INDEX is the index
    of the last pixel on the outline, i.e., the next one is the first
@@ -1390,9 +1397,19 @@ static void remove_adjacent_corners(index_list_type *list, unsigned last_index,
     }
   }
 
-  /* The list is sorted.  Now look for adjacent entries.  Each time
-     through the loop we insert the current entry and, if appropriate,
-     the next entry.  */
+  /* The list is sorted.  Without -remove-adjacent-corners, keep it as it
+     is.  The test for the last element below used to drop it even then,
+     whenever it was next to the one before, or was LAST_INDEX with a
+     corner at 0: a one-pixel bar lost a corner and was traced as a
+     sliver, and a one-pixel step at the end of an outline was cut across
+     (#467).  */
+  if (!remove_adj_corners) {
+    free_index_list(&new_list);
+    return;
+  }
+
+  /* Now look for adjacent entries.  Each time through the loop we insert
+     the current entry and, if appropriate, the next entry.  */
   for (j = 0; j < INDEX_LIST_LENGTH(*list) - 1; j += step) {
     unsigned current = GET_INDEX(*list, j);
     unsigned next = GET_INDEX(*list, j + 1);
@@ -1400,7 +1417,7 @@ static void remove_adjacent_corners(index_list_type *list, unsigned last_index,
     /* We should never have inserted the same element twice.  */
 
     /* Skip the next entry when it is adjacent to this one.  */
-    step = ((remove_adj_corners) && ((next == current + 1) || (next == current))) ? 2 : 1;
+    step = ((next == current + 1) || (next == current)) ? 2 : 1;
 
     append_index(&new_list, current);
   }
