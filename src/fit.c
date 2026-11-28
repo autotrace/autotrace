@@ -1226,7 +1226,10 @@ static index_list_type find_corners(pixel_outline_type pixel_outline,
     if (end_p <= fitting_opts->corner_surround * 2)
       return corner_list;
     APPEND_CORNER(0, 0.0, '@');
-    start_p += fitting_opts->corner_surround;
+    /* Point 0 is a corner now, so the search starts after it even with a
+       surround of 0.  It made every point a corner, point 0 twice, and the
+       curve between the two had a single point (#469).  */
+    start_p += fitting_opts->corner_surround ? fitting_opts->corner_surround : 1;
     end_p -= fitting_opts->corner_surround;
   }
 
